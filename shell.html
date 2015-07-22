@@ -1,24 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
-
+    <script src="libs/require.js" data-main="webMain"></script>
+    <style>
+      #inputDiv {
+      position: absolute;
+      top:80%;
+      left: 0;
+      right: 0;
+      width:400px;
+      margin:auto;
+      }
+      #shellInput{
+      width:400px;
+      
+      }
+    </style>
   </head>
   <body>
-    Test <br>
-    <input id="testName" type="text"><br>
-
+    <div id="inputDiv">
+      <input id="shellInput" type="text">
+    </div>
 
     
   </body>
-  <script>
-    document.querySelector('#testName').addEventListener('keypress',function(e){
-    var key = e.which || e.keyCode;
-    if (key === 13){
-    var value = document.getElementById('testName').value;
-    document.getElementById('testName').value = "";
-    console.log(value);
-    }
-    });
-  </script>
+    <script>
+  //   document.querySelector('#testName').addEventListener('keypress',function(e){
+  //   var key = e.which || e.keyCode;
+  //   if (key === 13){
+  //   var value = document.getElementById('testName').value;
+  //   document.getElementById('testName').value = "";
+  //   console.log(value);
+  //   }
+  //   });
+   </script>
 
 </html>

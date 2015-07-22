@@ -45,21 +45,27 @@ define([],function(){
     };
 
     Shell.prototype.changeDir = function(name){
-        console.log("Change Dir: ", name);
         var path = name.split('/');
         var node = this.find(path,name[0] === "/");
         if(node !== undefined){
             this.cwd = node;
+        }else{
+            console.log("Node: ",name," does not exist");
         }
     }
 
     Shell.prototype.pwd = function(){
-        console.log("Cwd:");
-        console.log("Value: ",this.cwd.value);
-        console.log("Children: ");
-        for(var child in this.cwd.children){
-            console.log(child);
-        }
+        var path = [];
+        var curr = this.cwd;
+        while(curr !== undefined){
+            if(curr.name !== this.root.name){
+                path.push(curr.name);
+            }
+            curr = curr.children['..'];
+        };
+        path.reverse();
+        var pathString = "/" + path.join("/");
+        return pathString;        
     };
 
     Shell.prototype.ls = function(path){
@@ -67,21 +73,26 @@ define([],function(){
         if(path.length === 0 || path === undefined){
             node = this.cwd;
         }else{
-            console.log(path);
             node = this.find(path[0].split('/'),path[0] === "/");
         }
-        for(var child in node.children){
-            console.log(child);
+
+        var children = [];
+        for(var name in node.children){
+            children.push(name);
         }
-        
+        return children.join(",");
+
     };
     
     //--------------------
     /**
        @class Node
        @constructor
-     */
-    var Node = function(value,parent){
+    */
+    var nextId = 0;
+    var Node = function(name,value,parent){
+        this.id = nextId++;
+        this.name = name;
         this.value = value;
         this.children = {};
         if(parent !== undefined){
@@ -92,7 +103,7 @@ define([],function(){
     };
 
     Node.prototype.addChild = function(name,value){
-        this.children[name] = new Node(value,this);
+        this.children[name] = new Node(name,value,this);
     };
     
 
