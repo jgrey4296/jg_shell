@@ -8,6 +8,10 @@ if(typeof define !== 'function'){
 
 define([],function(){
 
+    /**
+       @class Shell
+       @constructor
+     */
     var Shell = function(){
         this.root = new Node("__root");
         this.cwd = this.root;        
@@ -33,6 +37,10 @@ define([],function(){
     };
 
     //--------------------
+    /**
+       @class Node
+       @constructor
+     */
     var Node = function(value,parent){
         this.value = value;
         this.children = {};
