@@ -13,6 +13,12 @@ var commands = {
     },
     "pwd" : function(sh,values){
         sh.pwd();
+    },
+    "rm" : function(sh,values){
+        console.log("TODO: rm");
+    },
+    "ls" : function(sh,values){
+        sh.ls(values);
     }
 };
 
