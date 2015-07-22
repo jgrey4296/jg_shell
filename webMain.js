@@ -35,6 +35,8 @@ require(['libs/d3.min','src/shell'],function(d3,Shell){
     
     console.log(commands);
 
+    d3.select("#shellInput").node().focus();
+    
     //Setup the text input and parsing
     d3.select('#shellInput').on("keypress",function(e){
         if(d3.event.key === "Enter"){
@@ -69,7 +71,6 @@ require(['libs/d3.min','src/shell'],function(d3,Shell){
             .attr('r',Math.random() * 80 + 10)
             .attr('cx',Math.random() * 500 + 200)
             .attr('cy',Math.random() * 500 + 200);
-
     };
     
     console.log(HalfHeight());
