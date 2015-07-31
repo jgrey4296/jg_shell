@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define([],function(){
+define(['underscore'],function(_){
 
     /**
        @class Shell
@@ -17,6 +17,13 @@ define([],function(){
         this.cwd = this.root;        
     };
 
+    Shell.prototype.find = null;
+    Shell.prototype.mkChild = null;
+    Shell.prototype.mkParent = null;
+    Shell.prototype.setValue = null;
+
+    
+    
     /** find a given node, of a/b, b, or /a/b
        @method find
        @return Node or Undefined
@@ -24,7 +31,7 @@ define([],function(){
     Shell.prototype.find = function(path,fromRoot){
         var foundNode = null;
         var curr = fromRoot ? this.root : this.cwd;
-        while(path[0] === ""){
+        if(path[0] === ""){
             path.shift();
         }
         while(path.length > 0){
@@ -44,6 +51,15 @@ define([],function(){
         }
     };
 
+    Shell.prototype.connectParent = function(name){
+        //First find the parent
+
+        //if it doesnt exist make it
+
+        //add it to the parent list of the cwd
+
+    };
+    
     Shell.prototype.changeDir = function(name){
         var path = name.split('/');
         var node = this.find(path,name[0] === "/");
@@ -83,6 +99,25 @@ define([],function(){
         return children.join(",");
 
     };
+
+    //return {node,parent,children}
+    Shell.prototype.getContext = function(){
+        var retObject = {
+            node: this.cwd,
+            parents: [],
+            children: [],
+        };
+        for(var i in this.cwd.children){
+            if(i === ".."){
+                retObject.parents.push(this.cwd.children[i])
+            }else{
+                retObject.children.push(this.cwd.children[i]);
+            }
+        }
+        
+
+        return retObject;
+    };
     
     //--------------------
     /**
@@ -95,7 +130,9 @@ define([],function(){
         this.name = name;
         this.value = value;
         this.children = {};
+        this.parents = {};
         if(parent !== undefined){
+            this.parents[parent.name] = parent;
             this.children['..'] = parent;
         }else{
             console.log("Node with No Parent");
