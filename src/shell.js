@@ -1,5 +1,9 @@
 /** A Shell simulation
    @module shell
+
+   make nodes (of: Rules, objects, actions, concepts, institutions)
+   
+
 */
 
 if(typeof define !== 'function'){
