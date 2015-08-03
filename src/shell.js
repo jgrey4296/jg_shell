@@ -10,7 +10,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define([],function(){
 
     /**
        @class Shell
