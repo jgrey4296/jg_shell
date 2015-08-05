@@ -17,8 +17,12 @@ define([],function(){
        @constructor
      */
     var Shell = function(){
-        this.root = new Node("__root");
-        this.cwd = this.root;        
+        var rootNode = new Node("__root");
+        this.root = rootNode.id;
+        this.cwd = rootNode.id;
+        //Store nodes in an array by id number:
+        this.nodes = [];
+        this.nodes[rootNode.id] = rootNode;
     };
 
     Shell.prototype.find = null;
@@ -26,7 +30,22 @@ define([],function(){
     Shell.prototype.mkParent = null;
     Shell.prototype.setValue = null;
 
-    
+
+    Shell.prototype.getNodeById = function(id){
+        if(this.nodes[id]){
+            return this.nodes[id];
+        }else{
+            return null;
+        }
+    };
+
+    Shell.prototype.getRoot = function(){
+        return this.getNodeById(this.root);
+    };
+
+    Shell.prototype.getCwd = function(){
+        return this.getNodeById(this.cwd);
+    };
     
     /** find a given node, of a/b, b, or /a/b
        @method find
@@ -34,13 +53,13 @@ define([],function(){
      */
     Shell.prototype.find = function(path,fromRoot){
         var foundNode = null;
-        var curr = fromRoot ? this.root : this.cwd;
+        var curr = fromRoot ? this.getRoot() : this.getCwd();
         if(path[0] === ""){
             path.shift();
         }
         while(path.length > 0){
-            if(curr === undefined) break;
-            curr = curr.children[path.shift()];
+            if(curr === null) break;
+            curr = this.getNodeById(curr.children[path.shift()]);
         }
         return curr;
     }
@@ -50,8 +69,10 @@ define([],function(){
         var path = name.split('/');
         var newNodeName = path.pop()
         var parent = this.find(path,name[0] === "/");
-        if(parent !== undefined){
-            parent.addChild(newNodeName,value);
+        if(parent !== null){
+            var newNode = new Node(name,value,parent.id,parent.name);
+            parent.addChild(newNode.name,newNode.id);
+            this.nodes[newNode.id] = newNode;
         }
     };
 
@@ -67,8 +88,8 @@ define([],function(){
     Shell.prototype.changeDir = function(name){
         var path = name.split('/');
         var node = this.find(path,name[0] === "/");
-        if(node !== undefined){
-            this.cwd = node;
+        if(node !== null){
+            this.cwd = node.id;
         }else{
             console.log("Node: ",name," does not exist");
         }
@@ -76,12 +97,12 @@ define([],function(){
 
     Shell.prototype.pwd = function(){
         var path = [];
-        var curr = this.cwd;
-        while(curr !== undefined){
-            if(curr.name !== this.root.name){
+        var curr = this.getCwd();
+        while(curr !== null){
+            if(curr.name !== this.getRoot().name){
                 path.push(curr.name);
             }
-            curr = curr.children['..'];
+            curr = this.getNodeById(curr.children['..']);
         };
         path.reverse();
         var pathString = "/" + path.join("/");
@@ -89,13 +110,14 @@ define([],function(){
     };
 
     Shell.prototype.ls = function(path){
-        var node = undefined;
+        var node = null;
         if(path.length === 0 || path === undefined){
-            node = this.cwd;
+            node = this.getCwd();
         }else{
             node = this.find(path[0].split('/'),path[0] === "/");
         }
-
+        if(node === null) return "null node";
+        
         var children = [];
         for(var name in node.children){
             children.push(name);
@@ -107,19 +129,20 @@ define([],function(){
     //return {node,parent,children}
     Shell.prototype.getContext = function(){
         var retObject = {
-            node: this.cwd,
+            node: this.getCwd(),
             parents: [],
             children: [],
         };
-        for(var i in this.cwd.children){
+        for(var i in retObject.node.children){
             if(i === ".."){
-                retObject.parents.push(this.cwd.children[i])
+                var newChild = this.getNodeById(retObject.node.children[i]);
+                retObject.parents.push(newChild);
             }else{
-                retObject.children.push(this.cwd.children[i]);
+                var newChild = this.getNodeById(retObject.node.children[i]);
+                retObject.children.push(newChild);
             }
         }
         
-
         return retObject;
     };
     
@@ -129,22 +152,23 @@ define([],function(){
        @constructor
     */
     var nextId = 0;
-    var Node = function(name,value,parent){
+    var Node = function(name,value,parent,parentName){
         this.id = nextId++;
         this.name = name;
         this.value = value;
         this.children = {};
-        this.parents = {};
+        this.parents = [];
         if(parent !== undefined){
-            this.parents[parent.name] = parent;
+            this.parents.push(parent);
+            console.log("SEtting parent to:",parent);
             this.children['..'] = parent;
         }else{
             console.log("Node with No Parent");
         }
     };
 
-    Node.prototype.addChild = function(name,value){
-        this.children[name] = new Node(name,value,this);
+    Node.prototype.addChild = function(name,id){
+        this.children[name] = id;
     };
     
 

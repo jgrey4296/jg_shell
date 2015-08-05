@@ -5,6 +5,11 @@ var Shell = require('./src/shell');
 var theShell = new Shell();
 
 var commands = {
+    "save": function(sh,values){
+        var ja = JSON.stringify(sh.nodes,null,"\t");
+        console.log(ja);
+
+    },
     "mkdir" : function(sh,values){
         sh.mkdir(values[0],values.slice(1));
     },
@@ -12,13 +17,17 @@ var commands = {
         sh.changeDir(values[0]);
     },
     "pwd" : function(sh,values){
-        sh.pwd();
+        console.log(sh.pwd());
     },
     "rm" : function(sh,values){
         console.log("TODO: rm");
     },
     "ls" : function(sh,values){
-        sh.ls(values);
+        console.log(sh.ls(values));
+    },
+    "context":function(sh,values){
+        var context = sh.getContext();
+        console.log(JSON.stringify(context,null,"\t"));
     }
 };
 
