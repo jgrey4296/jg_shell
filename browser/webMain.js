@@ -18,6 +18,17 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
     
     //Maps typed commands to methods on shell
     var commands = {
+        "save" : function(sh,values){
+            var request = new XMLHttpRequest();
+            request.onreadystatechange=function(){
+                if (request.readyState==4){
+                    console.log("Finished");
+                    console.log(request.responseText);
+                }
+            };
+            request.open("POST","",true);
+            request.send("this is a test");
+        },
         "mkdir" : function(sh,values){
             sh.mkdir(values[0],values.slice(1));
             commands['context'](sh,values);
