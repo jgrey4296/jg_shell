@@ -11,18 +11,24 @@ if(typeof define !== 'function'){
 }
 
 define([],function(){
-
+    //Id for the nodes
+    var nextId = 0;
+    
     /**
        @class Shell
        @constructor
      */
     var Shell = function(){
+        nextId = 0;
         var rootNode = new Node("__root");
         this.root = rootNode.id;
         this.cwd = rootNode.id;
         //Store nodes in an array by id number:
         this.nodes = [];
         this.nodes[rootNode.id] = rootNode;
+
+        //Internal node ctor access:
+        this.__Node = Node;
     };
 
     //Find by id number?
@@ -209,7 +215,7 @@ define([],function(){
        @class Node
        @constructor
     */
-    var nextId = 0;
+
     var Node = function(name,values,parent,parentName){
         //Members:
         this.id = nextId++;

@@ -343,6 +343,9 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         var inodes = nodes.enter().append("g")
             .attr("transform",function(d,i){
                 return "translate(0," + (drawOffset + 20 + (i * 125)) +")";
+            })
+            .attr('id',function(d){
+                return d.id + "_node";
             });
 
         inodes.append("rect")

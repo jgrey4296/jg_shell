@@ -1,77 +1,49 @@
 var Shell = require('../src/shell');
 
-exports.tests = {
+exports.Shelltests = {
 
-    initTest : function(test){
-        var s = new Shell()
-        test.ok(s !== undefined);
-        test.done();
-    },
-
-    createNode:function(test){
-        test.done();
-    },
-
-    addChild:function(test){
-        test.done();
-    },
-
-    addParent:function(test){
-        test.done();
-    },
-
-    moveNode:function(test){
-        test.done();
-    },
-
-    defineValues:function(test){
-        test.done();
+    setUp : function(callback){
+        this.shell = new Shell();
+        callback();
     },
     
-    setValue:function(test){
-        test.done();
-    },
+    //test basic ctor
 
-    setValues:function(test){
-        test.done();
-    },
+    //test root is created
+
+    //test cwd and root are the same
+
+    //test root node only allnodes access
+
+    //test finding
+
+    //test mking childing
+
+    //test mking parent
+
+    //test setting values of nodes
+
+    //test renaming
+
+    //test goto
+
+    //test load json
+
+    //test getNodebyId
+
+    //test getRoot
+
+    //test getCwd
+
+    //test change dir
+
+    //test pwd
+
+    //test ls
+
+    //test getContext
+
     
-    getContext:function(test){
-        test.done();
-    },
-
-    changeCwd:function(test){
-        test.done();
-    },
-
-    findNode:function(test){
-        test.done();
-    },
-    
-    deleteNode:function(test){
-        test.done();
-    },
-
-    defineStructure:function(test){
-        test.done();
-    },
-    
-    addObject:function(test){
-        test.done();
-    },
-
-    addAction:function(test){
-        test.done();
-    },
-
-    addConcept:function(test){
-        test.done();
-    },
-
-    addInstitution:function(test){
-        test.done();
-    },
-
     
 };
 
