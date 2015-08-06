@@ -167,7 +167,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .attr('height',window.innerHeight - 30);
 
     
-    //Node Connections
+    //Node Connections - general groups
     var parents = svg.append("g").attr("id","parents")
         .attr("transform","translate(" +
               ((window.innerWidth * 0.5) - (columnWidth * 0.5) - columnWidth) + ",0)");
@@ -180,7 +180,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
             .attr("transform","translate(" +
                   ((window.innerWidth * 0.5) + columnWidth - (columnWidth * 0.5)) + ",0)");
 
-    
+    //Parent Column
     parents.append("text").text("Inputs/Parents")
         .style("text-anchor","middle")
         .attr("transform","translate(100,40)");
@@ -193,17 +193,19 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .attr("ry",10)
         .attr("transform","translate(0,"+drawOffset+")");
 
+    //Current Node column
     mainNode.append("text").text("Current Node")
         .attr("transform","translate(100,40)")
         .style("text-anchor","middle");
     
     mainNode.append("rect")
-        .attr("width",columnWidth)
+        .attr("width",columnWidth - 20)
         .attr("height",window.innerHeight - 200)
         .attr("rx",10)
         .attr("ry",10)
-        .attr("transform","translate(0,"+drawOffset+")");
+        .attr("transform","translate(10,"+drawOffset+")");
 
+    //Child column
     children.append("text").text("Outputs/Children")
         .attr("transform","translate(100,40)")
         .style("text-anchor","middle");
