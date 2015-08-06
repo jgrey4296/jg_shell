@@ -1,0 +1,133 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"children": {
+			"abl": 1
+		},
+		"parents": []
+	},
+	{
+		"id": 1,
+		"name": "abl",
+		"values": {},
+		"children": {
+			"..": 0,
+			"pre": 2,
+			"agent": 3
+		},
+		"parents": [
+			0
+		]
+	},
+	{
+		"id": 2,
+		"name": "pre",
+		"values": {},
+		"children": {
+			"..": 1,
+			"declarations": 4,
+			"imports": 5
+		},
+		"parents": [
+			1
+		]
+	},
+	{
+		"id": 3,
+		"name": "agent",
+		"values": {},
+		"children": {
+			"..": 1,
+			"initialtree": 6,
+			"behaviours": 7,
+			"variables": 8
+		},
+		"parents": [
+			1
+		]
+	},
+	{
+		"id": 4,
+		"name": "declarations",
+		"values": {},
+		"children": {
+			"..": 2
+		},
+		"parents": [
+			2
+		]
+	},
+	{
+		"id": 5,
+		"name": "imports",
+		"values": {},
+		"children": {
+			"..": 2
+		},
+		"parents": [
+			2
+		]
+	},
+	{
+		"id": 6,
+		"name": "initialtree",
+		"values": {},
+		"children": {
+			"..": 3,
+			"behaviours": 9
+		},
+		"parents": [
+			3
+		]
+	},
+	{
+		"id": 7,
+		"name": "behaviours",
+		"values": {
+			"parallel": "0",
+			"sequential": "0"
+		},
+		"children": {
+			"..": 3,
+			"preconditions": 10
+		},
+		"parents": [
+			3
+		]
+	},
+	{
+		"id": 8,
+		"name": "variables",
+		"values": {},
+		"children": {
+			"..": 3
+		},
+		"parents": [
+			3
+		]
+	},
+	{
+		"id": 9,
+		"name": "behaviours",
+		"values": {},
+		"children": {
+			"..": 6
+		},
+		"parents": [
+			6
+		]
+	},
+	{
+		"id": 10,
+		"name": "preconditions",
+		"values": {},
+		"children": {
+			"..": 7
+		},
+		"parents": [
+			7
+		]
+	}
+]

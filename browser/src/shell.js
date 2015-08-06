@@ -45,7 +45,7 @@ define([],function(){
     };
 
     
-    /**Add Or change a value of a node
+    /**Add, change or remove a value of a node
        @method setValue
      */
     Shell.prototype.setValue = function(values){
@@ -57,6 +57,18 @@ define([],function(){
         }        
     };
 
+    Shell.prototype.rename = function(values){
+        var cwd = this.getCwd();
+        cwd.name = values[0];
+    };
+
+    Shell.prototype.goto = function(values){
+        var node = this.getNodeById(values[0]);
+        if(node !== null){
+            this.cwd = node.id;
+        }
+    };
+    
     Shell.prototype.loadJson = function(dataArray){
         var largestId = 0;
         for(var i in dataArray){
@@ -243,7 +255,11 @@ define([],function(){
     };
     
     Node.prototype.setValue = function(name,value){
-        this.values[name] = value;
+        if(value === undefined || value === null){
+            delete this.values[name];
+        }else{
+            this.values[name] = value;
+        }
     };
     
     Node.prototype.valueArray = function(){

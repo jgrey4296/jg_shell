@@ -18,12 +18,11 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
     
     //Maps typed commands to methods on shell
     var commands = {
+        //Load a file from the server
         "load" : function(sh,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
-                //TODO: when file is recieved
                 if(request.readyState===4){
-                    console.log("Received");
                     try{
                     var receivedJson = JSON.parse(request.responseText);
                     console.log("JSON:",receivedJson);
@@ -36,8 +35,8 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
             };
             request.open("GET","/data/"+values[0]+".json",true);
             request.send();
-
         },
+        //Save the current graph to the server
         "save" : function(sh,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
@@ -49,21 +48,29 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
             request.open("POST","saveData="+values[0],true);
             request.send(JSON.stringify(sh.nodes,null,"\t"));
         },
+        //Make a node
         "mkdir" : function(sh,values){
             sh.mkdir(values[0],values.slice(1));
         },
+        //Change the current node
         "cd" : function(sh,values){
             sh.changeDir(values[0]);
+        },
+        //Goto a node by id:
+        "goto":function(sh,values){
+            sh.goto(values);
         },
         "pwd" : function(sh,values){
             displayText(sh.pwd());
         },
+        //Delete a child
         "rm" : function(sh,values){
             sh.rm(values);
         },
         "ls" : function(sh,values){
             displayText(sh.ls(values));
         },
+        //Set,change, or delete cwd value
         "value":function(sh,values){
             if(values.length < 1){
                 console.log(sh.getCwd().values);
@@ -71,8 +78,10 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
             }
 
             sh.setValue(values);
+            //update the values
             drawValues();
         },
+        //Rename the current node
         "rename":function(sh,values){
             sh.rename(values);
         },

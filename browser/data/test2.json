@@ -1,0 +1,22 @@
+[
+	{
+		"id": 0,
+		"name": "blah",
+		"values": {},
+		"children": {
+			"something": 1
+		},
+		"parents": []
+	},
+	{
+		"id": 1,
+		"name": "something",
+		"values": {},
+		"children": {
+			"..": 0
+		},
+		"parents": [
+			0
+		]
+	}
+]
