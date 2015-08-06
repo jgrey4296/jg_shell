@@ -57,29 +57,36 @@ var dealWithGet = function(request,response){
 var dealWithPost = function(request,response){
     console.log("RECIEVED POST:",request.url);
     var values = request.url.split("=");
-    
+
+    //Instruction to save data:
+    //using url for save instruction and filename.
     if(values[0].slice(1) === "saveData"){
         console.log("Saving to File:",values[1]+".json");
+        //aggregate recieved post data
         var allData = "";
         request.on('data',function(chunk){
             allData += chunk;
         });
 
+        //when aggregated, save it to file
         request.on('end',function(){
             console.log("Entire Message received:",allData);
             fs.writeFile("./data/"+values[1]+".json",allData,function(err){
                 if(err){
                     console.log("Error:",err);
+                    response.writeHead(404);
+                    response.end();
+                }else{
+                    //Respond with something
+                    response.writeHead(200,{'Content-Type':'text/plain'});
+                    response.end("");
                 }
             });
-            //Save the received data
         });
-        
-        response.writeHead(200,{'Content-Type':'text/plain'});
-        response.end("TEST blah blah blah");
     }
 };
 
+//----------------------------------------
 //The server itself
 var server = http.createServer(function(request,response){
     if(request.method === "GET"){

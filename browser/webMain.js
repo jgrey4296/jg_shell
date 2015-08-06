@@ -1,4 +1,6 @@
-
+/**Entry point for shell.html graph authoring program
+   @file webMain
+ */
 require.config({
     paths:{
         underscore: "/libs/underscore"
@@ -11,6 +13,10 @@ require.config({
 
 });
 
+/*
+  Creates a single shell instance, a command map,
+  and then the authoring environment d3 drawing code
+*/
 require(['libs/d3.min','src/shell'],function(d3,Shell,_){
 
     //The simulated shell:
@@ -115,15 +121,20 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
     console.log(commands);
 
 
-    //--------------------
+    //----------------------------------------
     //Drawing stuff:
-    var drawOffset = 50;
+    //----------------------------------------
 
-    
-    //Focus on the text input on load
-    d3.select("#shellInput").node().focus();
-    
-    //Setup the text input and parsing
+    //The y offset for rectangles so they
+    //arent at the very top of the screen
+    var drawOffset = 50;
+    //The width of the parent, mainnode, and children columns
+    var columnWidth = window.innerWidth * 0.25;
+
+    /*
+      Main selection here sets up parsing from input
+      and clearing after the user presses enter.
+     */
     d3.select('#shellInput').on("keypress",function(e){
         if(d3.event.key === "Enter"){
             var line = d3.select(this).node().value;
@@ -141,6 +152,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
                 }
                 commands['context'](theShell);
             }
+        //Otherwise not enter, user is still typing commands:
         }else if(d3.event.key.length === 1){
             var theValue = (d3.select(this).node().value + d3.event.key);
             //Here i could look up potential matches
@@ -156,19 +168,17 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
 
     
     //Node Connections
-    var columnWidth = 200;
-    
     var parents = svg.append("g").attr("id","parents")
         .attr("transform","translate(" +
-              ((window.innerWidth / 3) - (columnWidth * 0.5)) + ",0)");
+              ((window.innerWidth * 0.5) - (columnWidth * 0.5) - columnWidth) + ",0)");
 
     var mainNode = svg.append("g").attr("id","mainNode")
         .attr("transform","translate(" +
-              ((window.innerWidth / 2) - (columnWidth * 0.5)) + ",0)");
+              ((window.innerWidth * 0.5) - (columnWidth * 0.5)) + ",0)");
     
     var children = svg.append("g").attr("id","children")
             .attr("transform","translate(" +
-                  (((window.innerWidth / 3) * 2) - (columnWidth * 0.5)) + ",0)");
+                  ((window.innerWidth * 0.5) + columnWidth - (columnWidth * 0.5)) + ",0)");
 
     
     parents.append("text").text("Inputs/Parents")
@@ -176,7 +186,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .attr("transform","translate(100,40)");
     
     parents.append("rect")
-        .attr("width",200)
+        .attr("width",columnWidth)
         .attr("height",window.innerHeight - 200)
         .style("opacity",0.5)
         .attr("rx",10)
@@ -188,7 +198,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .style("text-anchor","middle");
     
     mainNode.append("rect")
-        .attr("width",200)
+        .attr("width",columnWidth)
         .attr("height",window.innerHeight - 200)
         .attr("rx",10)
         .attr("ry",10)
@@ -199,7 +209,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .style("text-anchor","middle");
     
     children.append("rect")
-        .attr("width",200)
+        .attr("width",columnWidth)
         .attr("height",window.innerHeight - 200)
         .style("opacity",0.5)
         .attr("rx",10)
@@ -207,14 +217,16 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .attr("transform","translate(0,"+drawOffset+")");
 
 
-    //Suggestion Box
+    //Suggestion Box, on the right had side,
+    //displays contextual information on what is typed
     var suggestions = svg.append("g")
         .attr("transform",function(){
-            return "translate("+ (window.innerWidth - 200) +",0)";
+            return "translate("+ (window.innerWidth - 200)
+                +"," + (window.innerHeight - 300) + ")";
         });
 
     suggestions.append("rect")
-        .attr("width",200)
+        .attr("width",columnWidth)
         .attr("height",300)
         .style("fill","black")
         .attr("rx",10)
@@ -225,6 +237,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         .attr("id","suggestions")
         .attr("transform","translate(10,40)");
 
+    //The writes information to the suggestion box
     var displayText = function(text){
         d3.select("#suggestions").text(text);
 
@@ -234,54 +247,72 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
        @function drawNode
      */
     var drawNode = function(node){
+        //Select
         var mainNode = svg.select("#mainNode");
+        //bind data
         var theNode = mainNode.selectAll("g").data([node],function(d){
             return d.id;
         });
+        //remove old data
         theNode.exit().remove();
-        
+
+        //Add visualisation
         var container = theNode.enter().append("g")
-            .attr("transform","translate(25,"+(drawOffset + 20)+")")
+            .attr("transform","translate(" +
+                  (columnWidth * 0.25)+ ","+(drawOffset + 20)+")")
             .attr("id","mainNodeInfo");
         
         container.append("rect")
             .style("fill","red")
-            .attr("width","150")
+            .attr("width",(columnWidth * 0.5))
             .attr("height","500")
             .attr("rx",10)
             .attr("ry",10);
 
         container.append("text")
-            .attr("transform","translate(75,20)")
+            .attr("transform","translate("
+                  + ((columnWidth * 0.25)) + ",20)")
             .style("text-anchor","middle")
             .text(function(d){
                 return d.name;
             });
 
-
+        //separate function to be able to update
+        //value text separately
         drawValues();
         
 
     };
 
+    /**Render the values of the current node
+       @function drawValues
+     */
     var drawValues = function(){
         console.log("Drawing values");
         console.log(theShell.getCwd().valueArray());
 
+        //Select the "g"
         var valueContainer = svg.select("#valueContainer");
+        //If it doesnt exist, create it
         if(valueContainer.empty()){
             console.log("value container empty, creating");
             valueContainer = svg.select("#mainNodeInfo")
                 .append("g")
                 .attr('id','valueContainer')
-                .attr("transform","translate(75,40)");
+                .attr("transform","translate("
+                      + (columnWidth * 0.25)+",40)");
         }
 
+        //Remove old text
         valueContainer.selectAll("text").remove();
 
+        //bind new texts
+        //Values are stored in a node as an object,
+        //.valueArray() converts it to an array of pairs
         var texts = valueContainer.selectAll("text")
             .data(theShell.getCwd().valueArray());
 
+        
         texts.enter().append("text")
             .text(function(d){
                 return d[0] + ": " + d[1];
@@ -314,18 +345,20 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
 
         inodes.append("rect")
             .style("fill","red")
-            .attr("width","125")
-            .attr("transform","translate(25,0)")
+            .attr("width",(columnWidth * 0.5))
+            .attr("transform","translate("
+                  + (columnWidth * 0.25)+ ",0)")
             .attr("height","100")
             .attr("rx",10)
             .attr("ry",10);
 
         inodes.append("text")
-            .attr("transform","translate(50,50)")
+            .style("text-anchor","middle")
+            .attr("transform","translate("
+                  + ((columnWidth * 0.5))+",50)")
             .text(function(d){
             return d.name;
             });
-
 
         nodes.exit().remove();
         
@@ -334,4 +367,7 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
 
     //Startup:
     commands['context'](theShell);
+    //Focus on the text input automatically on page load
+    d3.select("#shellInput").node().focus();
+
 });
