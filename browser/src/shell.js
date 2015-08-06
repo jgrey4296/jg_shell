@@ -25,12 +25,58 @@ define([],function(){
         this.nodes[rootNode.id] = rootNode;
     };
 
-    Shell.prototype.find = null;
+    //Find by id number?
+    Shell.prototype.find = function(id){
+
+    };
+    //Make a child
     Shell.prototype.mkChild = null;
+    //Make a parent of the current node
     Shell.prototype.mkParent = null;
-    Shell.prototype.setValue = null;
 
+    Shell.prototype.rm = function(values){
+        var cwd = this.getCwd();
+        for(var i in values){
+            var deletedId = cwd.removeChild(values[i]);
+            var deletedNode = this.getNodeById(deletedId);
+            //TODO: cleanup parent
+        }
 
+    };
+
+    
+    /**Add Or change a value of a node
+       @method setValue
+     */
+    Shell.prototype.setValue = function(values){
+        while(values.length > 0){
+            var name = values.shift();
+            var theValue = values.shift();
+            var cwd = this.getCwd();
+            cwd.setValue(name,theValue);
+        }        
+    };
+
+    Shell.prototype.loadJson = function(dataArray){
+        var largestId = 0;
+        for(var i in dataArray){
+            var curr = dataArray[i];
+            if(curr === null) continue;
+            if(largestId < curr.id) largestId = curr.id;
+            nextId = curr.id;
+            console.log("Creating Node with values:",curr.values);
+            var newNode = new Node(curr.name,
+                                   curr.values,
+                                   curr.parents);
+            newNode.children = curr.children;
+            this.nodes[newNode.id] = newNode;
+        }
+        console.log("Largest Id used:",largestId);
+        nextId = largestId + 1;
+        
+    };
+
+    
     Shell.prototype.getNodeById = function(id){
         if(this.nodes[id]){
             return this.nodes[id];
@@ -70,7 +116,7 @@ define([],function(){
         var newNodeName = path.pop()
         var parent = this.find(path,name[0] === "/");
         if(parent !== null){
-            var newNode = new Node(name,value,parent.id,parent.name);
+            var newNode = new Node(newNodeName,value,parent.id,parent.name);
             parent.addChild(newNode.name,newNode.id);
             this.nodes[newNode.id] = newNode;
         }
@@ -152,25 +198,63 @@ define([],function(){
        @constructor
     */
     var nextId = 0;
-    var Node = function(name,value,parent,parentName){
+    var Node = function(name,values,parent,parentName){
+        //Members:
         this.id = nextId++;
         this.name = name;
-        this.value = value;
+        this.values = {};
         this.children = {};
         this.parents = [];
+        //Init:
         if(parent !== undefined){
-            this.parents.push(parent);
-            console.log("SEtting parent to:",parent);
-            this.children['..'] = parent;
+            if(parent instanceof Array){
+                this.parents = parent;
+            }else{
+                this.parents.push(parent);
+                console.log("SEtting parent to:",parent);
+                this.children['..'] = parent;
+            }
         }else{
             console.log("Node with No Parent");
+        }
+        //value init:
+        if(values instanceof Array){
+            while(values.length > 0){
+                var name = values.shift();
+                var theValue = values.shift();
+                if(name && theValue){
+                    this.values[name] = theValue;
+                }
+            }
+        }else if(values instanceof Object){
+            this.values = values;
+
         }
     };
 
     Node.prototype.addChild = function(name,id){
         this.children[name] = id;
     };
-    
 
+    Node.prototype.removeChild = function(name){
+        var retid = this.children[name];
+        delete this.children[name];
+        return retid;
+    };
+    
+    Node.prototype.setValue = function(name,value){
+        this.values[name] = value;
+    };
+    
+    Node.prototype.valueArray = function(){
+        var outArray = [];
+        for(var i in this.values){
+            var value = this.values[i];
+            outArray.push([i,value]);
+        };
+        return outArray;
+    };
+
+    
     return Shell;
 });

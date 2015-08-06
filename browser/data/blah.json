@@ -1,0 +1,27 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {
+			"a": "e",
+			"b": "c",
+			"one": "two",
+			"three": "four"
+		},
+		"children": {},
+		"parents": []
+	},
+	{
+		"id": 1,
+		"name": "something",
+		"values": {
+			"a": "3"
+		},
+		"children": {
+			"..": 0
+		},
+		"parents": [
+			0
+		]
+	}
+]
