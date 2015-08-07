@@ -18,4 +18,5 @@ shell
 path
 amdefine
 
-
+#Unit Test Dependencies:
+nodeunit
