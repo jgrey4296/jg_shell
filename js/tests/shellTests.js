@@ -43,7 +43,19 @@ exports.Shelltests = {
 
     //test getContext
 
-    
+
+
+
+    //--------------------
+    //Uncertain:
+
+    //Save node value structures
+
+    //recreate /copy node value structures
+
+    //save node parent/child structures
+
+    //recreate/copy node parent/child structures
     
 };
 

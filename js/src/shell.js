@@ -216,7 +216,7 @@ define([],function(){
        @constructor
     */
 
-    var Node = function(name,values,parent,parentName){
+    var Node = function(name,values,parent){
         //Members:
         this.id = nextId++;
         this.name = name;
@@ -236,21 +236,23 @@ define([],function(){
             console.log("Node with No Parent");
         }
         //value init:
-        if(values instanceof Array){
+        if(values && values instanceof Array){
             while(values.length > 0){
                 var name = values.shift();
                 var theValue = values.shift();
-                if(name && theValue){
-                    this.values[name] = theValue;
-                }
+                if(theValue === undefined) theValue = null;
+                this.values[name] = theValue;
+                
             }
-        }else if(values instanceof Object){
+        }else if(values && values instanceof Object){
             this.values = values;
-
         }
     };
 
     Node.prototype.addChild = function(name,id){
+        if(typeof id !== 'number'){
+            throw new Error("Children should be specified by number");
+        }
         this.children[name] = id;
     };
 
