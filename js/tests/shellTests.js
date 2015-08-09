@@ -130,6 +130,8 @@ exports.Shelltests = {
         test.done();
     },
 
+    //retrieve the node given by the id number, from
+    //all of the currently existing nodes
     getNodeByIdTest : function(test){
         this.shell.addChild('blah');
         var childId = this.shell.getCwd().children['blah'];
@@ -139,6 +141,8 @@ exports.Shelltests = {
         test.done();
     },
 
+    //pass in an object of node ids, get back an array
+    //of the nodes
     getMultipleNodesByIdsTest : function(test){
         this.shell.addChild('blah');
         this.shell.addChild('bloo');
@@ -233,33 +237,35 @@ exports.Shelltests = {
         test.done();
     },
 
+    //check that rename will convert to underscores
     renameUnderscoreTest : function(test){
         this.shell.rename("this is a test");
         test.ok(this.shell.getCwd().name === "this_is_a_test");
         test.done();
     },
 
-    //test goto
-    gotoTest : function(test){
+    //test moveTo from an id... again?
+    moveToIdTest : function(test){
         this.shell.addMove("blah").addMove("bloo").addMove("bill");
         var billId = this.shell.getCwd().id;
         this.shell.moveToRoot();
-        this.shell.moveToById(billId);
+        this.shell.moveTo(billId);
         test.ok(this.shell.getCwd().name === "bill");
         test.ok(this.shell.getCwd().id === billId);
         test.done();
     },
     
-    //test load json
+    //Pass in a simple data example to test data loading on.
     loadJsonTest : function(test){
         var exampleJson = [
             {id:0,name:"newRoot","children":[1],"parents":[]},
             {id:1,name:"aChild","children":[],"parents":0},
         ];
         this.shell.loadJson(exampleJson);
-        test.ok(this.getCwd().id === 1);
-        test.ok(this.getCwd().name === 'aChild');
-        test.ok(this.getCwd().parents['newRoot'] === 0);
+        test.ok(this.shell.getCwd().id === 1);
+        test.ok(this.shell.getCwd().name === 'aChild');
+        //console.log(this.shell.getCwd());//.parents['..']);
+        test.ok(this.shell.getCwd().parents['..'] === 0);
         test.done();
     },
 
@@ -268,13 +274,33 @@ exports.Shelltests = {
     contextTest : function(test){
         this.shell.addChild('blah').addChild('bill');
         this.shell.moveTo('blah');
+        this.shell.addChild('bozo');
         var context = this.shell.getContext();
-        test.ok(context.parents['__root'].id === this.shell.getRoot().id);
-        test.ok(context.children['bill'].id === this.shell.getCwd().children['bill']);
+        //console.log(context.parents);
+        //console.log(context.children);
+        test.ok(context.parents[0].id === this.shell.getRoot().id);
+        test.ok(context.children[0].id === this.shell.getCwd().children['bozo']);
         test.ok(context.node.id === this.shell.getCwd().id);
         test.done();
     },
 
+    //Remove child test:
+    removeChildTest : function(test){
+        this.shell.addMove('blah').addMove('bloo').addMove('blah');
+        this.shell.moveTo('..');
+        test.ok(this.shell.getCwd().children['blah'] !== undefined);
+        test.ok(this.shell.getCwd().name === "bloo");
+        this.shell.rm('blah');
+        test.ok(this.shell.getCwd().children['blah'] === undefined);
+
+        
+
+        test.done();
+    },
+
+    //removePath test
+
+    
     //Export To Json:
     
 

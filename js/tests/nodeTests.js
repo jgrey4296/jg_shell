@@ -64,9 +64,10 @@ exports.nodetests = {
 
     //test ctor: name, value object, parent singular
     parentSingularTest: function(test){
-        var aNode = new Node("blah",{a:2},5);
+        var aNode = new Node("blah",{a:2},5,'theParent');
         test.ok(aNode.parents['..'] === 5);
         test.ok(aNode.values['a'] === 2);
+        test.ok(aNode.parents['theParent'] === 5);
         test.done();
     },
 

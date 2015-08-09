@@ -36,19 +36,28 @@ define([],function(){
         if(this.nodes[id]) return this.nodes[id];
         return null;
     };
-    //Make a child
-    Shell.prototype.mkChild = null;
-    //Make a parent of the current node
-    Shell.prototype.mkParent = null;
 
     Shell.prototype.rm = function(values){
         var cwd = this.getCwd();
+        if(!(values instanceof Array)){
+            values = [values];
+        }
         for(var i in values){
             var deletedId = cwd.removeChild(values[i]);
             var deletedNode = this.getNodeById(deletedId);
-            //TODO: cleanup parent
-        }
 
+            if(deletedNode === null) continue;
+            var nodesParents = this.getNodesByIds(deletedNode.parents);
+            nodesParents.map(function(a){
+                a.removeChild(values[i]);
+            });
+
+            this.getNodesByIds(deletedNode.children).map(function(a){
+                a.removeParent(values[i],true);
+            });
+            
+        }
+        return this;
     };
 
     
@@ -66,13 +75,21 @@ define([],function(){
 
     Shell.prototype.getNodesByIds = function(theIds){
         var outputNodes = [];
+        var foundIds = [];
         if((theIds instanceof Array)){
-            for(var i in ids){
-                outputNodes.push(this.getNodeById(theIds[i]));
+            for(var i in theIds){
+                if(foundIds.indexOf(theIds[i]) < 0){
+                    outputNodes.push(this.getNodeById(theIds[i]));
+                    foundIds.push(theIds[i]);
+                }
             }
         }else if( theIds instanceof Object){
+            foundIds = [];
             for(var i in theIds){
-                outputNodes.push(this.getNodeById(theIds[i]));
+                if(foundIds.indexOf(theIds[i])){
+                    outputNodes.push(this.getNodeById(theIds[i]));
+                    foundIds.push(theIds[i]);
+                }
             }
         }
         return outputNodes;
@@ -206,7 +223,11 @@ define([],function(){
             while(path.length > 0 && curr !== undefined && curr !== null){
                 //console.log("Moving to: ",curr.name);
                 var nextLoc = path.shift();
-                curr = this.getNodeById(curr.children[nextLoc]);
+                if(curr.children[nextLoc]){
+                    curr = this.getNodeById(curr.children[nextLoc]);
+                }else{
+                    curr = this.getNodeById(curr.parents[nextLoc]);
+                }
             }
         }            
         if(curr !== null){
@@ -262,15 +283,9 @@ define([],function(){
             parents: [],
             children: [],
         };
-        for(var i in retObject.node.children){
-            if(i === ".."){
-                var newChild = this.getNodeById(retObject.node.children[i]);
-                retObject.parents.push(newChild);
-            }else{
-                var newChild = this.getNodeById(retObject.node.children[i]);
-                retObject.children.push(newChild);
-            }
-        }
+
+        retObject.parents = this.getNodesByIds(retObject.node.parents);
+        retObject.children = this.getNodesByIds(retObject.node.children)
         
         return retObject;
     };
@@ -297,11 +312,12 @@ define([],function(){
                     this.parents[name] = number;
                     this.parents['..'] = number;
                 }
-            }else if(typeof parent === 'number'){
+            }else if(typeof parent === 'number'
+                    && parentName){
                 this.parents['..'] = parent;
                 this.parents[parentName] = parent;
             }else{
-                this.parents = parent;
+                this.parents['..'] = parent;
                 //console.log("SEtting parent to:",parent);
             }
         }else{
@@ -328,9 +344,19 @@ define([],function(){
         this.children[name] = id;
     };
     
-    Node.prototype.removeChild = function(name){
-        var retid = this.children[name];
-        delete this.children[name];
+    Node.prototype.removeChild = function(name,lookup){
+        var retid = null;
+        var target = lookup ? this.parents : this.children;
+        if(typeof name === 'number'){
+            retid = name;
+            var index = values(target).indexof(retid);
+            if(index > 0){
+                delete target[keys(target)[retid]];
+            }
+        }else{
+            var retid = target[name];
+            delete target[name];
+        }
         return retid;
     };
 
@@ -339,6 +365,12 @@ define([],function(){
             throw new Error("Parent should be specified by number");
         }
         this.parents[name] = id;
+    };
+
+    Node.prototype.removeParent = function(name){
+        var retid = this.children[name];
+        delete this.children[name];
+        return retid;
     };
     
     Node.prototype.setValue = function(name,value){
