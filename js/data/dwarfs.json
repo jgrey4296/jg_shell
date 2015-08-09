@@ -1,0 +1,385 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"children": {
+			"dig": 1,
+			"chop": 2
+		},
+		"parents": []
+	},
+	{
+		"id": 1,
+		"name": "dig",
+		"values": {},
+		"children": {
+			"..": 0,
+			"farm": 3,
+			"stone": 4
+		},
+		"parents": [
+			0
+		]
+	},
+	{
+		"id": 2,
+		"name": "chop",
+		"values": {
+			"trees": null
+		},
+		"children": {
+			"..": 0,
+			"wood": 10
+		},
+		"parents": [
+			0
+		]
+	},
+	{
+		"id": 3,
+		"name": "farm",
+		"values": {
+			"plot": null
+		},
+		"children": {
+			"..": 1,
+			"pigtail": 8,
+			"plump_helmets": 9
+		},
+		"parents": [
+			1
+		]
+	},
+	{
+		"id": 4,
+		"name": "stone",
+		"values": {},
+		"children": {
+			"..": 1,
+			"masons_workshop": 5,
+			"wall": 6,
+			"mechanics_workshop": 7
+		},
+		"parents": [
+			1
+		]
+	},
+	{
+		"id": 5,
+		"name": "masons_workshop",
+		"values": {},
+		"children": {
+			"..": 4,
+			"thrones": 15,
+			"tables": 16,
+			"doors": 17
+		},
+		"parents": [
+			4
+		]
+	},
+	{
+		"id": 6,
+		"name": "wall",
+		"values": {},
+		"children": {
+			"..": 4
+		},
+		"parents": [
+			4
+		]
+	},
+	{
+		"id": 7,
+		"name": "mechanics_workshop",
+		"values": {},
+		"children": {
+			"..": 4
+		},
+		"parents": [
+			4
+		]
+	},
+	{
+		"id": 8,
+		"name": "pigtail",
+		"values": {},
+		"children": {
+			"..": 3,
+			"farmer's_workshop": 25
+		},
+		"parents": [
+			3
+		]
+	},
+	{
+		"id": 9,
+		"name": "plump_helmets",
+		"values": {},
+		"children": {
+			"..": 3
+		},
+		"parents": [
+			3
+		]
+	},
+	{
+		"id": 10,
+		"name": "wood",
+		"values": {},
+		"children": {
+			"..": 2,
+			"wood_furnace": 11
+		},
+		"parents": [
+			2
+		]
+	},
+	{
+		"id": 11,
+		"name": "wood_furnace",
+		"values": {},
+		"children": {
+			"..": 10,
+			"charcoal": 12
+		},
+		"parents": [
+			10
+		]
+	},
+	{
+		"id": 12,
+		"name": "charcoal",
+		"values": {},
+		"children": {
+			"..": 11,
+			"forge": 13,
+			"smelter": 14
+		},
+		"parents": [
+			11
+		]
+	},
+	{
+		"id": 13,
+		"name": "forge",
+		"values": {},
+		"children": {
+			"..": 12
+		},
+		"parents": [
+			12
+		]
+	},
+	{
+		"id": 14,
+		"name": "smelter",
+		"values": {},
+		"children": {
+			"..": 12
+		},
+		"parents": [
+			12
+		]
+	},
+	{
+		"id": 15,
+		"name": "thrones",
+		"values": {},
+		"children": {
+			"..": 5,
+			"office": 18,
+			"dining_hall": 19,
+			"furniture_pile": 20
+		},
+		"parents": [
+			5
+		]
+	},
+	{
+		"id": 16,
+		"name": "tables",
+		"values": {},
+		"children": {
+			"..": 5
+		},
+		"parents": [
+			5
+		]
+	},
+	{
+		"id": 17,
+		"name": "doors",
+		"values": {},
+		"children": {
+			"..": 5
+		},
+		"parents": [
+			5
+		]
+	},
+	{
+		"id": 18,
+		"name": "office",
+		"values": {},
+		"children": {
+			"..": 15,
+			"bookkeeper": 21,
+			"manager": 22
+		},
+		"parents": [
+			15
+		]
+	},
+	{
+		"id": 19,
+		"name": "dining_hall",
+		"values": {},
+		"children": {
+			"..": 15,
+			"smooth_hall": 23,
+			"remove_embark_wagon": 24
+		},
+		"parents": [
+			15
+		]
+	},
+	{
+		"id": 20,
+		"name": "furniture_pile",
+		"values": {},
+		"children": {
+			"..": 15
+		},
+		"parents": [
+			15
+		]
+	},
+	{
+		"id": 21,
+		"name": "bookkeeper",
+		"values": {},
+		"children": {
+			"..": 18
+		},
+		"parents": [
+			18
+		]
+	},
+	{
+		"id": 22,
+		"name": "manager",
+		"values": {},
+		"children": {
+			"..": 18
+		},
+		"parents": [
+			18
+		]
+	},
+	{
+		"id": 23,
+		"name": "smooth_hall",
+		"values": {},
+		"children": {
+			"..": 19
+		},
+		"parents": [
+			19
+		]
+	},
+	{
+		"id": 24,
+		"name": "remove_embark_wagon",
+		"values": {},
+		"children": {
+			"..": 19
+		},
+		"parents": [
+			19
+		]
+	},
+	{
+		"id": 25,
+		"name": "farmer's_workshop",
+		"values": {},
+		"children": {
+			"..": 8,
+			"thread": 26
+		},
+		"parents": [
+			8
+		]
+	},
+	{
+		"id": 26,
+		"name": "thread",
+		"values": {},
+		"children": {
+			"..": 25,
+			"loom": 27
+		},
+		"parents": [
+			25
+		]
+	},
+	{
+		"id": 27,
+		"name": "loom",
+		"values": {},
+		"children": {
+			"..": 26,
+			"cloth": 28
+		},
+		"parents": [
+			26
+		]
+	},
+	{
+		"id": 28,
+		"name": "cloth",
+		"values": {},
+		"children": {
+			"..": 27,
+			"clothier's_shop": 29
+		},
+		"parents": [
+			27
+		]
+	},
+	{
+		"id": 29,
+		"name": "clothier's_shop",
+		"values": {},
+		"children": {
+			"..": 28,
+			"clothes": 31
+		},
+		"parents": [
+			28
+		]
+	},
+	{
+		"id": 30,
+		"name": "clohtes",
+		"values": {},
+		"children": {
+			"..": 29
+		},
+		"parents": [
+			29
+		]
+	},
+	{
+		"id": 31,
+		"name": "clothes",
+		"values": {},
+		"children": {
+			"..": 29
+		},
+		"parents": [
+			29
+		]
+	}
+]

@@ -53,19 +53,20 @@ exports.nodetests = {
     
     //test ctor: name, value object, parent array
     parentTest : function(test){
-        var aNode = new Node("blah",{a:2},[1,2,3,4]);
+        var aNode = new Node("blah",{a:2},['a',2,'b',3,'d',4]);
         test.ok(aNode.name === "blah");
         test.ok(aNode.values['a'] === 2);
-        test.ok(aNode.parents[0] === 1);
-        test.ok(aNode.parents[3] === 4);
+        test.ok(aNode.parents['a'] === 2);
+        test.ok(aNode.parents['b'] === 3);
+        test.ok(aNode.parents['d'] === 4);
         test.done();
     },
 
     //test ctor: name, value object, parent singular
     parentSingularTest: function(test){
         var aNode = new Node("blah",{a:2},5);
-        test.ok(aNode.parents[0] === 5);
-        test.ok(aNode.children['..'] === 5);
+        test.ok(aNode.parents['..'] === 5);
+        test.ok(aNode.values['a'] === 2);
         test.done();
     },
 
@@ -98,17 +99,66 @@ exports.nodetests = {
     
     //test setValue
     setValue : function(test){
-        
-        
+        var aNode = new Node("blah");
+        aNode.setValue("a",5);
+        aNode.setValue("b",10);
+
+        test.ok(aNode.values['a'] === 5);
+        test.ok(aNode.values['b'] === 10);
+
         test.done();
     },
 
-    
     //test setValue remove
-
+    setValueRemove : function(test){
+        var aNode = new Node("blah");
+        aNode.setValue('a',5);
+        test.ok(aNode.values['a'] === 5);
+        aNode.setValue('a');
+        test.ok(aNode.values['a'] === undefined);
+        test.done();
+    },
+    
     //test valueArray - no values
-
+    valueEmptyArray : function(test){
+        var aNode = new Node("blah");
+        var valArray = aNode.valueArray();
+        test.ok(valArray.length === 0);
+        test.done();
+    },
+    
     //test valueArray - with values
+    valueArrayTest : function(test){
+        var aNode = new Node("blah");
+        aNode.setValue('a',5);
+        aNode.setValue('b',10);
+        aNode.setValue('c',20);
 
-    //test comparison of nodes
+        var valArray = aNode.valueArray();
+
+        test.ok(valArray[0][0] === 'a');
+        test.ok(valArray[0][1] === 5);
+        test.ok(valArray[1][0] === 'b');
+        test.ok(valArray[1][1] === 10);
+        test.ok(valArray[2][0] === 'c');
+        test.ok(valArray[2][1] === 20);
+        
+        test.done();
+    },
+    
+    //test comparison of nodes:
+    equalityTestSimple : function(test){
+        var aNode = new Node("blah");
+        var notaNode = new Node("bloo");
+        var aNode2 = new Node("blah");
+
+        test.ok(aNode.equals(aNode));
+        test.ok(!aNode.equals(aNode2));
+        test.ok(!aNode.equals(notaNode));
+        
+        test.done();                          
+    },
+
+
+    
 };

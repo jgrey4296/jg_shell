@@ -33,7 +33,8 @@ define([],function(){
 
     //Find by id number?
     Shell.prototype.find = function(id){
-
+        if(this.nodes[id]) return this.nodes[id];
+        return null;
     };
     //Make a child
     Shell.prototype.mkChild = null;
@@ -63,9 +64,48 @@ define([],function(){
         }        
     };
 
+    Shell.prototype.getNodesByIds = function(theIds){
+        var outputNodes = [];
+        if((theIds instanceof Array)){
+            for(var i in ids){
+                outputNodes.push(this.getNodeById(theIds[i]));
+            }
+        }else if( theIds instanceof Object){
+            for(var i in theIds){
+                outputNodes.push(this.getNodeById(theIds[i]));
+            }
+        }
+        return outputNodes;
+    };
+    
     Shell.prototype.rename = function(values){
-        var cwd = this.getCwd();
-        cwd.name = values[0];
+        var cwdNode = this.getCwd();
+        if(typeof values === 'string'){
+            values = values.replace(/ /g,"_");
+        }
+        if(values instanceof Array){
+            values = values.join("_");
+        }
+        var oldName = cwdNode.name;
+        cwdNode.name = values;//values.join("_");
+        
+        //update the parents:
+        var parents = this.getNodesByIds(cwdNode.parents);
+        for(var i in parents){
+            var parent = parents[i];
+            delete parent.children[oldName]
+            parent.children[cwdNode.name] = cwdNode.id;
+        }
+
+        //update the children:
+        var childrens = this.getNodesByIds(cwdNode.children);
+        for(var i in childrens){
+            var child = childrens[i];
+            delete child.parents[oldName]
+            child.parents[cwdNode.name] = cwdNode.id;
+        }
+        
+        return this;
     };
 
     Shell.prototype.goto = function(values){
@@ -82,14 +122,15 @@ define([],function(){
             if(curr === null) continue;
             if(largestId < curr.id) largestId = curr.id;
             nextId = curr.id;
-            console.log("Creating Node with values:",curr.values);
+            //console.log("Creating Node with values:",curr.values);
             var newNode = new Node(curr.name,
                                    curr.values,
                                    curr.parents);
             newNode.children = curr.children;
             this.nodes[newNode.id] = newNode;
         }
-        console.log("Largest Id used:",largestId);
+        //console.log("Largest Id used:",largestId);
+        this.cwd = largestId;
         nextId = largestId + 1;
         
     };
@@ -115,58 +156,82 @@ define([],function(){
        @method find
        @return Node or Undefined
      */
-    Shell.prototype.find = function(path,fromRoot){
-        var foundNode = null;
-        var curr = fromRoot ? this.getRoot() : this.getCwd();
-        if(path[0] === ""){
-            path.shift();
-        }
-        while(path.length > 0){
-            if(curr === null) break;
-            curr = this.getNodeById(curr.children[path.shift()]);
-        }
-        return curr;
-    }
+
     
-    Shell.prototype.mkdir = function(name,value){
-        console.log("Making Dir: ",name,value);
-        var path = name.split('/');
-        var newNodeName = path.pop()
-        var parent = this.find(path,name[0] === "/");
-        if(parent !== null){
-            var newNode = new Node(newNodeName,value,parent.id,parent.name);
+    Shell.prototype.addChild = function(path,value){
+        //console.log("Making Dir: ",path,value);
+        var parent = path[0] === "/" ? this.getRoot() : this.getCwd();
+        path = path.split("/");
+        if(path[0] === "") path.shift();
+
+        while(path.length > 0){
+            var newNode = null;
+            var newName = path.shift();
+            if(newName === "") break;
+            newNode = new Node(newName,value,parent.id,parent.name);
             parent.addChild(newNode.name,newNode.id);
             this.nodes[newNode.id] = newNode;
+            parent = newNode;
         }
+        return this;
     };
 
-    Shell.prototype.connectParent = function(name){
-        //First find the parent
+    Shell.prototype.addParent = function(name,value){
+        var theCwd = this.getCwd();
 
-        //if it doesnt exist make it
-
-        //add it to the parent list of the cwd
-
+        var newNode = new Node(name,value);
+        theCwd.addParent(newNode.name,newNode.id);
+        newNode.addChild(theCwd.name,theCwd.id);
+        this.nodes[newNode.id] = newNode;
+        return this;
     };
+
+    Shell.prototype.addMove = function(path,value){
+        this.addChild(path,value);
+        this.moveTo(path);
+        return this;
+    },
     
-    Shell.prototype.changeDir = function(name){
-        var path = name.split('/');
-        var node = this.find(path,name[0] === "/");
-        if(node !== null){
-            this.cwd = node.id;
+    //Move from the cwd to the node specified by the name:
+    Shell.prototype.moveTo = function(path){
+        //console.log("Moving to:",path);
+        if(path === undefined) throw new Error("path is undefined");
+        var curr = path[0] === "/" ? this.getRoot(): this.getCwd();
+        if(typeof path === 'number'){
+            curr = this.getNodeById(path);
+            
+        }else if(typeof path === 'string'){
+            var path = path.split('/');
+            if(path[0]=== "") path.shift();
+            while(path.length > 0 && curr !== undefined && curr !== null){
+                //console.log("Moving to: ",curr.name);
+                var nextLoc = path.shift();
+                curr = this.getNodeById(curr.children[nextLoc]);
+            }
+        }            
+        if(curr !== null){
+            //console.log("Moving to:",curr.name);
+            this.cwd = curr.id;
         }else{
-            console.log("Node: ",name," does not exist");
+            console.log("Node: ",path," does not exist");
         }
+        return this;
     }
 
+    Shell.prototype.moveToRoot = function(){
+        this.cwd = this.root;
+        return this;
+    },
+    
     Shell.prototype.pwd = function(){
         var path = [];
         var curr = this.getCwd();
         while(curr !== null){
+            //console.log("Curr:",curr.name);
             if(curr.name !== this.getRoot().name){
                 path.push(curr.name);
             }
-            curr = this.getNodeById(curr.children['..']);
+            curr = this.getNodeById(curr.parents['..']);
         };
         path.reverse();
         var pathString = "/" + path.join("/");
@@ -178,7 +243,7 @@ define([],function(){
         if(path.length === 0 || path === undefined){
             node = this.getCwd();
         }else{
-            node = this.find(path[0].split('/'),path[0] === "/");
+            node = this.findByPath(path[0].split('/'),path[0] === "/");
         }
         if(node === null) return "null node";
         
@@ -216,24 +281,31 @@ define([],function(){
        @constructor
     */
 
-    var Node = function(name,values,parent){
+    var Node = function(name,values,parent,parentName){
         //Members:
         this.id = nextId++;
         this.name = name;
         this.values = {};
         this.children = {};
-        this.parents = [];
+        this.parents = {};
         //Init:
         if(parent !== undefined){
             if(parent instanceof Array){
-                this.parents = parent;
+                while(parent.length > 0){
+                    var name = parent.shift();
+                    var number = parent.shift();
+                    this.parents[name] = number;
+                    this.parents['..'] = number;
+                }
+            }else if(typeof parent === 'number'){
+                this.parents['..'] = parent;
+                this.parents[parentName] = parent;
             }else{
-                this.parents.push(parent);
-                console.log("SEtting parent to:",parent);
-                this.children['..'] = parent;
+                this.parents = parent;
+                //console.log("SEtting parent to:",parent);
             }
         }else{
-            console.log("Node with No Parent");
+            //console.log("Node with No Parent");
         }
         //value init:
         if(values && values instanceof Array){
@@ -255,11 +327,18 @@ define([],function(){
         }
         this.children[name] = id;
     };
-
+    
     Node.prototype.removeChild = function(name){
         var retid = this.children[name];
         delete this.children[name];
         return retid;
+    };
+
+    Node.prototype.addParent = function(name,id){
+        if(typeof id !== 'number'){
+            throw new Error("Parent should be specified by number");
+        }
+        this.parents[name] = id;
     };
     
     Node.prototype.setValue = function(name,value){
@@ -279,6 +358,11 @@ define([],function(){
         return outArray;
     };
 
+    Node.prototype.equals = function(aNode){
+        if(this.id === aNode.id) return true;
+        return false;
+    };
+    
     
     return Shell;
 });
