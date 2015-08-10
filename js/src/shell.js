@@ -317,7 +317,7 @@ define([],function(){
                 this.parents['..'] = parent;
                 this.parents[parentName] = parent;
             }else{
-                this.parents['..'] = parent;
+                this.parents = parent;
                 //console.log("SEtting parent to:",parent);
             }
         }else{

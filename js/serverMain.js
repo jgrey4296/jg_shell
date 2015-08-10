@@ -1,3 +1,5 @@
+//adapted from:
+//http://blog.kevinchisholm.com/javascript/node-js/making-a-simple-http-server-with-node-js-part-iv/
 var http = require('http');
 var fs = require('fs');
 var shell = fs.readFileSync('shell.html');

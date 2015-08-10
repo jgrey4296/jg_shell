@@ -4,6 +4,7 @@ var Shell = require('./src/shell');
 
 var theShell = new Shell();
 
+//TODO: update these
 var commands = {
     "save": function(sh,values){
         var ja = JSON.stringify(sh.nodes,null,"\t");

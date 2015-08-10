@@ -55,16 +55,24 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
             request.send(JSON.stringify(sh.nodes,null,"\t"));
         },
         //Make a node
-        "mkdir" : function(sh,values){
-            sh.mkdir(values[0],values.slice(1));
+        "new" : function(sh,values){
+            if(values[0] === 'child'){
+                sh.addChild(values[1],values.slice(2));
+            }
+            if(values[0] === 'parent'){
+                sh.addParent(values[1],values.slice(2));
+            }
         },
         //Change the current node
         "cd" : function(sh,values){
-            sh.changeDir(values[0]);
+            sh.moveTo(values[0]);
+        },
+        "root" : function(sh,value){
+            sh.moveToRoot();
         },
         //Goto a node by id:
         "goto":function(sh,values){
-            sh.goto(values);
+            sh.moveTo(values);
         },
         "pwd" : function(sh,values){
             displayText(sh.pwd());
@@ -72,9 +80,6 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
         //Delete a child
         "rm" : function(sh,values){
             sh.rm(values);
-        },
-        "ls" : function(sh,values){
-            displayText(sh.ls(values));
         },
         //Set,change, or delete cwd value
         "value":function(sh,values){
@@ -273,7 +278,15 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
 
         container.append("text")
             .attr("transform","translate("
-                  + ((columnWidth * 0.25)) + ",20)")
+                  + ((columnWidth * 0.25)) + ",15)")
+            .style("text-anchor","middle")
+            .text(function(d){
+                return "ID:"+d.id;
+            });
+        
+        container.append("text")
+            .attr("transform","translate("
+                  + ((columnWidth * 0.25)) + ",30)")
             .style("text-anchor","middle")
             .text(function(d){
                 return d.name;
@@ -302,12 +315,14 @@ require(['libs/d3.min','src/shell'],function(d3,Shell,_){
                 .append("g")
                 .attr('id','valueContainer')
                 .attr("transform","translate("
-                      + (columnWidth * 0.25)+",40)");
+                      + (columnWidth * 0.25)+",50)");
+
         }
 
         //Remove old text
         valueContainer.selectAll("text").remove();
 
+        
         //bind new texts
         //Values are stored in a node as an object,
         //.valueArray() converts it to an array of pairs
