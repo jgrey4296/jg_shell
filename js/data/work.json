@@ -1,0 +1,342 @@
+[
+	{
+		"id": 0,
+		"name": "work",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablParsing": 1,
+			"metaSteam": 2,
+			"js_shell": 3,
+			"nlp": 4,
+			"autoGrading": 5,
+			"pyBrain": 6,
+			"heuristicSorting": 7,
+			"gridSim": 8,
+			"jgRete": 9,
+			"institutions": 21
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "ablParsing",
+		"values": {},
+		"notes": {
+			"1": "jsShell helping",
+			"2": "starting on unit tests"
+		},
+		"children": {
+			"ANTLR": 12
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 2,
+		"name": "metaSteam",
+		"values": {},
+		"notes": {},
+		"children": {
+			"pythonServer": 10,
+			"webVisualisation": 11
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 3,
+		"name": "js_shell",
+		"values": {},
+		"notes": {
+			"1": "roughly working",
+			"2": "needs search",
+			"3": "needs graph analysis"
+		},
+		"children": {
+			"js": 13
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 4,
+		"name": "nlp",
+		"values": {},
+		"notes": {
+			"1": "basic"
+		},
+		"children": {
+			"novels": 14
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 5,
+		"name": "autoGrading",
+		"values": {},
+		"notes": {
+			"1": "ready for expansion"
+		},
+		"children": {
+			"python": 18
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 6,
+		"name": "pyBrain",
+		"values": {},
+		"notes": {
+			"1": "mainly experiments",
+			"2": "still need a working test"
+		},
+		"children": {
+			"python": 19
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 7,
+		"name": "heuristicSorting",
+		"values": {},
+		"notes": {
+			"1": "proof of concept"
+		},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 8,
+		"name": "gridSim",
+		"values": {},
+		"notes": {
+			"1": "needs work"
+		},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 9,
+		"name": "jgRete",
+		"values": {},
+		"notes": {
+			"1": "basic working",
+			"2": "uses doorenbos",
+			"3": "needs not nodes"
+		},
+		"children": {
+			"js": 20
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 10,
+		"name": "pythonServer",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"metaSteam": 2
+		}
+	},
+	{
+		"id": 11,
+		"name": "webVisualisation",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"metaSteam": 2
+		}
+	},
+	{
+		"id": 12,
+		"name": "ANTLR",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 1,
+			"ablParsing": 1
+		}
+	},
+	{
+		"id": 13,
+		"name": "js",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 3,
+			"js_shell": 3
+		}
+	},
+	{
+		"id": 14,
+		"name": "novels",
+		"values": {},
+		"notes": {},
+		"children": {
+			"horusHeresy": 15,
+			"discworld": 16,
+			"scifi": 17
+		},
+		"parents": {
+			"..": 4,
+			"nlp": 4
+		}
+	},
+	{
+		"id": 15,
+		"name": "horusHeresy",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 14,
+			"novels": 14
+		}
+	},
+	{
+		"id": 16,
+		"name": "discworld",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 14,
+			"novels": 14
+		}
+	},
+	{
+		"id": 17,
+		"name": "scifi",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 14,
+			"novels": 14
+		}
+	},
+	{
+		"id": 18,
+		"name": "python",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 5,
+			"autoGrading": 5
+		}
+	},
+	{
+		"id": 19,
+		"name": "python",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 6,
+			"pyBrain": 6
+		}
+	},
+	{
+		"id": 20,
+		"name": "js",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 9,
+			"jgRete": 9
+		}
+	},
+	{
+		"id": 21,
+		"name": "institutions",
+		"values": {},
+		"notes": {},
+		"children": {
+			"fligstein": 22,
+			"giddens": 23,
+			"graeber": 24,
+			"levi-martin": 25
+		},
+		"parents": {
+			"..": 0,
+			"work": 0
+		}
+	},
+	{
+		"id": 22,
+		"name": "fligstein",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 21,
+			"institutions": 21
+		}
+	},
+	{
+		"id": 23,
+		"name": "giddens",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 21,
+			"institutions": 21
+		}
+	},
+	{
+		"id": 24,
+		"name": "graeber",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 21,
+			"institutions": 21
+		}
+	},
+	{
+		"id": 25,
+		"name": "levi-martin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 21,
+			"institutions": 21
+		}
+	}
+]

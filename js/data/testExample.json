@@ -1,0 +1,162 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"children": {
+			"rule": 1
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "rule",
+		"values": {
+			"name": "testRule"
+		},
+		"children": {
+			"action": 2,
+			"conditions": 3
+		},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 2,
+		"name": "action",
+		"values": {
+			"do": "\"hello\""
+		},
+		"children": {},
+		"parents": {
+			"..": 1,
+			"rule": 1
+		}
+	},
+	{
+		"id": 3,
+		"name": "conditions",
+		"values": {
+			"inferred": "Binding_tests_below",
+			"c1x": "first",
+			"c2x": "second"
+		},
+		"children": {
+			"c1": 7,
+			"c2": 10
+		},
+		"parents": {
+			"..": 1,
+			"rule": 1
+		}
+	},
+	{
+		"id": 4,
+		"name": "constant_Tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 3,
+			"conditions": 3
+		}
+	},
+	{
+		"id": 5,
+		"name": "bindings",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 3,
+			"conditions": 3
+		}
+	},
+	{
+		"id": 6,
+		"name": "ct1",
+		"values": {
+			"first:": "bob",
+			"value": ">50"
+		},
+		"children": {},
+		"parents": {
+			"..": 4,
+			"constant_Tests": 4
+		}
+	},
+	{
+		"id": 7,
+		"name": "c1",
+		"values": {},
+		"children": {
+			"constTests": 8,
+			"bindings": 9
+		},
+		"parents": {
+			"..": 3,
+			"conditions": 3
+		}
+	},
+	{
+		"id": 8,
+		"name": "constTests",
+		"values": {
+			"value": ">50"
+		},
+		"children": {},
+		"parents": {
+			"..": 7,
+			"c1": 7
+		}
+	},
+	{
+		"id": 9,
+		"name": "bindings",
+		"values": {
+			"x": "first"
+		},
+		"children": {},
+		"parents": {
+			"..": 7,
+			"c1": 7
+		}
+	},
+	{
+		"id": 10,
+		"name": "c2",
+		"values": {},
+		"children": {
+			"constTests": 11,
+			"bindings": 12
+		},
+		"parents": {
+			"..": 3,
+			"conditions": 3
+		}
+	},
+	{
+		"id": 11,
+		"name": "constTests",
+		"values": {
+			"type": "friends"
+		},
+		"children": {},
+		"parents": {
+			"..": 10,
+			"c2": 10
+		}
+	},
+	{
+		"id": 12,
+		"name": "bindings",
+		"values": {
+			"x": "second"
+		},
+		"children": {},
+		"parents": {
+			"..": 10,
+			"c2": 10
+		}
+	}
+]

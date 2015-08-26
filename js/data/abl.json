@@ -1,0 +1,921 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"children": {
+			"prog": 2,
+			"guide": 19
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "blah",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 2,
+		"name": "prog",
+		"values": {},
+		"children": {
+			"g_package": 3,
+			"g_import": 4,
+			"behavingEntity": 5,
+			"constants": 6
+		},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 3,
+		"name": "g_package",
+		"values": {
+			"first": "'package'",
+			"sec": "name",
+			"third": "';'"
+		},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 4,
+		"name": "g_import",
+		"values": {
+			"first": "'import'",
+			"sec": "name",
+			"third": "';'"
+		},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 5,
+		"name": "behavingEntity",
+		"values": {
+			"TeamNeeded": "CHARS",
+			"variables": "*",
+			"decisionCycle": "?"
+		},
+		"children": {
+			"behaviours": 11,
+			"rules": 12,
+			"initialTree": 13,
+			"conflicts": 30
+		},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 6,
+		"name": "constants",
+		"values": {
+			"name": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 7,
+		"name": "teamNeeded",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 8,
+		"name": "decisionCycle",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 9,
+		"name": "conflict",
+		"values": {
+			"Decl": null
+		},
+		"children": {},
+		"parents": {
+			"..": 2,
+			"prog": 2
+		}
+	},
+	{
+		"id": 10,
+		"name": "variables",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 5,
+			"behavingEntity": 5
+		}
+	},
+	{
+		"id": 11,
+		"name": "behaviours",
+		"values": {
+			"exec_a": "ATOMIC",
+			"exec_b": "JOINT",
+			"exec_c": "ADAPTIVE",
+			"se_pa_coll_a": "SEQUENTIAL",
+			"se_par_col_b": "PARALLEL",
+			"se_par_col_c": "COLLECTIVE",
+			"name": "NAME"
+		},
+		"children": {
+			"parameters": 15,
+			"modifiers": 16,
+			"variables": 17,
+			"behaviourSteps": 18
+		},
+		"parents": {
+			"..": 5,
+			"behavingEntity": 5
+		}
+	},
+	{
+		"id": 12,
+		"name": "rules",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 5,
+			"behavingEntity": 5
+		}
+	},
+	{
+		"id": 13,
+		"name": "initialTree",
+		"values": {},
+		"children": {
+			"behaviourSteps": 14
+		},
+		"parents": {
+			"..": 5,
+			"behavingEntity": 5
+		}
+	},
+	{
+		"id": 14,
+		"name": "behaviourSteps",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 13,
+			"initialTree": 13
+		}
+	},
+	{
+		"id": 15,
+		"name": "parameters",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 11,
+			"behaviours": 11
+		}
+	},
+	{
+		"id": 16,
+		"name": "modifiers",
+		"values": {},
+		"children": {
+			"precondition": 38,
+			"specificity": 39,
+			"context_condition": 40,
+			"numNeededForSuccess": 43,
+			"teamMembers": 44,
+			"successCondition": 45,
+			"rSignal": 47,
+			"state": 49
+		},
+		"parents": {
+			"..": 11,
+			"behaviours": 11
+		}
+	},
+	{
+		"id": 17,
+		"name": "variables",
+		"values": {
+			"type": "?",
+			"name": "?",
+			"initializer": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 11,
+			"behaviours": 11
+		}
+	},
+	{
+		"id": 18,
+		"name": "behaviourSteps",
+		"values": {},
+		"children": {
+			"rule": 20,
+			"subgoal": 21,
+			"choose": 22,
+			"fail-succeed": 23,
+			"act": 24,
+			"mentalAct": 25,
+			"goalStep": 26,
+			"conditionalStep": 27,
+			"modifyStep": 28,
+			"anonStep": 29,
+			"waitStep": 31,
+			"parallelStep": 32
+		},
+		"parents": {
+			"..": 11,
+			"behaviours": 11
+		}
+	},
+	{
+		"id": 19,
+		"name": "guide",
+		"values": {
+			"tokens:": "TOKENS",
+			"rules:": "rules"
+		},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 20,
+		"name": "rule",
+		"values": {
+			"name": "?",
+			"group": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 21,
+		"name": "subgoal",
+		"values": {
+			"name": "*",
+			"params": "*"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18,
+			"with": 37
+		}
+	},
+	{
+		"id": 22,
+		"name": "choose",
+		"values": {},
+		"children": {
+			"behaviourSteps": 36
+		},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 23,
+		"name": "fail-succeed",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 24,
+		"name": "act",
+		"values": {
+			"params": "*"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 25,
+		"name": "mentalAct",
+		"values": {
+			"shouldIgnore": "YES"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 26,
+		"name": "goalStep",
+		"values": {
+			"joint": "?",
+			"subOrSpawn": "?",
+			"name": "*",
+			"params": "*",
+			"at": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 27,
+		"name": "conditionalStep",
+		"values": {
+			"ifTest": "?",
+			"parallel": "?"
+		},
+		"children": {
+			"behaviourSteps": 33,
+			"else_behaviourSteps": 34
+		},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 28,
+		"name": "modifyStep",
+		"values": {
+			"move": "0",
+			"delete": "0",
+			"add": "0",
+			"params": "?",
+			"behaviourStep": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 29,
+		"name": "anonStep",
+		"values": {
+			"SEQ": "?",
+			"PAR": "?",
+			"noNeededForSuccess": "?",
+			"variables": "?"
+		},
+		"children": {
+			"behaviourSteps": 35
+		},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 30,
+		"name": "conflicts",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 5,
+			"behavingEntity": 5
+		}
+	},
+	{
+		"id": 31,
+		"name": "waitStep",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 32,
+		"name": "parallelStep",
+		"values": {
+			"name": "*"
+		},
+		"children": {},
+		"parents": {
+			"..": 18,
+			"behaviourSteps": 18
+		}
+	},
+	{
+		"id": 33,
+		"name": "behaviourSteps",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 27,
+			"conditionalStep": 27
+		}
+	},
+	{
+		"id": 34,
+		"name": "else_behaviourSteps",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 27,
+			"conditionalStep": 27
+		}
+	},
+	{
+		"id": 35,
+		"name": "behaviourSteps",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 29,
+			"anonStep": 29
+		}
+	},
+	{
+		"id": 36,
+		"name": "behaviourSteps",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 22,
+			"choose": 22
+		}
+	},
+	{
+		"id": 37,
+		"name": "with",
+		"values": {
+			"policy": "?"
+		},
+		"children": {
+			"subgoal": 21,
+			"stepMod": 51,
+			"ruleMod": 64
+		},
+		"parents": {}
+	},
+	{
+		"id": 38,
+		"name": "precondition",
+		"values": {},
+		"children": {
+			"tests": 42
+		},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 39,
+		"name": "specificity",
+		"values": {
+			"value": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 40,
+		"name": "context_condition",
+		"values": {},
+		"children": {
+			"tests": 41
+		},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 41,
+		"name": "tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 40,
+			"context_condition": 40
+		}
+	},
+	{
+		"id": 42,
+		"name": "tests",
+		"values": {
+			"name": "?"
+		},
+		"children": {
+			"wmeTestSequence": 70
+		},
+		"parents": {
+			"..": 38,
+			"precondition": 38
+		}
+	},
+	{
+		"id": 43,
+		"name": "numNeededForSuccess",
+		"values": {
+			"value": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 44,
+		"name": "teamMembers",
+		"values": {
+			"names": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 45,
+		"name": "successCondition",
+		"values": {},
+		"children": {
+			"tests": 46
+		},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 46,
+		"name": "tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 45,
+			"successCondition": 45
+		}
+	},
+	{
+		"id": 47,
+		"name": "rSignal",
+		"values": {
+			"name": "?"
+		},
+		"children": {
+			"tests": 48
+		},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 48,
+		"name": "tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 47,
+			"rSignal": 47
+		}
+	},
+	{
+		"id": 49,
+		"name": "state",
+		"values": {
+			"name": "?",
+			"stateReturn": "?"
+		},
+		"children": {
+			"tests": 50
+		},
+		"parents": {
+			"..": 16,
+			"modifiers": 16
+		}
+	},
+	{
+		"id": 50,
+		"name": "tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 49,
+			"state": 49
+		}
+	},
+	{
+		"id": 51,
+		"name": "stepMod",
+		"values": {},
+		"children": {
+			"successTest": 52,
+			"ignoreFailure": 54,
+			"persistent": 55,
+			"effectOnly": 56,
+			"teamEffectOnly": 57,
+			"property": 58,
+			"post": 59,
+			"postTo": 60,
+			"oneNeededForSuccess": 61,
+			"teamNeededForSuccess": 62,
+			"numNeededForSuccess": 63
+		},
+		"parents": {
+			"..": 37,
+			"with": 37
+		}
+	},
+	{
+		"id": 52,
+		"name": "successTest",
+		"values": {},
+		"children": {
+			"tests": 53
+		},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 53,
+		"name": "tests",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 52,
+			"successTest": 52
+		}
+	},
+	{
+		"id": 54,
+		"name": "ignoreFailure",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 55,
+		"name": "persistent",
+		"values": {
+			"whenFails": "?",
+			"whenSucceeds": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 56,
+		"name": "effectOnly",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 57,
+		"name": "teamEffectOnly",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 58,
+		"name": "property",
+		"values": {
+			"name": "?",
+			"assignment": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 59,
+		"name": "post",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 60,
+		"name": "postTo",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 61,
+		"name": "oneNeededForSuccess",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 62,
+		"name": "teamNeededForSuccess",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 63,
+		"name": "numNeededForSuccess",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 51,
+			"stepMod": 51
+		}
+	},
+	{
+		"id": 64,
+		"name": "ruleMod",
+		"values": {},
+		"children": {
+			"searchMem": 65,
+			"bindMem": 66,
+			"outMem": 67,
+			"touchedMem": 68,
+			"modifiedMem": 69
+		},
+		"parents": {
+			"..": 37,
+			"with": 37
+		}
+	},
+	{
+		"id": 65,
+		"name": "searchMem",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 64,
+			"ruleMod": 64
+		}
+	},
+	{
+		"id": 66,
+		"name": "bindMem",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 64,
+			"ruleMod": 64
+		}
+	},
+	{
+		"id": 67,
+		"name": "outMem",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 64,
+			"ruleMod": 64
+		}
+	},
+	{
+		"id": 68,
+		"name": "touchedMem",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 64,
+			"ruleMod": 64
+		}
+	},
+	{
+		"id": 69,
+		"name": "modifiedMem",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 64,
+			"ruleMod": 64
+		}
+	},
+	{
+		"id": 70,
+		"name": "wmeTestSequence",
+		"values": {
+			"name": "?"
+		},
+		"children": {
+			"wmeTest": 71,
+			"conditional": 72
+		},
+		"parents": {
+			"..": 42,
+			"tests": 42
+		}
+	},
+	{
+		"id": 71,
+		"name": "wmeTest",
+		"values": {
+			"!": "?",
+			"bindMem": "?",
+			"name": "?"
+		},
+		"children": {
+			"fieldTests": 73
+		},
+		"parents": {
+			"..": 70,
+			"wmeTestSequence": 70
+		}
+	},
+	{
+		"id": 72,
+		"name": "conditional",
+		"values": {},
+		"children": {},
+		"parents": {
+			"..": 70,
+			"wmeTestSequence": 70
+		}
+	},
+	{
+		"id": 73,
+		"name": "fieldTests",
+		"values": {
+			"operator": "?",
+			"name": "?",
+			"name2": "?"
+		},
+		"children": {},
+		"parents": {
+			"..": 71,
+			"wmeTest": 71
+		}
+	}
+]

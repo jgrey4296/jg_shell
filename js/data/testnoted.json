@@ -1,0 +1,74 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"notes": {},
+		"children": {
+			"3": 3,
+			"a": 1,
+			"th": 4,
+			"_blah": 5
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "a",
+		"values": {},
+		"notes": {
+			"blah": "sonething"
+		},
+		"children": {
+			"b": 2
+		},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 2,
+		"name": "b",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 1,
+			"a": 1
+		}
+	},
+	{
+		"id": 3,
+		"name": "3",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 4,
+		"name": "th",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	},
+	{
+		"id": 5,
+		"name": "_blah",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"..": 0,
+			"__root": 0
+		}
+	}
+]

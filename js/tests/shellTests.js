@@ -312,6 +312,31 @@ exports.Shelltests = {
     //save node parent/child structures
 
     //recreate/copy node parent/child structures
+
+
+    //find/search test
+    search_by_ID_Test : function(test){
+        //setup a dummy shell
+
+        //call find
+
+        //check to see if all appropriate nodes were found
+        
+        test.done();
+    },
+
+    search_by_name_test: function(test){
+        test.done();
+    },
+
+    search_by_value_test : function(test){
+        test.done();
+    },
+
+    search_by_notation_test : function(test){
+        test.done();
+
+    },
     
 };
 

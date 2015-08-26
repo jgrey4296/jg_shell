@@ -45,6 +45,4 @@ process.stdin.on('readable',function(){
             console.log("unrecognised command: " + splitLine[0]);
         }
     }
-    
-
 });
