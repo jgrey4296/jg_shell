@@ -19,6 +19,8 @@ require.config({
 */
 require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
 
+    var lastSetOfSearchResults = [];
+    
     //Colours:
     var scaleToColour = d3.scale.linear()
         .range([0,20])
@@ -131,15 +133,20 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             
         },
         "search": function(sh,values){
-            //TODO:
             //search from anywhere for nodes
             //matching a pattern
             console.log("Searching for:",values);
             var found = sh.search(values);
             console.log("Found: ",found);
-
+            lastSetOfSearchResults = found;
             displayResults(found);
-            
+        },
+        "refine": function(sh,values){
+            console.log("Refining Search");
+            var refinedFound = sh.search(values,lastSetOfSearchResults);
+            console.log("Refined to:",refinedFound);
+            lastSetOfSearchResults = refinedFound;
+            displayResults(refinedFound);
         },
         "note": function(sh,values){
             //add values into a note object,
