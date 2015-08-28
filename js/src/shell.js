@@ -1,8 +1,8 @@
 /** A Shell simulation
-   @module shell
+    @module shell
 
-   make nodes (of: Rules, objects, actions, concepts, institutions)
-   
+    make nodes (of: Rules, objects, actions, concepts, institutions)
+    
 
 */
 
@@ -17,7 +17,7 @@ define(['underscore'],function(_){
     /**
        @class Shell
        @constructor
-     */
+    */
     var Shell = function(){
         nextId = 0;
         var rootNode = new Node("__root");
@@ -39,7 +39,7 @@ define(['underscore'],function(_){
        @method
        @param id The numeric id of the node to find       
        @return the node, or null
-     */
+    */
     Shell.prototype.find = function(id){
         if(this.nodes[id]) return this.nodes[id];
         return null;
@@ -49,37 +49,34 @@ define(['underscore'],function(_){
        @method
        @param values an array of numeric ids or words
        @return Shell
-     */
+    */
     Shell.prototype.rm = function(values){
         var cwd = this.getCwd();
         if(!(values instanceof Array)){
             values = [values];
         }
+        //for each value to be deleted
         for(var i in values){
             var value = values[i];
             console.log("rm: ",value);
             var deletedNode = null;
             if(isNaN(Number(value))){
-                console.log("original");
+                //console.log("original");
                 var deletedId = cwd.removeChild(values[i]);
                 deletedNode = this.getNodeById(deletedId);
             }else{
-                console.log("new",Number(value));
+                //console.log("new",Number(value));
                 deletedNode = this.getNodeById(Number(value));
             }
             if(deletedNode === null) continue;
             var nodesParents = this.getNodesByIds(deletedNode.parents);
+            console.log("nodes parents",nodesParents);
             nodesParents.map(function(a){
                 console.log("Removing from parent:",a);
                 a.removeChild(values[i]);
+                deletedNode.removeParent(a.id);
             });
 
-            var nodesChildren = this.getNodesByIds(deletedNode.children);
-                nodesChildren.map(function(a){
-                    console.log("Removing from child:",a);
-                a.removeParent(values[i]);
-            });
-            
         }
         return this;
     };
@@ -89,7 +86,7 @@ define(['underscore'],function(_){
        @method setValue
        @param values an array of pairs
        @return shell
-     */
+    */
     Shell.prototype.setValue = function(values){
         while(values.length > 0){
             var name = values.shift();
@@ -105,7 +102,7 @@ define(['underscore'],function(_){
        @method setNote
        @param notes an array of pairs
        @return shell
-     */
+    */
     Shell.prototype.setNote = function(notes){
         var name = notes.shift();
         var theNote = undefined;
@@ -123,7 +120,7 @@ define(['underscore'],function(_){
        @method getNodesByIds
        @param theIds array of numeric ids to find
        @return array of (possibly empty) nodes
-     */
+    */
     Shell.prototype.getNodesByIds = function(theIds){
         var outputNodes = [];
         var foundIds = [];
@@ -150,7 +147,7 @@ define(['underscore'],function(_){
        @method rename
        @param values the new name
        @return shell
-     */
+    */
     Shell.prototype.rename = function(values){
         var cwdNode = this.getCwd();
         if(typeof values === 'string'){
@@ -185,7 +182,7 @@ define(['underscore'],function(_){
        @method loadJson
        @param dataArray simple array to convert to nodes
        @return shell
-     */
+    */
     Shell.prototype.loadJson = function(dataArray){
         var largestId = 0;
         for(var i in dataArray){
@@ -215,7 +212,7 @@ define(['underscore'],function(_){
        @method getNodeById
        @param id the numeric id
        @return the node or null
-     */
+    */
     Shell.prototype.getNodeById = function(id){
         if(this.nodes[id]){
             return this.nodes[id];
@@ -227,7 +224,7 @@ define(['underscore'],function(_){
     /**Get the root node of the shell
        @method getRoot
        @return node
-     */
+    */
     Shell.prototype.getRoot = function(){
         return this.getNodeById(this.root);
     };
@@ -235,17 +232,17 @@ define(['underscore'],function(_){
     /**Get the current working directory of the shell
        @method getCwd
        @return node
-     */
+    */
     Shell.prototype.getCwd = function(){
         return this.getNodeById(this.cwd);
     };
     
     /** Add a child to the given path
-       @method addChild
-       @param path creates all needed subdirs
-       @param value
-       @return Node or Undefined
-     */
+        @method addChild
+        @param path creates all needed subdirs
+        @param value
+        @return Node or Undefined
+    */
     Shell.prototype.addChild = function(path,value){
         if(path.length === 0) return this;
         var parent = path[0] === "/" ? this.getRoot() : this.getCwd();
@@ -269,7 +266,7 @@ define(['underscore'],function(_){
        @param name The name of the new parent
        @param value the value of the new parent
        @return shell
-     */
+    */
     Shell.prototype.addParent = function(name,value){
         var theCwd = this.getCwd();
 
@@ -285,7 +282,7 @@ define(['underscore'],function(_){
        @param direction as a Child or a Parent
        @param id The numeric ID of the node to link with
        @return shell instance
-     */
+    */
     Shell.prototype.link = function(direction,id){
         //First, find the node:
         var node = this.find(id);
@@ -307,7 +304,7 @@ define(['underscore'],function(_){
        @param path the path to create
        @param value the value of the node to create
        @return shell
-     */
+    */
     Shell.prototype.addMove = function(path,value){
         this.addChild(path,value);
         this.moveTo(path);
@@ -318,23 +315,25 @@ define(['underscore'],function(_){
        @method moveTo
        @param path the path to move to
        @return shell
-     */
+    */
     Shell.prototype.moveTo = function(path){
         //console.log("Moving to:",path);
         if(path === undefined) throw new Error("path is undefined");
         var curr = path[0] === "/" ? this.getRoot(): this.getCwd();
-        console.log("path:",Number(path));
+        //console.log("path:",Number(path));
         if(!isNaN(Number(path))){
-            console.log("number");
+            //console.log("number");
             curr = this.getNodeById(Number(path));
         }else{
-            console.log("other option");
+            //console.log("other option");
             var path = path.split('/');
             if(path[0]=== "") path.shift();
             while(path.length > 0 && curr !== undefined && curr !== null){
-                console.log("Moving to: ",curr.name);
+                //console.log("Moving to: ",curr.name);
                 var nextLoc = path.shift();
-                if(curr.children[nextLoc]){
+                if(nextLoc === "..") {
+                    curr = this.getNodeById(curr._originalParent);
+                }else if(curr.children[nextLoc]){
                     curr = this.getNodeById(curr.children[nextLoc]);
                 }else{
                     curr = this.getNodeById(curr.parents[nextLoc]);
@@ -354,7 +353,7 @@ define(['underscore'],function(_){
     /**Utility method to move directly to the root
        @method moveToRoot
        @return shell
-     */
+    */
     Shell.prototype.moveToRoot = function(){
         this.cwd = this.root;
         return this;
@@ -363,7 +362,7 @@ define(['underscore'],function(_){
     /**Get a string describing the current path
        @method pwd
        @return string describes the path
-     */
+    */
     Shell.prototype.pwd = function(){
         var path = [];
         var curr = this.getCwd();
@@ -372,7 +371,7 @@ define(['underscore'],function(_){
             if(curr.name !== this.getRoot().name){
                 path.push(curr.name);
             }
-            curr = this.getNodeById(curr.parents['..']);
+            curr = this.getNodeById(_.values(curr.parents)[0]);
         };
         path.reverse();
         var pathString = "/" + path.join("/");
@@ -383,7 +382,7 @@ define(['underscore'],function(_){
        @method ls
        @param path
        @return string of children
-     */
+    */
     Shell.prototype.ls = function(path){
         var node = null;
         if(path.length === 0 || path === undefined){
@@ -405,7 +404,7 @@ define(['underscore'],function(_){
        a node, its parents, and children, for visualisation
        @method getContext
        @return object{node,parents,children} of cwd
-     */
+    */
     //return {node,parent,children}
     Shell.prototype.getContext = function(){
         var retObject = {
@@ -424,226 +423,258 @@ define(['underscore'],function(_){
        @method search
        @param pattern
        @return list of nodes
-     */
+    */
     Shell.prototype.search = function(list){
         var returnList = [];
 
-        //look for all nodes that match all patterns:
+        //Look for a field, a key, and a value
         var field = list.shift();
-        var pattern = list.shift();
+        console.log("Field",field);
+        var key = list.shift();
+        console.log("Key",key);
+        var valueStringPattern = list.shift();
+        console.log("RegExp2: ",valueStringPattern);
 
+        //filter by field
+        var returnList = _.filter(this.nodes,function(d){
+            if(d[field]) return true;
+            return false;
+        });
+        console.log("FieldList:",returnList);
+        if(key === undefined) return returnList;
 
+        console.log("Key is:",key);
+        if(field === "name" || field === "id"){
+            console.log("Searching for a name or id");
+            //for the singular valued fields
+            var keyPattern = new RegExp(key);
+            returnList = _.filter(returnList,function(d){
+                if(keyPattern.test(d[field])) return true;
+                return false;
+            });
+            //Return what was found:
+            return returnList;            
+        }else{
+            //filter opposite if looking for empty values
+            if(key === "-"){
+                console.log("Filtering by lenght");
+                returnList = _.filter(returnList,function(d){
+                    if(_.keys(d[field]).length === 0) return true;
+                    return false;
+                });
+                return returnList;
+            }
+            if(valueStringPattern === "-"){
+                returnList = _.filter(returnList,function(d){
+                    if(d[field][key]) return false;
+                    return true;
+                });
+                return returnList;
+            }
 
+            //for the dictionary fields
+            //filter by key and value
+            var returnList = _.filter(returnList,function(d){
+                if(d[field][key]) return true;
+                return false;
+            });
+            console.log("Key List:",returnList);
+            if(valueStringPattern === undefined) return returnList;
+            var pattern = new RegExp(valueStringPattern);
+            //filter by value regexp
+            var returnList = _.filter(returnList,function(d){
+                return pattern.test(d[field][key]);
+            });
+            console.log("Value List:",returnList);
+            
+            return returnList;
+        }
+    };
 
         
-        //For all nodes
-        for(var i in this.nodes){
-            var node = this.nodes[i];
-            var valToCompare = undefined;
-            //if a field, it *should* be
-            //from predefined fields, so an array for
-            //children or parents
-            if(node[field]){
-                valToCompare = node[field];
-                array.
-            }else if(node.values[field]){
-                valToCompare = node.values[field];
-            }else if(node.notes[field]){
-                valToCompare = node.notes[field];
-            }
-
-            if(pattern === undefined
-               && valToCompare !== undefined){
-                returnList.push(node);
-            }else if(valToCompare === pattern){
-                returnList.push(node);
-            }
-            
-        }
-        return returnList;
-    };
-
-    
-    //--------------------
-    /**
-       @class Node
-       @constructor
-    */
-    var Node = function(name,values,parent,parentName){
-        //Members:
-        this.id = nextId++;
-        this.name = name;
-        this.values = {};
-        //TODO: use this
-        this.notes = {};
-        this.children = {};
-        this.parents = {};
-        //Init:
-        if(parent !== undefined){
-            if(parent instanceof Array){
-                while(parent.length > 0){
-                    var name = parent.shift();
-                    var number = parent.shift();
-                    this.parents[name] = number;
-                    this.parents['..'] = number;
+        //--------------------
+        /**
+           @class Node
+           @constructor
+        */
+        var Node = function(name,values,parent,parentName){
+            //Members:
+            this.id = nextId++;
+            this.name = name;
+            this.values = {};
+            //TODO: use this
+            this.notes = {};
+            this.children = {};
+            this.parents = {};
+            //Init:
+            if(parent !== undefined){
+                if(parent instanceof Array){
+                    while(parent.length > 0){
+                        var name = parent.shift();
+                        var number = parent.shift();
+                        this.parents[name] = number;
+                        this._originalParent = number;
+                    }
+                }else if(!isNaN(Number(parent)) && parentName){
+                    this._originalParent = parent;
+                    this.parents[parentName] = parent;
+                }else{
+                    this.parents = parent;
+                    //console.log("SEtting parent to:",parent);
                 }
-            }else if(typeof parent === 'number'
-                    && parentName){
-                this.parents['..'] = parent;
-                this.parents[parentName] = parent;
             }else{
-                this.parents = parent;
-                //console.log("SEtting parent to:",parent);
+                //console.log("Node with No Parent");
             }
-        }else{
-            //console.log("Node with No Parent");
-        }
-        //value init:
-        if(values && values instanceof Array){
-            while(values.length > 0){
-                var name = values.shift();
-                var theValue = values.shift();
-                if(theValue === undefined) theValue = null;
-                this.values[name] = theValue;
-                
+            //value init:
+            if(values && values instanceof Array){
+                while(values.length > 0){
+                    var name = values.shift();
+                    var theValue = values.shift();
+                    if(theValue === undefined) theValue = null;
+                    this.values[name] = theValue;
+                    
+                }
+            }else if(values && values instanceof Object){
+                this.values = values;
             }
-        }else if(values && values instanceof Object){
-            this.values = values;
-        }
-    };
-
-    /**Add a child of NAME, with numeric ID to the node
-       @method addChild
-       @param name
-       @param id the numeric id
-       @return Node The current node, parent to the node just added
-     */
-    Node.prototype.addChild = function(name,id){
-        if(isNaN(Number(id))){
-            throw new Error("Children should be specified by number");
-        }
-        this.children[name] = id;
-        return this;
-    };
-
-    /**Remove a node from a Node. 
-       @method removeChild
-       @param name the name of the node to remove
-       @param lookup Remove from parents or children list
-     */
-    Node.prototype.removeChild = function(name){
-        console.log("Removing Child:",name);
-        var retid = null;
-        var target = this.children;
-        if(!isNaN(Number(name))){
-            console.log("is a number");
-            retid = Number(name);
-            var index = _.invert(target)[retid];
-            if(index !== undefined){
-                delete this.children[index];
-            }
-        }else{
-            retid = target[name];
-            delete target[name];
-        }
-        return retid;
-    };
-
-    /**Add a node as a parent to this node
-       @method addParent
-       @param name
-       @param id the numeric id
-       @return Node The child of the node just added.
-     */
-    Node.prototype.addParent = function(name,id){
-        if(isNaN(Number(id))){
-            throw new Error("Parent should be specified by number");
-        }
-        this.parents[name] = id;
-        return this;
-    };
-
-    /**Remove a parent from the node
-       @method removeParent
-       @param name
-       @return ID the numeric id of the node removed
-     */
-    Node.prototype.removeParent = function(name){
-        var retid = null;
-        var target = this.parents;
-        if(!isNaN(Number(name))){
-            retid = Number(name);
-            var index = _.invert(target)[retid];
-            if(index !== undefined){
-                delete target[retid];
-            }
-        }else{
-            retid = target[name];
-            delete target[name];
-        }
-        return retid;
-    };
-
-    /**Set or clear a value from the internal values of a node
-       @method setValue
-       @param name the value name to modify
-       @param value the value to set it to. if null or undefined, remove the value from the node
-     */
-    Node.prototype.setValue = function(name,value){
-        if(value === undefined || value === null){
-            delete this.values[name];
-        }else{
-            this.values[name] = value;
-        }
-    };
-
-    /**Get an array of all the name:value tuples of the node
-       @method valueArray
-       @return Array of tuples;
-     */
-    Node.prototype.valueArray = function(){
-        var outArray = [];
-        for(var i in this.values){
-            var value = this.values[i];
-            outArray.push([i,value]);
         };
-        return outArray;
-    };
 
-    /**Set a notation
-       @method setNote
-     */
-    Node.prototype.setNote = function(name,value){
-        if(value === undefined || value === null){
-            delete this.notes[name];
-        }else{
-            this.notes[name] = value;
-        }
-    };
+        /**Add a child of NAME, with numeric ID to the node
+           @method addChild
+           @param name
+           @param id the numeric id
+           @return Node The current node, parent to the node just added
+        */
+        Node.prototype.addChild = function(name,id){
+            if(isNaN(Number(id))){
+                throw new Error("Children should be specified by number");
+            }
+            this.children[name] = id;
+            return this;
+        };
 
-    /**Get an array of all note tuples
-       @method noteArray
-     */
-    Node.prototype.noteArray = function(){
-        var outArray = [];
-        for(var i in this.notes){
-            var note = this.notes[i];
-            outArray.push([i,note]);
-        }
-        return outArray;
-    };
+        /**Remove a node from a Node. 
+           @method removeChild
+           @param name the name of the node to remove
+           @param lookup Remove from parents or children list
+        */
+        Node.prototype.removeChild = function(name){
+            console.log("Removing Child:",name);
+            var retid = null;
+            var target = this.children;
+            if(!isNaN(Number(name))){
+                console.log("is a number");
+                retid = Number(name);
+                var index = _.invert(target)[retid];
+                if(index !== undefined){
+                    delete this.children[index];
+                }
+            }else{
+                retid = target[name];
+                delete this.children[name];
+            }
+            return retid;
+        };
 
-    
-    /**Utility method to compare two nodes
-       @method equals
-       @param aNode The other node to compare to
-       @return Bool based on comparison of node id's
-     */
-    Node.prototype.equals = function(aNode){
-        if(this.id === aNode.id) return true;
-        return false;
-    };
-    
-    
-    return Shell;
-});
+        /**Add a node as a parent to this node
+           @method addParent
+           @param name
+           @param id the numeric id
+           @return Node The child of the node just added.
+        */
+        Node.prototype.addParent = function(name,id){
+            if(isNaN(Number(id))){
+                throw new Error("Parent should be specified by number");
+            }
+            this.parents[name] = id;
+            return this;
+        };
+
+        /**Remove a parent from the node
+           @method removeParent
+           @param name
+           @return ID the numeric id of the node removed
+        */
+    Node.prototype.removeParent = function(name){
+        console.log("removing parent:",name);
+            var retid = null;
+            var target = this.parents;
+            if(!isNaN(Number(name))){
+                retid = Number(name);
+                var nameIndex = _.invert(target)[retid];
+                //console.log("removing:",nameIndex);
+                if(nameIndex !== undefined){
+                    //console.log("now removing",nameIndex);
+                    delete this.parents[nameIndex];
+                    //console.log("removed:",nameIndex,this.parents[nameIndex],this);
+                }
+            }else{
+                retid = target[name];
+                delete this.parents[name];
+            }
+            return retid;
+        };
+
+        /**Set or clear a value from the internal values of a node
+           @method setValue
+           @param name the value name to modify
+           @param value the value to set it to. if null or undefined, remove the value from the node
+        */
+        Node.prototype.setValue = function(name,value){
+            if(value === undefined || value === null){
+                delete this.values[name];
+            }else{
+                this.values[name] = value;
+            }
+        };
+
+        /**Get an array of all the name:value tuples of the node
+           @method valueArray
+           @return Array of tuples;
+        */
+        Node.prototype.valueArray = function(){
+            var outArray = [];
+            for(var i in this.values){
+                var value = this.values[i];
+                outArray.push([i,value]);
+            };
+            return outArray;
+        };
+
+        /**Set a notation
+           @method setNote
+        */
+        Node.prototype.setNote = function(name,value){
+            if(value === undefined || value === null){
+                delete this.notes[name];
+            }else{
+                this.notes[name] = value;
+            }
+        };
+
+        /**Get an array of all note tuples
+           @method noteArray
+        */
+        Node.prototype.noteArray = function(){
+            var outArray = [];
+            for(var i in this.notes){
+                var note = this.notes[i];
+                outArray.push([i,note]);
+            }
+            return outArray;
+        };
+
+        
+        /**Utility method to compare two nodes
+           @method equals
+           @param aNode The other node to compare to
+           @return Bool based on comparison of node id's
+        */
+        Node.prototype.equals = function(aNode){
+            if(this.id === aNode.id) return true;
+            return false;
+        };
+        
+        
+        return Shell;
+    });

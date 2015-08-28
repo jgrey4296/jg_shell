@@ -134,22 +134,14 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             //TODO:
             //search from anywhere for nodes
             //matching a pattern
+            console.log("Searching for:",values);
             var found = sh.search(values);
             console.log("Found: ",found);
 
             displayResults(found);
-            //create an anonymous node that holds
-            //all those nodes as children
-            
-            //set the search node as a child of
-            //the cwd, and move to it.
-
-            //clean it up automatically
-            //if its not... renamed?
             
         },
         "note": function(sh,values){
-            //TODO:
             //add values into a note object,
             //separate from values
             sh.setNote(values);
@@ -215,6 +207,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                 }
             }catch(err){
                 displayText(err);
+                console.log(err);
             }
           }else if(d3.event.key.length === 1){
             //Otherwise not enter, user is still typing commands:
@@ -310,6 +303,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
     //Create and deal with the left supplemental column
     //Typically for displaying results of a search
     var displayResults = function(list){
+        console.log("Display Results:",list);
         var resultsBar = d3.select("#resultsBar");
         if(resultsBar.empty()){
             resultsBar = d3.select("svg").append("g")
@@ -322,6 +316,23 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                 .attr("width",supplementalWidth)
                 .attr("height",supplementalHeight);
         }
+
+                
+        //Don't bother if theres nothing to draw
+        if(list.length < 1){
+            console.log("quitting display results early",list);
+            d3.select("#resultsBar").select("rect")
+                .transition()
+                .attr("height",0);                    
+            d3.select("#resultsBar").selectAll("text")
+                .remove();
+            
+            return;
+        }
+
+        d3.select("#resultsBar").select("rect")
+            .transition()
+            .attr("height",supplementalHeight);
         
         var lines = resultsBar.selectAll("text").data(list,function(d){
             return d.id;
@@ -329,15 +340,18 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
 
         lines.exit().remove();
         
-            lines.enter().append("text")
-            .attr("transform",function(d,i){
-                return "translate(10,"+ (40 + (i * 20)) + ")";
-            })
+        lines.enter().append("text")
             .text(function(d){
                 return (d.id + " : " + d.name);
             })
             .style("fill","white");
 
+        lines.attr("transform",function(d,i){
+                return "translate(10,"+ (40 + (i * 20)) + ")";
+        })
+
+        
+        
     };
     
     /**Renders the current Node 
@@ -399,7 +413,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
        @function drawValues
     */
     var drawValues = function(){
-        console.log("Drawing values");
+        //console.log("Drawing values");
         //console.log(theShell.getCwd().valueArray());
 
         //Select the "g"
@@ -443,7 +457,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
        @function drawNotes
     */
     var drawNotes = function(){
-        console.log("Drawing notes");
+        //console.log("Drawing notes");
 
         //Select the "g"
         var valueContainer = svg.select("#noteContainer");
@@ -497,7 +511,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         d3.select(baseContainer).selectAll(".node").remove();
         var heightAvailable = d3.select(baseContainer).select("rect").attr("height");
         heightAvailable -= 20; //-20 for top and bottom
-        console.log("Drawing array:",childArray);
+        //console.log("Drawing array:",childArray);
         var nodes = childNode.selectAll("g")
             .data(childArray,
                   function(d){
@@ -508,7 +522,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         
         var inodes = nodes.enter().append("g")
             .attr("transform",function(d,i){
-                console.log("Drawing inode:",d.id,i);
+                //console.log("Drawing inode:",d.id,i);
                 return "translate(0," + (drawOffset +(i * (heightAvailable / childArray.length))) + ")";
             })
             .attr('id',function(d){
