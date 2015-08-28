@@ -72,6 +72,20 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                 sh.addParent(values[1],values.slice(2));
             }
         },
+        //Link a node to a specified node id as a child or parent
+        "link" : function(sh,values){
+            //Check that an id has been specified
+            if(values.length < 2 ||
+               isNaN(Number(values[1]))){
+                throw new Error("linking needs a node number");
+            }
+            if(values[0] === "child"){
+                sh.link("child",values[1]);
+            }
+            if(values[0] === "parent") {
+                sh.link("parent",values[1]);
+            }
+        },
         //Change the current node
         "cd" : function(sh,values){
             sh.moveTo(values[0]);
@@ -120,7 +134,10 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             //TODO:
             //search from anywhere for nodes
             //matching a pattern
-            var found = sh.find(values);
+            var found = sh.search(values);
+            console.log("Found: ",found);
+
+            displayResults(found);
             //create an anonymous node that holds
             //all those nodes as children
             
@@ -171,7 +188,10 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
     var drawOffset = 50;
     //The width of the parent, mainnode, and children columns
     var columnWidth = window.innerWidth * 0.25;
-
+    //The height of the bottom supplemental columns
+    var supplementalHeight = 300;
+    var supplementalWidth = 200;
+    
     /*
       Main selection here sets up parsing from input
       and clearing after the user presses enter.
@@ -182,19 +202,22 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             console.log("Command: ",line);
             d3.select(this).node().value = "";
             displayText(line);
-            
-            if (line !== null){
-                var splitLine = line.trim().split(" ");
-                var command = commands[splitLine[0]];
-                if (command !== undefined){
-                    command(theShell,splitLine.slice(1));
-                }else{
-                    console.log("unrecognised command: " + splitLine[0]);
+            try{
+                if (line !== null){
+                    var splitLine = line.trim().split(" ");
+                    var command = commands[splitLine[0]];
+                    if (command !== undefined){
+                        command(theShell,splitLine.slice(1));
+                    }else{
+                        console.log("unrecognised command: " + splitLine[0]);
+                    }
+                    commands['context'](theShell);
                 }
-                commands['context'](theShell);
+            }catch(err){
+                displayText(err);
             }
+          }else if(d3.event.key.length === 1){
             //Otherwise not enter, user is still typing commands:
-        }else if(d3.event.key.length === 1){
             var theValue = (d3.select(this).node().value + d3.event.key);
             //Here i could look up potential matches
             displayText(theValue);            
@@ -264,17 +287,15 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
     //displays contextual information on what is typed
     var suggestions = svg.append("g")
         .attr("transform",function(){
-            return "translate("+ (window.innerWidth - 200)
-                +"," + (window.innerHeight - 300) + ")";
+            return "translate("+ (window.innerWidth - supplementalWidth)
+                +"," + (window.innerHeight - supplementalHeight) + ")";
         });
 
     suggestions.append("rect")
         .attr("width",columnWidth)
         .attr("height",300)
-        .style("fill","black")
-        .attr("rx",10)
-        .attr("ry",10);
-
+        .style("fill","black");
+       
     suggestions.append("text")
         .style("fill","white")
         .attr("id","suggestions")
@@ -286,6 +307,39 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
 
     };
 
+    //Create and deal with the left supplemental column
+    //Typically for displaying results of a search
+    var displayResults = function(list){
+        var resultsBar = d3.select("#resultsBar");
+        if(resultsBar.empty()){
+            resultsBar = d3.select("svg").append("g")
+                .attr("transform",
+                      "translate(0,"
+                      + (window.innerHeight - supplementalHeight) + ")")
+                .attr("id","resultsBar");
+
+            resultsBar.append("rect")
+                .attr("width",supplementalWidth)
+                .attr("height",supplementalHeight);
+        }
+        
+        var lines = resultsBar.selectAll("text").data(list,function(d){
+            return d.id;
+        });
+
+        lines.exit().remove();
+        
+            lines.enter().append("text")
+            .attr("transform",function(d,i){
+                return "translate(10,"+ (40 + (i * 20)) + ")";
+            })
+            .text(function(d){
+                return (d.id + " : " + d.name);
+            })
+            .style("fill","white");
+
+    };
+    
     /**Renders the current Node 
        @function drawNode
     */
@@ -440,23 +494,27 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         //}));
         
         var childNode = svg.select(baseContainer);
+        d3.select(baseContainer).selectAll(".node").remove();
         var heightAvailable = d3.select(baseContainer).select("rect").attr("height");
         heightAvailable -= 20; //-20 for top and bottom
+        console.log("Drawing array:",childArray);
         var nodes = childNode.selectAll("g")
             .data(childArray,
                   function(d){
-                      return d.id;
+                      return d.id + "_node";
                   });
 
         drawOffSet = 10; 
         
         var inodes = nodes.enter().append("g")
             .attr("transform",function(d,i){
-                return "translate(0," + (drawOffset +(i * (heightAvailable / childArray.length))) +")";
+                console.log("Drawing inode:",d.id,i);
+                return "translate(0," + (drawOffset +(i * (heightAvailable / childArray.length))) + ")";
             })
             .attr('id',function(d){
                 return d.id + "_node";
-            });
+            })
+            .classed("node",true);
         
         inodes.append("rect")
             .style("fill",function(d){

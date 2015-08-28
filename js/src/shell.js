@@ -280,6 +280,28 @@ define(['underscore'],function(_){
         return this;
     };
 
+    /**Use an existing node as a child or parent of the cwd
+       @method link
+       @param direction as a Child or a Parent
+       @param id The numeric ID of the node to link with
+       @return shell instance
+     */
+    Shell.prototype.link = function(direction,id){
+        //First, find the node:
+        var node = this.find(id);
+        //then add it to the correct object of cwd
+        if(node){
+            if(direction === "child"){
+                this.getCwd().addChild(node.name,node.id);
+            }
+            if(direction === "parent"){
+                this.getCwd().addParent(node.name,node.id);
+            }
+        }
+        return this;
+    };
+    
+    
     /**Utility method to add a node and move to that new node
        @method addMove
        @param path the path to create
@@ -397,6 +419,50 @@ define(['underscore'],function(_){
         
         return retObject;
     };
+
+    /**Search for all nodes that match a pattern
+       @method search
+       @param pattern
+       @return list of nodes
+     */
+    Shell.prototype.search = function(list){
+        var returnList = [];
+
+        //look for all nodes that match all patterns:
+        var field = list.shift();
+        var pattern = list.shift();
+
+
+
+
+        
+        //For all nodes
+        for(var i in this.nodes){
+            var node = this.nodes[i];
+            var valToCompare = undefined;
+            //if a field, it *should* be
+            //from predefined fields, so an array for
+            //children or parents
+            if(node[field]){
+                valToCompare = node[field];
+                array.
+            }else if(node.values[field]){
+                valToCompare = node.values[field];
+            }else if(node.notes[field]){
+                valToCompare = node.notes[field];
+            }
+
+            if(pattern === undefined
+               && valToCompare !== undefined){
+                returnList.push(node);
+            }else if(valToCompare === pattern){
+                returnList.push(node);
+            }
+            
+        }
+        return returnList;
+    };
+
     
     //--------------------
     /**
@@ -449,11 +515,11 @@ define(['underscore'],function(_){
     /**Add a child of NAME, with numeric ID to the node
        @method addChild
        @param name
-       @param id
+       @param id the numeric id
        @return Node The current node, parent to the node just added
      */
     Node.prototype.addChild = function(name,id){
-        if(typeof id !== 'number'){
+        if(isNaN(Number(id))){
             throw new Error("Children should be specified by number");
         }
         this.children[name] = id;
@@ -490,7 +556,7 @@ define(['underscore'],function(_){
        @return Node The child of the node just added.
      */
     Node.prototype.addParent = function(name,id){
-        if(typeof id !== 'number'){
+        if(isNaN(Number(id))){
             throw new Error("Parent should be specified by number");
         }
         this.parents[name] = id;

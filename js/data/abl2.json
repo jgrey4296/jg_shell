@@ -23,7 +23,9 @@
 		"id": 1,
 		"name": "package",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -34,7 +36,9 @@
 		"id": 2,
 		"name": "importDec",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -47,7 +51,9 @@
 		"values": {
 			"Name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -62,7 +68,10 @@
 			"TeamNeededForSuccess": "?",
 			"OneNeededForSuccess": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "examples?",
+			"2": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -75,7 +84,9 @@
 		"values": {
 			"name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "skipped for now"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -88,7 +99,9 @@
 		"values": {
 			"Name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 0,
@@ -154,7 +167,9 @@
 			"WMEClass": "?",
 			"Name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 7,
@@ -168,7 +183,10 @@
 			"Name": "?",
 			"Name2": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "simple unit tests written",
+			"2": "needs failure unit tests"
+		},
 		"children": {
 			"params": 14
 		},
@@ -184,7 +202,9 @@
 			"Name": "?",
 			"Extends": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {
 			"AblVariableDeclaration": 15
 		},
@@ -200,7 +220,9 @@
 			"Type": "?",
 			"Name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 7,
@@ -211,7 +233,9 @@
 		"id": 14,
 		"name": "params",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"1": "simple unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 11,
@@ -222,7 +246,9 @@
 		"id": 15,
 		"name": "AblVariableDeclaration",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {},
 		"parents": {
 			"..": 12,

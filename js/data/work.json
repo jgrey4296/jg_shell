@@ -38,7 +38,9 @@
 		"id": 2,
 		"name": "metaSteam",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"todo": "make an installer"
+		},
 		"children": {
 			"pythonServer": 10,
 			"webVisualisation": 11
