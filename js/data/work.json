@@ -24,7 +24,8 @@
 		"values": {},
 		"notes": {
 			"1": "jsShell helping",
-			"2": "starting on unit tests"
+			"2": "starting on unit tests",
+			"3": "up to propertyDeclarations"
 		},
 		"children": {
 			"ANTLR": 12
@@ -56,7 +57,6 @@
 		"values": {},
 		"notes": {
 			"1": "roughly working",
-			"2": "needs search",
 			"3": "needs graph analysis"
 		},
 		"children": {

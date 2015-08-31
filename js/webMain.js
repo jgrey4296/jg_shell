@@ -41,7 +41,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                         var receivedJson = JSON.parse(request.responseText);
                         console.log("JSON:",receivedJson);
                         sh.loadJson(receivedJson);
-                        commands['context'](theShell);
+                        commands.context(theShell);
                     }catch(err){
                         console.log("Error loading data:",err);
                     }
@@ -104,7 +104,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         },
         //Set,change, or delete cwd value
         "v" : function(sh,values){
-            commands["value"](sh,values);
+            commands.value(sh,values);
         },
         "value": function(sh,values){
             sh.setValue(values);
@@ -210,7 +210,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                     }else{
                         console.log("unrecognised command: " + splitLine[0]);
                     }
-                    commands['context'](theShell);
+                    commands.context(theShell);
                 }
             }catch(err){
                 displayText(err);
@@ -287,8 +287,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
     //displays contextual information on what is typed
     var suggestions = svg.append("g")
         .attr("transform",function(){
-            return "translate("+ (window.innerWidth - supplementalWidth)
-                +"," + (window.innerHeight - supplementalHeight) + ")";
+            return "translate("+ (window.innerWidth - supplementalWidth)+"," + (window.innerHeight - supplementalHeight) + ")";
         });
 
     suggestions.append("rect")
@@ -315,8 +314,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         if(resultsBar.empty()){
             resultsBar = d3.select("svg").append("g")
                 .attr("transform",
-                      "translate(0,"
-                      + (window.innerHeight - supplementalHeight) + ")")
+                      "translate(0," + (window.innerHeight - supplementalHeight) + ")")
                 .attr("id","resultsBar");
 
             resultsBar.append("rect")
@@ -355,7 +353,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
 
         lines.attr("transform",function(d,i){
                 return "translate(10,"+ (40 + (i * 20)) + ")";
-        })
+        });
 
         
         
@@ -393,16 +391,14 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             .attr("ry",10);
 
         container.append("text")
-            .attr("transform","translate("
-                  + ((columnWidth * 0.4)) + ",15)")
+            .attr("transform","translate(" + ((columnWidth * 0.4)) + ",15)")
             .style("text-anchor","middle")
             .text(function(d){
                 return "ID:"+d.id;
             });
         
         container.append("text")
-            .attr("transform","translate("
-                  + ((columnWidth * 0.4)) + ",30)")
+            .attr("transform","translate(" + ((columnWidth * 0.4)) + ",30)")
             .style("text-anchor","middle")
             .text(function(d){
                 return d.name;
@@ -431,8 +427,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             valueContainer = svg.select("#mainNodeInfo")
                 .append("g")
                 .attr('id','valueContainer')
-                .attr("transform","translate("
-                      + (columnWidth * 0.4)+",50)");
+                .attr("transform","translate(" + (columnWidth * 0.4)+",50)");
 
         }
 
@@ -474,8 +469,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             valueContainer = svg.select("#mainNodeInfo")
                 .append("g")
                 .attr('id','noteContainer')
-                .attr("transform","translate("
-                      + (columnWidth * 0.4)+",120)");
+                .attr("transform","translate(" + (columnWidth * 0.4)+",120)");
 
         }
 
@@ -542,16 +536,14 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
                 return colourScale(scaleToColour(_.values(d.children).length));
             })
             .attr("width",(columnWidth * 0.5))
-            .attr("transform","translate("
-                  + (columnWidth * 0.25)+ ",0)")
+            .attr("transform","translate(" + (columnWidth * 0.25)+ ",0)")
             .attr("height",(heightAvailable / childArray.length) - 5)
             .attr("rx",10)
             .attr("ry",10);
         
         inodes.append("text")
             .style("text-anchor","middle")
-            .attr("transform","translate("
-                  + (columnWidth * 0.5)+",20)")
+            .attr("transform","translate(" + (columnWidth * 0.5)+",20)")
             .text(function(d){
                 return "(" + d.id + "): " + d.name;
             });
@@ -562,7 +554,7 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
 
 
     //Startup:
-    commands['context'](theShell);
+    commands.context(theShell);
     //Focus on the text input automatically on page load
     d3.select("#shellInput").node().focus();
 

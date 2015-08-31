@@ -70,9 +70,9 @@ define(['underscore'],function(_){
             }
             if(deletedNode === null) continue;
             //delete the node from the cwd
-            var cwd = this.getCwd();
-            cwd.removeChild(values[i]);
-            deletedNode.removeParent(cwd.id);            
+            var theCwd = this.getCwd();
+            theCwd.removeChild(values[i]);
+            deletedNode.removeParent(theCwd.id);            
 
             //Delete the node from every parent,
             // var nodesParents = this.getNodesByIds(deletedNode.parents);
@@ -111,9 +111,9 @@ define(['underscore'],function(_){
     */
     Shell.prototype.setNote = function(notes){
         var name = notes.shift();
-        var theNote = undefined;
+        var theNote;
         if(notes.length > 0){
-            var theNote = notes.join(" ");
+            theNote = notes.join(" ");
         }
         var cwd = this.getCwd();
         cwd.setNote(name,theNote);
@@ -139,10 +139,10 @@ define(['underscore'],function(_){
             }
         }else if( theIds instanceof Object){
             foundIds = [];
-            for(var i in theIds){
-                if(foundIds.indexOf(theIds[i])){
-                    outputNodes.push(this.getNodeById(theIds[i]));
-                    foundIds.push(theIds[i]);
+            for(var j in theIds){
+                if(foundIds.indexOf(theIds[j])){
+                    outputNodes.push(this.getNodeById(theIds[j]));
+                    foundIds.push(theIds[j]);
                 }
             }
         }
@@ -169,15 +169,15 @@ define(['underscore'],function(_){
         var parents = this.getNodesByIds(cwdNode.parents);
         for(var i in parents){
             var parent = parents[i];
-            delete parent.children[oldName]
+            delete parent.children[oldName];
             parent.children[cwdNode.name] = cwdNode.id;
         }
 
         //update the children:
         var childrens = this.getNodesByIds(cwdNode.children);
-        for(var i in childrens){
-            var child = childrens[i];
-            delete child.parents[oldName]
+        for(var j in childrens){
+            var child = childrens[j];
+            delete child.parents[oldName];
             child.parents[cwdNode.name] = cwdNode.id;
         }
         
@@ -211,7 +211,7 @@ define(['underscore'],function(_){
         //console.log("Largest Id used:",largestId);
         this.cwd = largestId;
         nextId = largestId + 1;
-        return this
+        return this;
     };
 
     /**Get a single node by its numeric id
@@ -315,7 +315,7 @@ define(['underscore'],function(_){
         this.addChild(path,value);
         this.moveTo(path);
         return this;
-    },
+    };
     
     /**Move directly to a particular path
        @method moveTo
@@ -331,7 +331,7 @@ define(['underscore'],function(_){
             curr = this.getNodeById(Number(path));
         }else{
             //console.log("other option");
-            var path = path.split('/');
+            path = path.split('/');
             if(path[0]=== "") path.shift();
             while(path.length > 0 && curr !== undefined && curr !== null){
                 //console.log("Moving to: ",curr.name);
@@ -354,7 +354,7 @@ define(['underscore'],function(_){
             console.log("Node: ",path," does not exist");
         }
         return this;
-    }
+    };
 
     /**Utility method to move directly to the root
        @method moveToRoot
@@ -363,7 +363,7 @@ define(['underscore'],function(_){
     Shell.prototype.moveToRoot = function(){
         this.cwd = this.root;
         return this;
-    },
+    };
 
     /**Get a string describing the current path
        @method pwd
@@ -378,7 +378,7 @@ define(['underscore'],function(_){
                 path.push(curr.name);
             }
             curr = this.getNodeById(_.values(curr.parents)[0]);
-        };
+        }
         path.reverse();
         var pathString = "/" + path.join("/");
         return pathString;        
@@ -420,7 +420,7 @@ define(['underscore'],function(_){
         };
 
         retObject.parents = this.getNodesByIds(retObject.node.parents);
-        retObject.children = this.getNodesByIds(retObject.node.children)
+        retObject.children = this.getNodesByIds(retObject.node.children);
         
         return retObject;
     };
@@ -445,7 +445,7 @@ define(['underscore'],function(_){
         console.log("RegExp2: ",valueStringPattern);
 
         //filter by field
-        var returnList = _.filter(startingPoint,function(d){
+        returnList = _.filter(startingPoint,function(d){
             if(d[field]) return true;
             return false;
         });
@@ -484,7 +484,7 @@ define(['underscore'],function(_){
 
             //for the dictionary fields
             //filter by key and value
-            var returnList = _.filter(returnList,function(d){
+            returnList = _.filter(returnList,function(d){
                 if(d[field][key]) return true;
                 return false;
             });
@@ -492,7 +492,7 @@ define(['underscore'],function(_){
             if(valueStringPattern === undefined) return returnList;
             var pattern = new RegExp(valueStringPattern);
             //filter by value regexp
-            var returnList = _.filter(returnList,function(d){
+            returnList = _.filter(returnList,function(d){
                 return pattern.test(d[field][key]);
             });
             console.log("Value List:",returnList);
@@ -520,10 +520,10 @@ define(['underscore'],function(_){
         if(parent !== undefined){
             if(parent instanceof Array){
                 while(parent.length > 0){
-                    var name = parent.shift();
-                    var number = parent.shift();
-                    this.parents[name] = number;
-                    this._originalParent = number;
+                    var pname = parent.shift();
+                    var pnumber = parent.shift();
+                    this.parents[pname] = pnumber;
+                    this._originalParent = pnumber;
                 }
             }else if(!isNaN(Number(parent)) && parentName){
                 this._originalParent = parent;
@@ -538,10 +538,10 @@ define(['underscore'],function(_){
         //value init:
         if(values && values instanceof Array){
             while(values.length > 0){
-                var name = values.shift();
+                var vname = values.shift();
                 var theValue = values.shift();
                 if(theValue === undefined) theValue = null;
-                this.values[name] = theValue;
+                this.values[vname] = theValue;
                 
             }
         }else if(values && values instanceof Object){
@@ -647,7 +647,7 @@ define(['underscore'],function(_){
         for(var i in this.values){
             var value = this.values[i];
             outArray.push([i,value]);
-        };
+        }
         return outArray;
     };
 

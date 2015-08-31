@@ -1,0 +1,308 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"notes": {},
+		"children": {
+			"datasets": 1
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "datasets",
+		"values": {},
+		"notes": {},
+		"children": {
+			"Friends&Family": 3,
+			"RealityMining": 4,
+			"SocialEvolution": 5,
+			"Betrayal": 6,
+			"Quotus": 7,
+			"FigurativeLanguage": 9,
+			"PizzaRequests": 10,
+			"Beer": 11,
+			"Politeness": 12,
+			"SupremeCourtDialog": 13,
+			"simplification": 14,
+			"socialNetworks": 15,
+			"Badge": 23
+		},
+		"parents": {
+			"__root": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "Badege",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "Friends&Family",
+		"values": {
+			"Source": "Pentland"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 4,
+		"name": "RealityMining",
+		"values": {
+			"Source": "Pentland"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 5,
+		"name": "SocialEvolution",
+		"values": {
+			"Source": "Pentland"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 6,
+		"name": "Betrayal",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 7,
+		"name": "Quotus",
+		"values": {
+			"Source": "Quotus"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 8,
+		"name": "figurativeLaguage",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 1
+	},
+	{
+		"id": 9,
+		"name": "FigurativeLanguage",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 10,
+		"name": "PizzaRequests",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 11,
+		"name": "Beer",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 12,
+		"name": "Politeness",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 13,
+		"name": "SupremeCourtDialog",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 14,
+		"name": "simplification",
+		"values": {
+			"Source": "Mizil"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 15,
+		"name": "socialNetworks",
+		"values": {},
+		"notes": {},
+		"children": {
+			"SNAP": 16
+		},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 16,
+		"name": "SNAP",
+		"values": {},
+		"notes": {},
+		"children": {
+			"facebook": 17,
+			"amazon": 18,
+			"youtube": 19,
+			"livejournal": 20,
+			"enron": 21,
+			"euEduInst": 22
+		},
+		"parents": {
+			"socialNetworks": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 17,
+		"name": "facebook",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 18,
+		"name": "amazon",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 19,
+		"name": "youtube",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 20,
+		"name": "livejournal",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 21,
+		"name": "enron",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 22,
+		"name": "euEduInst",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"SNAP": 16
+		},
+		"_originalParent": 16
+	},
+	{
+		"id": 23,
+		"name": "Badge",
+		"values": {
+			"Source": "Pentland"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"datasets": 1
+		},
+		"_originalParent": 1
+	}
+]

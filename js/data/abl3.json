@@ -112,7 +112,9 @@
 		"id": 7,
 		"name": "AblDecs",
 		"values": {},
-		"notes": {},
+		"notes": {
+			"1": "AblDeclarations"
+		},
 		"children": {
 			"WMERegistration": 10,
 			"ActionRegistration": 11,
@@ -362,7 +364,7 @@
 		"values": {},
 		"notes": {},
 		"children": {
-			"TestExpression": 37
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 18,
@@ -375,7 +377,7 @@
 		"values": {},
 		"notes": {},
 		"children": {
-			"TestExpression": 38
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 18,
@@ -414,7 +416,7 @@
 		"values": {},
 		"notes": {},
 		"children": {
-			"TestExpression": 39
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 18,
@@ -441,9 +443,9 @@
 		"notes": {},
 		"children": {
 			"StateCondition": 44,
-			"AblVarDec": 45,
 			"Statement": 46,
-			"StateReturn": 47
+			"StateReturn": 47,
+			"AblVarDecs": 19
 		},
 		"parents": {
 			"..": 18,
@@ -456,7 +458,9 @@
 		"values": {
 			"identifier": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "unit tests to expand"
+		},
 		"children": {
 			"WMETestSequence": 31
 		},
@@ -468,8 +472,12 @@
 	{
 		"id": 31,
 		"name": "WMETestSequence",
-		"values": {},
-		"notes": {},
+		"values": {
+			"identifier": "?"
+		},
+		"notes": {
+			"1": "unit tests to expand"
+		},
 		"children": {
 			"WMETest": 32,
 			"ConditionalExpression": 33
@@ -487,7 +495,9 @@
 			"name": "?",
 			"WMEClass": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "unit tests to fill out"
+		},
 		"children": {
 			"WMEFieldTest": 34
 		},
@@ -515,6 +525,7 @@
 			"operator": "?"
 		},
 		"notes": {
+			"1": "very basic tests",
 			"operators": "< > == <= >= !=",
 			"operator_b": "bind"
 		},
@@ -532,7 +543,9 @@
 		"values": {
 			"name": "?"
 		},
-		"notes": {},
+		"notes": {
+			"1": "basic unit tests written"
+		},
 		"children": {
 			"AblLiteral": 36
 		},
@@ -548,6 +561,7 @@
 			"value": "?"
 		},
 		"notes": {
+			"1": "very basic tests",
 			"literals": "int float double",
 			"literals_b": "char string",
 			"literals_c": "bool null"
@@ -565,8 +579,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 23,
-			"contextCondition": 23
+			"..": 23
 		}
 	},
 	{
@@ -576,8 +589,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 24,
-			"entryCondition": 24
+			"..": 24
 		}
 	},
 	{
@@ -587,8 +599,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 27,
-			"successCondition": 27
+			"..": 27
 		}
 	},
 	{
@@ -609,7 +620,7 @@
 		"notes": {},
 		"children": {
 			"AblExpression": 42,
-			"TestExpression": 43
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 28,
@@ -634,8 +645,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 41,
-			"ReinforcementSignal": 41
+			"..": 41
 		}
 	},
 	{
@@ -644,7 +654,7 @@
 		"values": {},
 		"notes": {},
 		"children": {
-			"TestExpression": 48
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 29,
@@ -658,8 +668,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 29,
-			"reinforcementState": 29
+			"..": 29
 		}
 	},
 	{
@@ -693,8 +702,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 44,
-			"StateCondition": 44
+			"..": 44
 		}
 	},
 	{
@@ -977,7 +985,7 @@
 		"values": {},
 		"notes": {},
 		"children": {
-			"TestExpression": 71
+			"TestExpression": 30
 		},
 		"parents": {
 			"..": 50,
@@ -1005,8 +1013,7 @@
 		"notes": {},
 		"children": {},
 		"parents": {
-			"..": 69,
-			"SuccessTest": 69
+			"..": 69
 		}
 	},
 	{
