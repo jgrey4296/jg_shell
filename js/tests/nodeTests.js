@@ -31,23 +31,23 @@ exports.nodetests = {
     //Test ctor: name, value object, no parent/parentName
     nameValueTest : function(test){
         var aNode = new Node("blah",{a:2});
-        test.ok(aNode.values['a'] === 2);
+        test.ok(aNode.values.a === 2);
         test.done();
     },
 
     //test ctor: array of values
     nameValueArrayTest : function(test){
         var aNode = new Node("blah",['a',1,'b',5]);
-        test.ok(aNode.values['a'] === 1);
-        test.ok(aNode.values['b'] === 5);
+        test.ok(aNode.values.a === 1);
+        test.ok(aNode.values.b === 5);
         test.done();
     },
 
     //test ctor: array of uneven values:
-    nameValueArrayTest : function(test){
+    unEvenNameValueArrayTest : function(test){
         var aNode = new Node("blah",['a',2,'b']);
-        test.ok(aNode.values['a'] === 2);
-        test.ok(aNode.values['b'] === null);
+        test.ok(aNode.values.a === 2);
+        test.ok(aNode.values.b === null);
         test.done();
     },
     
@@ -55,19 +55,19 @@ exports.nodetests = {
     parentTest : function(test){
         var aNode = new Node("blah",{a:2},['a',2,'b',3,'d',4]);
         test.ok(aNode.name === "blah");
-        test.ok(aNode.values['a'] === 2);
-        test.ok(aNode.parents['a'] === 2);
-        test.ok(aNode.parents['b'] === 3);
-        test.ok(aNode.parents['d'] === 4);
+        test.ok(aNode.values.a === 2);
+        test.ok(aNode.parents.a === 2);
+        test.ok(aNode.parents.b === 3);
+        test.ok(aNode.parents.d === 4);
         test.done();
     },
 
     //test ctor: name, value object, parent singular
     parentSingularTest: function(test){
         var aNode = new Node("blah",{a:2},5,'theParent');
-        test.ok(aNode.parents['..'] === 5);
-        test.ok(aNode.values['a'] === 2);
-        test.ok(aNode.parents['theParent'] === 5);
+        test.ok(aNode._originalParent === 5);
+        test.ok(aNode.values.a === 2);
+        test.ok(aNode.parents.theParent === 5);
         test.done();
     },
 
@@ -76,9 +76,9 @@ exports.nodetests = {
     addChildTest : function(test){
         var aNode = new Node("blah");
         aNode.addChild("child",5);
-        test.ok(aNode.children['child'] === 5);
+        test.ok(aNode.children.child === 5);
         aNode.addChild("bob",10);
-        test.ok(aNode.children['bob'] === 10);
+        test.ok(aNode.children.bob === 10);
 
         test.throws(function(){
             aNode.addChild('bob','bill');
@@ -91,9 +91,9 @@ exports.nodetests = {
     removeChildTest : function(test){
         var aNode = new Node("blah");
         aNode.addChild("bob",5);
-        test.ok(aNode.children['bob'] === 5);
+        test.ok(aNode.children.bob === 5);
         var returned = aNode.removeChild('bob');
-        test.ok(aNode.children['bob'] === undefined);
+        test.ok(aNode.children.bob === undefined);
         test.ok(returned === 5);
         test.done();
     },
@@ -104,8 +104,8 @@ exports.nodetests = {
         aNode.setValue("a",5);
         aNode.setValue("b",10);
 
-        test.ok(aNode.values['a'] === 5);
-        test.ok(aNode.values['b'] === 10);
+        test.ok(aNode.values.a === 5);
+        test.ok(aNode.values.b === 10);
 
         test.done();
     },
@@ -114,9 +114,9 @@ exports.nodetests = {
     setValueRemove : function(test){
         var aNode = new Node("blah");
         aNode.setValue('a',5);
-        test.ok(aNode.values['a'] === 5);
+        test.ok(aNode.values.a === 5);
         aNode.setValue('a');
-        test.ok(aNode.values['a'] === undefined);
+        test.ok(aNode.values.a === undefined);
         test.done();
     },
     
