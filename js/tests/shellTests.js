@@ -18,7 +18,7 @@ exports.Shelltests = {
         test.ok(this.shell.nodes instanceof Array);
         test.ok(this.shell.nodes.length === 1);
         test.ok(this.shell.nodes[0].id === 0);
-        test.ok(this.shell.nodes[0] instanceof this.shell.__Node)
+        test.ok(this.shell.nodes[0] instanceof this.shell.__Node);
         test.done();
     },
 
@@ -43,8 +43,8 @@ exports.Shelltests = {
     rootMkChildTest : function(test){
         var retShell = this.shell.addChild('blah');
         test.ok(retShell instanceof Shell);
-        test.ok(this.shell.getCwd().children['blah'] !== undefined);
-        test.ok(this.shell.getRoot().children['blah'] !== undefined);
+        test.ok(this.shell.getCwd().children.blah !== undefined);
+        test.ok(this.shell.getRoot().children.blah !== undefined);
         test.done();
     },
 
@@ -54,10 +54,10 @@ exports.Shelltests = {
         this.shell.addChild('blah');
         var child = this.shell.moveTo('blah').getCwd();
         test.ok(this.shell.getCwd().id !== this.shell.getRoot().id);
-        test.ok(this.shell.getCwd().parents['..'] !== undefined,"The cwd's parent should not be undefined");
+        test.ok(this.shell.getCwd()._originalParent !== undefined,"The cwd's parent should not be undefined");
         test.ok(this.shell.getCwd().name === 'blah');
         test.ok(child.id === this.shell.getCwd().id);
-        test.ok(child.parents['..'] === this.shell.getRoot().id);
+        test.ok(child._originalParent === this.shell.getRoot().id);
         test.done();
     },
 
@@ -134,7 +134,7 @@ exports.Shelltests = {
     //all of the currently existing nodes
     getNodeByIdTest : function(test){
         this.shell.addChild('blah');
-        var childId = this.shell.getCwd().children['blah'];
+        var childId = this.shell.getCwd().children.blah;
         var retrieved = this.shell.getNodeById(childId);
         test.ok(retrieved.id === childId);
         test.ok(retrieved.name === 'blah');
@@ -147,7 +147,7 @@ exports.Shelltests = {
         this.shell.addChild('blah');
         this.shell.addChild('bloo');
         this.shell.addChild('bill');
-        var children = this.shell.getNodesByIds(this.shell.getCwd().children)
+        var children = this.shell.getNodesByIds(this.shell.getCwd().children);
         test.ok(children[0].name === 'blah');
         test.ok(children[1].name === 'bloo');
         test.ok(children[2].name === 'bill');
@@ -159,23 +159,23 @@ exports.Shelltests = {
         this.shell.addChild('blah/bob/bill');
         this.shell.moveTo('blah/bob/bill');
         test.ok(this.shell.getCwd().name === "bill");
-        test.ok(this.shell.getCwd().parents['..'] !== undefined);
+        test.ok(this.shell.getCwd()._originalParent !== undefined);
         var bill = this.shell.getCwd();
-        test.ok(this.shell.getNodeById(bill.parents['..']).parents['..'] !== undefined);
-        test.ok(this.shell.getNodeById(bill.parents['..']).children['bill'] !== undefined);
+        test.ok(this.shell.getNodeById(bill._originalParent)._originalParent !== undefined);
+        test.ok(this.shell.getNodeById(bill._originalParent).children.bill !== undefined);
         test.done();
     },
 
     //add a node to the cwd, as its parent
     makeParentTest : function(test){
         this.shell.addParent('blah');
-        test.ok(this.shell.getCwd().parents['blah'] !== undefined);
-        var newNode = this.shell.getNodeById(this.shell.getCwd().parents['blah']);
-        test.ok(newNode.id === this.shell.getCwd().parents['blah']);
+        test.ok(this.shell.getCwd().parents.blah !== undefined);
+        var newNode = this.shell.getNodeById(this.shell.getCwd().parents.blah);
+        test.ok(newNode.id === this.shell.getCwd().parents.blah);
         this.shell.addParent('bloo').addParent('bill');
 
-        test.ok(this.shell.getCwd().parents['bloo'] !== undefined);
-        test.ok(this.shell.getCwd().parents['bill'] !== undefined);
+        test.ok(this.shell.getCwd().parents.bloo !== undefined);
+        test.ok(this.shell.getCwd().parents.bill !== undefined);
         
         test.done();
     },
@@ -195,14 +195,14 @@ exports.Shelltests = {
     //test setting values of nodes
     setValuesTest : function(test){
         this.shell.setValue(["a",5]);
-        test.ok(this.shell.getCwd().values['a'] === 5);
+        test.ok(this.shell.getCwd().values.a === 5);
         this.shell.setValue(["b",10,"c",15]);
-        test.ok(this.shell.getCwd().values['b'] === 10);
-        test.ok(this.shell.getCwd().values['c'] === 15);
+        test.ok(this.shell.getCwd().values.b === 10);
+        test.ok(this.shell.getCwd().values.c === 15);
         this.shell.setValue(['d']);
-        test.ok(this.shell.getCwd().values['d'] === undefined);
+        test.ok(this.shell.getCwd().values.d === undefined);
         this.shell.setValue(['a']);
-        test.ok(this.shell.getCwd().values['a'] === undefined);
+        test.ok(this.shell.getCwd().values.a === undefined);
         test.done();
     },
     
@@ -219,19 +219,19 @@ exports.Shelltests = {
         this.shell.moveTo(currentId);
         //prior:
         test.ok(this.shell.getCwd().name === "bob");
-        test.ok(this.shell.getNodeById(parent).children['bob'] === currentId);
+        test.ok(this.shell.getNodeById(parent).children.bob === currentId);
         test.ok(this.shell.getNodeById(childId).parents['..'] = currentId);
-        test.ok(this.shell.getNodeById(childId).parents['bob'] === currentId);
+        test.ok(this.shell.getNodeById(childId).parents.bob === currentId);
         //change 'bob' to 'bill'
         var retShell = this.shell.rename('bill');
         test.ok(retShell instanceof Shell);
         //post:
         test.ok(this.shell.getCwd().name === "bill");
-        test.ok(this.shell.getNodeById(parent).children['bob'] === undefined);
-        test.ok(this.shell.getNodeById(parent).children['bill'] === currentId);
+        test.ok(this.shell.getNodeById(parent).children.bob === undefined);
+        test.ok(this.shell.getNodeById(parent).children.bill === currentId);
         test.ok(this.shell.getNodeById(childId).parents['..'] === currentId);
-        test.ok(this.shell.getNodeById(childId).parents['bill'] === currentId);
-        test.ok(this.shell.getNodeById(childId).parents['bob'] === undefined);
+        test.ok(this.shell.getNodeById(childId).parents.bill === currentId);
+        test.ok(this.shell.getNodeById(childId).parents.bob === undefined);
         
                 
         test.done();
@@ -258,14 +258,14 @@ exports.Shelltests = {
     //Pass in a simple data example to test data loading on.
     loadJsonTest : function(test){
         var exampleJson = [
-            {id:0,name:"newRoot","children":[1],"parents":[]},
-            {id:1,name:"aChild","children":[],"parents":0},
+            {id:0,name:"newRoot","children":[1],"parents":[],_originalParent:undefined},
+            {id:1,name:"aChild","children":[],"parents":0,_originalParent:0},
         ];
         this.shell.loadJson(exampleJson);
         test.ok(this.shell.getCwd().id === 1);
         test.ok(this.shell.getCwd().name === 'aChild');
         //console.log(this.shell.getCwd());//.parents['..']);
-        test.ok(this.shell.getCwd().parents['..'] === 0);
+        test.ok(this.shell.getCwd()._originalParent === 0);
         test.done();
     },
 
@@ -279,7 +279,7 @@ exports.Shelltests = {
         //console.log(context.parents);
         //console.log(context.children);
         test.ok(context.parents[0].id === this.shell.getRoot().id);
-        test.ok(context.children[0].id === this.shell.getCwd().children['bozo']);
+        test.ok(context.children[0].id === this.shell.getCwd().children.bozo);
         test.ok(context.node.id === this.shell.getCwd().id);
         test.done();
     },
@@ -288,12 +288,10 @@ exports.Shelltests = {
     removeChildTest : function(test){
         this.shell.addMove('blah').addMove('bloo').addMove('blah');
         this.shell.moveTo('..');
-        test.ok(this.shell.getCwd().children['blah'] !== undefined);
+        test.ok(this.shell.getCwd().children.blah !== undefined);
         test.ok(this.shell.getCwd().name === "bloo");
         this.shell.rm('blah');
-        test.ok(this.shell.getCwd().children['blah'] === undefined);
-
-        
+        test.ok(this.shell.getCwd().children.blah === undefined);
 
         test.done();
     },

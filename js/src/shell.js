@@ -10,7 +10,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define(['../libs/underscore'],function(_){
     //Id for the nodes
     var nextId = 0;
     
@@ -35,60 +35,105 @@ define(['underscore'],function(_){
         this.__Node = Node;
     };
 
-    /**Find a node by its id number
-       @method
-       @param id The numeric id of the node to find       
-       @return the node, or null
+    /*
+      Further methods organised thus:
+      1) json Methods
+      2) Get Node Methods
+      3) Set Values / Notes
+      4) Move
+      5) Node operations
+      6) Search / Find / Local Context
+
+     */
+
+        /**Take in an object, and load it
+       @method loadJson
+       @param dataArray simple array to convert to nodes
+       @return shell
     */
-    Shell.prototype.find = function(id){
-        if(this.nodes[id]) return this.nodes[id];
-        return null;
-    };
-    
-    /**Remove a node
-       @method
-       @param values an array of numeric ids or words
-       @return Shell
-    */
-    Shell.prototype.rm = function(values){
-        var cwd = this.getCwd();
-        if(!(values instanceof Array)){
-            values = [values];
-        }
-        //for each value to be deleted
-        for(var i in values){
-            var value = values[i];
-            console.log("rm: ",value);
-            var deletedNode = null;
-            if(isNaN(Number(value))){
-                //console.log("original");
-                var deletedId = cwd.removeChild(values[i]);
-                deletedNode = this.getNodeById(deletedId);
+    Shell.prototype.loadJson = function(dataArray){
+        var largestId = 0;
+        for(var i in dataArray){
+            var curr = dataArray[i];
+            if(curr === null) continue;
+            if(largestId < curr.id) largestId = curr.id;
+            if(isNaN(Number(curr.id))){
+                console.log("NaN:",curr);
             }else{
-                //console.log("new",Number(value));
-                deletedNode = this.getNodeById(Number(value));
+                nextId = Number(curr.id);
             }
-            if(deletedNode === null) continue;
-            //delete the node from the cwd
-            var theCwd = this.getCwd();
-            theCwd.removeChild(values[i]);
-            deletedNode.removeParent(theCwd.id);            
-
-            //Delete the node from every parent,
-            // var nodesParents = this.getNodesByIds(deletedNode.parents);
-            // console.log("nodes parents",nodesParents);
-            // nodesParents.map(function(a){
-            //     console.log("Removing from parent:",a);
-            //     a.removeChild(values[i]);
-            //     deletedNode.removeParent(a.id);
-            // });
-
+            //console.log("Creating Node with values:",curr.values);
+            var newNode = new Node(curr.name,
+                                   curr.values,
+                                   curr.parents);
+            newNode._originalParent = curr._originalParent;
+            newNode.children = curr.children;
+            newNode.notes = curr.notes;
+            this.nodes[newNode.id] = newNode;
         }
+        //console.log("Largest Id used:",largestId);
+        this.cwd = largestId;
+        nextId = largestId + 1;
         return this;
     };
 
-    
-    /**Add, change or remove a value of a node
+    /**Get nodes from the shell by their numeric ids
+       @method getNodesByIds
+       @param theIds array of numeric ids to find
+       @return array of (possibly empty) nodes
+    */
+    Shell.prototype.getNodesByIds = function(theIds){
+        var outputNodes = [];
+        var foundIds = [];
+        if((theIds instanceof Array)){
+            for(var i in theIds){
+                if(foundIds.indexOf(theIds[i]) < 0){
+                    outputNodes.push(this.getNodeById(theIds[i]));
+                    foundIds.push(theIds[i]);
+                }
+            }
+        }else if( theIds instanceof Object){
+            foundIds = [];
+            for(var j in theIds){
+                if(foundIds.indexOf(theIds[j])){
+                    outputNodes.push(this.getNodeById(theIds[j]));
+                    foundIds.push(theIds[j]);
+                }
+            }
+        }
+        return outputNodes;
+    };
+
+    /**Get a single node by its numeric id
+       @method getNodeById
+       @param id the numeric id
+       @return the node or null
+    */
+    Shell.prototype.getNodeById = function(id){
+        if(this.nodes[id]){
+            return this.nodes[id];
+        }else{
+            return null;
+        }
+    };
+
+    /**Get the root node of the shell
+       @method getRoot
+       @return node
+    */
+    Shell.prototype.getRoot = function(){
+        return this.getNodeById(this.root);
+    };
+
+    /**Get the current working directory of the shell
+       @method getCwd
+       @return node
+    */
+    Shell.prototype.getCwd = function(){
+        return this.getNodeById(this.cwd);
+    };
+
+        /**Add, change or remove a value of a node
        @method setValue
        @param values an array of pairs
        @return shell
@@ -120,127 +165,64 @@ define(['underscore'],function(_){
         return this;
     };
     
-    
-
-    /**Get nodes from the shell by their numeric ids
-       @method getNodesByIds
-       @param theIds array of numeric ids to find
-       @return array of (possibly empty) nodes
-    */
-    Shell.prototype.getNodesByIds = function(theIds){
-        var outputNodes = [];
-        var foundIds = [];
-        if((theIds instanceof Array)){
-            for(var i in theIds){
-                if(foundIds.indexOf(theIds[i]) < 0){
-                    outputNodes.push(this.getNodeById(theIds[i]));
-                    foundIds.push(theIds[i]);
-                }
-            }
-        }else if( theIds instanceof Object){
-            foundIds = [];
-            for(var j in theIds){
-                if(foundIds.indexOf(theIds[j])){
-                    outputNodes.push(this.getNodeById(theIds[j]));
-                    foundIds.push(theIds[j]);
-                }
-            }
-        }
-        return outputNodes;
-    };
-
-    /**Rename a node, updating parents and children
-       @method rename
-       @param values the new name
+    /**Move directly to a particular path
+       @method moveTo
+       @param path the path to move to
        @return shell
     */
-    Shell.prototype.rename = function(values){
-        var cwdNode = this.getCwd();
-        if(typeof values === 'string'){
-            values = values.replace(/ /g,"_");
-        }
-        if(values instanceof Array){
-            values = values.join("_");
-        }
-        var oldName = cwdNode.name;
-        cwdNode.name = values;//values.join("_");
-        
-        //update the parents:
-        var parents = this.getNodesByIds(cwdNode.parents);
-        for(var i in parents){
-            var parent = parents[i];
-            delete parent.children[oldName];
-            parent.children[cwdNode.name] = cwdNode.id;
-        }
-
-        //update the children:
-        var childrens = this.getNodesByIds(cwdNode.children);
-        for(var j in childrens){
-            var child = childrens[j];
-            delete child.parents[oldName];
-            child.parents[cwdNode.name] = cwdNode.id;
-        }
-        
-        return this;
-    };
-    
-    /**Take in an object, and load it
-       @method loadJson
-       @param dataArray simple array to convert to nodes
-       @return shell
-    */
-    Shell.prototype.loadJson = function(dataArray){
-        var largestId = 0;
-        for(var i in dataArray){
-            var curr = dataArray[i];
-            if(curr === null) continue;
-            if(largestId < curr.id) largestId = curr.id;
-            if(isNaN(Number(curr.id))){
-                console.log("NaN:",curr);
-            }else{
-                nextId = Number(curr.id);
-            }
-            //console.log("Creating Node with values:",curr.values);
-            var newNode = new Node(curr.name,
-                                   curr.values,
-                                   curr.parents);
-            newNode.children = curr.children;
-            newNode.notes = curr.notes;
-            this.nodes[newNode.id] = newNode;
-        }
-        //console.log("Largest Id used:",largestId);
-        this.cwd = largestId;
-        nextId = largestId + 1;
-        return this;
-    };
-
-    /**Get a single node by its numeric id
-       @method getNodeById
-       @param id the numeric id
-       @return the node or null
-    */
-    Shell.prototype.getNodeById = function(id){
-        if(this.nodes[id]){
-            return this.nodes[id];
+    Shell.prototype.moveTo = function(path){
+        if(path === undefined) throw new Error("path is undefined");
+        var curr = path[0] === "/" ? this.getRoot(): this.getCwd();
+        //console.log("path:",Number(path));
+        if(!isNaN(Number(path))){
+            //console.log("number");
+            curr = this.getNodeById(Number(path));
         }else{
-            return null;
+            //console.log("other option");
+            path = path.split('/');
+            if(path[0]=== "") path.shift();
+            while(path.length > 0 && curr !== undefined && curr !== null){
+                //console.log("Moving to: ",curr.name);
+                var nextLoc = path.shift();
+                if(nextLoc === "..") {
+                    curr = this.getNodeById(curr._originalParent);
+                    //console.log(curr);
+                }else if(curr.children[nextLoc]){
+                    curr = this.getNodeById(curr.children[nextLoc]);
+                }else{
+                    curr = this.getNodeById(curr.parents[nextLoc]);
+                }
+            }
         }
+        
+        if(curr !== null){
+            //console.log("Moving to:",curr.name);
+            this.cwd = curr.id;
+        }else{
+            console.log("Node: ",path," does not exist");
+        }
+        return this;
     };
 
-    /**Get the root node of the shell
-       @method getRoot
-       @return node
+    /**Utility method to move directly to the root
+       @method moveToRoot
+       @return shell
     */
-    Shell.prototype.getRoot = function(){
-        return this.getNodeById(this.root);
+    Shell.prototype.moveToRoot = function(){
+        this.cwd = this.root;
+        return this;
     };
 
-    /**Get the current working directory of the shell
-       @method getCwd
-       @return node
+        /**Utility method to add a node and move to that new node
+       @method addMove
+       @param path the path to create
+       @param value the value of the node to create
+       @return shell
     */
-    Shell.prototype.getCwd = function(){
-        return this.getNodeById(this.cwd);
+    Shell.prototype.addMove = function(path,value){
+        this.addChild(path,value);
+        this.moveTo(path);
+        return this;
     };
     
     /** Add a child to the given path
@@ -283,7 +265,7 @@ define(['underscore'],function(_){
         return this;
     };
 
-    /**Use an existing node as a child or parent of the cwd
+        /**Use an existing node as a child or parent of the cwd
        @method link
        @param direction as a Child or a Parent
        @param id The numeric ID of the node to link with
@@ -304,66 +286,101 @@ define(['underscore'],function(_){
         return this;
     };
     
-    
-    /**Utility method to add a node and move to that new node
-       @method addMove
-       @param path the path to create
-       @param value the value of the node to create
-       @return shell
+    /**Remove a node
+       @method
+       @param values an array of numeric ids or words
+       @return Shell
     */
-    Shell.prototype.addMove = function(path,value){
-        this.addChild(path,value);
-        this.moveTo(path);
-        return this;
-    };
-    
-    /**Move directly to a particular path
-       @method moveTo
-       @param path the path to move to
-       @return shell
-    */
-    Shell.prototype.moveTo = function(path){
-        if(path === undefined) throw new Error("path is undefined");
-        var curr = path[0] === "/" ? this.getRoot(): this.getCwd();
-        //console.log("path:",Number(path));
-        if(!isNaN(Number(path))){
-            //console.log("number");
-            curr = this.getNodeById(Number(path));
-        }else{
-            //console.log("other option");
-            path = path.split('/');
-            if(path[0]=== "") path.shift();
-            while(path.length > 0 && curr !== undefined && curr !== null){
-                //console.log("Moving to: ",curr.name);
-                var nextLoc = path.shift();
-                if(nextLoc === "..") {
-                    curr = this.getNodeById(curr._originalParent);
-                    console.log(curr);
-                }else if(curr.children[nextLoc]){
-                    curr = this.getNodeById(curr.children[nextLoc]);
-                }else{
-                    curr = this.getNodeById(curr.parents[nextLoc]);
-                }
-            }
+    Shell.prototype.rm = function(values){
+        var cwd = this.getCwd();
+        if(!(values instanceof Array)){
+            values = [values];
         }
-        
-        if(curr !== null){
-            //console.log("Moving to:",curr.name);
-            this.cwd = curr.id;
-        }else{
-            console.log("Node: ",path," does not exist");
+        //for each value to be deleted
+        for(var i in values){
+            var value = values[i];
+            //console.log("rm: ",value);
+            var deletedNode = null;
+            if(isNaN(Number(value))){
+                //console.log("original");
+                var deletedId = cwd.removeChild(values[i]);
+                deletedNode = this.getNodeById(deletedId);
+            }else{
+                //console.log("new",Number(value));
+                deletedNode = this.getNodeById(Number(value));
+            }
+            if(deletedNode === null) continue;
+            //delete the node from the cwd
+            var theCwd = this.getCwd();
+            theCwd.removeChild(values[i]);
+            deletedNode.removeParent(theCwd.id);            
+
+            //Delete the node from every parent,
+            // var nodesParents = this.getNodesByIds(deletedNode.parents);
+            // console.log("nodes parents",nodesParents);
+            // nodesParents.map(function(a){
+            //     console.log("Removing from parent:",a);
+            //     a.removeChild(values[i]);
+            //     deletedNode.removeParent(a.id);
+            // });
+
         }
         return this;
     };
 
-    /**Utility method to move directly to the root
-       @method moveToRoot
+    
+    
+
+
+    /**Rename a node, updating parents and children
+       @method rename
+       @param values the new name
        @return shell
     */
-    Shell.prototype.moveToRoot = function(){
-        this.cwd = this.root;
+    Shell.prototype.rename = function(values){
+        var cwdNode = this.getCwd();
+        if(typeof values === 'string'){
+            values = values.replace(/ /g,"_");
+        }
+        if(values instanceof Array){
+            values = values.join("_");
+        }
+        var oldName = cwdNode.name;
+        cwdNode.name = values;//values.join("_");
+        
+        //update the parents:
+        var parents = this.getNodesByIds(cwdNode.parents);
+        for(var i in parents){
+            var parent = parents[i];
+            delete parent.children[oldName];
+            parent.children[cwdNode.name] = cwdNode.id;
+        }
+
+        //update the children:
+        var childrens = this.getNodesByIds(cwdNode.children);
+        for(var j in childrens){
+            var child = childrens[j];
+            delete child.parents[oldName];
+            child.parents[cwdNode.name] = cwdNode.id;
+        }
+        
         return this;
     };
+    
+    
+    
+    /**Find a node by its id number
+       @method
+       @param id The numeric id of the node to find       
+       @return the node, or null
+    */
+    Shell.prototype.find = function(id){
+        if(this.nodes[id]) return this.nodes[id];
+        return null;
+    };
+    
+
+    
 
     /**Get a string describing the current path
        @method pwd
@@ -569,11 +586,11 @@ define(['underscore'],function(_){
        @param lookup Remove from parents or children list
     */
     Node.prototype.removeChild = function(name){
-        console.log("Removing Child:",name);
+        //console.log("Removing Child:",name);
         var retid = null;
         var target = this.children;
         if(!isNaN(Number(name))){
-            console.log("is a number");
+            //console.log("is a number");
             retid = Number(name);
             var index = _.invert(target)[retid];
             if(index !== undefined){
@@ -606,7 +623,7 @@ define(['underscore'],function(_){
        @return ID the numeric id of the node removed
     */
     Node.prototype.removeParent = function(name){
-        console.log("removing parent:",name);
+        //console.log("removing parent:",name);
         var retid = null;
         var target = this.parents;
         if(!isNaN(Number(name))){
