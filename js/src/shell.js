@@ -5,12 +5,16 @@
     
 
 */
-
+var underscoreName = "";
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
+    underscoreName = "../libs/underscore";
+}else{
+    underscoreName = "underscore";
 }
 
-define(['../libs/underscore'],function(_){
+define([underscoreName],function(_){
+
     //Id for the nodes
     var nextId = 0;
     
@@ -315,6 +319,7 @@ define(['../libs/underscore'],function(_){
             theCwd.removeChild(values[i]);
             deletedNode.removeParent(theCwd.id);            
 
+            
             //Delete the node from every parent,
             // var nodesParents = this.getNodesByIds(deletedNode.parents);
             // console.log("nodes parents",nodesParents);
