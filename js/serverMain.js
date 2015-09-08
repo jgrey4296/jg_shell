@@ -73,20 +73,51 @@ var dealWithPost = function(request,response){
         //when aggregated, save it to file
         request.on('end',function(){
             console.log("Entire Message received:",allData);
-            fs.writeFile("./data/"+values[1]+".json",allData,function(err){
-                if(err){
-                    console.log("Error:",err);
-                    response.writeHead(404);
-                    response.end();
-                }else{
-                    //Respond with something
-                    response.writeHead(200,{'Content-Type':'text/plain'});
-                    response.end("");
-                }
-            });
+
+            //Copy the file, and then call the function to
+            //write the new version of the file
+            copyFile("./data/",values[1]+".json",function(copyErr){
+                fs.writeFile("./data/"+values[1]+".json",allData,function(err){
+                    if(err || copyErr){
+                        console.log("Error:",err);
+                        response.writeHead(404);
+                        response.end();
+                    }else{
+                        //Respond with something
+                        response.writeHead(200,{'Content-Type':'text/plain'});
+                        response.end("");
+                    }
+                });
+            });                
         });
     }
 };
+
+
+//Copy a file:
+function copyFile(sourcePath,fileName,cb){
+    var cbCalled = false;
+    var rd = fs.createReadStream(source);
+    rd.on("error",function(err){
+        done(err);
+    });
+    var dateString = new Date().toISOString();
+    var wr = fs.createWriteStream(sourcePath+"backup_"+dateString+source);
+    wr.on("error",function(err){
+        done(err);
+    });
+    wr.on("close",function(ex){
+        done();
+    });
+    rd.pipe(wr);
+    function done(err){
+        if(cbCalled){
+            cb(err);
+            cbCalled = true;
+        }
+    }
+}
+
 
 //----------------------------------------
 //The server itself
