@@ -72,11 +72,12 @@ var dealWithPost = function(request,response){
 
         //when aggregated, save it to file
         request.on('end',function(){
-            console.log("Entire Message received:",allData);
+            //console.log("Entire Message received:",allData);
 
             //Copy the file, and then call the function to
             //write the new version of the file
             copyFile("./data/",values[1]+".json",function(copyErr){
+                console.log("Writing new File");
                 fs.writeFile("./data/"+values[1]+".json",allData,function(err){
                     if(err || copyErr){
                         console.log("Error:",err);
@@ -96,13 +97,14 @@ var dealWithPost = function(request,response){
 
 //Copy a file:
 function copyFile(sourcePath,fileName,cb){
+    console.log("Copying File");
     var cbCalled = false;
-    var rd = fs.createReadStream(source);
+    var rd = fs.createReadStream(sourcePath+fileName);
     rd.on("error",function(err){
         done(err);
     });
     var dateString = new Date().toISOString();
-    var wr = fs.createWriteStream(sourcePath+"backup_"+dateString+source);
+    var wr = fs.createWriteStream(sourcePath+"backup_"+dateString+fileName);
     wr.on("error",function(err){
         done(err);
     });
@@ -111,7 +113,8 @@ function copyFile(sourcePath,fileName,cb){
     });
     rd.pipe(wr);
     function done(err){
-        if(cbCalled){
+        console.log("Copying Done");
+        if(!cbCalled){
             cb(err);
             cbCalled = true;
         }
