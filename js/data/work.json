@@ -14,7 +14,8 @@
 			"heuristicSorting": 7,
 			"gridSim": 8,
 			"jgRete": 9,
-			"institutions": 21
+			"institutions": 21,
+			"dataAnalysis": 31
 		},
 		"parents": {}
 	},
@@ -24,8 +25,9 @@
 		"values": {},
 		"notes": {
 			"1": "jsShell helping",
-			"2": "starting on unit tests",
-			"3": "up to propertyDeclarations"
+			"2": "basic unit tests written",
+			"3": "reinforcement still to do",
+			"4": "maFilter written"
 		},
 		"children": {
 			"ANTLR": 12
@@ -87,10 +89,16 @@
 		"name": "autoGrading",
 		"values": {},
 		"notes": {
-			"1": "ready for expansion"
+			"1": "ready for expansion",
+			"2": "need to find unitTest frameworks"
 		},
 		"children": {
-			"python": 18
+			"python": 18,
+			"scheme": 26,
+			"perl": 27,
+			"c++": 28,
+			"ocaml": 29,
+			"smalltalk": 30
 		},
 		"parents": {
 			"..": 0,
@@ -340,5 +348,180 @@
 			"..": 21,
 			"institutions": 21
 		}
+	},
+	{
+		"id": 26,
+		"name": "scheme",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"autoGrading": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 27,
+		"name": "perl",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"autoGrading": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 28,
+		"name": "c++",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"autoGrading": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 29,
+		"name": "ocaml",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"autoGrading": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 30,
+		"name": "smalltalk",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"autoGrading": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 31,
+		"name": "dataAnalysis",
+		"values": {},
+		"notes": {},
+		"children": {
+			"friends&Family": 32,
+			"realityMining": 33,
+			"Badge": 34,
+			"supremeCourt": 35,
+			"socialEvo": 36,
+			"politeness": 37,
+			"figurativeComparisons": 38,
+			"pizzaRequest": 39,
+			"quotes": 40
+		},
+		"parents": {
+			"work": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 32,
+		"name": "friends&Family",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 33,
+		"name": "realityMining",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 34,
+		"name": "Badge",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 35,
+		"name": "supremeCourt",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 36,
+		"name": "socialEvo",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 37,
+		"name": "politeness",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 38,
+		"name": "figurativeComparisons",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 39,
+		"name": "pizzaRequest",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
+	},
+	{
+		"id": 40,
+		"name": "quotes",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"dataAnalysis": 31
+		},
+		"_originalParent": 31
 	}
 ]
