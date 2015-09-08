@@ -3,10 +3,14 @@
 */
 require.config({
     paths:{
-        underscore: "/libs/underscore"
+        "../libs/underscore": "/libs/underscore",
+        underscore : "/libs/underscore"
     },
     shim:{
-        underscore:{
+        "../libs/underscore":{
+            exports:'_'
+        },
+        underscore :{
             exports:'_'
         },
     }
@@ -161,7 +165,13 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
         "cleanup" : function(sh,values){
             //remove from the main node map
             //all nodes that are not part of the main graph
-        }       
+        },
+        "next" : function(sh,values){
+            sh.moveTo(sh.cwd + 1);
+        },
+        "prev" : function(sh,values){
+            sh.moveTo(sh.cwd - 1);
+        }
     };
 
 
