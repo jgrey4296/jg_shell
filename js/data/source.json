@@ -1,0 +1,2184 @@
+[
+	{
+		"id": 0,
+		"name": "sources",
+		"values": {},
+		"notes": {
+			"todo": "organise games",
+			"todo2": "notate everything"
+		},
+		"children": {
+			"fiction": 1,
+			"non-fiction": 2,
+			"theoretical": 3,
+			"games": 6,
+			"computational": 83,
+			"penAndPaper": 125,
+			"socialMovements": 142
+		},
+		"parents": {
+			"work": 88
+		}
+	},
+	{
+		"id": 1,
+		"name": "fiction",
+		"values": {},
+		"notes": {},
+		"children": {
+			"standOnZanzibar": 4,
+			"discworld": 5,
+			"Galactica": 7,
+			"redMars": 8,
+			"starsMyDestination": 9,
+			"demolishedMan": 10,
+			"horusHeresy": 23,
+			"stanislawLem": 24,
+			"gormenghast": 25,
+			"seriesOfUnfortunateEvents": 26,
+			"philipKDick": 27,
+			"Dune": 28,
+			"theDispossessed": 29,
+			"2312": 76,
+			"doctorWho": 135,
+			"douglasAdams": 171
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "non-fiction",
+		"values": {},
+		"notes": {},
+		"children": {
+			"graeber": 71,
+			"gluckman": 72,
+			"bodley": 73,
+			"greene": 74,
+			"perez": 75,
+			"levi-martin": 77,
+			"bibleMannersAndcustoms": 78,
+			"onPolitics": 79,
+			"law": 96,
+			"iNeverNewThatAboutTheEnglish": 100,
+			"forsyth": 115,
+			"rahwan": 116,
+			"politicalManifestos": 129,
+			"billBryson": 141,
+			"microtrends": 160,
+			"elias": 162
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 3,
+		"name": "theoretical",
+		"values": {},
+		"notes": {},
+		"children": {
+			"giddens": 15,
+			"searle": 16,
+			"goffman": 17,
+			"castelfranchi": 18,
+			"fligstein": 19,
+			"bicchieri": 20,
+			"balke": 21,
+			"diMaggio": 22,
+			"harrell": 80,
+			"boydAndRichardson": 87,
+			"quests": 101,
+			"taylor": 117,
+			"loyall": 119,
+			"smith": 121,
+			"weber": 122,
+			"activityTheory": 136,
+			"agentBasedComplexSystems": 139,
+			"mcGrath": 140,
+			"normative": 148,
+			"semiotics": 152,
+			"russell": 158,
+			"bourdieu": 161,
+			"sowell": 163
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 4,
+		"name": "standOnZanzibar",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 5,
+		"name": "discworld",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 6,
+		"name": "games",
+		"values": {},
+		"notes": {},
+		"children": {
+			"kingOfDragonPass": 11,
+			"elderScrolls": 12,
+			"lastFederation": 13,
+			"dwarfFortress": 14,
+			"zelda": 30,
+			"endlessLegend": 31,
+			"dungeonOfTheEndless": 32,
+			"civilisation": 33,
+			"assassinsCreed": 34,
+			"zenoClash": 35,
+			"theBannerSaga": 36,
+			"dyscourse": 37,
+			"geminiRue": 38,
+			"godsWillBeWatching": 39,
+			"longLiveTheQueen": 40,
+			"noirSyndrome": 41,
+			"postMortem": 42,
+			"sunlessSea": 43,
+			"talesFromTheBorderlands": 44,
+			"mountain": 45,
+			"theEscapists": 46,
+			"banished": 47,
+			"clockworkEmpires": 48,
+			"democracy3": 49,
+			"prisonArchitect": 50,
+			"tropico": 51,
+			"theWolfAmongUs": 52,
+			"metro": 53,
+			"dontStarve": 54,
+			"papersPlease": 55,
+			"pillarsOfEternity": 56,
+			"undertale": 57,
+			"unrest": 58,
+			"theWitcher": 59,
+			"massEffect": 60,
+			"saintsRow": 61,
+			"satelliteReign": 62,
+			"vampireTheMasquerade": 63,
+			"anno2070": 64,
+			"distantWorlds:Universe": 65,
+			"redshirt": 66,
+			"cosmonautica": 67,
+			"xcom": 68,
+			"darkSouls": 69,
+			"pokerNight": 70
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 7,
+		"name": "Galactica",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 8,
+		"name": "redMars",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 9,
+		"name": "starsMyDestination",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 10,
+		"name": "demolishedMan",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 11,
+		"name": "kingOfDragonPass",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 12,
+		"name": "elderScrolls",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 13,
+		"name": "lastFederation",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 14,
+		"name": "dwarfFortress",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 15,
+		"name": "giddens",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 16,
+		"name": "searle",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3,
+			"speechActs": 151
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 17,
+		"name": "goffman",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 18,
+		"name": "castelfranchi",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 19,
+		"name": "fligstein",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 20,
+		"name": "bicchieri",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 21,
+		"name": "balke",
+		"values": {},
+		"notes": {
+			"1": "dagstuhl follow up"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 22,
+		"name": "diMaggio",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 23,
+		"name": "horusHeresy",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 24,
+		"name": "stanislawLem",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 25,
+		"name": "gormenghast",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 26,
+		"name": "seriesOfUnfortunateEvents",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 27,
+		"name": "philipKDick",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 28,
+		"name": "Dune",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 29,
+		"name": "theDispossessed",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 30,
+		"name": "zelda",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 31,
+		"name": "endlessLegend",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 32,
+		"name": "dungeonOfTheEndless",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 33,
+		"name": "civilisation",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 34,
+		"name": "assassinsCreed",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 35,
+		"name": "zenoClash",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 36,
+		"name": "theBannerSaga",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 37,
+		"name": "dyscourse",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 38,
+		"name": "geminiRue",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 39,
+		"name": "godsWillBeWatching",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 40,
+		"name": "longLiveTheQueen",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 41,
+		"name": "noirSyndrome",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 42,
+		"name": "postMortem",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 43,
+		"name": "sunlessSea",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 44,
+		"name": "talesFromTheBorderlands",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 45,
+		"name": "mountain",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 46,
+		"name": "theEscapists",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 47,
+		"name": "banished",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 48,
+		"name": "clockworkEmpires",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 49,
+		"name": "democracy3",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 50,
+		"name": "prisonArchitect",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 51,
+		"name": "tropico",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 52,
+		"name": "theWolfAmongUs",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 53,
+		"name": "metro",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 54,
+		"name": "dontStarve",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 55,
+		"name": "papersPlease",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 56,
+		"name": "pillarsOfEternity",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 57,
+		"name": "undertale",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 58,
+		"name": "unrest",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 59,
+		"name": "theWitcher",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 60,
+		"name": "massEffect",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 61,
+		"name": "saintsRow",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 62,
+		"name": "satelliteReign",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 63,
+		"name": "vampireTheMasquerade",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 64,
+		"name": "anno2070",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 65,
+		"name": "distantWorlds:Universe",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 66,
+		"name": "redshirt",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 67,
+		"name": "cosmonautica",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 68,
+		"name": "xcom",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 69,
+		"name": "darkSouls",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 70,
+		"name": "pokerNight",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"games": 6
+		},
+		"_originalParent": 6
+	},
+	{
+		"id": 71,
+		"name": "graeber",
+		"values": {},
+		"notes": {},
+		"children": {
+			"debt": 81,
+			"bureacracy": 82
+		},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 72,
+		"name": "gluckman",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 73,
+		"name": "bodley",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 74,
+		"name": "greene",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 75,
+		"name": "perez",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 76,
+		"name": "2312",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 77,
+		"name": "levi-martin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 78,
+		"name": "bibleMannersAndcustoms",
+		"values": {},
+		"notes": {
+			"author": "mackie"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 79,
+		"name": "onPolitics",
+		"values": {},
+		"notes": {
+			"author": "ryan"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 80,
+		"name": "harrell",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 81,
+		"name": "debt",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"graeber": 71
+		},
+		"_originalParent": 71
+	},
+	{
+		"id": 82,
+		"name": "bureacracy",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"graeber": 71
+		},
+		"_originalParent": 71
+	},
+	{
+		"id": 83,
+		"name": "computational",
+		"values": {},
+		"notes": {},
+		"children": {
+			"epstein": 84,
+			"evans": 85,
+			"mccoy": 86,
+			"moise": 104,
+			"soar": 105,
+			"nlp": 106,
+			"mateas": 109,
+			"christian": 124,
+			"authoring": 147,
+			"generativeMethods": 155
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 84,
+		"name": "epstein",
+		"values": {},
+		"notes": {
+			"work": "sugarscape"
+		},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 85,
+		"name": "evans",
+		"values": {},
+		"notes": {
+			"work": "versu"
+		},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 86,
+		"name": "mccoy",
+		"values": {},
+		"notes": {
+			"work": "cif"
+		},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 87,
+		"name": "boydAndRichardson",
+		"values": {},
+		"notes": {
+			"work": "notByGenesAlone"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 88,
+		"name": "work",
+		"values": {},
+		"notes": {},
+		"children": {
+			"sources": 0,
+			"technology": 89,
+			"argument": 164,
+			"possibilities": 165,
+			"criticisms": 166
+		},
+		"parents": {}
+	},
+	{
+		"id": 89,
+		"name": "technology",
+		"values": {},
+		"notes": {},
+		"children": {
+			"reteNet": 90,
+			"textProcessing": 91,
+			"simulation": 95,
+			"commitmentBuffer": 167,
+			"neuralNet": 94
+		},
+		"parents": {
+			"work": 88
+		},
+		"_originalParent": 88
+	},
+	{
+		"id": 90,
+		"name": "reteNet",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technology": 89
+		},
+		"_originalParent": 89
+	},
+	{
+		"id": 91,
+		"name": "textProcessing",
+		"values": {},
+		"notes": {},
+		"children": {
+			"tracery": 92,
+			"nlp": 93,
+			"neuralNet": 94
+		},
+		"parents": {
+			"technology": 89
+		},
+		"_originalParent": 89
+	},
+	{
+		"id": 92,
+		"name": "tracery",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"textProcessing": 91
+		},
+		"_originalParent": 91
+	},
+	{
+		"id": 93,
+		"name": "nlp",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"textProcessing": 91
+		},
+		"_originalParent": 91
+	},
+	{
+		"id": 94,
+		"name": "neuralNet",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"textProcessing": 91
+		},
+		"_originalParent": 91
+	},
+	{
+		"id": 95,
+		"name": "simulation",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technology": 89
+		},
+		"_originalParent": 89
+	},
+	{
+		"id": 96,
+		"name": "law",
+		"values": {},
+		"notes": {},
+		"children": {
+			"tort": 97,
+			"contract": 98,
+			"criminal": 99
+		},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 97,
+		"name": "tort",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"law": 96
+		},
+		"_originalParent": 96
+	},
+	{
+		"id": 98,
+		"name": "contract",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"law": 96
+		},
+		"_originalParent": 96
+	},
+	{
+		"id": 99,
+		"name": "criminal",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"law": 96
+		},
+		"_originalParent": 96
+	},
+	{
+		"id": 100,
+		"name": "iNeverNewThatAboutTheEnglish",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 101,
+		"name": "quests",
+		"values": {},
+		"notes": {},
+		"children": {
+			"peterson": 102,
+			"sullivan": 103,
+			"howard": 111,
+			"dormans": 112,
+			"dyer-witheford": 113,
+			"jong": 118,
+			"saar": 120,
+			"zachariasson": 123
+		},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 102,
+		"name": "peterson",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 103,
+		"name": "sullivan",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 104,
+		"name": "moise",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 105,
+		"name": "soar",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 106,
+		"name": "nlp",
+		"values": {},
+		"notes": {},
+		"children": {
+			"hawes": 107,
+			"pennebaker": 108,
+			"danescu...": 110,
+			"gordon": 146,
+			"colombetti": 150
+		},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 107,
+		"name": "hawes",
+		"values": {},
+		"notes": {
+			"work": "supreme court",
+			"work2": "power dynamics"
+		},
+		"children": {},
+		"parents": {
+			"nlp": 106
+		},
+		"_originalParent": 106
+	},
+	{
+		"id": 108,
+		"name": "pennebaker",
+		"values": {},
+		"notes": {
+			"work": "liwc"
+		},
+		"children": {},
+		"parents": {
+			"nlp": 106
+		},
+		"_originalParent": 106
+	},
+	{
+		"id": 109,
+		"name": "mateas",
+		"values": {},
+		"notes": {
+			"work": "Facade",
+			"work2": "ABL"
+		},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 110,
+		"name": "danescu...",
+		"values": {},
+		"notes": {
+			"work": "linguistic coordination"
+		},
+		"children": {},
+		"parents": {
+			"nlp": 106
+		},
+		"_originalParent": 106
+	},
+	{
+		"id": 111,
+		"name": "howard",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 112,
+		"name": "dormans",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 113,
+		"name": "dyer-witheford",
+		"values": {},
+		"notes": {
+			"work": "games of empire"
+		},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 114,
+		"name": "goguen",
+		"values": {},
+		"notes": {
+			"work": "algebraic semiotics",
+			"link": "http://cseweb.ucsd.edu/~goguen/projs/semio.html"
+		},
+		"children": {},
+		"parents": {
+			"semiotics": 152
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 115,
+		"name": "forsyth",
+		"values": {},
+		"notes": {
+			"work": "group dynamics"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 116,
+		"name": "rahwan",
+		"values": {},
+		"notes": {
+			"work": "argumentation"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 117,
+		"name": "taylor",
+		"values": {},
+		"notes": {
+			"work": "evo of social contract"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 118,
+		"name": "jong",
+		"values": {},
+		"notes": {
+			"work": "dragon age questing"
+		},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 119,
+		"name": "loyall",
+		"values": {},
+		"notes": {
+			"work": "believable agents"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 120,
+		"name": "saar",
+		"values": {},
+		"notes": {
+			"work": "quest system for mmos"
+		},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 121,
+		"name": "smith",
+		"values": {},
+		"notes": {
+			"work": "expressive design tools"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 122,
+		"name": "weber",
+		"values": {},
+		"notes": {
+			"work": "multiscale agents"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 123,
+		"name": "zachariasson",
+		"values": {},
+		"notes": {
+			"work": "worldbuilding in mmos"
+		},
+		"children": {},
+		"parents": {
+			"quests": 101
+		},
+		"_originalParent": 101
+	},
+	{
+		"id": 124,
+		"name": "christian",
+		"values": {},
+		"notes": {
+			"work": "strategic deception in agents"
+		},
+		"children": {},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 125,
+		"name": "penAndPaper",
+		"values": {},
+		"notes": {
+			"alt": "tabletop"
+		},
+		"children": {
+			"kingdom": 126,
+			"microscope": 127,
+			"dogEatDog": 128,
+			"d&d": 168,
+			"cosmicEncounter": 169,
+			"cthuluGloom": 170
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 126,
+		"name": "kingdom",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 127,
+		"name": "microscope",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 128,
+		"name": "dogEatDog",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 129,
+		"name": "politicalManifestos",
+		"values": {},
+		"notes": {},
+		"children": {
+			"labour": 130,
+			"conservative": 131,
+			"liberal": 132,
+			"republican": 133,
+			"democrat": 134
+		},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 130,
+		"name": "labour",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"politicalManifestos": 129
+		},
+		"_originalParent": 129
+	},
+	{
+		"id": 131,
+		"name": "conservative",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"politicalManifestos": 129
+		},
+		"_originalParent": 129
+	},
+	{
+		"id": 132,
+		"name": "liberal",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"politicalManifestos": 129
+		},
+		"_originalParent": 129
+	},
+	{
+		"id": 133,
+		"name": "republican",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"politicalManifestos": 129
+		},
+		"_originalParent": 129
+	},
+	{
+		"id": 134,
+		"name": "democrat",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"politicalManifestos": 129
+		},
+		"_originalParent": 129
+	},
+	{
+		"id": 135,
+		"name": "doctorWho",
+		"values": {},
+		"notes": {
+			"work": "midnight"
+		},
+		"children": {},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 136,
+		"name": "activityTheory",
+		"values": {},
+		"notes": {},
+		"children": {
+			"nardi": 137,
+			"engestrom": 138
+		},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 137,
+		"name": "nardi",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"activityTheory": 136
+		},
+		"_originalParent": 136
+	},
+	{
+		"id": 138,
+		"name": "engestrom",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"activityTheory": 136
+		},
+		"_originalParent": 136
+	},
+	{
+		"id": 139,
+		"name": "agentBasedComplexSystems",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 140,
+		"name": "mcGrath",
+		"values": {},
+		"notes": {
+			"work": "circumplex"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 141,
+		"name": "billBryson",
+		"values": {},
+		"notes": {
+			"work": "atHome"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 142,
+		"name": "socialMovements",
+		"values": {},
+		"notes": {},
+		"children": {
+			"feminism": 143,
+			"blackLivesMatter": 144,
+			"teaParty": 145,
+			"theNewJimCrow": 159
+		},
+		"parents": {
+			"sources": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 143,
+		"name": "feminism",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialMovements": 142
+		},
+		"_originalParent": 142
+	},
+	{
+		"id": 144,
+		"name": "blackLivesMatter",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialMovements": 142
+		},
+		"_originalParent": 142
+	},
+	{
+		"id": 145,
+		"name": "teaParty",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialMovements": 142
+		},
+		"_originalParent": 142
+	},
+	{
+		"id": 146,
+		"name": "gordon",
+		"values": {},
+		"notes": {
+			"work": "pleadingsGame"
+		},
+		"children": {},
+		"parents": {
+			"nlp": 106
+		},
+		"_originalParent": 106
+	},
+	{
+		"id": 147,
+		"name": "authoring",
+		"values": {},
+		"notes": {},
+		"children": {
+			"mateas": 109
+		},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 148,
+		"name": "normative",
+		"values": {},
+		"notes": {},
+		"children": {
+			"boella": 149,
+			"dignum": 154,
+			"balke": 21
+		},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 149,
+		"name": "boella",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"normative": 148
+		},
+		"_originalParent": 148
+	},
+	{
+		"id": 150,
+		"name": "colombetti",
+		"values": {},
+		"notes": {
+			"work": "commitment based",
+			"work2": "speech acts"
+		},
+		"children": {},
+		"parents": {
+			"nlp": 106,
+			"speechActs": 151
+		},
+		"_originalParent": 106
+	},
+	{
+		"id": 151,
+		"name": "speechActs",
+		"values": {},
+		"notes": {},
+		"children": {
+			"colombetti": 150
+		},
+		"parents": {}
+	},
+	{
+		"id": 152,
+		"name": "semiotics",
+		"values": {},
+		"notes": {},
+		"children": {
+			"goguen": 114,
+			"galantucci": 153
+		},
+		"parents": {}
+	},
+	{
+		"id": 153,
+		"name": "galantucci",
+		"values": {},
+		"notes": {
+			"work": "experimental semiotics"
+		},
+		"children": {},
+		"parents": {
+			"semiotics": 152
+		},
+		"_originalParent": 152
+	},
+	{
+		"id": 154,
+		"name": "dignum",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"normative": 148
+		},
+		"_originalParent": 148
+	},
+	{
+		"id": 155,
+		"name": "generativeMethods",
+		"values": {},
+		"notes": {},
+		"children": {
+			"compton": 156,
+			"jadhav": 157
+		},
+		"parents": {
+			"computational": 83
+		},
+		"_originalParent": 83
+	},
+	{
+		"id": 156,
+		"name": "compton",
+		"values": {},
+		"notes": {},
+		"children": {
+			"tracery": 92
+		},
+		"parents": {
+			"generativeMethods": 155
+		},
+		"_originalParent": 155
+	},
+	{
+		"id": 157,
+		"name": "jadhav",
+		"values": {},
+		"notes": {
+			"work": "evo indian dancing"
+		},
+		"children": {},
+		"parents": {
+			"generativeMethods": 155
+		},
+		"_originalParent": 155
+	},
+	{
+		"id": 158,
+		"name": "russell",
+		"values": {},
+		"notes": {
+			"work": "power"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 159,
+		"name": "theNewJimCrow",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialMovements": 142
+		},
+		"_originalParent": 142
+	},
+	{
+		"id": 160,
+		"name": "microtrends",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 161,
+		"name": "bourdieu",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 162,
+		"name": "elias",
+		"values": {},
+		"notes": {
+			"work": "the court society"
+		},
+		"children": {},
+		"parents": {
+			"non-fiction": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 163,
+		"name": "sowell",
+		"values": {},
+		"notes": {
+			"work": "preferential policies"
+		},
+		"children": {},
+		"parents": {
+			"theoretical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 164,
+		"name": "argument",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"work": 88
+		},
+		"_originalParent": 88
+	},
+	{
+		"id": 165,
+		"name": "possibilities",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"work": 88
+		},
+		"_originalParent": 88
+	},
+	{
+		"id": 166,
+		"name": "criticisms",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"work": 88
+		},
+		"_originalParent": 88
+	},
+	{
+		"id": 167,
+		"name": "commitmentBuffer",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technology": 89
+		},
+		"_originalParent": 89
+	},
+	{
+		"id": 168,
+		"name": "d&d",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 169,
+		"name": "cosmicEncounter",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 170,
+		"name": "cthuluGloom",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"penAndPaper": 125
+		},
+		"_originalParent": 125
+	},
+	{
+		"id": 171,
+		"name": "douglasAdams",
+		"values": {},
+		"notes": {},
+		"children": {
+			"dirkGently": 172,
+			"hitchHikersGuide": 173
+		},
+		"parents": {
+			"fiction": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 172,
+		"name": "dirkGently",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"douglasAdams": 171
+		},
+		"_originalParent": 171
+	},
+	{
+		"id": 173,
+		"name": "hitchHikersGuide",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"douglasAdams": 171
+		},
+		"_originalParent": 171
+	}
+]

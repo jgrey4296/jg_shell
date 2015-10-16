@@ -18,6 +18,7 @@ var extensions = {
 
 //Function for GET messages
 var dealWithGet = function(request,response){
+    //Default to shell.html if nothing else is requested
     var fileName = path.basename(request.url) || 'shell.html';
     var dirName = path.dirname(request.url);
     var ext = path.extname(fileName);

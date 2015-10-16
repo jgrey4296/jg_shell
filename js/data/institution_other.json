@@ -1,0 +1,878 @@
+[
+	{
+		"id": 0,
+		"name": "intstitution_other",
+		"values": {},
+		"notes": {},
+		"children": {
+			"institution": 1,
+			"commitmentBuffer": 28,
+			"Agent": 32
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "institution",
+		"values": {},
+		"notes": {},
+		"children": {
+			"roles": 2,
+			"strategicActionField": 11,
+			"interface": 12,
+			"bureacracies": 13,
+			"symbols": 30,
+			"objects": 31,
+			"changes": 38
+		},
+		"parents": {
+			"isomorphisms": 37,
+			"intstitution_other": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "roles",
+		"values": {},
+		"notes": {
+			"All": "are not mutually-exclusive"
+		},
+		"children": {
+			"challengers": 3,
+			"incumbents": 4,
+			"enforcers": 7,
+			"normativelyGoverned": 8,
+			"normativelyUngoverned": 9,
+			"judicial": 10,
+			"legislative": 35
+		},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "challengers",
+		"values": {},
+		"notes": {
+			"desc": "people who can ignore norms"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 4,
+		"name": "incumbents",
+		"values": {},
+		"notes": {
+			"desc": "those benefiting from rules"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 5,
+		"name": "theConstrained",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 2
+	},
+	{
+		"id": 6,
+		"name": "theUnconstrained",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 2
+	},
+	{
+		"id": 7,
+		"name": "enforcers",
+		"values": {
+			"who": "everyone?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 8,
+		"name": "normativelyGoverned",
+		"values": {},
+		"notes": {
+			"desc": "who has to follow the rules"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 9,
+		"name": "normativelyUngoverned",
+		"values": {},
+		"notes": {
+			"desc": "who doesnt have to follow the rules"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 10,
+		"name": "judicial",
+		"values": {},
+		"notes": {
+			"those": "who decide disagreements"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 11,
+		"name": "strategicActionField",
+		"values": {},
+		"notes": {
+			"actions": "tagged",
+			"tag1": "roles",
+			"tag2": "physical",
+			"tag3": "communicative",
+			"tag4": "symbolics",
+			"tag5": "objects",
+			"tag6": "institutionally"
+		},
+		"children": {
+			"physicalActions": 23,
+			"communicativeActions": 24,
+			"symbolicActions": 25,
+			"statisticalNorms": 36
+		},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 12,
+		"name": "interface",
+		"values": {},
+		"notes": {},
+		"children": {
+			"effectingOtherFields": 21,
+			"affectedByOtherFields": 22
+		},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 13,
+		"name": "bureacracies",
+		"values": {},
+		"notes": {},
+		"children": {
+			"informational": 14,
+			"administrative": 15,
+			"regulative": 16,
+			"certification": 18,
+			"enforcement": 20,
+			"symbolic": 29
+		},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 14,
+		"name": "informational",
+		"values": {},
+		"notes": {
+			"types:": "Speech Acts",
+			"values": "Descriptive capabilties",
+			"purpose": "base language of the institution",
+			"purpose2:": "to be embellished in non-perfect uses"
+		},
+		"children": {},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 15,
+		"name": "administrative",
+		"values": {},
+		"notes": {
+			"types": "scheduledActions",
+			"values": "Actual/SymbolicActions",
+			"purpose": "to plan events going forward",
+			"administrative": "schdling of other IGU parts"
+		},
+		"children": {
+			"type": 19,
+			"commitmentBuffer": 28
+		},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 16,
+		"name": "regulative",
+		"values": {},
+		"notes": {
+			"types": "normStatements",
+			"if(breach)": "correctingAction",
+			"should(action)": "?",
+			"toAchieve(goal)": "action",
+			"should(goal)": "?",
+			"purpose": "Base Playbook"
+		},
+		"children": {},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 17,
+		"name": "enforment",
+		"values": {},
+		"notes": {
+			"types": "breach of norm handling",
+			"values": "punishment, internalStateChange",
+			"purpose": "describe corrective responses"
+		},
+		"children": {},
+		"parents": {},
+		"_originalParent": 13
+	},
+	{
+		"id": 18,
+		"name": "certification",
+		"values": {},
+		"notes": {
+			"types": "rituals of role traversal",
+			"values": "offical action sequences",
+			"purpose": "accrediting or exclusion"
+		},
+		"children": {
+			"roles": 2
+		},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 19,
+		"name": "type",
+		"values": {
+			"?": null
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"administrative": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 20,
+		"name": "enforcement",
+		"values": {},
+		"notes": {
+			"types": "correctiveActions",
+			"values": "punishments, gossip",
+			"stateChange": "internal",
+			"purpose": "at its core, violence"
+		},
+		"children": {},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 21,
+		"name": "effectingOtherFields",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"interface": 12
+		},
+		"_originalParent": 12
+	},
+	{
+		"id": 22,
+		"name": "affectedByOtherFields",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"interface": 12
+		},
+		"_originalParent": 12
+	},
+	{
+		"id": 23,
+		"name": "physicalActions",
+		"values": {},
+		"notes": {},
+		"children": {
+			"move": 43,
+			"pickup": 44,
+			"putDown": 45,
+			"hit": 46,
+			"say": 47,
+			"jump": 48,
+			"use": 49,
+			"throw": 50,
+			"catch": 51
+		},
+		"parents": {
+			"strategicActionField": 11
+		},
+		"_originalParent": 11
+	},
+	{
+		"id": 24,
+		"name": "communicativeActions",
+		"values": {},
+		"notes": {},
+		"children": {
+			"representative": 53,
+			"directive": 54,
+			"commissive": 55,
+			"declarative": 57,
+			"expressive": 56
+		},
+		"parents": {
+			"strategicActionField": 11,
+			"say": 47
+		},
+		"_originalParent": 11
+	},
+	{
+		"id": 25,
+		"name": "symbolicActions",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"strategicActionField": 11,
+			"representative": 53,
+			"expresive": 56,
+			"declarative": 57
+		},
+		"_originalParent": 11
+	},
+	{
+		"id": 26,
+		"name": "physicalObjects",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 11
+	},
+	{
+		"id": 27,
+		"name": "symbolicFeaturesOfObjects",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 11
+	},
+	{
+		"id": 28,
+		"name": "commitmentBuffer",
+		"values": {},
+		"notes": {
+			"desc": "future action buffer"
+		},
+		"children": {},
+		"parents": {
+			"intstitution_other": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 29,
+		"name": "symbolic",
+		"values": {},
+		"notes": {
+			"purpose": "the rituals of the inst"
+		},
+		"children": {},
+		"parents": {
+			"bureacracies": 13
+		},
+		"_originalParent": 13
+	},
+	{
+		"id": 30,
+		"name": "symbols",
+		"values": {},
+		"notes": {
+			"purpose": "all symbolic concepts"
+		},
+		"children": {},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 31,
+		"name": "objects",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 32,
+		"name": "Agent",
+		"values": {},
+		"notes": {},
+		"children": {
+			"institution": 1,
+			"personalBehaviourNorms": 33,
+			"personalPreferences": 34,
+			"symbols": 30,
+			"objects": 31
+		},
+		"parents": {
+			"intstitution_other": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 33,
+		"name": "personalBehaviourNorms",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"Agent": 32
+		},
+		"_originalParent": 32
+	},
+	{
+		"id": 34,
+		"name": "personalPreferences",
+		"values": {},
+		"notes": {
+			"symbolic": "socially defined",
+			"physical": "standardised",
+			"eg": "symbolic prefer to be rich",
+			"eg2": "physical prefer to be alive"
+		},
+		"children": {},
+		"parents": {
+			"Agent": 32
+		},
+		"_originalParent": 32
+	},
+	{
+		"id": 35,
+		"name": "legislative",
+		"values": {},
+		"notes": {
+			"desc": "those who define the rules"
+		},
+		"children": {},
+		"parents": {
+			"roles": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 36,
+		"name": "statisticalNorms",
+		"values": {},
+		"notes": {
+			"eg": "bayesian rules"
+		},
+		"children": {},
+		"parents": {
+			"strategicActionField": 11
+		},
+		"_originalParent": 11
+	},
+	{
+		"id": 37,
+		"name": "isomorphisms",
+		"values": {},
+		"notes": {},
+		"children": {
+			"institution": 1
+		},
+		"parents": {}
+	},
+	{
+		"id": 38,
+		"name": "changes",
+		"values": {},
+		"notes": {},
+		"children": {
+			"shocks": 39,
+			"mobilization": 40,
+			"contention": 41,
+			"settlement": 42
+		},
+		"parents": {
+			"institution": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 39,
+		"name": "shocks",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"changes": 38
+		},
+		"_originalParent": 38
+	},
+	{
+		"id": 40,
+		"name": "mobilization",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"changes": 38
+		},
+		"_originalParent": 38
+	},
+	{
+		"id": 41,
+		"name": "contention",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"changes": 38
+		},
+		"_originalParent": 38
+	},
+	{
+		"id": 42,
+		"name": "settlement",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"changes": 38
+		},
+		"_originalParent": 38
+	},
+	{
+		"id": 43,
+		"name": "move",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 44,
+		"name": "pickup",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 45,
+		"name": "putDown",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 46,
+		"name": "hit",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 47,
+		"name": "say",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 48,
+		"name": "jump",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 49,
+		"name": "use",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 50,
+		"name": "throw",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 51,
+		"name": "catch",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"physicalActions": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 52,
+		"name": "declarative",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 24
+	},
+	{
+		"id": 53,
+		"name": "representative",
+		"values": {},
+		"notes": {
+			"eg": "The world is round"
+		},
+		"children": {
+			"physicalActions": 23,
+			"permissionDescription": 67
+		},
+		"parents": {
+			"communicativeActions": 24
+		},
+		"_originalParent": 24
+	},
+	{
+		"id": 54,
+		"name": "directive",
+		"values": {},
+		"notes": {
+			"eg": "Please sit up"
+		},
+		"children": {
+			"physicalActions": 23
+		},
+		"parents": {
+			"communicativeActions": 24
+		},
+		"_originalParent": 24
+	},
+	{
+		"id": 55,
+		"name": "commissive",
+		"values": {},
+		"notes": {
+			"eg": "I will do that"
+		},
+		"children": {
+			"physicalActions": 23
+		},
+		"parents": {
+			"communicativeActions": 24
+		},
+		"_originalParent": 24
+	},
+	{
+		"id": 56,
+		"name": "expressive",
+		"values": {},
+		"notes": {
+			"eg": "Ow!"
+		},
+		"children": {},
+		"parents": {
+			"communicativeActions": 24
+		},
+		"_originalParent": 24
+	},
+	{
+		"id": 57,
+		"name": "declarative",
+		"values": {},
+		"notes": {
+			"eg": "This paper counts as money"
+		},
+		"children": {},
+		"parents": {
+			"communicativeActions": 24
+		},
+		"_originalParent": 24
+	},
+	{
+		"id": 58,
+		"name": "moveRep",
+		"values": {},
+		"notes": {
+			"eg": "\"bob moved quickly\""
+		},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 59,
+		"name": "pickupRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 60,
+		"name": "putDownRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 61,
+		"name": "hitRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 62,
+		"name": "sayRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 63,
+		"name": "jumpRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 64,
+		"name": "useRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 65,
+		"name": "throwRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 66,
+		"name": "catchRep",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 53
+	},
+	{
+		"id": 67,
+		"name": "permissionDescription",
+		"values": {},
+		"notes": {
+			"eg": "\"Bob is allowed to X\""
+		},
+		"children": {},
+		"parents": {
+			"representative": 53
+		},
+		"_originalParent": 53
+	}
+]

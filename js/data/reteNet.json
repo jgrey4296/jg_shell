@@ -1,0 +1,185 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"notes": {},
+		"children": {
+			"reteNet": 1,
+			"ruleStructure": 5
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "reteNet",
+		"values": {},
+		"notes": {},
+		"children": {
+			"alphaNetwork": 2,
+			"betaNetwork": 3,
+			"totalNetwork": 4,
+			"tokens": 12,
+			"wmes": 13
+		},
+		"parents": {
+			"__root": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "alphaNetwork",
+		"values": {},
+		"notes": {},
+		"children": {
+			"alphaNode": 8,
+			"alphaMemory": 9
+		},
+		"parents": {
+			"reteNet": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "betaNetwork",
+		"values": {},
+		"notes": {},
+		"children": {
+			"betaNode": 10,
+			"betaMemory": 11
+		},
+		"parents": {
+			"reteNet": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 4,
+		"name": "totalNetwork",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"reteNet": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 5,
+		"name": "ruleStructure",
+		"values": {},
+		"notes": {},
+		"children": {
+			"conditionStructure": 6,
+			"actionStructure": 7
+		},
+		"parents": {
+			"__root": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 6,
+		"name": "conditionStructure",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ruleStructure": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 7,
+		"name": "actionStructure",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ruleStructure": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 8,
+		"name": "alphaNode",
+		"values": {},
+		"notes": {
+			"1": "constantTests"
+		},
+		"children": {},
+		"parents": {
+			"alphaNetwork": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 9,
+		"name": "alphaMemory",
+		"values": {},
+		"notes": {
+			"1": "stores wmes"
+		},
+		"children": {},
+		"parents": {
+			"alphaNetwork": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 10,
+		"name": "betaNode",
+		"values": {},
+		"notes": {
+			"1": "performs join tests on wmes and tokens"
+		},
+		"children": {},
+		"parents": {
+			"betaNetwork": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 11,
+		"name": "betaMemory",
+		"values": {},
+		"notes": {
+			"1": "stores tokens of wmes"
+		},
+		"children": {},
+		"parents": {
+			"betaNetwork": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 12,
+		"name": "tokens",
+		"values": {
+			"wme": "?",
+			"bindings": "?",
+			"parent": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"reteNet": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 13,
+		"name": "wmes",
+		"values": {},
+		"notes": {
+			"1": "can have any values"
+		},
+		"children": {},
+		"parents": {
+			"reteNet": 1
+		},
+		"_originalParent": 1
+	}
+]

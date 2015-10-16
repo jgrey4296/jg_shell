@@ -457,6 +457,7 @@ define([underscoreName],function(_){
         var startingPoint = this.nodes;
         if(priorSearch) startingPoint = priorSearch;
 
+        //For all nodes:
         console.log("startingPoint",startingPoint);
         //Look for a field, a key, and a value
         var field = list.shift();
@@ -465,61 +466,54 @@ define([underscoreName],function(_){
         console.log("Key",key);
         var valueStringPattern = list.shift();
         console.log("RegExp2: ",valueStringPattern);
+        var pattern = new RegExp(valueStringPattern);
 
-        //filter by field
-        returnList = _.filter(startingPoint,function(d){
-            if(d[field]) return true;
-            return false;
-        });
-        console.log("FieldList:",returnList);
-        if(key === undefined) return returnList;
-
-        console.log("Key is:",key);
-        if(field === "name" || field === "id"){
-            console.log("Searching for a name or id");
-            //for the singular valued fields
-            //use key as a regex
-            var keyPattern = new RegExp(key);
-            returnList = _.filter(returnList,function(d){
-                if(keyPattern.test(d[field])) return true;
-                return false;
-            });
-            //Return what was found:
-            return returnList;            
-        }else{
-            //filter opposite if looking for empty values
-            if(key === "-"){
-                console.log("Filtering by length");
-                returnList = _.filter(returnList,function(d){
-                    if(_.keys(d[field]).length === 0) return true;
-                    return false;
-                });
-                return returnList;
-            }
-            if(valueStringPattern === "-"){
-                returnList = _.filter(returnList,function(d){
-                    if(d[field][key]) return false;
-                    return true;
-                });
-                return returnList;
-            }
-
-            //for the dictionary fields
-            //filter by key and value
-            returnList = _.filter(returnList,function(d){
-                if(d[field][key]) return true;
-                return false;
-            });
-            console.log("Key List:",returnList);
-            if(valueStringPattern === undefined) return returnList;
-            var pattern = new RegExp(valueStringPattern);
-            //filter by value regexp
-            returnList = _.filter(returnList,function(d){
-                return pattern.test(d[field][key]);
-            });
-            console.log("Value List:",returnList);
-            
-            return returnList;
+        var keyNum = Number(valueStringPattern);
+        if(field && key && key === "id" && Number.isInteger(keyNum)){
+            var objs = _.map(startingPoint,function(d){
+                if(d && d[field]){
+                    if(_.some(_.values(d[field]),function(e){
+                        return e === keyNum;
+                    })){
+                        return d;
+                    }
+                };
+            }).filter(function(d){if(d)return true;});
+            return objs;
+        }else if(field && key && key === "name" && valueStringPattern){
+            var objs = _.map(startingPoint,function(d){
+                if(_.some(_.keys(d[field]),function(e){
+                    return pattern.test(e);
+                })){
+                    return d;
+                }
+            });            
+            return objs.filter(function(d){if(d)return true;});
+        }else if(field && key && valueStringPattern){
+            //ie: search values aValue (~=) blah
+            //search for node[field][key] ~= pattern
+            var objs = _.map(startingPoint,function(d){
+                if(d && d[field] && d[field][key]){
+                    if(pattern.test(d[field][key])){
+                        return d;
+                    }
+                }
+            }).filter(function(d){if(d) return true;});
+            return objs;
+        }else if(field && key){
+            //ie: search parents (~=) bure
+            //search for node[field] ~= pattern
+            pattern = new RegExp(key);
+            var objs = _.map(startingPoint,function(d){
+                if(d && d[field]){
+                    if(pattern.test(d[field])){
+                        return d;
+                    }
+                }
+            }).filter(function(d){if(d)return true;});
+            return objs;
+        }else if(field){
+            return [];
         }
     };
 

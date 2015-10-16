@@ -145,6 +145,29 @@ require(['libs/d3.min','src/shell','underscore'],function(d3,Shell,_){
             lastSetOfSearchResults = found;
             displayResults(found);
         },
+        //display an overview of values and notes of a node
+        "review": function(sh,values){
+            var id = Number(values.shift());
+            console.log("Reviewing Node:",id,sh.nodes[id]);
+            if(sh.nodes[id]){
+                var values = _.pairs(sh.nodes[id].values);
+                var notes = _.pairs(sh.nodes[id].notes);
+
+                //convert to id and name form
+                var objs = _.map(values,function(d){
+                    return {id:d[0],name:d[1]};
+                });
+                var noteObjs = _.map(notes,function(d){
+                    return {id:d[0],name:d[1]};
+                });
+
+                var allObjs = Array.concat(objs,noteObjs);
+                
+                displayResults(allObjs);                
+            }
+        },
+        //take a set of previously searched for nodes,
+        //and search within them
         "refine": function(sh,values){
             console.log("Refining Search");
             var refinedFound = sh.search(values,lastSetOfSearchResults);

@@ -1,0 +1,544 @@
+[
+	{
+		"id": 0,
+		"name": "__root",
+		"values": {},
+		"notes": {},
+		"children": {
+			"books": 1,
+			"papers": 44
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "books",
+		"values": {},
+		"notes": {},
+		"children": {
+			"socialTheory": 2,
+			"technical": 3,
+			"fiction": 4
+		},
+		"parents": {
+			"__root": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "socialTheory",
+		"values": {},
+		"notes": {},
+		"children": {
+			"brandom": 5,
+			"searle": 6,
+			"giddens": 7,
+			"ryan": 15,
+			"schelling": 16,
+			"schutz": 17,
+			"bourdieu": 18,
+			"greene": 19,
+			"epsteinAndAxtell": 20,
+			"bergerAndLuckmann": 21,
+			"vygotsky": 22,
+			"penn": 23,
+			"graeber": 24,
+			"gluckman": 25,
+			"perez": 26,
+			"lakoffAndJohson": 27,
+			"schechner": 28,
+			"ensslin": 29,
+			"austin": 30,
+			"forsyth": 31,
+			"powellandDimaggio": 32,
+			"fligstein": 33,
+			"harrell": 34,
+			"elias": 35,
+			"levi-martin": 36
+		},
+		"parents": {
+			"books": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "technical",
+		"values": {},
+		"notes": {},
+		"children": {
+			"NLP": 8,
+			"gameTheory": 14,
+			"hofstadter": 42,
+			"popper": 43
+		},
+		"parents": {
+			"books": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 4,
+		"name": "fiction",
+		"values": {},
+		"notes": {},
+		"children": {
+			"pratchett": 37,
+			"brunner": 38,
+			"bester": 39,
+			"horusHeresy": 40,
+			"mieville": 41
+		},
+		"parents": {
+			"books": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 5,
+		"name": "brandom",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 6,
+		"name": "searle",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 7,
+		"name": "giddens",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 8,
+		"name": "NLP",
+		"values": {},
+		"notes": {},
+		"children": {
+			"schiffrin": 10,
+			"easleyAndKleinberg": 11,
+			"bishop": 12
+		},
+		"parents": {
+			"technical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 9,
+		"name": "schriffrin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 8
+	},
+	{
+		"id": 10,
+		"name": "schiffrin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"NLP": 8
+		},
+		"_originalParent": 8
+	},
+	{
+		"id": 11,
+		"name": "easleyAndKleinberg",
+		"values": {},
+		"notes": {
+			"1": "networks crowds and markeys"
+		},
+		"children": {},
+		"parents": {
+			"NLP": 8
+		},
+		"_originalParent": 8
+	},
+	{
+		"id": 12,
+		"name": "bishop",
+		"values": {},
+		"notes": {
+			"1": "pattern recog and machine learning"
+		},
+		"children": {},
+		"parents": {
+			"NLP": 8
+		},
+		"_originalParent": 8
+	},
+	{
+		"id": 13,
+		"name": "game",
+		"values": {
+			"theory": null
+		},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 3
+	},
+	{
+		"id": 14,
+		"name": "gameTheory",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 15,
+		"name": "ryan",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 16,
+		"name": "schelling",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 17,
+		"name": "schutz",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 18,
+		"name": "bourdieu",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 19,
+		"name": "greene",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 20,
+		"name": "epsteinAndAxtell",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 21,
+		"name": "bergerAndLuckmann",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 22,
+		"name": "vygotsky",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 23,
+		"name": "penn",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 24,
+		"name": "graeber",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 25,
+		"name": "gluckman",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 26,
+		"name": "perez",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 27,
+		"name": "lakoffAndJohson",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 28,
+		"name": "schechner",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 29,
+		"name": "ensslin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 30,
+		"name": "austin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 31,
+		"name": "forsyth",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 32,
+		"name": "powellandDimaggio",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 33,
+		"name": "fligstein",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 34,
+		"name": "harrell",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 35,
+		"name": "elias",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 36,
+		"name": "levi-martin",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"socialTheory": 2
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 37,
+		"name": "pratchett",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 38,
+		"name": "brunner",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 39,
+		"name": "bester",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 40,
+		"name": "horusHeresy",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 41,
+		"name": "mieville",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"fiction": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 42,
+		"name": "hofstadter",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 43,
+		"name": "popper",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"technical": 3
+		},
+		"_originalParent": 3
+	},
+	{
+		"id": 44,
+		"name": "papers",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"__root": 0
+		},
+		"_originalParent": 0
+	}
+]

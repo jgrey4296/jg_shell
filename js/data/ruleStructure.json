@@ -1,0 +1,176 @@
+[
+	{
+		"id": 0,
+		"name": "ruleStructure",
+		"values": {},
+		"notes": {},
+		"children": {
+			"rule": 1
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "rule",
+		"values": {
+			"conditions": "array.of(2)",
+			"actions": "array.of(3)"
+		},
+		"notes": {},
+		"children": {
+			"Condition": 2,
+			"Action": 3
+		},
+		"parents": {
+			"ruleStructure": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "Condition",
+		"values": {
+			"constantTests": "array.of(14)",
+			"bindings": "array.of(5)"
+		},
+		"notes": {},
+		"children": {
+			"ComparisonTest": 4,
+			"binding": 5
+		},
+		"parents": {
+			"rule": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "Action",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"rule": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 4,
+		"name": "ComparisonTest",
+		"values": {
+			"testField": "wmeProp",
+			"testValue": "?",
+			"operator": "enum(6)",
+			"comparison()": "7"
+		},
+		"notes": {},
+		"children": {
+			"operatorEnum": 6,
+			"comparison()": 7
+		},
+		"parents": {
+			"Condition": 2,
+			"alphaNode": 8
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 5,
+		"name": "binding",
+		"values": {
+			"internalValue": "wmeProperty"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"Condition": 2,
+			"joinNode": 9
+		},
+		"_originalParent": 2
+	},
+	{
+		"id": 6,
+		"name": "operatorEnum",
+		"values": {
+			"EQ": "1",
+			"GT": "2",
+			"LT": "3",
+			"LE": "4",
+			"GE": "5",
+			"NE": "6"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ComparisonTest": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 7,
+		"name": "comparison()",
+		"values": {
+			"param": "wme",
+			"return": "bool"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ComparisonTest": 4
+		},
+		"_originalParent": 4
+	},
+	{
+		"id": 8,
+		"name": "alphaNode",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ComparisonTest": 4
+		},
+		"parents": {}
+	},
+	{
+		"id": 9,
+		"name": "joinNode",
+		"values": {},
+		"notes": {},
+		"children": {
+			"binding": 5,
+			"betaMemory": 11
+		},
+		"parents": {
+			"8": 10,
+			"betaMemory": 11
+		}
+	},
+	{
+		"id": 10,
+		"name": "8",
+		"values": {},
+		"notes": {},
+		"children": {
+			"joinNode": 9
+		},
+		"parents": {}
+	},
+	{
+		"id": 11,
+		"name": "betaMemory",
+		"values": {},
+		"notes": {},
+		"children": {
+			"joinNode": 9
+		},
+		"parents": {}
+	},
+	{
+		"id": 12,
+		"name": "11",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 9
+	}
+]
