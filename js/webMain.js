@@ -68,41 +68,55 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     //         request.open("POST","saveData="+values[0],true);
     //         request.send(sh.exportToJson());
     //     },
-    //     //Create new elements
-    //     "new" : function(sh,values){
-    //         if(values[0] === 'rule'){
-    //             sh.interface.addRule(values[1]);
-    //         }
-    //         if(values[0] === 'condition'){
-    //             sh.interface.addCondition(values[1]);
-    //         }
-    //         if(values[0] === 'binding'){
-    //             sh.interface.addBinding(values.slice(1));
-    //         }
-    //         if(values[0] === 'test'){
-    //             sh.interface.addTestToCondition(values[1],values.slice(2));
-    //         }
-    //         if(values[0] === 'action'){
-    //             sh.interface.addAction(" ".join(values.slice(1)));
-    //         }
-    //     },
+        //Create new elements
+        "new" : function(sh,values){
+            console.log("New: ",values);
+            if(values[0] === 'rule'){
+                sh.addRule(values[1]);
+            }else if(values[0] === 'condition'){
+                sh.addCondition();
+            }else if(values[0] === 'binding'){
+                sh.addBinding(values.slice(1));
+            }else if(values[0] === 'test'){
+                sh.addTestToCondition(values[1],values.slice(2));
+            }else if(values[0] === 'action'){
+                sh.addAction(values.slice(1).join(" "));
+            }else{
+                console.log("Unrecognised new command");
+            }
+        },
     //     //Change the current rule
     //     //move either... to a condition? to a child or parent rule?
     //     "cd" : function(sh,values){
 
     //     },
-    //     //TODO:Delete a rule/action/condition/test
-    //     "rm" : function(sh,values){
+        //TODO:Delete a rule/action/condition/test
+        "rm" : function(sh,values){
+            if(values[0] === "rule"){
 
-    //     },
+            }else if(values[0] === "action"){
+
+            }else if(values[0] === "condition"){
+
+            }else if(values[0] === "test"){
+
+            }else{
+                console.log("Unrecognised removal target");
+            }
+        },
     //     //TODO:Set,change, or delete cwr value
     //     "value": function(sh,values){
 
     //     },
-    //     //TODO:Rename the current rule
-    //     "rename": function(sh,values){
-
-    //     },
+        //TODO:Rename the current rule
+        "rename": function(sh,values){
+            if(values.length !== 1) throw new Error("Renaming should take a single value");
+            console.log("Renaming to:",values);
+            sh.cwr.name = values[0];
+            d3.select("#ruleNameText").text(function(d){
+                return "Name: " + d.name;
+            });
+        },
     //     //List all rules
     //     "allRules": function(sh,values){
 
@@ -163,17 +177,16 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     var supplementalHeight = 300;
     var supplementalWidth = 200;
     var usableWidth = window.innerWidth - 10;
-    var noOfColumns = 5;
-    var calcWidth = function(availableWidth,noOfColumns){
-        return (availableWidth / (noOfColumns + 2))
-    };
-    var columnWidth = calcWidth(usableWidth,noOfColumns);
     var columnNames = ["ParentRules","Conditions","Rule","Actions","DependentRules"];
     var columnLookup = {};
     columnNames.map(function(d,i){
         columnLookup[d] = i;
     });
-    
+    var noOfColumns = columnNames.length;
+    var calcWidth = function(availableWidth,noOfColumns){
+        return (availableWidth / (noOfColumns + 2))
+    };
+    var columnWidth = calcWidth(usableWidth,noOfColumns);    
     
     /*
       Main selection here sets up parsing from input
@@ -249,6 +262,13 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     var columns = columnNames.map(function(d,i){
         return initColumn(d,i);
     });
+
+    var getColumnObject = function(columnName){
+        if(!columnLookup[columnName]){
+            throw new Error("Unrecognised Column Name:",columnName);
+        }
+        return columns[columnLookup[columnName]];
+    };
     
     
     /**Renders the current rule 
@@ -257,13 +277,13 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     */
     var drawRule = function(rule){
         if(rule === undefined){
-            rule = [{id:0,name:"root"}];
+            return;
         }else{
             rule = [rule];
         }
         console.log("Drawing:",rule);
         
-        var ruleContainer = svg.select("#rule");
+        var ruleContainer = svg.select("#Rule");
         //bind data
         var theNode = ruleContainer.selectAll("g").data(rule,function(d){
             return d.id;
@@ -288,32 +308,43 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
             .attr("rx",10)
             .attr("ry",10);
 
+        //Draw the id number
         container.append("text")
         //translate over by half the rects width, not the column width
             .attr("transform","translate(" + ((columnWidth * 0.4)) + ",15)")
             .style("text-anchor","middle")
             .text(function(d){
-                console.log(d);
                 return "ID:" + d.id;
             });
-        
+
+        //draw the rule name
         container.append("text")
             .attr("transform","translate(" + ((columnWidth * 0.4)) + ",30)")
             .style("text-anchor","middle")
             .text(function(d){
                 return "Name: " + d.name;
-            });
+            })
+            .attr("id","ruleNameText");
 
         //separate function to be able to update
         //value text separately
         drawValues();
+        drawMultipleNodes("Conditions",theShell.cwr.getConditionNodes());
+        drawMultipleNodes("Actions",theShell.cwr.getActionNodes());
+        //TODO:
+        drawMultipleNodes("ParentRules",[]);
+        drawMultipleNodes("DependentRules",[]);
     };
 
     /**Render the values of the current rule
        Most likely the bindings
        @function drawValues
     */
-    var drawValues = function(){
+    var drawValues = function(domElement,data){
+        if(theShell.cwr === undefined) return;
+        //if(theShell.cwr.getBindingsArray().length === 0) return;
+        console.log("Drawing values");
+        
         //Select the "g"
         var valueContainer = svg.select("#valueContainer");
         //If it doesnt exist, create it
@@ -326,14 +357,14 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
 
         //Remove old text
         valueContainer.selectAll("text").remove();
-
         
         //bind new texts
+        var textPairs = [["Bindings",""]].concat(theShell.cwr.getBindingsArray());
+            
         //Values are stored in a node as an object,
         //.valueArray() converts it to an array of pairs
         var texts = valueContainer.selectAll("text")
-            .data(theShell.cwr.getBindingsArray());
-
+            .data(textPairs);
         
         texts.enter().append("text")
             .text(function(d){
@@ -354,14 +385,19 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
        @function drawMultipleNodes
     */
     var drawMultipleNodes = function(baseContainer,childArray){
-        var containingNode = svg.select(baseContainer);
+        console.log("Drawing Column:",baseContainer,childArray);
+        if(childArray.length === 0){
+            return;
+        }
+
+        var containingNode = getColumnObject(baseContainer);
         //clean the container
-        d3.select(baseContainer).selectAll(".node").remove();
+        containingNode.selectAll(".node").remove();
         
-        var heightAvailable = d3.select(baseContainer).select("rect").attr("height");
+        var heightAvailable = containingNode.select("rect").attr("height");
         heightAvailable -= 20; //-20 for top and bottom
         //bind the data
-        var nodes = childNode.selectAll("g")
+        var nodes = containingNode.selectAll("g")
             .data(childArray,
                   function(d){
                       //using custom id's
@@ -384,10 +420,10 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
         //Draw a rectangle for the node
         inodes.append("rect")
             .style("fill",function(d){
-                return colourScale(scaleToColour(_.values(d.children).length));
+                return colourScale(scaleToColour(_.values(d.constantTests).length));
             })
             .attr("width",(columnWidth * 0.8))
-            .attr("transform","translate(" + (columnWidth * 0.1)+ ",0)")
+            .attr("transform","translate(" + (columnWidth * 0.1)+ ",10)")
             .attr("height",(heightAvailable / childArray.length) - 5)
             .attr("rx",10)
             .attr("ry",10);
@@ -395,11 +431,30 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
         //Draw the nodes text
         inodes.append("text")
             .style("text-anchor","middle")
-            .attr("transform","translate(" + (columnWidth * 0.5)+",20)")
+            .attr("transform","translate(" + (columnWidth * 0.5)+",30)")
             .text(function(d){
-                return "(" + d.id + "): " + d.name;
+                return "(" + d.id + "): ";
             });
 
+        //Draw values:
+        var subText = inodes.append("g")
+            .classed("nodeSubText",true)
+            .attr("transform","translate(" + (columnWidth * 0.5) + ",45)");
+
+        var boundText = subText.selectAll("text").data(function(d){
+            return d.values;
+        });
+        
+        boundText.enter().append("text")
+            .attr("text-anchor","middle")
+            .attr("transform",function(d,i){
+                return "translate(0," + (i * 20) + ")";
+            })
+            .text(function(d){
+                return d;
+            });
+
+        
         //remove any old nodes
         nodes.exit().remove();
         

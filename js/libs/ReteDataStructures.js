@@ -81,17 +81,21 @@ define(['underscore'],function(_){
         }
         this.constantTests = [];
         this.bindings = [];
+
+        if(tests){
+            tests.map(function(d){
+                var test = new ConstantTest(d[0],d[1],d[2]);
+                this.constantTests.push(test);
+            });
+        }
+
+        if(bindings){
+            bindings.map(function(d){
+                var binding = [d[0],d[1]];
+                this.bindings.push(binding);
+            });
+        }
         
-        for(var i in tests){
-            var v = tests[i];
-            var test = new ConstantTest(v[0],v[1],v[2]);
-            this.constantTests.push(test);
-        }
-        for(var i in bindings){
-            var v = bindings[i];
-            var binding = [v[0],v[1]];
-            this.bindings.push(binding);
-        }
         this.bindings.sort(function(a,b){
             if(a[0] < b[0]) return -1;
             if(a[0] > b[0]) return 1;
@@ -99,6 +103,9 @@ define(['underscore'],function(_){
         });
         this.id = startingId;
         startingId++;
+
+        console.log("Created condition:",this);
+        
     };
 
 
@@ -121,7 +128,10 @@ define(['underscore'],function(_){
     //associated action
     var Rule = function(name,conditions,action){
         this.name = name;
-        this.action = action;
+        this.actions = [];
+        if(action){
+            this.actions.push(action);
+        }
         this.conditions = [];
         for(var i in conditions){
             //[[tests+], [bindings+], ncc?]
@@ -148,7 +158,26 @@ define(['underscore'],function(_){
         });
         return _.uniq(bindings);
     };
-    
+
+    Rule.prototype.getActionNodes = function(){
+        var actionObjects = this.actions.map(function(d,i){
+            return {id:"a"+i,values:[d]};
+        });
+        return actionObjects;
+    };
+
+    Rule.prototype.getConditionNodes = function(){
+        console.log("Mapping over:",this.conditions);
+        var conditionObjects = this.conditions.map(function(d,i){
+            var cond = {id:"c"+i,name:""};
+            cond.values = d.constantTests.map(function(e){
+                //TODO: convert operator to symbol
+                return e.field + " " + e.operator + " " + e.value;
+            });
+            return cond;
+        });
+        return conditionObjects;
+    };
  
     //Utility storage of wme and its alphaMemory together
     //used in alphamemory and WME
