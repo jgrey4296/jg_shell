@@ -37,7 +37,6 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     
     //Maps typed commands to methods on shell
     var commands = {
-        "no commands yet" : "",
     //     //Load a file from the server
     //     "load" : function(sh,values){
     //         var request = new XMLHttpRequest();
@@ -76,51 +75,66 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
             }else if(values[0] === 'condition'){
                 sh.addCondition();
             }else if(values[0] === 'binding'){
-                sh.addBinding(values.slice(1));
+                sh.addBinding(values[1],values.slice(2));
             }else if(values[0] === 'test'){
                 sh.addTestToCondition(values[1],values.slice(2));
             }else if(values[0] === 'action'){
-                sh.addAction(values.slice(1).join(" "));
+                sh.addAction(values.slice(1));
+            }else if(values[0] === 'actionValue'){
+                sh.specifyAction(values[1],values.slice(2);
+            }
             }else{
                 console.log("Unrecognised new command");
             }
         },
-    //     //Change the current rule
-    //     //move either... to a condition? to a child or parent rule?
-    //     "cd" : function(sh,values){
-
-    //     },
+        //move by id or name, as necessary, to OTHER RULES ONLY
+        "cd" : function(sh,values){
+            //If an ID is passed in:
+            if(!isNaN(Number(values[0]))
+               && sh.allRulesById[Number(values[0])] !== undefined){
+                sh.cwr = sh.allRulesById[Number(values[0])];
+            //else by name
+            }else if(sh.allRulesByName[values[0]] !== undefined){
+                sh.cwr = sh.allRulesByName[values[0]];
+            }else{
+                console.log("Unrecognised rule to move to");
+            }                
+        },
         //TODO:Delete a rule/action/condition/test
         "rm" : function(sh,values){
             if(values[0] === "rule"){
-
+                sh.removeRule();
             }else if(values[0] === "action"){
-
+                sh.removeAction(values[1]);
             }else if(values[0] === "condition"){
-
+                sh.removeCondition(values[1]);
             }else if(values[0] === "test"){
-
+                sh.removeTest(values[1],values[2]);
+            }else if(values[0] === "binding"){
+                sh.removeBinding(values[1],values[2]);
             }else{
                 console.log("Unrecognised removal target");
             }
         },
-    //     //TODO:Set,change, or delete cwr value
-    //     "value": function(sh,values){
-
-    //     },
-        //TODO:Rename the current rule
         "rename": function(sh,values){
             if(values.length !== 1) throw new Error("Renaming should take a single value");
             console.log("Renaming to:",values);
+            //remove the old name
+            delete sh.allRulesByName[sh.cwr.name];
+            //update the rules name
             sh.cwr.name = values[0];
+            //re-store it with its new name
+            sh.allRulesByName[sh.cwr.name] = sh.cwr;
+            //update the visualisation
             d3.select("#ruleNameText").text(function(d){
                 return "Name: " + d.name;
             });
         },
-    //     //List all rules
-    //     "allRules": function(sh,values){
+        //     //List all rules
+        //     "allRules": function(sh,values){
+        //     },
 
-    //     },
+        
         //Get the context of a rule
         //ie: get the rule, get its conditions,
         //get its conditions tests
@@ -133,10 +147,39 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     //     "search": function(sh,values){
 
     //     },
-    //     //annotate a rule
-    //     "note": function(sh,values){
-
-    //     },
+        //tag a rule
+        "tag": function(sh,values){
+            if(values[0] === "rule"){
+                values.slice(1).map(function(d){
+                    sh.cwr.tags[d] = true;
+                });
+            }else if(values[0] === 'action'
+                     && !isNaN(Number(values[1]))){
+                var action = sh.cwr.actions[Number(values[1])];
+                if(action){
+                    values.slice(2).map(function(d){
+                        action.tags[d] = true;
+                    });
+                }
+            }
+        },
+        "untag" : function(sh,values){
+            if(values[0] === 'rule'){
+                values.slice(1).map(function(d){
+                    delete sh.cwr.tags[d];
+                });
+            }else if(values[0] === 'action'
+                     && !isNaN(Number(values[1]))){
+                var action = sh.cwr.actions[Number(values[1])];
+                if(action){
+                    values.slice(2).map(function(d){
+                        delete action.tags[d];
+                    });
+                }
+            }
+            drawValues();
+        },
+        
     //     //Get conditionless rules
     //     //get actionless rules
     //     //get testless conditions
@@ -149,10 +192,10 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     //     "prev" : function(sh,values){
     //         sh.moveTo(sh.cwd - 1);
     //     },
-    //     //Display help dialog
-    //     "help" : function(sh,values){
-
-    //     },
+        //Display help dialog
+        "help" : function(sh,values){
+            //create a tab showing all commands that can be called
+        },
     };
     console.log(commands);
 
@@ -187,6 +230,10 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
         return (availableWidth / (noOfColumns + 2))
     };
     var columnWidth = calcWidth(usableWidth,noOfColumns);    
+
+    //----------------------------------------
+    //CLI FUNCTION:
+    //note: uses lookup to the commands object.
     
     /*
       Main selection here sets up parsing from input
@@ -224,6 +271,9 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
 
     });
 
+    //END OF CLI FUNCTION
+    //----------------------------------------
+    
     //Setup the svg for drawing
     var svg = d3.select('body').append('svg')
         .attr('width',usableWidth)
@@ -264,8 +314,8 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     });
 
     var getColumnObject = function(columnName){
-        if(!columnLookup[columnName]){
-            throw new Error("Unrecognised Column Name:",columnName);
+        if(columnLookup[columnName] === undefined){
+            throw new Error("Unrecognised Column Name:" + columnName);
         }
         return columns[columnLookup[columnName]];
     };
@@ -277,8 +327,11 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     */
     var drawRule = function(rule){
         if(rule === undefined){
+            //Cleanup
+            d3.select("#Rule").select("#mainRuleInfo").remove();
             return;
         }else{
+            //a data array of 1
             rule = [rule];
         }
         console.log("Drawing:",rule);
@@ -326,6 +379,13 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
             })
             .attr("id","ruleNameText");
 
+        //TODO: draw bindings
+
+        //TODO: draw tags
+        
+
+        
+        
         //separate function to be able to update
         //value text separately
         drawValues();
@@ -340,7 +400,7 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
        Most likely the bindings
        @function drawValues
     */
-    var drawValues = function(domElement,data){
+    var drawValues = function(){
         if(theShell.cwr === undefined) return;
         //if(theShell.cwr.getBindingsArray().length === 0) return;
         console.log("Drawing values");
@@ -359,22 +419,25 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
         valueContainer.selectAll("text").remove();
         
         //bind new texts
-        var textPairs = [["Bindings",""]].concat(theShell.cwr.getBindingsArray());
-            
+        var bindings = ["All Bound Vars: "].concat(theShell.cwr.getBindingsArray());
+        var tags = ["Tags:"].concat(Object.keys(theShell.cwr.tags));
+
+
+        var allValues = bindings.concat(tags);
+        console.log("Values for rule:",allValues);
         //Values are stored in a node as an object,
         //.valueArray() converts it to an array of pairs
         var texts = valueContainer.selectAll("text")
-            .data(textPairs);
+            .data(allValues);
         
         texts.enter().append("text")
             .text(function(d){
-                return d[0] + ": " + d[1];
+                return d;
             })
             .style("text-anchor","middle")
             .attr("transform",function(d,i){
                 return "translate(0," + (i * 20) + ")";
             });
-
         texts.exit().remove();
     };
 
@@ -386,13 +449,15 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     */
     var drawMultipleNodes = function(baseContainer,childArray){
         console.log("Drawing Column:",baseContainer,childArray);
+        
+        var containingNode = getColumnObject(baseContainer);
+        //clean the container
+        containingNode.selectAll(".node").remove();
+
         if(childArray.length === 0){
             return;
         }
 
-        var containingNode = getColumnObject(baseContainer);
-        //clean the container
-        containingNode.selectAll(".node").remove();
         
         var heightAvailable = containingNode.select("rect").attr("height");
         heightAvailable -= 20; //-20 for top and bottom

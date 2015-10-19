@@ -34,11 +34,16 @@ define(['ReteDataStructures'],function(RDS){
     //Methods to be used from the cli
     RuleShell.prototype.interface = {
         addRule : undefined,
+        removeRule : undefined,
         addCondition : undefined,
+        removeCondition : undefined,
         linkCondition : undefined,
         addBinding : undefined,
+        removeBinding : undefined,
         addAction : undefined,
+        removeAction : undefined,
         addTestToCondition : undefined,
+        removeTest : undefined,
         exportToJson : undefined,
         loadJson : undefined,
     };
@@ -57,6 +62,34 @@ define(['ReteDataStructures'],function(RDS){
         console.log("Set CWR to:",newRule);
     };
 
+    //remove the current rule
+    RuleShell.prototype.removeRule = function(){
+        console.log("Cwr starting as:",this.cwr);
+        var ruleToRemove = this.cwr;
+        //remove from the allRulesByName list
+        delete this.allRulesByName[ruleToRemove.name];
+        
+        //remove from the id list
+        this.allRulesById.splice(ruleToRemove.id,1);
+        
+        //remove it's tests?
+        //remove its conditions?
+
+        //set the cwr to something else
+        this.cwr = undefined;
+        var RuleKeys = Object.keys(this.allRulesByName);
+        console.log("Keys:",RuleKeys);
+        var index = 0;
+        while(index < RuleKeys.length && this.cwr === undefined){
+            this.cwr = this.allRulesByName[RuleKeys[index]];
+            index++;
+        }
+        console.log("Set cwr to:",this.cwr);
+    };
+
+
+    //--------------------
+    
     //Create a new empty condition
     RuleShell.prototype.addCondition = function(){
         if(!this.cwr) throw new Error("There needs to be a rule to add a condition");
@@ -65,10 +98,28 @@ define(['ReteDataStructures'],function(RDS){
         this.cwr.conditions.push(newCondition);
     };
 
+
+    RuleShell.prototype.removeCondition = function(conditionNumber){
+        if(isNaN(Number(conditionNumber))){
+            throw new Error("Remove condition takes a condition number");
+        }
+        console.log("rm condition. starting length:",this.cwr.conditions.length);
+        var theCondition = this.cwr.conditions[Number(conditionNumber)];
+        //remove the condition from allConditions?
+        //remove its tests?
+
+        this.cwr.conditions.splice(conditionNumber,1);
+        console.log("ending condition length:",this.cwr.conditions.length);
+    };
+    
     //Get and reuse a condition from elsewhere:
     RuleShell.prototype.linkCondition = function(ruleToAddTo,condition){
         console.log("TODO: link condition");
     };
+
+    //--------------------
+
+
     
     //Register a new binding for the specified condition
     //of the current rule
@@ -87,13 +138,63 @@ define(['ReteDataStructures'],function(RDS){
         }
     };
 
-    //Add an action to the rule, as a text string defining
-    //a function to eval
-    RuleShell.prototype.addAction = function(actionDescription){
-        if(this.cwr === undefined) throw new Error("Actions need an owning rule");
-            this.cwr.actions.push(actionDescription);
+    RuleShell.prototype.removeBinding = function(conditionNumber,boundVar){
+        console.log("Removing binding:",conditionNumber,boundVar);
+        //validate entry
+        if(!(this.cwr)) throw new Error("Bindings need an owning rule");
+        if(isNaN(Number(conditionNumber)))throw new Error("Adding a binding requires a condition");
+        //get the condition:
+        var condition = this.cwr.conditions[conditionNumber];
+        if(condition === undefined) return;
+        condition.bindings = condition.bindings.filter(function(d){
+            return d[0] !== boundVar;
+        });        
     };
 
+    
+    //--------------------
+
+    
+    //Add an action to the rule, as a text string defining
+    //a function to eval
+    //Rule possibilities:
+    //Types:
+    //Assert, retract, modify, aggregate?
+    //Foci:
+    //action, fact, rule
+    
+    RuleShell.prototype.addAction = function(actionParamList){
+        if(this.cwr === undefined) throw new Error("Actions need an owning rule");
+        var actionType = actionParamList[0];
+        var actionFocus = actionParamList[1];
+        var aDesc = RDS.ActionDescription(actionType,focus);
+        
+        this.cwr.actions.push(aDesc);
+    };
+
+    RuleShell.prototype.removeAction = function(actionNumber){
+            //validate:
+        if(isNaN(Number(actionNumber))){
+            throw new Error("Removal of action requires its index");
+        }
+        this.cwr.actions.splice(actionNumber,1);        
+    };
+
+    RuleShell.prototype.specifyAction = function(actionNumber,params){
+        //validate:
+        if(isNaN(Number(actionNumber))){
+            throw new Error("Specify action takes the action index");
+        }
+        //get the action
+        var action = this.cwr.actions[Number(actionNumber)];
+        if(action){
+            action.values[params[0]] = params[1];
+        };        
+    }
+        
+    
+    //--------------------
+    
     //Add a test to a specified condition, of the current rule
     RuleShell.prototype.addTestToCondition = function(conditionNumber,test){
         //Validate
@@ -114,6 +215,26 @@ define(['ReteDataStructures'],function(RDS){
         }
         console.log("State of condition after adding:",condition);
     };
+
+    RuleShell.prototype.removeTest = function(conditionNumber,testNumber){
+        //validate:
+        if(isNaN(Number(conditionNumber)) || isNaN(Number(testNumber))){
+            throw new Error("removal of Test requires 2 indices");
+        }
+
+        var condition = this.cwr.conditions[conditionNumber];
+        if(condition === undefined) return;
+        var test = condition.constantTests[testNumber];
+        if(test === undefined) return;
+
+        //remove the test
+        condition.constantTests.splice(testNumber,1);
+        //TODO:cleanup from all tests?
+    };
+
+    
+    //--------------------
+
     
     //Export each Rule to its json format (nested arrays)
     //to use in constructors

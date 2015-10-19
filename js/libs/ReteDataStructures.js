@@ -82,14 +82,14 @@ define(['underscore'],function(_){
         this.constantTests = [];
         this.bindings = [];
 
-        if(tests){
+        if(tests !== undefined){
             tests.map(function(d){
                 var test = new ConstantTest(d[0],d[1],d[2]);
                 this.constantTests.push(test);
             });
         }
 
-        if(bindings){
+        if(bindings !== undefined){
             bindings.map(function(d){
                 var binding = [d[0],d[1]];
                 this.bindings.push(binding);
@@ -122,6 +122,9 @@ define(['underscore'],function(_){
         startingId++;
     };
     
+
+    //----------------------------------------
+    //START OF RULE AND RULE UTILITIES
     
 
     //The rule/production that stores conditions and
@@ -129,6 +132,7 @@ define(['underscore'],function(_){
     var Rule = function(name,conditions,action){
         this.name = name;
         this.actions = [];
+        this.tags = {};
         if(action){
             this.actions.push(action);
         }
@@ -153,9 +157,16 @@ define(['underscore'],function(_){
     Rule.prototype.getBindingsArray = function(){
         var bindings = [];
         //for all conditions
+        console.log(this.conditions);
         this.conditions.map(function(d){
-            bindings = bindings.concat(d.bindings);
+            if(d.bindings.length > 0){
+                d.bindings.map(function(e){
+                    var theString = e[0];
+                    bindings.push(theString);
+                });
+            }
         });
+        console.log("Bindings array:",bindings);
         return _.uniq(bindings);
     };
 
@@ -178,7 +189,30 @@ define(['underscore'],function(_){
         });
         return conditionObjects;
     };
- 
+
+
+    //END OF RULE UTILITIES
+    //----------------------------------------
+    //Action description:
+    var ActionDescription = function(type,focus){
+        //possible Types:
+        //assert, retract, modify, aggregate?
+        this.type = type;
+        //possible foci:
+        //facts, performances, rule, customFunction
+        this.focus = focus;
+        //Object of bindings to use from the input token
+        //when the action is fired
+        this.values = {};
+        //tag Data
+        this.tags = {};
+        //the scope object to get things, like
+        //general grammars, and the firing token?
+        this.scope = {};
+    };
+
+    //------------------------------
+    
     //Utility storage of wme and its alphaMemory together
     //used in alphamemory and WME
     var AlphaMemoryItem = function(wme,alphaMem){
@@ -375,6 +409,7 @@ define(['underscore'],function(_){
         "Condition"        : Condition,
         "NCCCondition"    : NCCCondition,
         "Rule"             : Rule,
+        "ActionDescription" : ActionDescription,
         "ActionNode"       : ActionNode,
         "ReteNet"          : ReteNet
     };
