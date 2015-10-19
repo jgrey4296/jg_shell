@@ -80,9 +80,8 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
                 sh.addTestToCondition(values[1],values.slice(2));
             }else if(values[0] === 'action'){
                 sh.addAction(values.slice(1));
-            }else if(values[0] === 'actionValue'){
-                sh.specifyAction(values[1],values.slice(2);
-            }
+            }else if(values[0] === 'param'){
+                sh.specifyAction(values[1],values.slice(2));
             }else{
                 console.log("Unrecognised new command");
             }
@@ -100,7 +99,7 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
                 console.log("Unrecognised rule to move to");
             }                
         },
-        //TODO:Delete a rule/action/condition/test
+        //TODO:delete action paramaters
         "rm" : function(sh,values){
             if(values[0] === "rule"){
                 sh.removeRule();
@@ -162,6 +161,7 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
                     });
                 }
             }
+            drawValues();
         },
         "untag" : function(sh,values){
             if(values[0] === 'rule'){
@@ -199,6 +199,32 @@ require(['libs/d3.min','src/ruleCreator','underscore'],function(d3,Shell,_){
     };
     console.log(commands);
 
+    //the additional information for each major command
+    var helpTexts = {
+        "new"   : "",
+        "rm"    : "",
+        "cd"    : "",
+        "rename": "",
+        "tag"   : "",
+        "untag" : "",
+        
+    };
+
+    
+    var displayHelp = function(){
+        //create a help window from the main svg
+        //bottom left hand corner,
+        //or long across the area above the text editor, below the columns
+        
+
+        //populate it with the text from commands + helpTexts,
+        
+
+        
+
+    };
+
+    
     //Utility functions:
     var HalfWidth = function(){
         return (window.innerWidth - 10) * 0.5;

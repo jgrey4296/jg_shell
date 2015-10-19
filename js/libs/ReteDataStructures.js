@@ -170,13 +170,34 @@ define(['underscore'],function(_){
         return _.uniq(bindings);
     };
 
+    //return a node for each action
+    //each node has a values list, of combined parameters,
+    //values, and tags, all as strings
     Rule.prototype.getActionNodes = function(){
+        console.log("Getting action nodes:",this);
         var actionObjects = this.actions.map(function(d,i){
-            return {id:"a"+i,values:[d]};
+            //starting object
+            var action = {id:"a"+i,values:[]};
+            //add the type and focus
+            action.values.push(d.type + " + " + d.focus);
+            //values
+            action.values.push("Values: ");
+            action.values.push(Object.keys(d.values).map(function(e){
+                return e + " : " + d.values[e];
+            }));
+            //tags
+            action.values.push(["Tags: "]);
+            action.values.push(Object.keys(d.tags).map(function(e){
+                return e;
+            }));
+            action.values = _.flatten(action.values);
+            return action;
         });
         return actionObjects;
     };
 
+    //return node for each condition,
+    //with a values field that has a list of strings that are tests
     Rule.prototype.getConditionNodes = function(){
         console.log("Mapping over:",this.conditions);
         var conditionObjects = this.conditions.map(function(d,i){

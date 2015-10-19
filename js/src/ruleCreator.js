@@ -167,19 +167,19 @@ define(['ReteDataStructures'],function(RDS){
         if(this.cwr === undefined) throw new Error("Actions need an owning rule");
         var actionType = actionParamList[0];
         var actionFocus = actionParamList[1];
-        var aDesc = RDS.ActionDescription(actionType,focus);
+        var aDesc = new RDS.ActionDescription(actionType,actionFocus);
         
         this.cwr.actions.push(aDesc);
     };
-
+    
     RuleShell.prototype.removeAction = function(actionNumber){
-            //validate:
+        //validate:
         if(isNaN(Number(actionNumber))){
             throw new Error("Removal of action requires its index");
         }
         this.cwr.actions.splice(actionNumber,1);        
     };
-
+    
     RuleShell.prototype.specifyAction = function(actionNumber,params){
         //validate:
         if(isNaN(Number(actionNumber))){
@@ -191,7 +191,7 @@ define(['ReteDataStructures'],function(RDS){
             action.values[params[0]] = params[1];
         };        
     }
-        
+    
     
     //--------------------
     
