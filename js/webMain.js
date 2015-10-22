@@ -444,12 +444,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 return d;
             });
 
-            var childList = Object.keys(node.children).map(function(d){
-                return node.children[d];
-            });
-            var parentList = Object.keys(node.parents).map(function(d){
-                return node.parents[d];
-            });
+            var childList = _.values(node.children);
+            var parentList = _.values(node.parents);
 
             drawMultipleNodes('Parents',parentList,columnWidth);
             drawMultipleNodes('Children',childList,columnWidth);
@@ -632,7 +628,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .style("text-anchor","middle")
                 .attr("transform","translate(" + (columnWidth * 0.5)+",30)")
                 .text(function(d){
-                    return "(" + d.id + "): ";
+                    return "(" + d.id + "): " + d.name + " (" + d.tags.type + ")";
                 });
 
             //Draw values:

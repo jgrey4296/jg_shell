@@ -86,7 +86,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.children['OutgoingInterface'] = new GraphNode('OutwardRelations',this);
         this.children['facts'] = new GraphNode('Facts',this);
         this.children['norms'] = new GraphNode('Norms',this);
-        this.parents['IncomingInterface'] = new GraphNode('InwardRelations',this);
+        this.parents['IncomingInterface'] = new GraphNode('InwardRelations');
+        this.parents['IncomingInterface'].children[this.name] = this;
 
         //All rules defined in this institution?
         this.allRules = {};
@@ -160,10 +161,26 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
                 newNode = new constructor(name,this.cwd);
             }
             this.cwd[target][newNode.id] = newNode;
+
             if(this.allNodes[newNode.id]){
                 throw new Error("Node Id is already used");
             }
-            this.allNodes[newNode.id] = newNode;
+            
+            //add all the children of the node as well,
+            //using a recursive map, so *all* children are added
+            var shellInstance = this;
+            var addChildrenFn = function(d){
+                if(shellInstance.allNodes[d.id]){
+                    return;
+                }
+                shellInstance.allNodes[d.id] = d;
+                _.values(d.children).map(addChildrenFn);
+                _.values(d.parents).map(addChildrenFn);
+            };
+
+            addChildrenFn(newNode);
+
+            
             return newNode;
         }
         throw new Error("Add Node general error");
@@ -194,10 +211,11 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             return;
         }
         
-        if(!isNaN(Number(target))){
+        if(!isNaN(Number(target)) && this.allNodes[target]){
             this.cwd = this.allNodes[target];
             return;
         }
+        
         //passed a name. convert it to an id
         var nameIdPairs = {};
         var children = this.cwd.children;
