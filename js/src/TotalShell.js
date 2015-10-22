@@ -1,12 +1,21 @@
 //an idea for a complete shell
-if(typeof define !== 'define'){
+if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
+    if(RDS === undefined) throw new Error("RDS Not Loaded");
+    if(_ === undefined) throw new Error("Underscore not loaded");
+
+
+    var randomChoice = function(array){
+        var randIndex = Math.floor(Math.random() * array.length);
+        return array[randIndex];
+    };
+    
+    
     var nextId = 0;
     //Data Structures:
-    
     //The main node of the graph
     var GraphNode = function(name,parent){
         //Id and name for identification
@@ -27,22 +36,43 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.tags['type'] = 'GraphNode';
     };
 
+
+    GraphNode.prototype.getLists = function(fieldNameList){
+        var theNode = this;
+        var allArrays = fieldNameList.map(function(d){
+            if(theNode[d] !== undefined){
+                if(d !== "id" && d !== "name"){
+                    return ["","| " + d + " |"].concat(theNode.getList(d));
+                }else{
+                    return d +  ": " + theNode[d];
+                }
+            }else{
+                console.log("Could not find: ",d,theNode);
+            }
+        });
+        console.log("Prior to flattening:",allArrays);
+        return _.flatten(allArrays);
+    };
+    
     GraphNode.prototype.getList = function(fieldName){
+        console.log("Getting list for:",fieldName,this[fieldName]);
+        var obj = this;
         if(this[fieldName] === undefined) throw new Error("Unrecognised field");
         var retArray = [];
-        Object.keys(this[fieldName]).map(function(d){
-            retArray.push(d + ": " + this[fieldName][d]);
+        Object.keys(obj[fieldName]).map(function(d){
+                retArray.push(d + ": " + obj[fieldName][d]);
         });
+        console.log("Final list for:",fieldName,retArray);
         return retArray;
     };
     
     //----------
-    var Role = function(name,parent){
+    var Role = function(name,parent,description){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
-        this.description = undefined;
+        this.description = description;
         this.children['Rules'] = new GraphNode('Rules',this);
-                      
+        
     };
     Role.prototype = Object.create(GraphNode.prototype);
     
@@ -53,10 +83,10 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.children['Roles'] = new GraphNode('Roles',this);
         this.children['Activities'] = new GraphNode('Activities',this);
         this.children['Governance'] = new GraphNode('Governance',this);
-        this.children['OutwardRelations'] = new GraphNode('OutwardRelations',this);
+        this.children['OutgoingInterface'] = new GraphNode('OutwardRelations',this);
         this.children['facts'] = new GraphNode('Facts',this);
         this.children['norms'] = new GraphNode('Norms',this);
-        this.parents['InwardRelations'] = new GraphNode('InwardRelations',this);
+        this.parents['IncomingInterface'] = new GraphNode('InwardRelations',this);
 
         //All rules defined in this institution?
         this.allRules = {};
@@ -84,6 +114,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'RuleContainer';
         this.rules = [];
+        this.rulesByName = {};
 
     };
     RuleContainer.prototype = Object.create(GraphNode.prototype);
@@ -93,9 +124,9 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.tags = {};
         this.tags['type'] = 'Shell';
         //the root
-        this.root = new GraphNode('__root');;
+        this.root = new GraphNode('__root');
         //All Nodes:
-        this.allNodes = [];
+        this.allNodes = {};
         this.allNodes[this.root.id] = this.root;
         //AllRules:
         this.allRules = [];
@@ -107,36 +138,84 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     //END OF DATA STRUCTURES
     //----------------------------------------
 
-    //Methods:
-    /**
-       @params target child,parent, or node specific
-       @params type the type of node to add
-       @params name the name of the node to add
-     */
+    /*Methods:
+      
+      @params target child,parent, or node specific
+      @params type the type of node to add
+      @params name the name of the node to add
+    */
     CompleteShell.prototype.addNode = function(target,type,name){
         //create the new node of type
+        if(type === 'Rule') throw new Error('Rule Construction has its own function');
         var constructor = interface[type];
+        if(constructor === undefined) throw new Error("Unrecognised Node Type");
+        if(this.cwd[target] === undefined) throw new Error("Unrecognised target");
+        //call the ctor, adding to the target
         if(constructor && this.cwd[target]){
-            var newNode = new constructor(name,this.cwd);
+            var newNode;
+            if(target === "parents"){
+                newNode = new constructor(name);
+                newNode.children[this.cwd.id] = this.cwd;
+            }else{
+                newNode = new constructor(name,this.cwd);
+            }
             this.cwd[target][newNode.id] = newNode;
+            if(this.allNodes[newNode.id]){
+                throw new Error("Node Id is already used");
+            }
             this.allNodes[newNode.id] = newNode;
             return newNode;
         }
+        throw new Error("Add Node general error");
     };
-
+    
+    //Add a rule to the current node, should be a rule container
+    CompleteShell.prototype.addRule = function(name){
+        if(this.cwd.tags.type !== "RuleContainer") throw new Error("Rules should be added to a rule container");
+        var rule = new RDS.Rule(name);
+        this.cwd.rules.push(rule);
+        this.cwd.rulesByName[rule.name] = rule;
+        return rule;
+    };
+    
     /**
        @params target The id (global) or name (local) to move to
-     */
+    */
     CompleteShell.prototype.cd = function(target){
+        //TODO: cd into a rule
         //If a number:
+        if(target === ".."){
+            if(this.cwd._originalParent){
+                this.cd(this.cwd._originalParent.id);
+            }else{
+                var randomParent = randomChoice(Object.keys(this.cwd.parents));
+                this.cd(this.cwd.parents[randomParent]);
+            }
+            return;
+        }
+        
         if(!isNaN(Number(target))){
             this.cwd = this.allNodes[target];
+            return;
+        }
+        //passed a name. convert it to an id
+        var nameIdPairs = {};
+        var children = this.cwd.children;
+        Object.keys(children).map(function(d){
+            this[children[d].name] = children[d].id;
+        },nameIdPairs);
+        var parents = this.cwd.parents;
+        Object.keys(parents).map(function(d){
+            this[parents[d].name] = parents[d].id;
+        },nameIdPairs);
+        if(nameIdPairs[target]){
+            this.cd(nameIdPairs[target]);
         }else{
-            //TODO: name based movement not just id based
+            //cant find the target, complain
             throw new Error("Unrecognised cd form");
         }
     };
-
+    
     CompleteShell.prototype.getNodeListByIds = function(idList){
         var tempShell = this;
         var retList = [];
@@ -147,10 +226,10 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         });
         return retList;
     };
-
+    
     CompleteShell.prototype.setParameter = function(field,parameter,value){
         if(!this.cwd[field]) throw new Error("Unrecognised field");
-        if(field !== 'values' | field !== 'tags' | field !== 'annotations'){
+        if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
             throw new Error("Bad field");
         }
         if(value !== undefined){
@@ -160,8 +239,9 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             delete this.cwd[field][parameter];
         }
     };
-
-
+    
+    
+    //TODO: should this be mutual?
     CompleteShell.prototype.link = function(target,id){
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
@@ -169,7 +249,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         if(!this.cwd[target]) throw new Error("Unrecognised target");
         this.cwd[target][id] = this.allNodes[id];        
     };
-
+    
     //Remove a node from the parent/child lists
     CompleteShell.prototype.rm = function(id){
         //is an id
@@ -186,12 +266,12 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             throw new Error("TODO");
         }
     };
-
+    
     CompleteShell.prototype.rename = function(name){
         this.cwd.name = name;
     };
-
-
+    
+    
     //ie: toVar  <- wme.fromVar
     //a <- wme.first
     CompleteShell.prototype.addBinding = function(conditionNum,toVar,FromVar){
@@ -211,6 +291,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         "Institution":Institution,
         "Activity"  : Activity,
         "Rule"      : RDS.Rule,
+        "RuleContainer":RuleContainer,
         "Condition" : RDS.Condition,
         "Test"      : RDS.Test,
         "Action"    : RDS.ActionDescription,

@@ -133,23 +133,28 @@ define(['underscore'],function(_){
         this.name = name;
         this.actions = [];
         this.tags = {};
+        this.tags.type = 'Rule';
         if(action){
             this.actions.push(action);
         }
         this.conditions = [];
-        for(var i in conditions){
-            //[[tests+], [bindings+], ncc?]
-            var v = conditions[i];
-            if(v.length > 0){
-                if(v[0] !== '!'){
-                    var cond = new Condition(conditions[i][0],conditions[i][1],conditions[i][2]);
-                    this.conditions.push(cond);
-                }else{
-                    var cond = new NCCCondition(conditions[1][0]);
-                    this.conditions.push(cond);
+        //construct and add the conditions
+        if(conditions){
+            conditions.map(function(d){
+                if(d.length > 0){
+                    //not a negated condition
+                    if(d[0] !== '!'){
+                        var cond = new Condition(conditions[i][0],conditions[i][1],conditions[i][2]);
+                        this.conditions.push(cond);
+                    }else{
+                        //a negated condition
+                        var cond = new NCCCondition(conditions[1][0]);
+                        this.conditions.push(cond);
+                    }
                 }
-            }
+            });
         }
+        
         this.id = startingId;
         startingId++;
     };
