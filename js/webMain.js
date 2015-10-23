@@ -5,7 +5,7 @@ require.config({
     baseUrl: "/js",
     paths:{
         "../libs/underscore": "/libs/underscore",
-        underscore : "/libs/underscore",
+        underscore : "libs/underscore",
         ReteDataStructures : '/libs/ReteDataStructures',
     },
     shim:{
@@ -50,7 +50,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 throw new Error("Incorrect number of arguments");
             }
         };
-
+        
         //----------------------------------------
         //COMMAND SECTION
         //----------------------------------------
@@ -60,11 +60,34 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             //new -> addNode,
             "new" : function(sh,values){
                 valueCheck(values,3);
-                sh.addNode(values[0],values[1],values[2]);
+                //Expand out simplifications
+                console.log("new",values);
+                var target = values[0];
+                if(target === "child") target = "children";
+                if(target === "parent") target  = "parents";
+                console.log("Target:",target);
+                sh.addNode(target,values[1],values[2]);
             },
+            //Shortcuts:
+            //New Child Node, ncn:
+            "ncn" : function(sh,values){
+                sh.addNode('children','node',values[0]);
+            },
+            //new child institution: nci
+            "nci" : function(sh,values){
+                sh.addNode('children','institution',values[0]);
+            },
+            //new role
+
+            //new activity
+
+            //new rule container
+
+            //new rule
+            
             //rm -> removeNode,
             "rm" : function(sh,values){
-
+                sh.rm(values[0]);
             },
             //cd -> cd
             "cd" : function(sh,values){
@@ -160,12 +183,12 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
 
         //the additional information for each major command
         var helpTexts = {
-            "new"   : "",
-            "rm"    : "",
-            "cd"    : "",
-            "rename": "",
-            "tag"   : "",
-            "untag" : "",
+            "new"   : "$target $type $name",
+            "[ncn | nci]" : "$name",
+            "rm"    : "$id",
+            "cd"    : "[.. | $name | $id]",
+            "rename": "$name",
+            "set"   : "$field $parameter $value"
         };
         
         //Utility functions:
@@ -348,11 +371,11 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
 
             //If cwd === node
-            if(node.tags.type !== 'Rule'){
+            if(node.tags.type !== 'Rule' && node.tags.type !== 'RuleContainer'){
                 console.log("Drawing nodes");
                 //setup columns
                 var columnWidth = calcWidth(usableWidth,columnNames.node.length);
-                if(Object.keys(columns).length !== columnNames.rule.length){
+                if(Object.keys(columns).length !== columnNames.node.length){
                     console.log("Cleaning up columns");
                     //cleanup everything there at the moment
                     Object.keys(columns).map(function(d){
@@ -369,15 +392,16 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     console.log("Final Columns:",columns);
                 }
                 drawNode(node,columnWidth);
-            }else if(node.tags.type === "Rule"){
+            }else if(node.tags.type === "Rule" | node.tags.type === "RuleContainer"){
+                //OTHERWISE: dealing with rules
                 console.log("Drawing rules");
                 //setup columns
-                var columnWidth = calcWith(usableWidth,columnNames.rule.length);
-                if(Object.keys(columns).length !== nodeColumnNames.length){
+                var columnWidth = calcWidth(usableWidth,columnNames.rule.length);
+                if(Object.keys(columns).length !== columnNames.rule.length){
                     console.log("Cleaning up columns");
                     //cleanup
                     Object.keys(columns).map(function(d){
-                        d3.select(columns[d]).remove();
+                        d3.select("#"+d).remove();
                     });
                     //re-init
                     columns = {};
@@ -389,7 +413,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 //switch to rule mode
                 drawRule(node,columnWidth);
             }else{
-                throw new Error("Unrecognised Node Type");
+                throw new Error("Unrecognised Node Type:",node);
             }
         };
 

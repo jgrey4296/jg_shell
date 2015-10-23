@@ -71,7 +71,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
         this.description = description;
-        this.children['Rules'] = new GraphNode('Rules',this);
+        this.children['Rules'] = new RuleContainer('Rules',this);
         
     };
     Role.prototype = Object.create(GraphNode.prototype);
@@ -146,21 +146,22 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
       @params name the name of the node to add
     */
     CompleteShell.prototype.addNode = function(target,type,name){
+        console.log("Adding:",target,type,name);
         //create the new node of type
         if(type === 'Rule') throw new Error('Rule Construction has its own function');
-        var constructor = interface[type];
-        if(constructor === undefined) throw new Error("Unrecognised Node Type");
-        if(this.cwd[target] === undefined) throw new Error("Unrecognised target");
+        var constructor = interface[type.toLowerCase()];
+        if(constructor === undefined) throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+        if(this.cwd[target] === undefined) throw new Error("Unrecognised target: " + target);
         //call the ctor, adding to the target
         if(constructor && this.cwd[target]){
             var newNode;
             if(target === "parents"){
                 newNode = new constructor(name);
-                newNode.children[this.cwd.id] = this.cwd;
+                newNode.children[this.cwd.name] = this.cwd;
             }else{
                 newNode = new constructor(name,this.cwd);
             }
-            this.cwd[target][newNode.id] = newNode;
+            this.cwd[target][newNode.name] = newNode;
 
             if(this.allNodes[newNode.id]){
                 throw new Error("Node Id is already used");
@@ -210,7 +211,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             }
             return;
         }
-        
+
+        //id specified
         if(!isNaN(Number(target)) && this.allNodes[target]){
             this.cwd = this.allNodes[target];
             return;
@@ -281,7 +283,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             }
         }else{
             //is a name
-            throw new Error("TODO");
+            
         }
     };
     
@@ -301,18 +303,22 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     
     //conversion to simple arrays for visualisation
     //export/import json
-    
+
+    //Interface of potential objects, used in addNode lookup,
+    //which defaults to lowercase
     var interface =  {
         "CompleteShell":CompleteShell,
-        "GraphNode" : GraphNode,
-        "Role"      : Role,
-        "Institution":Institution,
-        "Activity"  : Activity,
-        "Rule"      : RDS.Rule,
-        "RuleContainer":RuleContainer,
-        "Condition" : RDS.Condition,
-        "Test"      : RDS.Test,
-        "Action"    : RDS.ActionDescription,
+        "shell"     : CompleteShell,
+        "graphnode" : GraphNode,
+        "node"      : GraphNode,
+        "role"      : Role,
+        "institution":Institution,
+        "activity"  : Activity,
+        "rulecontainer":RuleContainer,
+        "rule"      : RDS.Rule,
+        "condition" : RDS.Condition,
+        "test"      : RDS.Test,
+        "action"    : RDS.ActionDescription,
     };
     return interface;
 });
