@@ -50,19 +50,19 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
                 console.log("Could not find: ",d,theNode);
             }
         });
-        console.log("Prior to flattening:",allArrays);
+        //console.log("Prior to flattening:",allArrays);
         return _.flatten(allArrays);
     };
     
     GraphNode.prototype.getList = function(fieldName){
-        console.log("Getting list for:",fieldName,this[fieldName]);
+        //console.log("Getting list for:",fieldName,this[fieldName]);
         var obj = this;
         if(this[fieldName] === undefined) throw new Error("Unrecognised field");
         var retArray = [];
         Object.keys(obj[fieldName]).map(function(d){
                 retArray.push(d + ": " + obj[fieldName][d]);
         });
-        console.log("Final list for:",fieldName,retArray);
+        //console.log("Final list for:",fieldName,retArray);
         return retArray;
     };
     
@@ -71,7 +71,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
         this.description = description;
-        this.children['Rules'] = new RuleContainer('Rules',this);
+        var temp = new RuleContainer('Rules',this);
+        this.children[temp.id] = temp;
         
     };
     Role.prototype = Object.create(GraphNode.prototype);
@@ -80,14 +81,21 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Institution';
         //All of these are nodes themselves?
-        this.children['Roles'] = new GraphNode('Roles',this);
-        this.children['Activities'] = new GraphNode('Activities',this);
-        this.children['Governance'] = new GraphNode('Governance',this);
-        this.children['OutgoingInterface'] = new GraphNode('OutwardRelations',this);
-        this.children['facts'] = new GraphNode('Facts',this);
-        this.children['norms'] = new GraphNode('Norms',this);
-        this.parents['IncomingInterface'] = new GraphNode('InwardRelations');
-        this.parents['IncomingInterface'].children[this.name] = this;
+        var temp = new GraphNode('Roles',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('Activities',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('Governance',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('OutwardRelations',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('Facts',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('Norms',this);
+        this.children[temp.id] = temp;
+        temp = new GraphNode('InwardRelations');
+        this.parents[temp.id] = temp;
+        temp.children[this.id] = this;
 
         //All rules defined in this institution?
         this.allRules = {};
@@ -102,11 +110,14 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.values['object'] = null;
         this.values['tool'] = null;
         //rules for this activity
-        this.children['Rules'] = new GraphNode('Rules',this);
+        var temp = new GraphNode('Rules',this);
+        this.children[temp.id] = temp;
         //potential interactions
-        this.children['Community'] = new GraphNode('Community',this);
+        temp = new GraphNode('Community',this);
+        this.children[temp.id] = temp;
         //how the community interacts with the outcome/object
-        this.children['DivisionOfLabour'] = new GraphNode('DivisionOfLabour',this);
+        temp = new GraphNode('DivisionOfLabour',this);
+        this.children[temp.id] = temp;
     };
     Activity.prototype = Object.create(GraphNode.prototype);
 
@@ -126,14 +137,25 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.tags['type'] = 'Shell';
         //the root
         this.root = new GraphNode('__root');
+        
+        //disconnected nodes:
+        this.disconnected = {
+            noParents : new GraphNode('disconnectedFromParents'),
+            noChildren : new GraphNode('disconnectedFromChildren'),
+        };
+
         //All Nodes:
         this.allNodes = {};
         this.allNodes[this.root.id] = this.root;
+        this.allNodes[this.disconnected.noParents.id] = this.disconnected.noParents;
+        this.allNodes[this.disconnected.noChildren.id] = this.disconnected.noChildren;
         //AllRules:
         this.allRules = [];
         this.allRulesByName = {};
         //current node/rule
         this.cwd = this.root;
+        
+        
     };
 
     //END OF DATA STRUCTURES
@@ -150,18 +172,38 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //create the new node of type
         if(type === 'Rule') throw new Error('Rule Construction has its own function');
         var constructor = interface[type.toLowerCase()];
-        if(constructor === undefined) throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+
         if(this.cwd[target] === undefined) throw new Error("Unrecognised target: " + target);
+
+        if(constructor === undefined) throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+                
+        if(this.cwd[target][name] !== undefined){
+            throw new Error("Node already exists, id of: " + this.cwd[target][name].id);
+        }
+
         //call the ctor, adding to the target
         if(constructor && this.cwd[target]){
             var newNode;
             if(target === "parents"){
                 newNode = new constructor(name);
-                newNode.children[this.cwd.name] = this.cwd;
+                newNode.children[this.cwd.id] = this.cwd;
             }else{
                 newNode = new constructor(name,this.cwd);
             }
-            this.cwd[target][newNode.name] = newNode;
+
+            this.cwd[target][newNode.id] = newNode;
+
+            //if the cwd has disconnected from parents
+            //or disconnectedFrom children
+            //remove from as appropriate
+            if(this.cwd[target][this.disconnected.noParents.id]){
+                this.rm(this.disconnected.noParents.id);
+            }
+            if(this.cwd[target][this.disconnected.noChildren.id]){
+                this.rm(this.disconnected.noChildren.id);                
+            };
+
+            
 
             if(this.allNodes[newNode.id]){
                 throw new Error("Node Id is already used");
@@ -180,8 +222,6 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             };
 
             addChildrenFn(newNode);
-
-            
             return newNode;
         }
         throw new Error("Add Node general error");
@@ -222,12 +262,14 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         var nameIdPairs = {};
         var children = this.cwd.children;
         Object.keys(children).map(function(d){
-            this[children[d].name] = children[d].id;
-        },nameIdPairs);
+            this[d.name] = d.id;
+        },nameIdPairs);//pay attention to the state arg
         var parents = this.cwd.parents;
-        Object.keys(parents).map(function(d){
-            this[parents[d].name] = parents[d].id;
-        },nameIdPairs);
+        _.values(parents).map(function(d){
+            this[d.name] = d.id;
+        },nameIdPairs);//state arg
+
+        //if you can find the target to move to:
         if(nameIdPairs[target]){
             this.cd(nameIdPairs[target]);
         }else{
@@ -263,27 +305,94 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     
     //TODO: should this be mutual?
     CompleteShell.prototype.link = function(target,id){
+        if(isNaN(Number(id))) throw new Error("id should be a global id number");
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
         if(!this.cwd[target]) throw new Error("Unrecognised target");
-        this.cwd[target][id] = this.allNodes[id];        
+        var nodeToLink = this.allNodes[id];
+        this.cwd[target][nodeToLink.id] = this.allNodes[id];        
     };
     
     //Remove a node from the parent/child lists
     CompleteShell.prototype.rm = function(id){
         //is an id
         if(!isNaN(Number(id))){
+            var id = Number(id);
+            console.log("Removing:",id);
+            var removed;
             if(this.cwd.parents[id]){
+                //if removing a parent
+                //ASSUMING NODES ARE STORED BY ID NOT NAME
+                removed = this.cwd.parents[id];
                 delete this.cwd.parents[id];
+                delete removed.children[this.cwd.id];
             }else if(this.cwd.children[id]){
+                //if removing a child
+                removed = this.cwd.children[id];
+                console.log("getting:",removed);
                 delete this.cwd.children[id];
+                delete removed.parents[this.cwd.id];
             }else{
-                throw new Error("Unrecognised id");
+                throw new Error("Unrecognised id: " + id);
             }
+            //if the removed node has no other parents,
+            //connect it to the parentless list
+            console.log("cleaning up from id delete" );
+            if(_.values(removed.parents).filter(function(d){return d;}).length === 0){
+                console.log("Storing in no parents:",this.allNodes[1],removed);
+                this.disconnected.noParents.children[removed.id] = removed;
+                removed.parents[this.disconnected.noParents.id] = this.disconnected.noParents;
+            }
+            if(_.values(removed.children).filter(function(d){return d;}).length === 0){
+                console.log("Storing in no children:",this.allNodes[2],removed);
+                this.disconnected.noChildren.parents[removed.id] = removed;
+                removed.children[this.disconnected.noChildren.id] = this.disconnected.noChildren;
+            }
+            //FINISHED REMOVING NUMERIC ID NODE
         }else{
-            //is a name
+            //is a NAME
+            //loop over all children and parents looking for name
+            //and delete it
+            var name = id;
+            var shell = this;
+            var childRemoved = _.values(this.cwd.children).filter(function(d){ return d.name === name;});
+            childRemoved.forEach(function(d){
+                delete d.parents[shell.cwd.id];
+                delete shell.cwd.children[d.id];
+                console.log("deleted:",shell.cwd.children,d);
+            });
+
+            var parentRemoved = _.values(this.cwd.parents).filter(function(d){ return d.name === name;});
+            parentRemoved.forEach(function(d){
+                delete shell.cwd.parents[d.id];
+                delete d.children[shell.cwd.id];
+            });
             
+            console.log(childRemoved,parentRemoved);
+            if(childRemoved.length === 0 && parentRemoved.length === 0){
+                throw new Error("No node found with id: " + id);
+            }
+
+            //cleanup and connect any nodes to noParents/Children if neccesary:
+            console.log("cleaning up from name delete");
+            parentRemoved.concat(childRemoved).map(function(d){
+                console.log("testing:",d);
+                console.log(_.values(d.parents).filter(function(d){return d;}));
+                if(_.values(d.parents).filter(function(d){return d;}).length === 0){
+                    console.log("disconnected");
+                    this.disconnected.noParents.children[d.id] = d;
+                    d.parents[this.disconnected.noParents.id] = this.disconnected.noParents;
+                }
+                if(_.values(d.children).filter(function(d){return d;}).length === 0){
+                    console.log("disconnected2");
+                    this.disconnected.noChildren.parents[d.id] = d;
+                    d.children[this.disconnected.noChildren.id] = this.disconnected.noChildren;
+                }
+            },this);//this as arg, so this= shell still
+
+            
+            //FINISHED REMOVING A NUMERIC SPECIFIED NODE
         }
     };
     
