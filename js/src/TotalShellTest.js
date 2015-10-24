@@ -14,7 +14,7 @@ exports.TotalShellTests = {
     initTest : function(test){
         var shell = makeShell();
         test.ok(shell.root !== undefined);
-        test.ok(Object.keys(shell.allNodes).length === 1);
+        test.ok(Object.keys(shell.allNodes).length === 3);
         test.ok(shell.allRules.length === 0);
         test.ok(Object.keys(shell.allRulesByName).length === 0);
         test.ok(shell.cwd.id === shell.root.id);
@@ -89,7 +89,7 @@ exports.TotalShellTests = {
         test.ok(newNode.id === shell.cwd.id);
 
         test.ok(newNode.tags.type === 'Role');
-        test.ok(newNode.children.Rules !== undefined);
+        test.ok(newNode.children.length !== 0);
         test.ok(newNode.name === 'blah');
         test.done();
     },
@@ -98,13 +98,8 @@ exports.TotalShellTests = {
         var shell = makeShell();
         var newNode = shell.addNode('children','Institution','bloo');
         test.ok(newNode.tags.type === 'Institution');
-        test.ok(newNode.children.Roles !== undefined);
-        test.ok(newNode.children.Activities !== undefined);
-        test.ok(newNode.children.Governance !== undefined);
-        test.ok(newNode.children.OutgoingInterface !== undefined);
-        test.ok(newNode.children.facts !== undefined);
-        test.ok(newNode.children.norms !== undefined);
-        test.ok(newNode.parents.IncomingInterface !== undefined);
+        test.ok(_.keys(newNode.children).length === 6,_.keys(newNode.children).length);
+        test.ok(_.keys(newNode.parents).length === 2); 
         test.done();
     },
 
@@ -146,9 +141,7 @@ exports.TotalShellTests = {
         test.ok(newNode.values.actor === null);
         test.ok(newNode.values.object === null);
         test.ok(newNode.values.tool === null);
-        test.ok(newNode.children.Rules !== undefined);
-        test.ok(newNode.children.Community !== undefined);
-        test.ok(newNode.children.DivisionOfLabour !== undefined);
+        test.ok(_.keys(newNode.children).length === 3);
         test.done();
     },
 

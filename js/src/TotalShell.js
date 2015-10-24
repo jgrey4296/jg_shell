@@ -3,145 +3,21 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
+define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(RDS,_,DS){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
+    if(DS === undefined) throw new Error("DS not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
-
-
-    var randomChoice = function(array){
-        var randIndex = Math.floor(Math.random() * array.length);
-        return array[randIndex];
-    };
-    
-    
-    var nextId = 0;
-    //Data Structures:
-    //The main node of the graph
-    var GraphNode = function(name,parent){
-        //Id and name for identification
-        this.id = nextId++;
-        this.name = name;
-        //parents and children for links
-        //storing by ID
-        this.parents = {};
-        this._originalParent = parent;
-        if(parent){
-            this.parents[parent.id] = parent;
-        }
-        this.children = {};
-        //values and tags and annotations for data
-        this.values = {};
-        this.tags = {};
-        this.annotations = {};
-        this.tags['type'] = 'GraphNode';
-    };
-
-
-    GraphNode.prototype.getLists = function(fieldNameList){
-        var theNode = this;
-        var allArrays = fieldNameList.map(function(d){
-            if(theNode[d] !== undefined){
-                if(d !== "id" && d !== "name"){
-                    return ["","| " + d + " |"].concat(theNode.getList(d));
-                }else{
-                    return d +  ": " + theNode[d];
-                }
-            }else{
-                console.log("Could not find: ",d,theNode);
-            }
-        });
-        //console.log("Prior to flattening:",allArrays);
-        return _.flatten(allArrays);
-    };
-    
-    GraphNode.prototype.getList = function(fieldName){
-        //console.log("Getting list for:",fieldName,this[fieldName]);
-        var obj = this;
-        if(this[fieldName] === undefined) throw new Error("Unrecognised field");
-        var retArray = [];
-        Object.keys(obj[fieldName]).map(function(d){
-                retArray.push(d + ": " + obj[fieldName][d]);
-        });
-        //console.log("Final list for:",fieldName,retArray);
-        return retArray;
-    };
-    
-    //----------
-    var Role = function(name,parent,description){
-        GraphNode.call(this,name,parent);
-        this.tags['type'] = 'Role';
-        this.description = description;
-        var temp = new RuleContainer('Rules',this);
-        this.children[temp.id] = temp;
-        
-    };
-    Role.prototype = Object.create(GraphNode.prototype);
-    
-    var Institution = function(name,parent){
-        GraphNode.call(this,name,parent);
-        this.tags['type'] = 'Institution';
-        //All of these are nodes themselves?
-        var temp = new GraphNode('Roles',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('Activities',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('Governance',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('OutwardRelations',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('Facts',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('Norms',this);
-        this.children[temp.id] = temp;
-        temp = new GraphNode('InwardRelations');
-        this.parents[temp.id] = temp;
-        temp.children[this.id] = this;
-
-        //All rules defined in this institution?
-        this.allRules = {};
-    };
-    Institution.prototype = Object.create(GraphNode.prototype);
-    
-    var Activity = function(name,parent){
-        GraphNode.call(this,name,parent);
-        this.tags['type'] = 'Activity';
-        //actor type
-        this.values['actor'] = null;
-        this.values['object'] = null;
-        this.values['tool'] = null;
-        //rules for this activity
-        var temp = new GraphNode('Rules',this);
-        this.children[temp.id] = temp;
-        //potential interactions
-        temp = new GraphNode('Community',this);
-        this.children[temp.id] = temp;
-        //how the community interacts with the outcome/object
-        temp = new GraphNode('DivisionOfLabour',this);
-        this.children[temp.id] = temp;
-    };
-    Activity.prototype = Object.create(GraphNode.prototype);
-
-
-    var RuleContainer = function(name,parent){
-        GraphNode.call(this,name,parent);
-        this.tags['type'] = 'RuleContainer';
-        this.rules = [];
-        this.rulesByName = {};
-
-    };
-    RuleContainer.prototype = Object.create(GraphNode.prototype);
-
     
     var CompleteShell = function(){
         this.tags = {};
         this.tags['type'] = 'Shell';
         //the root
-        this.root = new GraphNode('__root');
+        this.root = new DS.GraphNode('__root');
         
         //disconnected nodes:
         this.disconnected = {
-            noParents : new GraphNode('disconnectedFromParents'),
-            noChildren : new GraphNode('disconnectedFromChildren'),
+            noParents : new DS.GraphNode('disconnectedFromParents'),
+            noChildren : new DS.GraphNode('disconnectedFromChildren'),
         };
 
         //All Nodes:
@@ -154,7 +30,10 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.allRulesByName = {};
         //current node/rule
         this.cwd = this.root;
-        
+
+        //stashed locations:
+        this._nodeStash = [];
+        this.previousLocation = 0;
         
     };
 
@@ -171,7 +50,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         console.log("Adding:",target,type,name);
         //create the new node of type
         if(type === 'Rule') throw new Error('Rule Construction has its own function');
-        var constructor = interface[type.toLowerCase()];
+        //Retrieve the node constructor from the data structures module:
+        var constructor = DS[type.toLowerCase()];
 
         if(this.cwd[target] === undefined) throw new Error("Unrecognised target: " + target);
 
@@ -228,6 +108,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     };
     
     //Add a rule to the current node, should be a rule container
+    //TODO:
     CompleteShell.prototype.addRule = function(name){
         if(this.cwd.tags.type !== "RuleContainer") throw new Error("Rules should be added to a rule container");
         var rule = new RDS.Rule(name);
@@ -240,28 +121,32 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
        @params target The id (global) or name (local) to move to
     */
     CompleteShell.prototype.cd = function(target){
+        this.previousLocation = this.cwd.id;
         //TODO: cd into a rule
         //If a number:
         if(target === ".."){
+            console.log("cd : ..");
             if(this.cwd._originalParent){
                 this.cd(this.cwd._originalParent.id);
             }else{
-                var randomParent = randomChoice(Object.keys(this.cwd.parents));
+                var randomParent = util.randomChoice(Object.keys(this.cwd.parents));
                 this.cd(this.cwd.parents[randomParent]);
             }
             return;
         }
-
+        
         //id specified
-        if(!isNaN(Number(target)) && this.allNodes[target]){
-            this.cwd = this.allNodes[target];
+        if(!isNaN(Number(target)) && this.allNodes[Number(target)]){
+            console.log("cd : ", Number(target));
+            this.cwd = this.allNodes[Number(target)];
             return;
         }
         
         //passed a name. convert it to an id
+        console.log("Cd-ing: ",target);
         var nameIdPairs = {};
         var children = this.cwd.children;
-        Object.keys(children).map(function(d){
+        _.values(children).map(function(d){
             this[d.name] = d.id;
         },nameIdPairs);//pay attention to the state arg
         var parents = this.cwd.parents;
@@ -269,6 +154,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             this[d.name] = d.id;
         },nameIdPairs);//state arg
 
+        console.log("Available keys:",_.keys(nameIdPairs));
         //if you can find the target to move to:
         if(nameIdPairs[target]){
             this.cd(nameIdPairs[target]);
@@ -304,14 +190,19 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     
     
     //TODO: should this be mutual?
-    CompleteShell.prototype.link = function(target,id){
+    CompleteShell.prototype.link = function(target,id,reciprocal){
         if(isNaN(Number(id))) throw new Error("id should be a global id number");
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
         if(!this.cwd[target]) throw new Error("Unrecognised target");
         var nodeToLink = this.allNodes[id];
-        this.cwd[target][nodeToLink.id] = this.allNodes[id];        
+        this.cwd[target][nodeToLink.id] = this.allNodes[id];
+        if(reciprocal){
+            var rtarget = 'parents';
+            if(target === 'parents') rtarget = 'children';
+            nodeToLink[rtarget][this.cwd.id] = this.cwd;
+        }
     };
     
     //Remove a node from the parent/child lists
@@ -409,6 +300,23 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         
     };
     
+
+    //Stashing and unstashing:
+    CompleteShell.prototype.stash = function(){
+        this._nodeStash.push(this.cwd.id);
+    };
+
+    CompleteShell.prototype.unstash = function(){
+        if(this._nodeStash.length > 0){
+            this.cd(this._nodeStash.pop());
+        }
+    };
+
+    CompleteShell.prototype.top = function(){
+        if(this._nodeStash.length > 0){
+            this.cd(this._nodeStash[this._nodeStash.length - 1]);
+        }
+    };
     
     //conversion to simple arrays for visualisation
     //export/import json
@@ -418,16 +326,6 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     var interface =  {
         "CompleteShell":CompleteShell,
         "shell"     : CompleteShell,
-        "graphnode" : GraphNode,
-        "node"      : GraphNode,
-        "role"      : Role,
-        "institution":Institution,
-        "activity"  : Activity,
-        "rulecontainer":RuleContainer,
-        "rule"      : RDS.Rule,
-        "condition" : RDS.Condition,
-        "test"      : RDS.Test,
-        "action"    : RDS.ActionDescription,
     };
     return interface;
 });

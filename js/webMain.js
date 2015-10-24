@@ -6,7 +6,8 @@ require.config({
     paths:{
         "../libs/underscore": "/libs/underscore",
         underscore : "libs/underscore",
-        ReteDataStructures : '/libs/ReteDataStructures',
+        ReteDataStructures : 'libs/ReteDataStructures',
+        DataStructures : "src/DataStructures",
     },
     shim:{
         "../libs/underscore":{
@@ -121,12 +122,35 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             //link -> link
             //TODO: detect if recursive connection or not
             "link" : function(sh,values){
-                sh.link(values[0],values[1]);
+                var target = values[0];
+                if(target === 'child') target = 'children';
+                if(target === 'parent') target = 'parents';
+                sh.link(target,values[1],false);
+            },
+            "linkr" : function(sh,values){
+                var target = values[0];
+                if(target === 'child') target = 'children';
+                if(target === 'parent') target = 'parents';
+                sh.link(target,values[1],true);
+
             },
             //rename -> rename
             "rename" : function(sh,values){
 
-            }
+            },
+            //Stashing:
+            "stash" : function(sh,values){
+                sh.stash();
+            },
+            "unstash" : function(sh,values){
+                sh.unstash();
+            },
+            "top" : function(sh,values){
+                sh.top();
+            },
+            "prev" : function(sh,value){
+                sh.cd(sh.previousLocation);
+            },
         };
 
         var ruleCommands = {
@@ -204,15 +228,27 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         //     },
 
         //the additional information for each major command
-        var helpTexts = {
-            "new"   : "$target $type $name",
-            "nc"    : "[n|i|r|a|rc] $name",
-            "[ncn | nci]" : "$name",
-            "rm"    : "$id",
-            "cd"    : "[.. | $name | $id]",
-            "rename": "$name",
-            "set"   : "$field $parameter $value"
+        var helpData = {
+            node : {
+                "new"   : "$target $type $name",
+                "nc"    : "[n|i|r|a|rc] $name",
+                "[ncn | nci]" : "$name",
+                "rm"    : "$id",
+                "cd"    : "[.. | $name | $id]",
+                "rename": "$name",
+                "set"   : "$field $parameter $value",
+                "stash" : "",
+                "unstash":"",
+                "top" : "",
+                "prev" : "",
+            },
+            rule : {
+
+
+            },
         };
+
+
         
         //Utility functions:
         var HalfWidth = function(){
@@ -254,7 +290,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         var getColumnObject = function(columnName){
             if(columns[columnName] === undefined){
                 console.log("Available columns:",columns);
-                throw new Error("Unrecognised column name:",columnName);
+                throw new Error("Unrecognised column name:" + columnName);
             }
             return columns[columnName];
         };
@@ -288,7 +324,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         //----------------------------------------
 
         //Draw a help window informing what commands are available
-        var displayHelp = function(columnWidth){
+        var displayHelp = function(columnWidth,helpDataSubGrammar){
+            console.log(columnWidth + ":Available Commands:", helpDataSubGrammar);
+            var helpText = [["Available Commands ",""]].concat(_.pairs(helpDataSubGrammar));
             if(columnWidth === undefined){
                 console.warn("No columnWidth provided to displayHelp, assuming 200");
                 columnWidth = 200;
@@ -296,33 +334,41 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             var helpSize = 300;
             var helpWindow = d3.select("#helpWindow");
             if(helpWindow.empty()){
+                console.log("Initialising help window");
                 //create the window
                 helpWindow = d3.select("svg").append("g")
                     .attr("transform",
                           "translate(" + (usableWidth - columnWidth) + ","
                           + (usableHeight - helpSize) + ")")
                     .attr("id","helpWindow");
-            }
-
-            //clear it
-            helpWindow.selectAll().remove();
-            //create a help window from the main svg
-            helpWindow.append("rect")
+                helpWindow.append("rect")
                 .style("fill","black")
                 .attr("width",columnWidth)
                 .attr("height",helpSize);
+            }
 
-            var helpData = [["Available Commands: ",""]].concat(_.pairs(helpTexts));
-            var boundSelection = helpWindow.selectAll("text").data(helpData).enter()
+            //resize the rectangle:
+            helpWindow.attr("transform","translate(" + (usableWidth - columnWidth) + "," + (usableHeight - helpSize) + ")");
+            helpWindow.select("rect").attr("width",columnWidth);
+
+            //create a help window from the main svg
+
+            console.log("binding:",helpText);
+            var boundSelection = helpWindow.selectAll("text").data(helpText,function(d){return d[1];});
+
+            boundSelection.enter()
                 .append("text")
                 .style("text-anchor","middle")
-                .style("fill","white")
-                .attr("transform",function(d,i){
-                    return "translate("+ (columnWidth * 0.5) + "," + (30 + i * 30) +")";
+                .style("fill","white");
+            
+            boundSelection.attr("transform",function(d,i){
+                    return "translate("+ (columnWidth * 0.5) + "," + (30 + i * 20) +")";
                 })
                 .text(function(d){
                     return d[0] + ": " + d[1];
                 });
+
+            boundSelection.exit().remove();
         };
         
         //----------------------------------------
@@ -355,6 +401,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                           || theShell.cwd.tags.type === "RuleContainer"){
                             commandMode = "rule";
                         };
+                        console.log("Command mode: ", commandMode, "Commands: ", columnNames[commandMode]);
                         //get the command
                         var command = commands[commandMode][splitLine[0]];
                         if (command !== undefined){
@@ -366,6 +413,15 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         }
                         console.log("Shell cwd state:",theShell.cwd);
                         commands.context(theShell);
+                        //recheck the command type for displaying help
+                        if(theShell.cwd.tags.type === "Rule"
+                          || theShell.cwd.tags.type === "RuleContainer"){
+                            commandMode = "rule";
+                        }else{
+                            commandMode = "node";
+                        }                        
+                        displayHelp(calcWidth(usableWidth,_.values(columnNames[commandMode]).length), helpData[commandMode]);
+
                     }
                 }catch(err){
                     alert("Input error: \n" + err.message);
@@ -513,27 +569,29 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 //Cleanup
                 d3.select("#Rule").select("#mainRuleInfo").remove();
                 return;
-            }else{
-                //a data array of 1
-                rule = [rule];
+            }
+            if(columnWidth === undefined){
+                console.warn("No column width specified for drawRule, defaulting to 200");
+                columnWidth = 200;
             }
             console.log("Drawing:",rule);
-            
             var ruleContainer = svg.select("#Rule");
             //bind data
-            var theNode = ruleContainer.selectAll("g").data(rule,function(d){
+            var bound = ruleContainer.selectAll("g").data([rule],function(d){
                 return d.id;
             });
             //remove old data?
-            theNode.exit().remove();
+            bound.exit().remove();
 
             //Add a container to draw the rule's information in
-            var container = theNode.enter().append("g")
+            var container = bound.enter().append("g")
                 .attr("transform","translate(" +
                       (columnWidth * 0.1)+ ","+(drawOffset + 20)+")")
                 .attr("id","mainRuleInfo");
 
-            //make it visible:
+            //draw the parent NODE of the graph
+
+            //draw the rect
             container.append("rect")
                 .style("fill",function(d){
                     //TODO: colour by something else?
@@ -544,34 +602,17 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("rx",10)
                 .attr("ry",10);
 
-            //Draw the id number
-            container.append("text")
-            //translate over by half the rects width, not the column width
-                .attr("transform","translate(" + ((columnWidth * 0.4)) + ",15)")
-                .style("text-anchor","middle")
-                .text(function(d){
-                    return "ID:" + d.id;
-                });
 
-            //draw the rule name
-            container.append("text")
-                .attr("transform","translate(" + ((columnWidth * 0.4)) + ",30)")
-                .style("text-anchor","middle")
-                .text(function(d){
-                    return "Name: " + d.name;
-                })
-                .attr("id","ruleNameText");
+            //note: currently draw multiple nodes expected
+            
+            //draw node information,bindings,tags, etc
+            
 
-            //TODO: draw bindings
-            //TODO: draw tags
-
-            //separate function to be able to update
-            //value text separately
             //drawMultipleNodes("Conditions",theShell.cwd.getConditionNodes(),columnwidth);
             //drawMultipleNodes("Actions",theShell.cwd.getActionNodes(),columnWidth);
             //TODO:
-            drawMultipleNodes("ParentRules",[],columnWidth);
-            drawMultipleNodes("DependentRules",[],columnWidth);
+            //drawMultipleNodes("parents",[],columnWidth);
+            //drawMultipleNodes("children",[],columnWidth);
         };
 
         /**Draw a column of conditions
@@ -664,7 +705,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         commands.context(theShell);
         //Focus on the text input automatically on page load
         d3.select("#shellInput").node().focus();
-        displayHelp();
+        displayHelp(calcWidth(usableWidth,3),helpData['node']);
     }catch(e){
         alert("General Error: \n" + e.message);
         console.log("An Error Occurred:",e);
