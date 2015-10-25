@@ -78,40 +78,71 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     };
     
     //----------
+    //A generic container, creates a new child for each element in
+    //subsections
+    var Container = function(name,parent,subSections){
+        GraphNode.call(this,name,parent);
+        this.tags['type'] = 'Container';
+        subSections.forEach(function(d){
+            this.addNodeTo(new GraphNode(d,this),'children');
+        },this);
+    };
+    Container.prototype = Object.create(GraphNode.prototype);
+
+    //A node to describe an individual role,
+    //with sections for regulative and constitutive rules
     var Role = function(name,parent,description){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
         this.description = description;
-        var temp = new RuleContainer('Rules',this);
-        this.children[temp.id] = temp;
+        this.addNodeTo(new RuleContainer('ConstitutiveRules',this),'children');
+        this.addNodeTo(new RuleContainer('RegulativeRules',this),'children');
         
     };
     Role.prototype = Object.create(GraphNode.prototype);
-    
+
+    //a node to describe the varieties of possible norms
+    var NormsNode = function(name,parent){
+        GraphNode.call(this,name,parent);
+        this.tags['type'] = 'NormsNode';
+        this.addNodeTo(new RuleContainer('EmpiricallyExpected',this),'children');
+        this.addNodeTo(new RuleContainer('NormativelyExpected',this),'children');
+        this.addNodeTo(new RuleContainer('Sanctionable',this),'children');
+    };
+    NormsNode.prototype = Object.create(GraphNode.prototype);
+
+    //the super node: structures an entire institution
     var Institution = function(name,parent){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Institution';
         //All of these are nodes themselves?
-        this.addNodeTo(new GraphNode('Roles',this),'children');
-        this.addNodeTo(new GraphNode('Activities',this),'children');
-        this.addNodeTo(new GraphNode('Governance',this),'children');
-        this.addNodeTo(new GraphNode('OutwardRelations',this),'children');
-        this.addNodeTo(new GraphNode('Facts',this),'children');
-        this.addNodeTo(new GraphNode('Norms',this),'children');
+        this.addNodeTo(new Container('Roles',this,[
+            'incumbent','challenger','controlled','exempt'
+        ]),'children');
+        this.addNodeTo(new Container('Activities',this,[
+            'physical','symbolic','communicative'
+        ]),'children');
+        this.addNodeTo(new GraphNode('IGU',this),'children');
+        this.addNodeTo(new GraphNode('ExternalEffects',this),'children');
+        this.addNodeTo(new GraphNode('FactGrammar',this),'children');
+        this.addNodeTo(new GraphNode('ValueHierarchy',this),'children');
+        this.addNodeTo(new NormsNode('Norms',this),'children');
         //chain to update the parent's children as well:
-        this.addNodeTo(new GraphNode('InwardRelations'),'parents').addNodeTo(this,'children');
+        this.addNodeTo(new GraphNode('ExternalEffectors'),'parents').addNodeTo(this,'children');
 
         //All rules defined in this institution?
         this.allRules = {};
     };
     Institution.prototype = Object.create(GraphNode.prototype);
-    
+
+    //A Node to describe an activity    
     var Activity = function(name,parent){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Activity';
         //actor type
         this.values['actor'] = null;
         this.values['object'] = null;
+        this.values['outcome'] = null;
         this.values['tool'] = null;
         //rules for this activity
         this.addNodeTo(new GraphNode('Rules',this),'children');
@@ -119,10 +150,12 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.addNodeTo(new GraphNode('Community',this),'children');
         //how the community interacts with the outcome/object
         this.addNodeTo(new GraphNode('DivisionOfLabour',this),'children');
+        //the performance possibilities?
+        this.addNodeTo(new GraphNode('Actions',this),'children');
     };
     Activity.prototype = Object.create(GraphNode.prototype);
 
-
+    //A Container for Rules
     var RuleContainer = function(name,parent){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'RuleContainer';
@@ -132,6 +165,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     };
     RuleContainer.prototype = Object.create(GraphNode.prototype);
 
+    //A Single rule node, stores a ReteNet capable rule definition
     var RuleNode = function(name,parent){
         GraphNode.call(this,name,parent);
         this.tags.type = "RuleNode";
@@ -148,7 +182,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         var outputStringArray = [];
         outputStringArray.push("ID: " + this.id);
         outputStringArray.push("Name: " + this.name);
-        outputStringArray.push("Tags: ");
+        outputStringArray.push("| Tags |");
         outputStringArray = outputStringArray.concat(_.pairs(this.rule.tags).map(function(d){
             return d[0] +": " + d[1];
         }));
@@ -157,6 +191,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     };
     
 
+    //----------------------------------------
+    //----------------------------------------
     var theInterface = {
         "GraphNode" : GraphNode,
         "graphnode" : GraphNode,

@@ -175,9 +175,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 }else if(values[0] === "action"){
                     sh.addAction(values.slice(1));
                 }else if(values[0] === "test"){
-                    sh.addTest(values[0],values[1],values[2],values[3]);
+                    sh.addTest(values[1],values[2],values[3],values[4]);
                 }else if(values[0] === "binding"){
-                    sh.addBinding(values.slice(1));
+                    sh.addBinding(values[1],values[2],values[3]);
                 }                
             },
             //rm
@@ -271,7 +271,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             },
             rule : {
                 "cd"    : "[.. | $name | $id]",
-                "new condition" : "...",
+                "new condition" : " ",
                 "new action" : "$type $focus",
                 "new test" : "$num $field $op $value",
                 "new binding" : "$bind $source",
@@ -683,75 +683,98 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             var containingNode = getColumnObject(baseContainer);
             var heightAvailable = containingNode.select("rect").attr("height");
             heightAvailable -= 20; //-20 for top and bottom
-            //bind the data
-            var nodes = containingNode.selectAll("g")
-                .data(childArray,
-                      function(d){
-                          //using custom id's
-                          return d.id + "_node";
-                      });
 
+            var gOffset = function(i){
+                return (drawOffset + (i * (heightAvailable / childArray.length)));
+            };
+            
+            //bind the data
+            var nodes = containingNode.selectAll(".node")
+                .data(childArray,function(d,i){
+                    return baseContainer + d.id;
+                });
+            
             //remove any old nodes
             nodes.exit().remove();
-            //create each node
+            //create each new node
             var inodes = nodes.enter().append("g")
-                .attr("transform",function(d,i){
-                    //console.log("Drawing inode:",d.id,i);
-                    return "translate(0," + (drawOffset +(i * (heightAvailable / childArray.length))) + ")";
-                })
                 .classed("node",true);
 
-            inodes.append("rect");
-            inodes.append("text");
-
-
-            //Update Selection:
-            //update the  rectangle for each node
-            nodes.selectAll("rect")
+            //append to the enter selection:
+            inodes.append("rect")
                 .style("fill",function(d){
                     return colourScale(scaleToColour(_.values(d.constantTests).length));
                 })
                 .attr("width",(columnWidth * 0.8))
-                .attr("transform","translate(" + (columnWidth * 0.1)+ ",10)")
-                .attr("height",(heightAvailable / childArray.length) - 5)
+            //this transform causes cascade transforms for header text
+            //and context text
+                .attr("transform","translate(0,10)")
                 .attr("rx",10)
                 .attr("ry",10);
 
-            //Draw the nodes text
-            nodes.selectAll("text")
+            //HEADER TEXT:
+            inodes.append("text")
                 .style("text-anchor","middle")
-                .attr("transform","translate(" + (columnWidth * 0.5)+",30)")
-                .text(function(d){
-                    //D should be a node, condition, or action description
-                    if(typeof d.toShortString !== 'function'){
-                        console.log(d);
-                        throw new Error("Data is lacking a toShortString function");
-                    }
-                    return d.toShortString();
+            //* 0.4 because the overall container is shifted by 0.1
+            //30 because the rect is down by 10
+                .attr("transform","translate(" + (columnWidth * 0.4)+",30)")
+                .text(function(d,i){
+                    return d.toShortString(i);
+                });
+            
+            //update selection:
+            nodes.selectAll("rect")
+                .attr("height",(heightAvailable / childArray.length) - 5);
+
+            nodes.attr("transform",function(d,i){
+                return "translate(" + (columnWidth * 0.1) + "," + gOffset(i) + ")";
+            });
+
+            //----------------------------------------
+            //Draw tests if condition
+            if(baseContainer !== "conditions"){
+                return;
+            };
+
+            nodes.selectAll(".test").remove();
+            
+            var testsPerCondition = nodes.selectAll(".test").data(function(d,i){
+                var tests = ["Tests:"];
+                tests = tests.concat(d.constantTests);
+                tests.push("Bindings:");
+                tests = tests.concat(d.bindings);
+                console.log("Output tests:",tests);
+                return tests;
+            });
+
+            testsPerCondition.exit().remove();
+
+            //CONTENT:
+            var newTests = testsPerCondition.enter().append("g")
+                .classed("test",true)
+                .attr("transform",function(d,i){
+                    //50 because the condition header is 30.
+                    return "translate(" + (columnWidth * 0.4) + "," + (50 + (i * 20)) + ")";
                 });
 
-            // //Draw values:
-            // var subText = inodes.append("g")
-            //     .classed("nodeSubText",true)
-            //     .attr("transform","translate(" + (columnWidth * 0.5) + ",45)");
+            newTests.append("text")
+                .attr("text-anchor","middle");
 
-            // //here: have a method for each type (node,condition, action etc)
-            // //that converts to text representation
-            // var boundText = subText.selectAll("text").data(function(d){
-            //     return d.values;
-            // });
-            
-            // boundText.enter().append("text")
-            //     .attr("text-anchor","middle")
-            //     .attr("transform",function(d,i){
-            //         return "translate(0," + (i * 20) + ")";
-            //     })
-            //     .text(function(d){
-            //         return d;
-            //     });
-
-            
-            
+            //Draw the specific forms you can get in conditions:
+            testsPerCondition.selectAll("text")
+                .text(function(d){
+                    if(typeof d === "string"){
+                        //headers (ie: c_0, TESTS, BINDINGS)
+                        return d;                       
+                    }else if(d.field && d.operator && d.value){
+                        //TESTS
+                        return d.field + " " + d.operator + " " + d.value;
+                    }else if(d instanceof Array){
+                        //BINDINGS
+                        return d[0] + " <- wme." + d[1];
+                    }
+                });
+                        
         };
 
 

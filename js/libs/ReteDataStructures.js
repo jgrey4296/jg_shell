@@ -107,12 +107,17 @@ define(['underscore'],function(_){
     };
 
     //Method for js_shell integration, used in webMain.drawMultipleNodes
-    Condition.prototype.toShortString = function(){
-        return "( c" + this.id + " )";
+    Condition.prototype.toShortString = function(i){
+        var v = this.id;
+        if(i !== undefined){
+            v = i;
+        }        
+        return "( c_" + v + " )";
     };
     
     Condition.prototype.addBinding = function(to,from){
-        this.bindings[to] = from;
+        this.bindings.push([to,from]);
+        this.bindings.sort();
     };
     
 

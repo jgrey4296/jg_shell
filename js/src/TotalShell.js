@@ -301,25 +301,28 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     };
 
     CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
+        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.rule.conditions);
         if(this.cwd.tags.type !== 'RuleNode'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
 
-        if(conditionNumber > this.cwd.rule.conditions.length){
+        if(this.cwd.rule.conditions[conditionNumber] === undefined){
+            console.log(conditionNumber,this.cwd.rule.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
-        var test = RDS.ConstantTest(testField,op,value);
+        var test = new RDS.ConstantTest(testField,op,value);
         this.cwd.rule.conditions[conditionNumber].constantTests.push(test);
     };
 
     //ie: toVar  <- wme.fromVar
     //a <- wme.first
     CompleteShell.prototype.addBinding = function(conditionNum,toVar,fromVar){
+        console.log("Add binding to:",conditionNum,toVar,fromVar);
         if(this.cwd.tags.type !== 'RuleNode'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-        if(conditionNum > this.cwd.rule.conditions.length){
-            throw new Error("Cannot add binding to non-existent condition");
+        if(this.cwd.rule.conditions[conditionNum] === undefined){
+            throw new Error("Can't add binding to non=existent condition");
         }
         this.cwd.rule.conditions[conditionNum].addBinding(toVar,fromVar);
         
