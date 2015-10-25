@@ -8,7 +8,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     //Data Structures:
 
     //The main node type of the graph:
-    var GraphNode = function(name,parent){
+    var GraphNode = function(name,parent,owningShell){
         //Id and name for identification
         this.id = nextId++;
         this.name = name;
@@ -17,8 +17,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
         this.parents = {};
-        this._originalParent = parent.id;
         if(parent){
+            this._originalParent = parent.id;
             this.parents[parent.id] = true;//parent;
         }
         this.children = {};
@@ -31,10 +31,11 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
 
     //Utility add function
     //DOES NOT UPDATE OTHER NODES
-    GraphNode.prototype.addNodeTo = function(node,target){
+    GraphNode.prototype.addNodeTo = function(node,target,owningShell){
         if(this[target]){
-            this[target][node.id] = node;
+            this[target][node.id] = true;//node;
         }
+        owningShell.allNodes[node.id] = node;
         return node;
     };
 
@@ -51,18 +52,17 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     //Get simplified lists of the field names specified,
     //as key value pairs turned into strings
     GraphNode.prototype.getLists = function(fieldNameList){
-        var theNode = this;
         var allArrays = fieldNameList.map(function(d){
-            if(theNode[d] !== undefined){
+            if(this[d] !== undefined){
                 if(d !== "id" && d !== "name"){
-                    return ["","| " + d + " |"].concat(theNode.getList(d));
+                    return ["","| " + d + " |"].concat(this.getList(d));
                 }else{
-                    return d +  ": " + theNode[d];
+                    return d +  ": " + this[d];
                 }
             }else{
-                console.log("Could not find: ",d,theNode);
+                console.log("Could not find: ",d,this);
             }
-        });
+        },this);
         //console.log("Prior to flattening:",allArrays);
         return _.flatten(allArrays);
     };
@@ -82,57 +82,57 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     //----------
     //A generic container, creates a new child for each element in
     //subsections
-    var Container = function(name,parent,subSections){
+    var Container = function(name,parent,subSections,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Container';
         subSections.forEach(function(d){
-            this.addNodeTo(new GraphNode(d,this),'children');
+            this.addNodeTo(new GraphNode(d,this,owningShell),'children',owningShell);
         },this);
     };
     Container.prototype = Object.create(GraphNode.prototype);
 
     //A node to describe an individual role,
     //with sections for regulative and constitutive rules
-    var Role = function(name,parent,description){
+    var Role = function(name,parent,description,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
         this.description = description;
-        this.addNodeTo(new RuleContainer('ConstitutiveRules',this),'children');
-        this.addNodeTo(new RuleContainer('RegulativeRules',this),'children');
+        this.addNodeTo(new RuleContainer('ConstitutiveRules',this,owningShell),'children',owningShell);
+        this.addNodeTo(new RuleContainer('RegulativeRules',this,owningShell),'children',owningShell);
         
     };
     Role.prototype = Object.create(GraphNode.prototype);
 
     //a node to describe the varieties of possible norms
-    var NormsNode = function(name,parent){
+    var NormsNode = function(name,parent,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'NormsNode';
-        this.addNodeTo(new RuleContainer('EmpiricallyExpected',this),'children');
-        this.addNodeTo(new RuleContainer('NormativelyExpected',this),'children');
-        this.addNodeTo(new RuleContainer('Sanctionable',this),'children');
+        this.addNodeTo(new RuleContainer('EmpiricallyExpected',this,owningShell),'children',owningShell);
+        this.addNodeTo(new RuleContainer('NormativelyExpected',this,owningShell),'children',owningShell);
+        this.addNodeTo(new RuleContainer('Sanctionable',this,owningShell),'children',owningShell);
     };
     NormsNode.prototype = Object.create(GraphNode.prototype);
 
     //the super node: structures an entire institution
-    var Institution = function(name,parent){
+    var Institution = function(name,parent,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Institution';
         //All of these are nodes themselves?
         this.addNodeTo(new Container('Roles',this,[
             'incumbent','challenger','controlled','exempt'
-        ]),'children');
+        ],owningShell),'children',owningShell);
         this.addNodeTo(new Container('Activities',this,[
             'physical','symbolic','communicative','unbound'
-        ]),'children');
-        this.addNodeTo(new GraphNode('IGU',this),'children');
-        this.addNodeTo(new GraphNode('ExternalEffects',this),'children');
+        ],owningShell),'children',owningShell);
+        this.addNodeTo(new GraphNode('IGU',this,owningShell),'children',owningShell);
+        this.addNodeTo(new GraphNode('ExternalEffects',this,owningShell),'children',owningShell);
         this.addNodeTo(new Container('FactGrammar',this,[
             'physical','symbolic','communicative','unbound'
-        ]),'children');
-        this.addNodeTo(new GraphNode('ValueHierarchy',this),'children');
-        this.addNodeTo(new NormsNode('Norms',this),'children');
+        ],owningShell),'children',owningShell);
+        this.addNodeTo(new GraphNode('ValueHierarchy',this,owningShell),'children',owningShell);
+        this.addNodeTo(new NormsNode('Norms',this,owningShell),'children',owningShell);
         //chain to update the parent's children as well:
-        this.addNodeTo(new GraphNode('ExternalEffectors'),'parents').addNodeTo(this,'children');
+        this.addNodeTo(new GraphNode('ExternalEffectors'),'parents',owningShell).addNodeTo(this,'children',owningShell);
 
         //All rules defined in this institution?
         this.allRules = {};
@@ -140,7 +140,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     Institution.prototype = Object.create(GraphNode.prototype);
 
     //A Node to describe an activity    
-    var Activity = function(name,parent){
+    var Activity = function(name,parent,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Activity';
         //actor type
@@ -149,18 +149,18 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.values['outcome'] = null;
         this.values['tool'] = null;
         //rules for this activity
-        this.addNodeTo(new GraphNode('Rules',this),'children');
+        this.addNodeTo(new GraphNode('Rules',this,owningShell),'children',owningShell);
         //potential interactions
-        this.addNodeTo(new GraphNode('Community',this),'children');
+        this.addNodeTo(new GraphNode('Community',this,owningShell),'children',owningShell);
         //how the community interacts with the outcome/object
-        this.addNodeTo(new GraphNode('DivisionOfLabour',this),'children');
+        this.addNodeTo(new GraphNode('DivisionOfLabour',this,owningShell),'children',owningShell);
         //the performance possibilities?
-        this.addNodeTo(new GraphNode('Actions',this),'children');
+        this.addNodeTo(new GraphNode('Actions',this,owningShell),'children',owningShell);
     };
     Activity.prototype = Object.create(GraphNode.prototype);
 
     //A Container for Rules
-    var RuleContainer = function(name,parent){
+    var RuleContainer = function(name,parent,owningShell){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'RuleContainer';
         this.rules = [];
@@ -170,7 +170,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     RuleContainer.prototype = Object.create(GraphNode.prototype);
 
     //A Single rule node, stores a ReteNet capable rule definition
-    var RuleNode = function(name,parent){
+    var RuleNode = function(name,parent,owningShell){
         GraphNode.call(this,name,parent);
         this.tags.type = "RuleNode";
         this.rule = new RDS.Rule(name);

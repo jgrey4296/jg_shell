@@ -11,7 +11,7 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     var CompleteShell = function(){
         console.log("Shell constructor");
         this.tags = {};
-        this.tags['type'] = 'Shell';
+        this.tags.type = 'Shell';
         //the root
         this.root = new DS.GraphNode('__root');
         
@@ -71,14 +71,15 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         if(constructor && this.cwd[target]){
             var newNode;
             if(target === "parents"){
-                newNode = new constructor(name);
+                newNode = new constructor(name,undefined,this);
                 newNode.children[this.cwd.id] = true;//this.cwd;
             }else{
-                newNode = new constructor(name,this.cwd);
+                newNode = new constructor(name,this.cwd,this);
             }
+            this.allNodes[newNode.id] = newNode;
+            this.cwd[target][newNode.id] = true;//newNode;
 
-            this.cwd[target][newNode.id] = //newNode;
-
+            
             //if the cwd has disconnected from parents
             //or disconnectedFrom children
             //remove from as appropriate
@@ -87,27 +88,25 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
             }
             if(this.cwd[target][this.disconnected.noChildren.id]){
                 this.rm(this.disconnected.noChildren.id);                
-            };
+            }
 
             
-
-            if(this.allNodes[newNode.id]){
-                throw new Error("Node Id is already used");
-            }
+            // if(this.allNodes[newNode.id]){
+            //     throw new Error("Node Id is already used");
+            // }
             
             //add all the children of the node as well,
             //using a recursive map, so *all* children are added
-            var shellInstance = this;
-            var addChildrenFn = function(d){
-                if(shellInstance.allNodes[d.id]){
-                    return;
-                }
-                shellInstance.allNodes[d.id] = true;//d;
-                _.values(d.children).map(addChildrenFn);
-                _.values(d.parents).map(addChildrenFn);
-            };
-
-            addChildrenFn(newNode);
+            // var shellInstance = this;
+            // var addChildrenFn = function(d){
+            //     if(shellInstance.allNodes[d.id]){
+            //         return;
+            //     }
+            //     shellInstance.allNodes[d.id] = d;//d;
+            //     _.values(d.children).map(addChildrenFn);
+            //     _.values(d.parents).map(addChildrenFn);
+            // };
+            //addChildrenFn(newNode);
             return newNode;
         }
         throw new Error("Add Node general error");
@@ -126,8 +125,8 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
                 this.cd(this.cwd._originalParent);
             }else{
                 var randomParentKey = util.randomChoice(Object.keys(this.cwd.parents));
-                if(randomParent !== undefined){
-                    this.cd(randomParent);
+                if(randomParentKey !== undefined){
+                    this.cd(randomParentKey);
                 }
             }
             return;
@@ -144,11 +143,17 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         console.log("Cd-ing: ",target);
         var nameIdPairs = {};
         var children = this.cwd.children;
-        _.values(children).map(function(d){
+
+        _.keys(children).map(function(d){
+            return this.allNodes[d];
+        },this).forEach(function(d){
             this[d.name] = d.id;
         },nameIdPairs);//pay attention to the state arg
+        
         var parents = this.cwd.parents;
-        _.values(parents).map(function(d){
+        _.keys(parents).map(function(d){
+            return this.allNodes[d];
+        },this).forEach(function(d){
             this[d.name] = d.id;
         },nameIdPairs);//state arg
 
@@ -163,13 +168,11 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     };
     
     CompleteShell.prototype.getNodeListByIds = function(idList){
-        var tempShell = this;
-        var retList = [];
-        idList.map(function(d){
-            if(tempShell.allNodes[d]){
-                retList.push(tempShell.allNodes[d]);
+        var retList = idList.map(function(d){
+            if(this.allNodes[d]){
+                retList.push(this.allNodes[d]);
             }            
-        });
+        },this);
         return retList;
     };
     
@@ -195,11 +198,11 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         }
         if(!this.cwd[target]) throw new Error("Unrecognised target");
         var nodeToLink = this.allNodes[id];
-        this.cwd[target][nodeToLink.id] = this.allNodes[id];
+        this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
             var rtarget = 'parents';
             if(target === 'parents') rtarget = 'children';
-            nodeToLink[rtarget][this.cwd.id] = this.cwd;
+            nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
         }
     };
     
@@ -207,18 +210,18 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     CompleteShell.prototype.rm = function(id){
         //is an id
         if(!isNaN(Number(id))){
-            var id = Number(id);
+            id = Number(id);
             console.log("Removing:",id);
             var removed;
             if(this.cwd.parents[id]){
                 //if removing a parent
                 //ASSUMING NODES ARE STORED BY ID NOT NAME
-                removed = this.cwd.parents[id];
+                removed = this.allNodes[id];
                 delete this.cwd.parents[id];
                 delete removed.children[this.cwd.id];
             }else if(this.cwd.children[id]){
                 //if removing a child
-                removed = this.cwd.children[id];
+                removed = this.allNodes[id];
                 console.log("getting:",removed);
                 delete this.cwd.children[id];
                 delete removed.parents[this.cwd.id];
@@ -230,13 +233,13 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
             console.log("cleaning up from id delete" );
             if(_.values(removed.parents).filter(function(d){return d;}).length === 0){
                 console.log("Storing in no parents:",this.allNodes[1],removed);
-                this.disconnected.noParents.children[removed.id] = removed;
-                removed.parents[this.disconnected.noParents.id] = this.disconnected.noParents;
+                this.disconnected.noParents.children[removed.id] = true;
+                removed.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
             }
             if(_.values(removed.children).filter(function(d){return d;}).length === 0){
                 console.log("Storing in no children:",this.allNodes[2],removed);
-                this.disconnected.noChildren.parents[removed.id] = removed;
-                removed.children[this.disconnected.noChildren.id] = this.disconnected.noChildren;
+                this.disconnected.noChildren.parents[removed.id] = true;//removed;
+                removed.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
             }
             //FINISHED REMOVING NUMERIC ID NODE
         }else{
@@ -244,19 +247,18 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
             //loop over all children and parents looking for name
             //and delete it
             var name = id;
-            var shell = this;
-            var childRemoved = _.values(this.cwd.children).filter(function(d){ return d.name === name;});
+            var childRemoved = _.keys(this.cwd.children).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this);
             childRemoved.forEach(function(d){
                 delete d.parents[shell.cwd.id];
-                delete shell.cwd.children[d.id];
+                delete this.cwd.children[d.id];
                 console.log("deleted:",shell.cwd.children,d);
-            });
+            },this);
 
-            var parentRemoved = _.values(this.cwd.parents).filter(function(d){ return d.name === name;});
+            var parentRemoved = _.keys(this.cwd.parents).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this);
             parentRemoved.forEach(function(d){
-                delete shell.cwd.parents[d.id];
+                delete this.cwd.parents[d.id];
                 delete d.children[shell.cwd.id];
-            });
+            },this);
             
             console.log(childRemoved,parentRemoved);
             if(childRemoved.length === 0 && parentRemoved.length === 0){
@@ -265,18 +267,17 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
 
             //cleanup and connect any nodes to noParents/Children if neccesary:
             console.log("cleaning up from name delete");
-            parentRemoved.concat(childRemoved).map(function(d){
-                console.log("testing:",d);
+            parentRemoved.concat(childRemoved).forEach(function(d){
                 console.log(_.values(d.parents).filter(function(d){return d;}));
                 if(_.values(d.parents).filter(function(d){return d;}).length === 0){
                     console.log("disconnected");
-                    this.disconnected.noParents.children[d.id] = d;
-                    d.parents[this.disconnected.noParents.id] = this.disconnected.noParents;
+                    this.disconnected.noParents.children[d.id] = true;//d;
+                    d.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
                 }
                 if(_.values(d.children).filter(function(d){return d;}).length === 0){
                     console.log("disconnected2");
-                    this.disconnected.noChildren.parents[d.id] = d;
-                    d.children[this.disconnected.noChildren.id] = this.disconnected.noChildren;
+                    this.disconnected.noChildren.parents[d.id] = true; //d;
+                    d.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
                 }
             },this);//this as arg, so this= shell still
 

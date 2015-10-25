@@ -596,9 +596,11 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             var childList = _.keys(node.children).map(function(d){
                 return this.allNodes[d];
             },theShell);
-            var parentList = _.values(node.parents).map(function(d){
+            var parentList = _.keys(node.parents).map(function(d){
                 return this.allNodes[d];
             },theShell);
+
+            console.log("To Draw columns with:",childList,parentList);
             
             drawMultipleNodes('Parents',parentList,columnWidth);
             drawMultipleNodes('Children',childList,columnWidth);
@@ -667,7 +669,6 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             
             //note: currently draw multiple nodes expected
             //draw node information,bindings,tags, etc
-            
             drawMultipleNodes("conditions",ruleNode.rule.conditions,columnWidth);
             drawMultipleNodes("actions",ruleNode.rule.actions,columnWidth);
             //TODO:
