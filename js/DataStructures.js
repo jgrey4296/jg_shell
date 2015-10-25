@@ -35,14 +35,6 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         }
         return node;
     };
-
-    GraphNode.prototype.toShortString = function(){
-        return "(" + this.id + "): " + this.name + " (" + this.tags.type + ")";
-    };
-
-    GraphNode.prototype.toStringList = function(){
-        return [];
-    };
     
 
     //for pseudoprinting
@@ -82,9 +74,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         GraphNode.call(this,name,parent);
         this.tags['type'] = 'Role';
         this.description = description;
-        var temp = new RuleContainer('Rules',this);
-        this.children[temp.id] = temp;
-        
+        this.addNodeTo(new RuleContainer('Rules',this),'children');
     };
     Role.prototype = Object.create(GraphNode.prototype);
     
@@ -93,7 +83,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.tags['type'] = 'Institution';
         //All of these are nodes themselves?
         this.addNodeTo(new GraphNode('Roles',this),'children');
-        this.addNodeTo(new GraphNode('Activities',this),'children');
+        this.addNodeTo(new GraphNode('Activities','children'));
         this.addNodeTo(new GraphNode('Governance',this),'children');
         this.addNodeTo(new GraphNode('OutwardRelations',this),'children');
         this.addNodeTo(new GraphNode('Facts',this),'children');
@@ -132,34 +122,13 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
     };
     RuleContainer.prototype = Object.create(GraphNode.prototype);
 
-    var RuleNode = function(name,parent){
-        GraphNode.call(this,name,parent);
-        this.tags.type = "RuleNode";
-        this.rule = new RDS.Rule(name);
-        this.rule.ruleNode = this;
-    };
-    RuleNode.prototype = Object.create(GraphNode.prototype);
+    RuleContainer.prototype.addRule = function(name){
 
-    //TODO: convert this to a generic "get all information as string array" method
-    RuleNode.prototype.toStringList = function(){
-        if(!this.rule){
-            throw new Error("Rule Node should always own a rule");
-        }
-        var outputStringArray = [];
-        outputStringArray.push("ID: " + this.id);
-        outputStringArray.push("Name: " + this.name);
-        outputStringArray.push("Tags: ");
-        outputStringArray = outputStringArray.concat(_.pairs(this.rule.tags).map(function(d){
-            return d[0] +": " + d[1];
-        }));
-        console.log("Rule turned to strings:",outputStringArray);
-        return outputStringArray;
     };
-    
+
 
     var theInterface = {
         "GraphNode" : GraphNode,
-        "graphnode" : GraphNode,
         "node"      : GraphNode,
         "role"      : Role,
         "institution":Institution,
@@ -167,11 +136,8 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         "Activity"  : Activity,
         "activity"  : Activity,
         "RuleContainer":RuleContainer,
-        "rulecontainer":RuleContainer,
         "rulecon"   : RuleContainer,
-        "Rule"      : RuleNode,
-        "rule"      : RuleNode,
     };
     
     return theInterface;      
-});
+    };

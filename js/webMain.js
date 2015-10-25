@@ -46,9 +46,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         };
         
         //utility function to check input values for commands:
-        var valueCheck = function(list,requiredLength,command){
+        var valueCheck = function(list,requiredLength){
             if(list.length !== requiredLength){
-                throw new Error("Incorrect number of arguments: " + command);
+                throw new Error("Incorrect number of arguments: " + list);
             }
         };
         
@@ -78,7 +78,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     "a" : "activity",
                     "rc": "rulecontainer",
                 };
-                sh.addNode('children',chars[values[0]],values[1]);
+                if(chars[values[0]]){
+                    sh.addNode('children',chars[values[0]],values[1]);
+                }
             },
             "np" : function(sh,values){
                 var chars = {
@@ -88,7 +90,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     "a" : "activity",
                     "rc": "rulecontainer",
                 };
-                sh.addNode('parents',chars[values[0]],values[1]);
+                if(chars[values[0]]){
+                    sh.addNode('parents',chars[values[0]],values[1]);
+                }
             },
             //New Child Node, ncn:
             "ncn" : function(sh,values){
@@ -112,7 +116,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             },
             //cd -> cd
             "cd" : function(sh,values){
-                valueCheck(values,1,values);
+                valueCheck(values,1);
                 sh.cd(values[0]);
             },
             //set -> setParameter
@@ -136,7 +140,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             },
             //rename -> rename
             "rename" : function(sh,values){
-
+                sh.rename(values[0]);
             },
             //Stashing:
             "stash" : function(sh,values){
@@ -148,14 +152,37 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             "top" : function(sh,values){
                 sh.top();
             },
-            "prev" : function(sh,value){
+            "prev" : function(sh,values){
                 sh.cd(sh.previousLocation);
             },
+            //Search:
+            "search" : function(sh,values){
+                throw new Error("Search unimplemented");
+            }
+            
         };
 
         var ruleCommands = {
-            //new -> addRule,
+            //cd
+            "cd" : function(sh,values){
+                valueCheck(values,1);
+                sh.cd(values[0]);
+            },
+            //new -> addCondition/test/action
             "new" : function(sh,values){
+                if(values[0] === "condition"){
+                    sh.addCondition();
+                }else if(values[0] === "action"){
+                    sh.addAction(values.slice(1));
+                }else if(values[0] === "test"){
+                    sh.addTest(values[0],values[1],values[2],values[3]);
+                }else if(values[0] === "binding"){
+                    sh.addBinding(values.slice(1));
+                }                
+            },
+            //rm
+            "rm" : function(sh,values){
+
 
             },
             //set -> setParameter
@@ -243,7 +270,16 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 "prev" : "",
             },
             rule : {
-
+                "cd"    : "[.. | $name | $id]",
+                "new condition" : "...",
+                "new action" : "$type $focus",
+                "new test" : "$num $field $op $value",
+                "new binding" : "$bind $source",
+                "rm"     : "",
+                "set"    : "",
+                "rename" :"",
+                "add"    : "",
+                
 
             },
         };
@@ -397,8 +433,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         //default to node view
                         var commandMode = "node";
                         //shift to rule view when appropriate
-                        if(theShell.cwd.tags.type === "Rule"
-                          || theShell.cwd.tags.type === "RuleContainer"){
+                        if(theShell.cwd.tags.type === "RuleNode"){
                             commandMode = "rule";
                         };
                         console.log("Command mode: ", commandMode, "Commands: ", columnNames[commandMode]);
@@ -414,8 +449,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         console.log("Shell cwd state:",theShell.cwd);
                         commands.context(theShell);
                         //recheck the command type for displaying help
-                        if(theShell.cwd.tags.type === "Rule"
-                          || theShell.cwd.tags.type === "RuleContainer"){
+                        if(theShell.cwd.tags.type === "RuleNode"){
                             commandMode = "rule";
                         }else{
                             commandMode = "node";
@@ -454,7 +488,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
 
             //If cwd === node
-            if(node.tags.type !== 'Rule' && node.tags.type !== 'RuleContainer'){
+            if(node.tags.type !== 'RuleNode'){
                 console.log("Drawing nodes");
                 //setup columns
                 var columnWidth = calcWidth(usableWidth,columnNames.node.length);
@@ -475,7 +509,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     console.log("Final Columns:",columns);
                 }
                 drawNode(node,columnWidth);
-            }else if(node.tags.type === "Rule" | node.tags.type === "RuleContainer"){
+            }else if(node.tags.type === "RuleNode"){
                 //OTHERWISE: dealing with rules
                 console.log("Drawing rules");
                 //setup columns
@@ -525,8 +559,10 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("transform","translate(" +
                       (columnWidth * 0.1) + "," + (drawOffset + 20) + ")");
             
-            //draw the rectangle
-            theNode.append("rect")
+            theNode.append("rect");
+            
+            //update the rectangles
+            bound.selectAll("rect")
                 .attr("width",(columnWidth * 0.8))
                 .attr("height",300)
                 .attr("rx",10)
@@ -534,20 +570,21 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
 
             //draw the text of the node
             var nodeInternalText  = node.getLists(["id","name","values","tags","annotations"]);
+            //select all existing and bind
+            var boundText = bound.selectAll("text").data(nodeInternalText);
             
-            var boundText = theNode.selectAll("text").data(nodeInternalText);
-
-            boundText.exit().remove();
-            
+            //for new stuff, create the node but dont set its text
             boundText.enter().append("text")
                 .attr("transform",function(d,i){
                     return "translate(" + (columnWidth * 0.4) + "," + (15 + i * 15) + ")";
                 })
                 .style("text-anchor","middle")
                 .style("fill","white");
-
-            //this should be in the update selection?
+            //remove old text:
+            boundText.exit().remove();
+            //now set the text of all existing texts
             boundText.text(function(d,i){
+                //console.log(i,":",d);
                 return d;
             });
 
@@ -562,22 +599,24 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         
         /**Renders the current rule 
            @function drawRule
-           @param rule The Rule object to render
+           @param rule The RuleNode object to draw, that contains the rule Object
         */
-        var drawRule = function(rule,columnWidth){
+        var drawRule = function(ruleNode,columnWidth){
+            //validation
             if(rule === undefined){
                 //Cleanup
-                d3.select("#Rule").select("#mainRuleInfo").remove();
+                d3.select("#rule").select("#mainRuleInfo").remove();
                 return;
             }
             if(columnWidth === undefined){
                 console.warn("No column width specified for drawRule, defaulting to 200");
                 columnWidth = 200;
             }
-            console.log("Drawing:",rule);
-            var ruleContainer = svg.select("#Rule");
+            //main:
+            console.log("Drawing:",rule,ruleNode.rule);
+            var ruleContainer = svg.select("#rule");
             //bind data
-            var bound = ruleContainer.selectAll("g").data([rule],function(d){
+            var bound = ruleContainer.selectAll("g").data([ruleNode.rule],function(d){
                 return d.id;
             });
             //remove old data?
@@ -588,9 +627,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("transform","translate(" +
                       (columnWidth * 0.1)+ ","+(drawOffset + 20)+")")
                 .attr("id","mainRuleInfo");
-
-            //draw the parent NODE of the graph
-
+            
+            //TODO:draw the parent rule container? of the graph
             //draw the rect
             container.append("rect")
                 .style("fill",function(d){
@@ -602,18 +640,33 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("rx",10)
                 .attr("ry",10);
 
-
-            //note: currently draw multiple nodes expected
+            //get data from the rule:
+            var bound = container.selectAll("text").data(ruleNode.toStringList());
+            //new stuff
+            bound.enter().append("text")
+                .attr("text-anchor","middle")
+                .attr("transform",function(d,i){
+                    return "translate(" + (columnWidth * 0.4) + ","
+                        + (30 + i * 30) + ")";
+                });
+            //old stuff
+            bound.exit().remove();
+            //remaining stuff
+            bound.text(function(d){
+                return d;
+            });
             
+            //note: currently draw multiple nodes expected
             //draw node information,bindings,tags, etc
             
-
-            //drawMultipleNodes("Conditions",theShell.cwd.getConditionNodes(),columnwidth);
-            //drawMultipleNodes("Actions",theShell.cwd.getActionNodes(),columnWidth);
+            drawMultipleNodes("conditions",ruleNode.rule.conditions,columnWidth);
+            drawMultipleNodes("actions",ruleNode.rule.actions,columnWidth);
             //TODO:
             //drawMultipleNodes("parents",[],columnWidth);
             //drawMultipleNodes("children",[],columnWidth);
         };
+
+        //------------------------------
 
         /**Draw a column of conditions
            @param baseContainer The container column to use
@@ -621,17 +674,13 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
            @function drawMultipleNodes
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
-            //console.log("Drawing Column:",baseContainer,childArray);
+            console.log("Drawing Column:",baseContainer,childArray);
+            console.log("Column Length:",childArray.length);
+            if(childArray.length > 0 && typeof childArray[0].toShortString !== 'function'){
+                throw new Error("Drawing multiple nodes requires an object with the toShortString method");
+            }
             
             var containingNode = getColumnObject(baseContainer);
-            //clean the container
-            containingNode.selectAll(".node").remove();
-
-            if(childArray.length === 0){
-                return;
-            }
-
-            
             var heightAvailable = containingNode.select("rect").attr("height");
             heightAvailable -= 20; //-20 for top and bottom
             //bind the data
@@ -642,21 +691,23 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                           return d.id + "_node";
                       });
 
-            drawOffSet = 10; 
-
+            //remove any old nodes
+            nodes.exit().remove();
             //create each node
             var inodes = nodes.enter().append("g")
                 .attr("transform",function(d,i){
                     //console.log("Drawing inode:",d.id,i);
                     return "translate(0," + (drawOffset +(i * (heightAvailable / childArray.length))) + ")";
                 })
-                .attr('id',function(d){
-                    return d.id + "_node";
-                })
                 .classed("node",true);
 
-            //Draw a rectangle for the node
-            inodes.append("rect")
+            inodes.append("rect");
+            inodes.append("text");
+
+
+            //Update Selection:
+            //update the  rectangle for each node
+            nodes.selectAll("rect")
                 .style("fill",function(d){
                     return colourScale(scaleToColour(_.values(d.constantTests).length));
                 })
@@ -667,34 +718,39 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("ry",10);
 
             //Draw the nodes text
-            inodes.append("text")
+            nodes.selectAll("text")
                 .style("text-anchor","middle")
                 .attr("transform","translate(" + (columnWidth * 0.5)+",30)")
                 .text(function(d){
-                    return "(" + d.id + "): " + d.name + " (" + d.tags.type + ")";
+                    //D should be a node, condition, or action description
+                    if(typeof d.toShortString !== 'function'){
+                        console.log(d);
+                        throw new Error("Data is lacking a toShortString function");
+                    }
+                    return d.toShortString();
                 });
 
-            //Draw values:
-            var subText = inodes.append("g")
-                .classed("nodeSubText",true)
-                .attr("transform","translate(" + (columnWidth * 0.5) + ",45)");
+            // //Draw values:
+            // var subText = inodes.append("g")
+            //     .classed("nodeSubText",true)
+            //     .attr("transform","translate(" + (columnWidth * 0.5) + ",45)");
 
-            var boundText = subText.selectAll("text").data(function(d){
-                return d.values;
-            });
+            // //here: have a method for each type (node,condition, action etc)
+            // //that converts to text representation
+            // var boundText = subText.selectAll("text").data(function(d){
+            //     return d.values;
+            // });
             
-            boundText.enter().append("text")
-                .attr("text-anchor","middle")
-                .attr("transform",function(d,i){
-                    return "translate(0," + (i * 20) + ")";
-                })
-                .text(function(d){
-                    return d;
-                });
+            // boundText.enter().append("text")
+            //     .attr("text-anchor","middle")
+            //     .attr("transform",function(d,i){
+            //         return "translate(0," + (i * 20) + ")";
+            //     })
+            //     .text(function(d){
+            //         return d;
+            //     });
 
             
-            //remove any old nodes
-            nodes.exit().remove();
             
         };
 

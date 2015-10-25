@@ -3,12 +3,14 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(RDS,_,DS){
+define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],function(RDS,_,DS,util){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
     if(DS === undefined) throw new Error("DS not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
     
     var CompleteShell = function(){
+        console.log("Shell constructor");
+        console.log(util);
         this.tags = {};
         this.tags['type'] = 'Shell';
         //the root
@@ -51,11 +53,16 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(R
         //create the new node of type
         if(type === 'Rule') throw new Error('Rule Construction has its own function');
         //Retrieve the node constructor from the data structures module:
+        //----------
         var constructor = DS[type.toLowerCase()];
-
+        //----------
+        
         if(this.cwd[target] === undefined) throw new Error("Unrecognised target: " + target);
 
-        if(constructor === undefined) throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+        if(constructor === undefined){
+            console.log("Available Types:",_.keys(DS));
+            throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+        }
                 
         if(this.cwd[target][name] !== undefined){
             throw new Error("Node already exists, id of: " + this.cwd[target][name].id);
@@ -107,16 +114,6 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(R
         throw new Error("Add Node general error");
     };
     
-    //Add a rule to the current node, should be a rule container
-    //TODO:
-    CompleteShell.prototype.addRule = function(name){
-        if(this.cwd.tags.type !== "RuleContainer") throw new Error("Rules should be added to a rule container");
-        var rule = new RDS.Rule(name);
-        this.cwd.rules.push(rule);
-        this.cwd.rulesByName[rule.name] = rule;
-        return rule;
-    };
-    
     /**
        @params target The id (global) or name (local) to move to
     */
@@ -130,7 +127,9 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(R
                 this.cd(this.cwd._originalParent.id);
             }else{
                 var randomParent = util.randomChoice(Object.keys(this.cwd.parents));
-                this.cd(this.cwd.parents[randomParent]);
+                if(randomParent !== undefined){
+                    this.cd(this.cwd.parents[randomParent]);
+                }
             }
             return;
         }
@@ -291,14 +290,50 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures'],function(R
         this.cwd.name = name;
     };
     
-    
+    //------------------------------
+    //Rule modifiers:
+    CompleteShell.prototype.addCondition = function(){
+        if(this.cwd.tags.type !== 'RuleNode'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        var cond = new RDS.Condition();
+        this.cwd.rule.conditions.push(cond);
+    };
+
+    CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
+        if(this.cwd.tags.type !== 'RuleNode'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+
+        if(conditionNumber > this.cwd.rule.conditions.length){
+            throw new Error("Can't add a test to a non-existent condition");
+        }
+        var test = RDS.ConstantTest(testField,op,value);
+        this.cwd.rule.conditions[conditionNumber].constantTests.push(test);
+    };
+
     //ie: toVar  <- wme.fromVar
     //a <- wme.first
-    CompleteShell.prototype.addBinding = function(conditionNum,toVar,FromVar){
-        //chekc that you are in a rule
-        //add or change the binding
+    CompleteShell.prototype.addBinding = function(conditionNum,toVar,fromVar){
+        if(this.cwd.tags.type !== 'RuleNode'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        if(conditionNum > this.cwd.rule.conditions.length){
+            throw new Error("Cannot add binding to non-existent condition");
+        }
+        this.cwd.rule.conditions[conditionNum].addBinding(toVar,fromVar);
         
     };
+
+    
+    CompleteShell.prototype.addAction = function(valueArray){
+        if(this.cwd.tags.type !== 'RuleNode'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        var actionDescription = new RDS.ActionDescription(valueArray[0], valueArray[1]);
+        this.cwd.rule.actions.push(actionDescription);
+    };
+    
     
 
     //Stashing and unstashing:

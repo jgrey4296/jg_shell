@@ -8,7 +8,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-    var startingId = 0;
+    var nextId = 0;
     
     //base WME structure.
     //information stored in .data
@@ -20,8 +20,8 @@ define(['underscore'],function(_){
         this.tokens = [];
         //Tokens this wme is blocking
         this.negJoinResults = [];
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
 
     //base token,
@@ -56,8 +56,8 @@ define(['underscore'],function(_){
             this.bindings[i] = bindings[i];
         }
 
-        this.id = startingId;
-        startingId++;        
+        this.id = nextId;
+        nextId++;        
     };
 
     //Test: (wme.)a = 5
@@ -66,8 +66,8 @@ define(['underscore'],function(_){
         this.field = testWmeField;
         this.operator = operator;
         this.value = testValue;
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
     
     //condition:
@@ -101,13 +101,20 @@ define(['underscore'],function(_){
             if(a[0] > b[0]) return 1;
             return 0;
         });
-        this.id = startingId;
-        startingId++;
-
+        this.id = nextId++;
         console.log("Created condition:",this);
         
     };
 
+    //Method for js_shell integration, used in webMain.drawMultipleNodes
+    Condition.prototype.toShortString = function(){
+        return "( c" + this.id + " )";
+    };
+    
+    Condition.prototype.addBinding = function(to,from){
+        this.bindings[to] = from;
+    };
+    
 
     //pretty much just wraps an array of conditions
     var NCCCondition = function(conditions){
@@ -118,8 +125,8 @@ define(['underscore'],function(_){
             var cond = new Condition(conditions[i][0],conditions[i][1],conditions[i][2]);
             this.conditions.push(cond);
         }
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
     
 
@@ -130,6 +137,7 @@ define(['underscore'],function(_){
     //The rule/production that stores conditions and
     //associated action
     var Rule = function(name,conditions,action){
+        this.id = nextId++;
         this.name = name;
         this.actions = [];
         this.tags = {};
@@ -139,7 +147,7 @@ define(['underscore'],function(_){
         }
         this.conditions = [];
         //construct and add the conditions
-        if(conditions){
+        if(conditions && conditions instanceof Array){
             conditions.map(function(d){
                 if(d.length > 0){
                     //not a negated condition
@@ -154,9 +162,9 @@ define(['underscore'],function(_){
                 }
             });
         }
-        
-        this.id = startingId;
-        startingId++;
+
+        //For integration with js_shell authoring:
+        this.ruleNode = null;
     };
 
     Rule.prototype.getBindingsArray = function(){
@@ -221,11 +229,12 @@ define(['underscore'],function(_){
     //----------------------------------------
     //Action description:
     var ActionDescription = function(type,focus){
+        this.id = nextId++;
         //possible Types:
         //assert, retract, modify, aggregate?
         this.type = type;
         //possible foci:
-        //facts, performances, rule, customFunction
+        //facts, performances, rule, customFunction, action, activity...?
         this.focus = focus;
         //Object of bindings to use from the input token
         //when the action is fired
@@ -237,6 +246,11 @@ define(['underscore'],function(_){
         this.scope = {};
     };
 
+    //method for js shell integration, used in webMain.drawMultipleNodes
+    ActionDescription.prototype.toShortString = function(){
+        return "(" + this.id + "): " + this.type + " (" + this.focus + ")";
+    };
+    
     //------------------------------
     
     //Utility storage of wme and its alphaMemory together
@@ -244,14 +258,14 @@ define(['underscore'],function(_){
     var AlphaMemoryItem = function(wme,alphaMem){
         this.wme = wme;
         this.alphaMemory = alphaMem;
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
     
     //A constant test node
     //constantTest = {field:"",value:"",operator:""};
     var AlphaNode = function(parent,constantTest){
-        this.id = startingId;
+        this.id = nextId;
         this.isConstantTestNode = true;
         this.parent = parent;
         if(this.parent && this.parent.children){
@@ -266,7 +280,7 @@ define(['underscore'],function(_){
         }else{
             this.passThrough = true;
         }
-        startingId++;
+        nextId++;
     };
 
    
@@ -289,8 +303,8 @@ define(['underscore'],function(_){
         this.unlinkedChildren = [];
         this.referenceCount = 0;
         this.isMemoryNode = true;
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
 
     
@@ -301,8 +315,8 @@ define(['underscore'],function(_){
         if(this.parent && this.parent.children){
             this.parent.children.unshift(this);
         }
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
 
     //Beta Memory Stores tokens
@@ -361,8 +375,8 @@ define(['underscore'],function(_){
         if(this.wme){
             this.wme.negJoinResults.unshift(this);
         }
-        this.id = startingId;
-        startingId++;
+        this.id = nextId;
+        nextId++;
     };
 
     //Negative Node:The node that gates token progression
@@ -402,7 +416,7 @@ define(['underscore'],function(_){
         this.nccNode = null;
         this.numberOfConjuncts = num;
         this.newResultBuffer = [];
-        this.id = startingId;
+        this.id = nextId;
     };
     
 
