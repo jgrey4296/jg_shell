@@ -534,7 +534,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             }
         };
 
-
+        //----------------------------------------
         var drawNode = function(node,columnWidth){
             //validate:
             if(node === undefined){
@@ -588,9 +588,18 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 return d;
             });
 
-            var childList = _.values(node.children);
-            var parentList = _.values(node.parents);
+            //Deprecated, this is switched to work with children and parent
+            //lists as id's ONLY, to allow for JSON.stringify to work
+            //var childList = _.values(node.children);
+            //var parentList = _.values(node.parents);
 
+            var childList = _.keys(node.children).map(function(d){
+                return this.allNodes[d];
+            },theShell);
+            var parentList = _.values(node.parents).map(function(d){
+                return this.allNodes[d];
+            },theShell);
+            
             drawMultipleNodes('Parents',parentList,columnWidth);
             drawMultipleNodes('Children',childList,columnWidth);
             

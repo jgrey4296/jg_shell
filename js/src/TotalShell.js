@@ -10,7 +10,6 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     
     var CompleteShell = function(){
         console.log("Shell constructor");
-        console.log(util);
         this.tags = {};
         this.tags['type'] = 'Shell';
         //the root
@@ -73,12 +72,12 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
             var newNode;
             if(target === "parents"){
                 newNode = new constructor(name);
-                newNode.children[this.cwd.id] = this.cwd;
+                newNode.children[this.cwd.id] = true;//this.cwd;
             }else{
                 newNode = new constructor(name,this.cwd);
             }
 
-            this.cwd[target][newNode.id] = newNode;
+            this.cwd[target][newNode.id] = //newNode;
 
             //if the cwd has disconnected from parents
             //or disconnectedFrom children
@@ -103,7 +102,7 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
                 if(shellInstance.allNodes[d.id]){
                     return;
                 }
-                shellInstance.allNodes[d.id] = d;
+                shellInstance.allNodes[d.id] = true;//d;
                 _.values(d.children).map(addChildrenFn);
                 _.values(d.parents).map(addChildrenFn);
             };
@@ -124,11 +123,11 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         if(target === ".."){
             console.log("cd : ..");
             if(this.cwd._originalParent){
-                this.cd(this.cwd._originalParent.id);
+                this.cd(this.cwd._originalParent);
             }else{
-                var randomParent = util.randomChoice(Object.keys(this.cwd.parents));
+                var randomParentKey = util.randomChoice(Object.keys(this.cwd.parents));
                 if(randomParent !== undefined){
-                    this.cd(this.cwd.parents[randomParent]);
+                    this.cd(randomParent);
                 }
             }
             return;
@@ -359,6 +358,16 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     //conversion to simple arrays for visualisation
     //export/import json
 
+
+    CompleteShell.prototype.exportToJson = function(){
+        var cyclesRemovedObjects = _.map(this.allNodes,function(d){
+            //for each object, convert references to other objects into id numbers
+            
+        });
+
+        
+    };
+    
     //Interface of potential objects, used in addNode lookup,
     //which defaults to lowercase
     var interface =  {

@@ -14,10 +14,12 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.name = name;
         //parents and children for links
         //storing by ID
+        //Note: converted to *only* store id's, and not the objects
+        //therefore no cycles, therefore json export
         this.parents = {};
-        this._originalParent = parent;
+        this._originalParent = parent.id;
         if(parent){
-            this.parents[parent.id] = parent;
+            this.parents[parent.id] = true;//parent;
         }
         this.children = {};
         //values and tags and annotations for data
@@ -120,11 +122,13 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
             'incumbent','challenger','controlled','exempt'
         ]),'children');
         this.addNodeTo(new Container('Activities',this,[
-            'physical','symbolic','communicative'
+            'physical','symbolic','communicative','unbound'
         ]),'children');
         this.addNodeTo(new GraphNode('IGU',this),'children');
         this.addNodeTo(new GraphNode('ExternalEffects',this),'children');
-        this.addNodeTo(new GraphNode('FactGrammar',this),'children');
+        this.addNodeTo(new Container('FactGrammar',this,[
+            'physical','symbolic','communicative','unbound'
+        ]),'children');
         this.addNodeTo(new GraphNode('ValueHierarchy',this),'children');
         this.addNodeTo(new NormsNode('Norms',this),'children');
         //chain to update the parent's children as well:
