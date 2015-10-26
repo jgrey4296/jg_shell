@@ -69,13 +69,16 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
 
         //Extend the structure as necessary:
         if(DSCtors[type] !== undefined){
+            console.log("Calling ctor:",type);
             var children = _.flatten(DSCtors[type](newNode));
             children.forEach(function(d){
                 if(this.allNodes[d.id] !== undefined){
                     console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
                 }
                 this.allNodes[d.id] = d;
-            });
+            },this);
+        }else{
+            console.log("No ctor for:",type);
         }
 
         //If the cwd WAS disconnected in some way,
@@ -199,9 +202,9 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     CompleteShell.prototype.getNodeListByIds = function(idList){
         var retList = idList.map(function(d){
             if(this.allNodes[d]){
-                retList.push(this.allNodes[d]);
+                return this.allNodes[d];
             }            
-        },this);
+        },this).filter(function(d){ return d;});
         return retList;
     };
     
@@ -244,7 +247,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         //is an id
         if(!isNaN(Number(id))){
             id = Number(id);
-            console.log("Removing:",id);
+            //console.log("Removing:",id);
             var removed;
             if(this.cwd.parents[id]){
                 //if removing a parent
@@ -255,7 +258,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             }else if(this.cwd.children[id]){
                 //if removing a child
                 removed = this.allNodes[id];
-                console.log("getting:",removed);
+                //console.log("getting:",removed);
                 delete this.cwd.children[id];
                 delete removed.parents[this.cwd.id];
             }else{
@@ -263,14 +266,14 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             }
             //if the removed node has no other parents,
             //connect it to the parentless list
-            console.log("cleaning up from id delete" );
+            //console.log("cleaning up from id delete" );
             if(_.values(removed.parents).filter(function(d){return d;}).length === 0){
-                console.log("Storing in no parents:",this.allNodes[1],removed);
+                //console.log("Storing in no parents:",this.allNodes[1],removed);
                 this.disconnected.noParents.children[removed.id] = true;
                 removed.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
             }
             if(_.values(removed.children).filter(function(d){return d;}).length === 0){
-                console.log("Storing in no children:",this.allNodes[2],removed);
+                //console.log("Storing in no children:",this.allNodes[2],removed);
                 this.disconnected.noChildren.parents[removed.id] = true;//removed;
                 removed.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
             }
@@ -410,9 +413,6 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         allNodes.map(function(d){
             this.addNodeFromJson(d);
         },this);
-
-
-        
     };
 
     

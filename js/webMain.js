@@ -1,4 +1,4 @@
-/**Entry point for shell.html graph authoring program
+hh/**Entry point for shell.html graph authoring program
    @file webMain
 */
 require.config({
@@ -67,7 +67,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 if(target === "child") target = "children";
                 if(target === "parent") target  = "parents";
                 console.log("Target:",target);
-                sh.addNode(target,values[1],values[2]);
+                sh.addNode(values[2],target,values[1]);
             },
             //Shortcuts:
             "nc" : function(sh,values){
@@ -79,7 +79,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     "rc": "rulecontainer",
                 };
                 if(chars[values[0]]){
-                    sh.addNode('children',chars[values[0]],values[1]);
+                    sh.addNode(values[1],'children',chars[values[0]]);
                 }
             },
             "np" : function(sh,values){
@@ -91,16 +91,16 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     "rc": "rulecontainer",
                 };
                 if(chars[values[0]]){
-                    sh.addNode('parents',chars[values[0]],values[1]);
+                    sh.addNode(values[1],'parents',chars[values[0]]);
                 }
             },
             //New Child Node, ncn:
             "ncn" : function(sh,values){
-                sh.addNode('children','node',values[0]);
+                sh.addNode(values[0],'children','node');
             },
             //new child institution: nci
             "nci" : function(sh,values){
-                sh.addNode('children','institution',values[0]);
+                sh.addNode(values[0],'children','institution');
             },
             //new role
 

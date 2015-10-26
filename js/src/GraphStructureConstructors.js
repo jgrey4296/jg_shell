@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./GraphNode'],function(GraphNode){
+define(['underscore','./GraphNode'],function(_,GraphNode){
 
     //Define a variety of graph structures to use in the shell:
     //each ctor returns a flat array of all sub-nodes created
@@ -24,7 +24,12 @@ define(['./GraphNode'],function(GraphNode){
             "Norms"          : ['container',
                                 ['EmpiricallyExpected','NormativelyExpected','Sanctionable']],
         };
+        var parents = {
+            "ExternalEffectors" : ["node",[]],
+        };
+        //TODO: externalEffectors added to parent
 
+        
         var createdChildren = _.keys(children).map(function(d){
             //create a new object of: name,parentId,type
             var newObj = new GraphNode(d,baseNode.id,children[d][0]);
@@ -33,7 +38,6 @@ define(['./GraphNode'],function(GraphNode){
             if(ctors[children[d][0]]){
                 subChildren = ctors[children[d][0]](newObj,children[d][1]);
             }
-            
             return [newObj,subChildren];;
         });
         //add the created children's ids to the baseNode
@@ -42,7 +46,19 @@ define(['./GraphNode'],function(GraphNode){
         createdChildren.forEach(function(d){
             baseNode.children[d[0].id] = true;
         });
-        return createdChildren;
+
+        //do the same stuff for parents
+        var createdParents = _.keys(parents).map(function(d){
+            var newObj = new GraphNode(d,undefined);
+            return newObj;
+        });
+        createdParents.forEach(function(d){
+            baseNode.parents[d.id] = true;
+            d.children[baseNode.id] = true;
+        });
+
+        var createdNodes = createdChildren.concat(createdParents);
+        return createdNodes;
     };
     
     //------------------------------
@@ -95,7 +111,21 @@ define(['./GraphNode'],function(GraphNode){
         });
         return createdChildren;
     };
-              
 
+
+    //------------------------------
+    //The Rule object:
+    ctors['rule'] = function(baseNode){
+        baseNode.conditions = [];
+        baseNode.actions = [];
+    };
+
+    //------------------------------
+    //The action object:
+    // ctors['action'] = function(baseNode){
+
+    // };
+
+    
     return ctors;
 });

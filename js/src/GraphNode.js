@@ -16,7 +16,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
         this.parents = {};
-        if(parentId){
+        if(parentId !== undefined){
             this._originalParent = parentId
             this.parents[parentId] = true;//parent;
         }
@@ -30,7 +30,10 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         this.annotations = {};
 
         //for if its a rule object:
-        this.rule = undefined;
+        // this.rule = {
+        //     conditions : [],
+        //     actions : [],
+        // };
         
     };
 

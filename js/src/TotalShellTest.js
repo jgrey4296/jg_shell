@@ -74,62 +74,47 @@ exports.TotalShellTests = {
     
     addTypesOfNodeTest : function(test){
         var shell = makeShell();
-        var child1 = shell.addNode('children','Role','test1');
-        test.ok(child1.tags.type === "Role");
-        test.ok(child1._originalParent.id === shell.cwd.id);
+        var child1 = shell.addNode('test1','children','role');
+        test.ok(child1.tags.type === "role");
+        test.ok(child1._originalParent === shell.cwd.id)
 
-        var child2 = shell.addNode('children','Institution','test2');
-        test.ok(child2.tags.type === "Institution");
-        test.ok(child2._originalParent.id === shell.cwd.id);
+        var child2 = shell.addNode('test2','children','institution');
+        test.ok(child2.tags.type === "institution");
+        test.ok(child2._originalParent === shell.cwd.id);
         test.done();        
     },
 
     checkRoleConstructionTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','Role','blah');
-        shell.cd('blah');
+        var newNode = shell.addNode('test1','children','role');
+        shell.cd('test1');
         test.ok(newNode.id === shell.cwd.id);
+        test.ok(newNode.name === 'test1');
+        test.ok(newNode.tags.type === 'role');
+        test.ok(_.keys(newNode.children).length === 2);
+        test.ok(shell.allNodes[_.keys(newNode.children)[0]].name === "ConstitutiveRules");
+        test.ok(shell.allNodes[_.keys(newNode.children)[1]].name === "RegulativeRules");
 
-        test.ok(newNode.tags.type === 'Role');
-        test.ok(newNode.children.length !== 0);
-        test.ok(newNode.name === 'blah');
         test.done();
     },
 
     checkInstitutionConstructionTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','Institution','bloo');
-        test.ok(newNode.tags.type === 'Institution');
-        test.ok(_.keys(newNode.children).length === 6,_.keys(newNode.children).length);
+        var newNode = shell.addNode('test1','children','institution');
+        test.ok(newNode.tags.type === 'institution');
+        test.ok(_.keys(newNode.children).length === 7,_.keys(newNode.children).length);
         test.ok(_.keys(newNode.parents).length === 2); 
         test.done();
     },
 
-    checkRuleConstructionErrorFromAddNodeTest : function(test){
-        var shell = makeShell();
-        test.throws(function(){
-            shell.addNode('children','Rule','blah');
-        });
-        test.done();
-    },
-
-    checkRuleContainerConstructionTest : function(test){
-        var shell = makeShell();
-        var newNode = shell.addNode('children','RuleContainer','rCon1');
-        test.ok(newNode.tags.type === 'RuleContainer');
-        test.ok(newNode.rules.length === 0);
-        test.done();
-    },
-    
-    //TODO: make rule inherit from GraphNode?
     checkRuleConstructionTest : function(test){
         var shell = makeShell();
-        var container = shell.addNode('children','RuleContainer','rc1');
-        shell.cd('rc1');
-        test.ok(shell.cwd.tags.type === "RuleContainer");
-        var newRule = shell.addRule('blah');
-        test.ok(newRule.tags.type === 'Rule');
-        test.ok(newRule.name === 'blah');
+        var newRule = shell.addNode('test1','children','rule');
+        shell.cd('test1');
+        test.ok(shell.cwd.tags.type === "rule");
+        test.ok(shell.cwd.id === newRule.id);
+        test.ok(newRule.tags.type === 'rule');
+        test.ok(newRule.name === 'test1');
         test.ok(newRule.actions.length === 0);
         test.ok(newRule.conditions.length === 0);
         test.done();
@@ -137,35 +122,57 @@ exports.TotalShellTests = {
 
     checkActivityConstructionTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','Activity','bloo');
-        test.ok(newNode.name === 'bloo');
-        test.ok(newNode.tags.type === 'Activity');
+        var newNode = shell.addNode('test1','children','activity');
+        test.ok(newNode.name === 'test1');
+        test.ok(newNode.tags.type === 'activity');
         test.ok(newNode.values.actor === null);
         test.ok(newNode.values.object === null);
         test.ok(newNode.values.tool === null);
-        test.ok(_.keys(newNode.children).length === 3);
+        test.ok(newNode.values.outcome === null);
+        test.ok(_.keys(newNode.children).length === 4);
         test.done();
     },
 
-    //TODO: for later when initial form is working
-    checkTestConstructionTest : function(test){
+    checkAddConditionToRuleTest : function(test){
+        test.ok(false);
         test.done();
     },
 
-    checkActionConstructionTest : function(test){
+    checkAddActionToRuleTest : function(test){
+        test.ok(false);
+        test.done();
+    },
+
+    checkAddConstantTestToCondition : function(test){
+        test.ok(false);
+        test.done();
+    },
+
+    checkAddConstantTestToSpecifiedCondition : function(test){
+        test.ok(false);
+        test.done();
+    },
+
+    checkAddBindingToCondition : function(test){
+        test.ok(false);
+        test.done();
+    },
+
+    checkAddBindingToSpecifiedCondition : function(test){
+        test.ok(false);
         test.done();
     },
     
     getNodeListByIdsTest : function(test){
         var shell = makeShell();
         var nodes = [];
-        nodes.push(shell.addNode('children','GraphNode','test1'));
-        nodes.push(shell.addNode('children','GraphNode','test2'));
+        nodes.push(shell.addNode('test1','children'));
+        nodes.push(shell.addNode('test2','children'));
         shell.cd(nodes[1].id);
-        nodes.push(shell.addNode('children','GraphNode','test3'));
-        nodes.push(shell.addNode('children','GraphNode','test4'));
-        nodes.push(shell.addNode('children','GraphNode','test5'));
-        nodes.push(shell.addNode('children','GraphNode','test6'));
+        nodes.push(shell.addNode('test3','children'));
+        nodes.push(shell.addNode('test4','children'));
+        nodes.push(shell.addNode('test5','children'));
+        nodes.push(shell.addNode('test6','children'));
 
         var ids = nodes.map(function(d){
             return d.id;
@@ -173,7 +180,7 @@ exports.TotalShellTests = {
         var retrievedNodes = shell.getNodeListByIds(ids);
         //check every id and node align
         var combinedLists = _.zip(ids,retrievedNodes);
-        combinedLists.map(function(d){
+        combinedLists.forEach(function(d){
             test.ok(d[0] === d[1].id);
         });
         test.done();
@@ -203,26 +210,26 @@ exports.TotalShellTests = {
 
     linkTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','GraphNode','blah');
-        var node2 = shell.addNode('children','GraphNode','other');
+        var newNode = shell.addNode('test1','children');
+        var node2 = shell.addNode('test2','children');
         shell.cd(newNode.id);
-        var thirdNode = shell.addNode('children','GraphNode','childOfnewNode');
+        var thirdNode = shell.addNode('test3','children');
         shell.cd(node2.id);
 
-        test.ok(thirdNode._originalParent.id === newNode.id);
+        test.ok(thirdNode._originalParent === newNode.id);
         test.ok(shell.cwd.id === node2.id);
 
         shell.link('parents',thirdNode.id);
-        test.ok(shell.cwd.parents[thirdNode.id].name === thirdNode.name);
+        test.ok(shell.cwd.parents[thirdNode.id] === true);
+        test.ok(shell.allNodes[thirdNode.id].name === thirdNode.name);
         test.done();
     },
 
     rmTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','GraphNode','test');
+        var newNode = shell.addNode('test1','children');
         test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id].name === newNode.name);
-
+        test.ok(shell.cwd.children[newNode.id] === true);
         shell.rm(newNode.id);
         test.ok(shell.cwd.children[newNode.id] === undefined);
         
@@ -239,46 +246,9 @@ exports.TotalShellTests = {
         test.done();
     },
 
-    addRuleTest : function(test){
-        var shell = makeShell();
-        var container = shell.addNode('children','RuleContainer','rc1');
-        shell.cd('rc1');
-        test.ok(shell.cwd.rules.length === 0);
-        
-        var newRule = shell.addRule('testRule1');
-
-        test.ok(shell.cwd.rules.length === 1);
-        test.ok(shell.cwd.rules[0].name === "testRule1");
-        
-        test.done();
-    },
-
-    //Rule modifications
-    //when in a rule, be able to:
-    //add and remove conditions
-    addRemoveConditionTest : function(test){
-        test.done();
-    },
-
-    //add and remove bindings for conditions
-    addRemoveBindingTest : function(test){
-        test.done();
-    },
-
-    //add and remove actions (actions being... parameterised activities?)
-    addRemoveActionTest : function(test){
-        test.done();
-    },
-
-
-
     //Display conversion tests
     //check functions for converting nodes/rules etc to
     //simple array formats for visualisation
-
-
-
-
     
     //without needing to be in that specific part of the institution:
     //be able to add facts/roles/activities/rules..
