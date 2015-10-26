@@ -1,4 +1,4 @@
-hh/**Entry point for shell.html graph authoring program
+/**Entry point for shell.html graph authoring program
    @file webMain
 */
 require.config({
@@ -418,8 +418,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         */
         console.log("Setting up Text input");
         //TODO: change this to keydown
-        d3.select('#shellInput').on("keypress",function(e){
-            if(d3.event.key === "Enter"){
+        d3.select('#shellInput').on("keydown",function(e){
+            if(d3.event.keyCode === 13){ //ie:"Enter"
                 console.log(".");
                 console.log("..");
                 console.log("...");
@@ -472,7 +472,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     alert("Input error: \n" + err.message);
                     console.log("Input Error:",err);
                 }
-            }else if(d3.event.key.length === 1){
+            }else{
                 //Otherwise not enter, user is still typing commands:
                 //HERE would be the automatic selection and display of possible
                 //values

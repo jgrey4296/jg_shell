@@ -285,9 +285,9 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             var name = id;
             var childRemoved = _.keys(this.cwd.children).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this);
             childRemoved.forEach(function(d){
-                delete d.parents[shell.cwd.id];
+                delete d.parents[this.cwd.id];
                 delete this.cwd.children[d.id];
-                console.log("deleted:",shell.cwd.children,d);
+                console.log("deleted:",this.cwd.children,d);
             },this);
 
             var parentRemoved = _.keys(this.cwd.parents).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this);
