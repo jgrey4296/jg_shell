@@ -2,7 +2,7 @@
    @file webMain
 */
 require.config({
-    baseUrl: "/js",
+    baseUrl: "/",
     paths:{
         "../libs/underscore": "/libs/underscore",
         underscore : "libs/underscore",
@@ -214,8 +214,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     if(request.readyState===4){
                         try{
                             var receivedJson = JSON.parse(request.responseText);
-                            console.log("JSON:",receivedJson);
-                            sh.loadJson(receivedJson);
+                            console.log("Received JSON:",receivedJson);
+                            sh.importJson(receivedJson);
                             commands.context(theShell);
                         }catch(err){
                             alert("Error loading data: \n" + err.message);
@@ -228,6 +228,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             },
             //Save the current graph to the server
             "save" : function(sh,values){
+                console.log("Saving:",values);
                 var request = new XMLHttpRequest();
                 request.onreadystatechange=function(){
                     if (request.readyState===4){
@@ -236,7 +237,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     }
                 };
                 request.open("POST","saveData="+values[0],true);
-                request.send(sh.exportToJson());
+                request.send(sh.exportJson());
             },
         };
         //End of Commands
@@ -416,6 +417,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
           and clearing after the user presses enter.
         */
         console.log("Setting up Text input");
+        //TODO: change this to keydown
         d3.select('#shellInput').on("keypress",function(e){
             if(d3.event.key === "Enter"){
                 console.log(".");
@@ -437,15 +439,22 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                             commandMode = "rule";
                         };
                         console.log("Command mode: ", commandMode, "Commands: ", columnNames[commandMode]);
-                        //get the command
-                        var command = commands[commandMode][splitLine[0]];
-                        if (command !== undefined){
-                            //call the command, slicing off the command itself
-                            console.log("Calling command:",splitLine[0]);
-                            command(theShell,splitLine.slice(1));
+                        if(splitLine[0] === 'load' || splitLine[0] === 'save'){
+                            console.log("General Command",splitLine,splitLine.slice(1));
+                            commands[splitLine[0]](theShell,splitLine.slice(1));
                         }else{
-                            console.log("unrecognised command: " + splitLine[0]);
+                            //get the command
+                            var command = commands[commandMode][splitLine[0]];
+                            if (command !== undefined){
+                                //call the command, slicing off the command itself
+                                console.log("Calling command:",splitLine[0]);
+                                command(theShell,splitLine.slice(1));
+                            }else{
+                                console.log("unrecognised command: " + splitLine[0]);
+                            }
                         }
+
+                        //Redisplay:
                         console.log("Shell cwd state:",theShell.cwd);
                         commands.context(theShell);
                         //recheck the command type for displaying help
@@ -453,7 +462,9 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                             commandMode = "rule";
                         }else{
                             commandMode = "node";
-                        }                        
+                        }
+
+                        //Update the displayed help
                         displayHelp(calcWidth(usableWidth,_.values(columnNames[commandMode]).length), helpData[commandMode]);
 
                     }
@@ -569,7 +580,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("ry",10);
 
             //draw the text of the node
-            var nodeInternalText  = node.getLists(["id","name","values","tags","annotations"]);
+            var nodeInternalText  = theShell.getListsFromNode(node,["id","name","values","tags","annotations"]);
             //select all existing and bind
             var boundText = bound.selectAll("text").data(nodeInternalText);
             
@@ -652,7 +663,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("ry",10);
 
             //get data from the rule:
-            var bound = container.selectAll("text").data(ruleNode.toStringList());
+            var bound = container.selectAll("text").data(theShell.nodeToStringList(node));
             //new stuff
             bound.enter().append("text")
                 .attr("text-anchor","middle")
@@ -686,9 +697,6 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
             console.log("Drawing Column:",baseContainer,childArray);
             console.log("Column Length:",childArray.length);
-            if(childArray.length > 0 && typeof childArray[0].toShortString !== 'function'){
-                throw new Error("Drawing multiple nodes requires an object with the toShortString method");
-            }
             
             var containingNode = getColumnObject(baseContainer);
             var heightAvailable = containingNode.select("rect").attr("height");
@@ -729,7 +737,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             //30 because the rect is down by 10
                 .attr("transform","translate(" + (columnWidth * 0.4)+",30)")
                 .text(function(d,i){
-                    return d.toShortString(i);
+                    return theShell.nodeToShortString(d,i);
                 });
             
             //update selection:

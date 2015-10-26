@@ -3,22 +3,22 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],function(RDS,_,DS,util){
+define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,_,GraphNode,DSCtors,util){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
-    if(DS === undefined) throw new Error("DS not loaded");
+    if(GraphNode === undefined) throw new Error("DS not loaded");
+    if(DSCtors === undefined) throw new Error("DSCtors not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
     
     var CompleteShell = function(){
-        console.log("Shell constructor");
         this.tags = {};
         this.tags.type = 'Shell';
-        //the root
-        this.root = new DS.GraphNode('__root');
+        //the root node
+        this.root = new GraphNode('__root');
         
         //disconnected nodes:
         this.disconnected = {
-            noParents : new DS.GraphNode('disconnectedFromParents'),
-            noChildren : new DS.GraphNode('disconnectedFromChildren'),
+            noParents : new GraphNode('disconnectedFromParents'),
+            noChildren : new GraphNode('disconnectedFromChildren'),
         };
 
         //All Nodes:
@@ -38,79 +38,108 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         
     };
 
-    //END OF DATA STRUCTURES
+    //END OF DATA STRUCTURE
     //----------------------------------------
+    //START OF METHODS:
 
-    /*Methods:
-      
-      @params target child,parent, or node specific
-      @params type the type of node to add
-      @params name the name of the node to add
-    */
-    CompleteShell.prototype.addNode = function(target,type,name){
-        console.log("Adding:",target,type,name);
-        //create the new node of type
-        if(type === 'Rule') throw new Error('Rule Construction has its own function');
-        //Retrieve the node constructor from the data structures module:
-        //----------
-        var constructor = DS[type.toLowerCase()];
-        //----------
+    //add a node manually / through user interface
+    CompleteShell.prototype.addNode = function(name,target,type){
+        //validate:
+        if(this.cwd[target] === undefined) throw new Error("Unknown target");
+        type = type || "GraphNode";
         
-        if(this.cwd[target] === undefined) throw new Error("Unrecognised target: " + target);
-
-        if(constructor === undefined){
-            console.log("Available Types:",_.keys(DS));
-            throw new Error("Unrecognised Node Type: " +type.toLowerCase());
+        var newNode;
+        if(target === 'parents' || target === 'parent'){
+            //if adding to parents,don't store the cwd as newnode's parent
+            newNode = new GraphNode(name,undefined,type);
+            //add the cwd to the newNodes children:
+            newNode.children[this.cwd.id] = true;
+        }else{
+            newNode = new GraphNode(name,this.cwd.id,type);
         }
-                
-        if(this.cwd[target][name] !== undefined){
-            throw new Error("Node already exists, id of: " + this.cwd[target][name].id);
+
+        //add to cwd:
+        this.cwd[target][newNode.id] = true;
+
+        //Store:
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+
+        //Extend the structure as necessary:
+        if(DSCtors[type] !== undefined){
+            var children = _.flatten(DSCtors[type](newNode));
+            children.forEach(function(d){
+                if(this.allNodes[d.id] !== undefined){
+                    console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
+                }
+                this.allNodes[d.id] = d;
+            });
         }
 
-        //call the ctor, adding to the target
-        if(constructor && this.cwd[target]){
-            var newNode;
-            if(target === "parents"){
-                newNode = new constructor(name,undefined,this);
-                newNode.children[this.cwd.id] = true;//this.cwd;
-            }else{
-                newNode = new constructor(name,this.cwd,this);
-            }
-            this.allNodes[newNode.id] = newNode;
-            this.cwd[target][newNode.id] = true;//newNode;
-
-            
-            //if the cwd has disconnected from parents
-            //or disconnectedFrom children
-            //remove from as appropriate
-            if(this.cwd[target][this.disconnected.noParents.id]){
-                this.rm(this.disconnected.noParents.id);
-            }
-            if(this.cwd[target][this.disconnected.noChildren.id]){
-                this.rm(this.disconnected.noChildren.id);                
-            }
-
-            
-            // if(this.allNodes[newNode.id]){
-            //     throw new Error("Node Id is already used");
-            // }
-            
-            //add all the children of the node as well,
-            //using a recursive map, so *all* children are added
-            // var shellInstance = this;
-            // var addChildrenFn = function(d){
-            //     if(shellInstance.allNodes[d.id]){
-            //         return;
-            //     }
-            //     shellInstance.allNodes[d.id] = d;//d;
-            //     _.values(d.children).map(addChildrenFn);
-            //     _.values(d.parents).map(addChildrenFn);
-            // };
-            //addChildrenFn(newNode);
-            return newNode;
+        //If the cwd WAS disconnected in some way,
+        //remove it from that designation
+        if(this.cwd[target][this.disconnected.noParents.id]){
+            this.rm(this.disconnected.noParents.id);
         }
-        throw new Error("Add Node general error");
+        if(this.cwd[target][this.disconnected.noChildren.id]){
+            this.rm(this.disconnected.noChildren.id);                
+        }
+
+        
+        return newNode;        
     };
+
+    //add a node from its json representation
+    CompleteShell.prototype.addNodeFromJson = function(obj){
+        var newNode = new GraphNode(obj.name,obj._originalParent,obj.type,obj.id);
+        _.keys(obj).forEach(function(d){
+            newNode[d] = obj[d];
+        });
+
+        if(newNode.id !== obj.id) throw new Error("Ids need to match");
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+        
+        return newNode;
+    };
+
+
+    //Utility functions for display Output:    
+    CompleteShell.prototype.nodeToShortString = function(node,i){
+        return "(" + node.id + "): " + node.name + " (" + node.tags.type + ")";
+    };
+
+    CompleteShell.prototype.nodeToStringList = function(node){
+        return [];
+    };
+    
+    CompleteShell.prototype.getListsFromNode = function(node,fieldNameList){
+        var allArrays = fieldNameList.map(function(d){
+            if(node[d] !== undefined){
+                if(d !== 'id' && d !== 'name'){
+                    return ["","| "+d+" |"].concat(this.getListFromNode(node,d));
+                }else{
+                    return d + ": " + node[d];
+                }
+            }else{
+                console.log("Could not find:",d,node);
+            }
+        },this);
+        return _.flatten(allArrays);
+    };
+
+    CompleteShell.prototype.getListFromNode = function(node,fieldName){
+        if(node[fieldName] === undefined) throw new Error("Unrecognised field: "+fieldName);
+        var retArray = _.keys(node[fieldName]).map(function(d){
+            return d + ": " + this[fieldName][d];
+        },node);
+        return retArray;
+    };
+    
     
     /**
        @params target The id (global) or name (local) to move to
@@ -134,13 +163,13 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         
         //id specified
         if(!isNaN(Number(target)) && this.allNodes[Number(target)]){
-            console.log("cd : ", Number(target));
+            //console.log("cd : ", Number(target));
             this.cwd = this.allNodes[Number(target)];
             return;
         }
         
         //passed a name. convert it to an id
-        console.log("Cd-ing: ",target);
+        //console.log("Cd-ing: ",target);
         var nameIdPairs = {};
         var children = this.cwd.children;
 
@@ -157,7 +186,7 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
             this[d.name] = d.id;
         },nameIdPairs);//state arg
 
-        console.log("Available keys:",_.keys(nameIdPairs));
+        //console.log("Available keys:",_.keys(nameIdPairs));
         //if you can find the target to move to:
         if(nameIdPairs[target]){
             this.cd(nameIdPairs[target]);
@@ -192,11 +221,14 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     
     //TODO: should this be mutual?
     CompleteShell.prototype.link = function(target,id,reciprocal){
+        //validate:
         if(isNaN(Number(id))) throw new Error("id should be a global id number");
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
         if(!this.cwd[target]) throw new Error("Unrecognised target");
+
+        //perform the link:
         var nodeToLink = this.allNodes[id];
         this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
@@ -207,6 +239,7 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
     };
     
     //Remove a node from the parent/child lists
+    //TODO: refactor
     CompleteShell.prototype.rm = function(id){
         //is an id
         if(!isNaN(Number(id))){
@@ -280,18 +313,24 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
                     d.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
                 }
             },this);//this as arg, so this= shell still
-
             
             //FINISHED REMOVING A NUMERIC SPECIFIED NODE
         }
     };
+    //RM FINISHED
+
     
     CompleteShell.prototype.rename = function(name){
         this.cwd.name = name;
     };
     
     //------------------------------
+
+
+
+    //----------------------------------------
     //Rule modifiers:
+    //----------------------------------------
     CompleteShell.prototype.addCondition = function(){
         if(this.cwd.tags.type !== 'RuleNode'){
             throw new Error("Trying to modify a rule when not located at a rule");
@@ -356,18 +395,26 @@ define(['../libs/ReteDataStructures','underscore','./DataStructures','./utils'],
         }
     };
     
-    //conversion to simple arrays for visualisation
+
     //export/import json
+    //As nodes only store ID numbers, its non-cyclic. meaning json
+    //should be straightforward.
+    CompleteShell.prototype.exportJson = function(){
+        var graphJson = JSON.stringify(this.allNodes,undefined,4);
+        console.log("Converted to JSON:",graphJson);
+        return graphJson;
+    };
 
+    //Loading json data means creating
+    CompleteShell.prototype.importJson = function(allNodes){
+        allNodes.map(function(d){
+            this.addNodeFromJson(d);
+        },this);
 
-    CompleteShell.prototype.exportToJson = function(){
-        var cyclesRemovedObjects = _.map(this.allNodes,function(d){
-            //for each object, convert references to other objects into id numbers
-            
-        });
 
         
     };
+
     
     //Interface of potential objects, used in addNode lookup,
     //which defaults to lowercase

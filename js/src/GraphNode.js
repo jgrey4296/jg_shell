@@ -16,7 +16,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
         this.parents = {};
-        if(parent){
+        if(parentId){
             this._originalParent = parentId
             this.parents[parentId] = true;//parent;
         }
@@ -34,15 +34,5 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         
     };
 
-
-    //----------------------------------------
-    //----------------------------------------
-    //Interface, and shortcut aliases
-    var theInterface = {
-        "GraphNode" : GraphNode,
-        "graphnode" : GraphNode,
-        "node"      : GraphNode,
-    };
-    
-    return theInterface;      
+    return GraphNode;
 });

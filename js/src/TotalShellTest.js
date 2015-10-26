@@ -23,17 +23,17 @@ exports.TotalShellTests = {
 
     createNodeTest : function(test){
         var shell = makeShell();
-        var newNode = shell.addNode('children','GraphNode','testNode');
+        var newNode = shell.addNode("test",'children');
         test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id].tags.type === "GraphNode");
-        test.ok(shell.cwd.children[newNode.id].id === newNode.id);
+        test.ok(shell.cwd.children[newNode.id] === true);
+        test.ok(shell.allNodes[newNode.id].name === newNode.name);
         test.done();
     },
 
     createMultipleNodes : function(test){
         var shell = makeShell();
-        var n1 = shell.addNode('children','GraphNode','test1');
-        var n2 = shell.addNode('children','GraphNode','test2');
+        var n1 = shell.addNode("test1",'children');
+        var n2 = shell.addNode('test2','children');
         test.ok(n1.id !== n2.id);
         test.ok(Object.keys(shell.cwd.children).length === 2);
         test.done();
@@ -41,16 +41,18 @@ exports.TotalShellTests = {
 
     createParentNode : function(test){
         var shell = makeShell();
-        var parentNode = shell.addNode('parents','GraphNode','test1');
+        var parentNode = shell.addNode('test1','parents');
         test.ok(parentNode !== undefined);
         test.ok(Object.keys(shell.cwd.parents).length === 1);
         test.ok(shell.cwd._originalParent === undefined);
+        test.ok(shell.cwd.parents[parentNode.id] === true);
+        test.ok(parentNode.children[shell.cwd.id] === true);
         test.done();
     },
 
     changeDirTest : function(test){
         var shell = makeShell();
-        var child = shell.addNode('children','GraphNode','test1');
+        var child = shell.addNode('test1','children');
         test.ok(Object.keys(shell.cwd.children).length === 1);
         shell.cd(child.id);
         test.ok(shell.cwd.id === child.id);
@@ -61,9 +63,9 @@ exports.TotalShellTests = {
         test.done();
     },
 
-    changeDirNameTest : function(test){
+    changeDirByNameTest : function(test){
         var shell = makeShell();
-        var child = shell.addNode('children','GraphNode','test1');
+        var child = shell.addNode('test1','children');
         test.ok(shell.root.id === shell.cwd.id);
         shell.cd('test1');
         test.ok(shell.cwd.id === child.id);        

@@ -1,0 +1,407 @@
+{
+    "0": {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": true
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "1": {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "2": {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "3": {
+        "id": 3,
+        "name": "blah",
+        "parents": {
+            "0": true,
+            "26": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "4": true,
+            "9": true,
+            "14": true,
+            "15": true,
+            "16": true,
+            "21": true,
+            "22": true
+        },
+        "values": {},
+        "tags": {
+            "type": "Institution"
+        },
+        "annotations": {},
+        "allRules": {}
+    },
+    "4": {
+        "id": 4,
+        "name": "Roles",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {
+            "5": true,
+            "6": true,
+            "7": true,
+            "8": true
+        },
+        "values": {},
+        "tags": {
+            "type": "Container"
+        },
+        "annotations": {}
+    },
+    "5": {
+        "id": 5,
+        "name": "incumbent",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "6": {
+        "id": 6,
+        "name": "challenger",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "7": {
+        "id": 7,
+        "name": "controlled",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "8": {
+        "id": 8,
+        "name": "exempt",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "9": {
+        "id": 9,
+        "name": "Activities",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {
+            "10": true,
+            "11": true,
+            "12": true,
+            "13": true
+        },
+        "values": {},
+        "tags": {
+            "type": "Container"
+        },
+        "annotations": {}
+    },
+    "10": {
+        "id": 10,
+        "name": "physical",
+        "parents": {
+            "9": true
+        },
+        "_originalParent": 9,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "11": {
+        "id": 11,
+        "name": "symbolic",
+        "parents": {
+            "9": true
+        },
+        "_originalParent": 9,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "12": {
+        "id": 12,
+        "name": "communicative",
+        "parents": {
+            "9": true
+        },
+        "_originalParent": 9,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "13": {
+        "id": 13,
+        "name": "unbound",
+        "parents": {
+            "9": true
+        },
+        "_originalParent": 9,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "14": {
+        "id": 14,
+        "name": "IGU",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "15": {
+        "id": 15,
+        "name": "ExternalEffects",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "16": {
+        "id": 16,
+        "name": "FactGrammar",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {
+            "17": true,
+            "18": true,
+            "19": true,
+            "20": true
+        },
+        "values": {},
+        "tags": {
+            "type": "Container"
+        },
+        "annotations": {}
+    },
+    "17": {
+        "id": 17,
+        "name": "physical",
+        "parents": {
+            "16": true
+        },
+        "_originalParent": 16,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "18": {
+        "id": 18,
+        "name": "symbolic",
+        "parents": {
+            "16": true
+        },
+        "_originalParent": 16,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "19": {
+        "id": 19,
+        "name": "communicative",
+        "parents": {
+            "16": true
+        },
+        "_originalParent": 16,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "20": {
+        "id": 20,
+        "name": "unbound",
+        "parents": {
+            "16": true
+        },
+        "_originalParent": 16,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "21": {
+        "id": 21,
+        "name": "ValueHierarchy",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "22": {
+        "id": 22,
+        "name": "Norms",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {
+            "23": true,
+            "24": true,
+            "25": true
+        },
+        "values": {},
+        "tags": {
+            "type": "NormsNode"
+        },
+        "annotations": {}
+    },
+    "23": {
+        "id": 23,
+        "name": "EmpiricallyExpected",
+        "parents": {
+            "22": true
+        },
+        "_originalParent": 22,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "RuleContainer"
+        },
+        "annotations": {},
+        "rules": [],
+        "rulesByName": {}
+    },
+    "24": {
+        "id": 24,
+        "name": "NormativelyExpected",
+        "parents": {
+            "22": true
+        },
+        "_originalParent": 22,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "RuleContainer"
+        },
+        "annotations": {},
+        "rules": [],
+        "rulesByName": {}
+    },
+    "25": {
+        "id": 25,
+        "name": "Sanctionable",
+        "parents": {
+            "22": true
+        },
+        "_originalParent": 22,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "RuleContainer"
+        },
+        "annotations": {},
+        "rules": [],
+        "rulesByName": {}
+    },
+    "26": {
+        "id": 26,
+        "name": "ExternalEffectors",
+        "parents": {},
+        "children": {
+            "3": true
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    }
+}
