@@ -42,6 +42,19 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     //----------------------------------------
     //START OF METHODS:
 
+    //Utility method to add children to a node:
+    CompleteShell.prototype.addLink = function(node,target,id,name){
+        if(isNaN(Number(id))){
+            throw new Error("Trying to link without providing a value id number");
+        }
+        if(node && node[target]){
+            node[target][Number(id)] = name;
+        }else{
+            throw new Error("Unrecognised target");
+        }
+    };
+
+    
     //add a node manually / through user interface
     CompleteShell.prototype.addNode = function(name,target,type){
         //validate:
@@ -53,13 +66,15 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             //if adding to parents,don't store the cwd as newnode's parent
             newNode = new GraphNode(name,undefined,type);
             //add the cwd to the newNodes children:
-            newNode.children[this.cwd.id] = true;
+            this.addLink(newNode,'children',this.cwd.id,this.cwd.name);
+            //newNode.children[this.cwd.id] = true;
         }else{
             newNode = new GraphNode(name,this.cwd.id,type);
         }
 
         //add to cwd:
-        this.cwd[target][newNode.id] = true;
+        this.addLink(this.cwd,target,newNode.id,newNode.name);
+        //this.cwd[target][newNode.id] = true;
 
         //Store:
         if(this.allNodes[newNode.id] !== undefined){
@@ -77,7 +92,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
                 }
                 this.allNodes[d.id] = d;
             },this);
-        }else{
+        }else if(type !== 'GraphNode'){
             console.log("No ctor for:",type);
         }
 
@@ -100,7 +115,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         _.keys(obj).forEach(function(d){
             newNode[d] = obj[d];
         });
-
+        
         if(newNode.id !== obj.id) throw new Error("Ids need to match");
         if(this.allNodes[newNode.id] !== undefined){
             console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
@@ -142,6 +157,102 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         },node);
         return retArray;
     };
+
+    //Do a pwd to the root, or highest parent otherwise
+    CompleteShell.prototype.pwd = function(){
+
+    };
+
+    /**
+       SEARCH {whereToLook} {WhatToLookFor} {KeyOrValue}
+
+       //eg: find all nodes matching a pattern:
+       // search name blah
+
+       //eg: find the node with a specified id:
+       // search id 5
+
+       //eg2: find all nodes with children's names matching a pattern:
+       // search children blah
+
+       //eg3: find all nodes with a specific node as a child
+       // search children 5 id
+
+       //eg4: find all nodes where a value of an object  matches a pattern:
+       // search values bob value
+
+       //eg5: find all nodes where keys(values) contains a pattern
+       // search values bob key
+
+       
+       search ALL NODES for ones that have the specified property
+       namely, that they have a particular connection
+    */
+    
+    CompleteShell.prototype.search = function(target,regex,type){
+        if(type === 'value' || type === undefined){
+            return this.searchForValue(target,regex);
+        }else if(type === 'key' || type === "id"){
+            return this.searchForKey(target,regex);
+        }
+    }
+
+
+    CompleteShell.prototype.searchForValue = function(target,regex){
+        console.log("searching by value:",target,regex);
+        //if searching by name, or the value stored in a location
+        var pattern = new RegExp(regex);
+        var matchingNodes = _.values(this.allNodes).filter(function(node){
+            if(target === 'name'){
+                //ie: search name blah
+                return pattern.test(node.name);
+            }else if(node[target] === undefined){
+                //ie: search somethingUndefined blah
+                console.log("Skipping node without target:",target,node);
+                return false;
+            }else{
+                //ie: search children blah
+                //ie: search values bob, where values = { a: "bob"}
+                return _.some(_.values(node[target]),function(d){
+                    return pattern.test(d);
+                });
+            }
+        });
+        return matchingNodes;
+    }
+
+
+    CompleteShell.prototype.searchForKey = function(target,keyVal){
+        console.log("searching by key");
+        var targetId = Number(keyVal);
+        var pattern = new RegExp(keyVal);
+        if(target === 'id' && isNaN(targetId)){
+            throw new Error("searching for an id requires a number");
+        }
+        var matchingNodes = _.values(this.allNodes).filter(function(node){
+            if(target === 'id'){
+                //ie: search id 5
+                return node.id === Number(keyVal);
+            }else if(node[target] === undefined){
+                //ie: search somethingUndefined 5
+                console.log("skipping node without target:",target,node);
+                return false;
+            }else if(target === 'parents' || target === 'children'){
+                //ie: search children 5
+                return _.some(_.keys(node[target]),function(d){
+                    //console.log("Comparing:",d,targetId,Number(d) === targetId);
+                    return Number(d) === targetId;
+                });
+            }else{
+                //ie: search values bob, where values = {"bob": a}
+                return _.some(_.keys(node[target]),function(d){
+                    return pattern.test(d);
+                });
+            }
+        });
+        return matchingNodes;
+    }
+
     
     
     /**
@@ -233,11 +344,13 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
 
         //perform the link:
         var nodeToLink = this.allNodes[id];
-        this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
+        this.addLink(this.cwd,target,nodeToLink.id,nodeToLink.name);
+        //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
             var rtarget = 'parents';
             if(target === 'parents') rtarget = 'children';
-            nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
+            this.addLink(nodeToLink,rTarget,this.cwd.id,this.cwd.name);
+            //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
         }
     };
     
@@ -269,13 +382,17 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             //console.log("cleaning up from id delete" );
             if(_.values(removed.parents).filter(function(d){return d;}).length === 0){
                 //console.log("Storing in no parents:",this.allNodes[1],removed);
-                this.disconnected.noParents.children[removed.id] = true;
-                removed.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
+                this.addLink(this.disconnected.noParents,'children',removed.id,removed.name);
+                //this.disconnected.noParents.children[removed.id] = true;
+                this.addLink(removed,'parents',this.disconnected.noParents.id,this.disconnected.noParents.name);
+                //removed.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
             }
             if(_.values(removed.children).filter(function(d){return d;}).length === 0){
                 //console.log("Storing in no children:",this.allNodes[2],removed);
-                this.disconnected.noChildren.parents[removed.id] = true;//removed;
-                removed.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
+                this.addLink(this.disconnected.noChildren,'parents',removed.id,removed.name);
+                //this.disconnected.noChildren.parents[removed.id] = true;//removed;
+                this.addLink(removed,'children',this.disconnected.noChildren.id,this.disconnected.noChildren.name);
+                //removed.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
             }
             //FINISHED REMOVING NUMERIC ID NODE
         }else{
@@ -307,13 +424,17 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
                 console.log(_.values(d.parents).filter(function(d){return d;}));
                 if(_.values(d.parents).filter(function(d){return d;}).length === 0){
                     console.log("disconnected");
-                    this.disconnected.noParents.children[d.id] = true;//d;
-                    d.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
+                    this.addLink(this.disconnected.noParents,'children',d.id,d.name);
+                    //this.disconnected.noParents.children[d.id] = true;//d;
+                    this.addLink(d,'parents',this.disconnected.noParents.id,this.disconnected.noParents.name);
+                    //d.parents[this.disconnected.noParents.id] = true;//this.disconnected.noParents;
                 }
                 if(_.values(d.children).filter(function(d){return d;}).length === 0){
                     console.log("disconnected2");
-                    this.disconnected.noChildren.parents[d.id] = true; //d;
-                    d.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
+                    this.addLink(this.disconnected.noChildren,'parents',d.id,d.name);
+                    //this.disconnected.noChildren.parents[d.id] = true; //d;
+                    this.addLink(d,'children',this.disconnected.noChildren.id,this.disconnected.noChildren.name);
+                    //d.children[this.disconnected.noChildren.id] = true;//this.disconnected.noChildren;
                 }
             },this);//this as arg, so this= shell still
             
@@ -410,9 +531,11 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
 
     //Loading json data means creating
     CompleteShell.prototype.importJson = function(allNodes){
-        allNodes.map(function(d){
+        console.log("importing type:", typeof allNodes);
+        _.values(allNodes).map(function(d){
             this.addNodeFromJson(d);
         },this);
+        this.cwd = this.allNodes[0];
     };
 
     

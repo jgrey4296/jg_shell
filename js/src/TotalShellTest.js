@@ -25,7 +25,7 @@ exports.TotalShellTests = {
         var shell = makeShell();
         var newNode = shell.addNode("test",'children');
         test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id] === true);
+        test.ok(shell.cwd.children[newNode.id] === newNode.name);
         test.ok(shell.allNodes[newNode.id].name === newNode.name);
         test.done();
     },
@@ -45,8 +45,8 @@ exports.TotalShellTests = {
         test.ok(parentNode !== undefined);
         test.ok(Object.keys(shell.cwd.parents).length === 1);
         test.ok(shell.cwd._originalParent === undefined);
-        test.ok(shell.cwd.parents[parentNode.id] === true);
-        test.ok(parentNode.children[shell.cwd.id] === true);
+        test.ok(shell.cwd.parents[parentNode.id] === parentNode.name);
+        test.ok(parentNode.children[shell.cwd.id] === shell.cwd.name);
         test.done();
     },
 
@@ -133,35 +133,6 @@ exports.TotalShellTests = {
         test.done();
     },
 
-    checkAddConditionToRuleTest : function(test){
-        test.ok(false);
-        test.done();
-    },
-
-    checkAddActionToRuleTest : function(test){
-        test.ok(false);
-        test.done();
-    },
-
-    checkAddConstantTestToCondition : function(test){
-        test.ok(false);
-        test.done();
-    },
-
-    checkAddConstantTestToSpecifiedCondition : function(test){
-        test.ok(false);
-        test.done();
-    },
-
-    checkAddBindingToCondition : function(test){
-        test.ok(false);
-        test.done();
-    },
-
-    checkAddBindingToSpecifiedCondition : function(test){
-        test.ok(false);
-        test.done();
-    },
     
     getNodeListByIdsTest : function(test){
         var shell = makeShell();
@@ -220,7 +191,7 @@ exports.TotalShellTests = {
         test.ok(shell.cwd.id === node2.id);
 
         shell.link('parents',thirdNode.id);
-        test.ok(shell.cwd.parents[thirdNode.id] === true);
+        test.ok(shell.cwd.parents[thirdNode.id] === thirdNode.name);
         test.ok(shell.allNodes[thirdNode.id].name === thirdNode.name);
         test.done();
     },
@@ -229,7 +200,7 @@ exports.TotalShellTests = {
         var shell = makeShell();
         var newNode = shell.addNode('test1','children');
         test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id] === true);
+        test.ok(shell.cwd.children[newNode.id] === newNode.name);
         shell.rm(newNode.id);
         test.ok(shell.cwd.children[newNode.id] === undefined);
         
@@ -246,6 +217,88 @@ exports.TotalShellTests = {
         test.done();
     },
 
+
+    //SEARCH TESTS:
+    searchTest_forChildren : function(test){
+        var shell = makeShell();
+        shell.addNode("test",'children');
+        shell.addNode('test2','children');
+        shell.addNode('aewaf','children');
+        var foundNodes = shell.search('children','test');
+        test.ok(foundNodes.length === 1);
+        test.ok(foundNodes[0].id === shell.cwd.id);
+        test.done();
+    },
+
+    searchTest_forParents : function(test){
+        var shell = makeShell();
+        var t1 = shell.addNode('test','children');
+        var t2 = shell.addNode('test2','children');
+        var t3 = shell.addNode('test3','parents');
+        var foundNodes = shell.search('parents',shell.cwd.id,'id');
+        test.ok(foundNodes.length === 2,foundNodes.length);
+        test.ok(foundNodes[0].id === t1.id);
+        test.ok(foundNodes[1].id === t2.id);
+        test.done();
+    },
+
+    //make sure the search is across all nodes, not just the current nodes:
+    searchTest_checkAllNodes : function(test){
+        var shell = makeShell();
+        var t1 = shell.addNode('test','children');
+        shell.cd(t1.id);
+        test.ok(shell.cwd.id === t1.id);
+        shell.addNode('test2','children');
+        shell.cd(shell.root.id);
+        test.ok(shell.cwd.id !== t1.id);
+        var foundNodes = shell.search('name','test');
+        test.ok(foundNodes.length === 2);
+        test.done();
+    },
+
+    //TODO:
+    //search for an id
+
+    //search for parents of a pattern
+
+    //search for parents of an id
+
+    //value search for values/tags
+
+    //key search for values/tags
+    
+
+    // checkAddConditionToRuleTest : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    // checkAddActionToRuleTest : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    // checkAddConstantTestToCondition : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    // checkAddConstantTestToSpecifiedCondition : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    // checkAddBindingToCondition : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    // checkAddBindingToSpecifiedCondition : function(test){
+    //     test.ok(false);
+    //     test.done();
+    // },
+
+    
     //Display conversion tests
     //check functions for converting nodes/rules etc to
     //simple array formats for visualisation

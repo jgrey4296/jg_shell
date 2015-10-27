@@ -469,6 +469,7 @@ define([underscoreName],function(_){
         var pattern = new RegExp(valueStringPattern);
 
         var keyNum = Number(valueStringPattern);
+        //search for an id
         if(field && key && key === "id" && Number.isInteger(keyNum)){
             var objs = _.map(startingPoint,function(d){
                 if(d && d[field]){
@@ -480,6 +481,7 @@ define([underscoreName],function(_){
                 };
             }).filter(function(d){if(d)return true;});
             return objs;
+            //search for a name
         }else if(field && key && key === "name" && valueStringPattern){
             var objs = _.map(startingPoint,function(d){
                 if(_.some(_.keys(d[field]),function(e){

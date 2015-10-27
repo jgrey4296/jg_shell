@@ -1,0 +1,512 @@
+{
+    "0": {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "4": true
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "1": {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {
+            "3": true
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "2": {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {
+            "3": true,
+            "17": true
+        },
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "3": {
+        "id": 3,
+        "name": "cif",
+        "parents": {
+            "1": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "2": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "4": {
+        "id": 4,
+        "name": "ensemble",
+        "parents": {
+            "0": true,
+            "18": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "5": true,
+            "6": true,
+            "7": true,
+            "8": true,
+            "9": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "5": {
+        "id": 5,
+        "name": "schema",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {
+            "10": true,
+            "16": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "6": {
+        "id": 6,
+        "name": "characters",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {
+            "28": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "7": {
+        "id": 7,
+        "name": "volitionRules",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {
+            "21": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "8": {
+        "id": 8,
+        "name": "triggerRules",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {
+            "24": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "9": {
+        "id": 9,
+        "name": "actions",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {
+            "11": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "10": {
+        "id": 10,
+        "name": "socialValueSchema",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {
+            "category": "feeling",
+            "isBoolean": "false",
+            "directionType": "directed",
+            "types": "affinity",
+            "types_b": "attraction",
+            "defaultValue": "0",
+            "minValue": "0",
+            "maxValues": "100",
+            "actionable": "true",
+            "duration": "6"
+        },
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "11": {
+        "id": 11,
+        "name": "actionInstance",
+        "parents": {
+            "9": true
+        },
+        "_originalParent": 9,
+        "children": {
+            "12": true,
+            "13": true,
+            "14": true,
+            "15": true
+        },
+        "values": {
+            "name": "\"\"",
+            "isAccept": "Boolean"
+        },
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "12": {
+        "id": 12,
+        "name": "conditions",
+        "parents": {
+            "11": true
+        },
+        "_originalParent": 11,
+        "children": {
+            "17": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "13": {
+        "id": 13,
+        "name": "influenceRules",
+        "parents": {
+            "11": true
+        },
+        "_originalParent": 11,
+        "children": {
+            "19": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "14": {
+        "id": 14,
+        "name": "leadsTo",
+        "parents": {
+            "11": true
+        },
+        "_originalParent": 11,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "15": {
+        "id": 15,
+        "name": "effects",
+        "parents": {
+            "11": true
+        },
+        "_originalParent": 11,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "16": {
+        "id": 16,
+        "name": "intent",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {
+            "category": "relationship",
+            "type": "involved_with",
+            "intentType": "true",
+            "first": "initiator",
+            "second": "responder"
+        },
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "17": {
+        "id": 17,
+        "name": "condition",
+        "parents": {
+            "12": true
+        },
+        "_originalParent": 12,
+        "children": {
+            "2": true
+        },
+        "values": {
+            "category": "trait",
+            "type": "lucky",
+            "first": "luckyGuy",
+            "value": "true"
+        },
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "18": {
+        "id": 18,
+        "name": "rules",
+        "parents": {},
+        "children": {
+            "4": true,
+            "7": true,
+            "8": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "19": {
+        "id": 19,
+        "name": "influenceRule",
+        "parents": {
+            "13": true
+        },
+        "_originalParent": 13,
+        "children": {
+            "20": true,
+            "23": true
+        },
+        "values": {
+            "weight": "8",
+            "direction": "positive"
+        },
+        "tags": {
+            "type": "node",
+            "focus_a": "preferBranch",
+            "focus_b": "preferBinding"
+        },
+        "annotations": {}
+    },
+    "20": {
+        "id": 20,
+        "name": "conditions",
+        "parents": {
+            "19": true
+        },
+        "_originalParent": 19,
+        "children": {
+            "17": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "21": {
+        "id": 21,
+        "name": "volitionRuleInstance",
+        "parents": {
+            "7": true
+        },
+        "_originalParent": 7,
+        "children": {
+            "22": true,
+            "27": true
+        },
+        "values": {
+            "weight": "9"
+        },
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "22": {
+        "id": 22,
+        "name": "conditions",
+        "parents": {
+            "21": true
+        },
+        "_originalParent": 21,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "23": {
+        "id": 23,
+        "name": "intent",
+        "parents": {
+            "19": true
+        },
+        "_originalParent": 19,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "24": {
+        "id": 24,
+        "name": "triggerRule",
+        "parents": {
+            "8": true
+        },
+        "_originalParent": 8,
+        "children": {
+            "25": true,
+            "26": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "25": {
+        "id": 25,
+        "name": "conditions",
+        "parents": {
+            "24": true
+        },
+        "_originalParent": 24,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "26": {
+        "id": 26,
+        "name": "effects",
+        "parents": {
+            "24": true
+        },
+        "_originalParent": 24,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "27": {
+        "id": 27,
+        "name": "intent",
+        "parents": {
+            "21": true
+        },
+        "_originalParent": 21,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "28": {
+        "id": 28,
+        "name": "character",
+        "parents": {
+            "6": true
+        },
+        "_originalParent": 6,
+        "children": {
+            "29": true,
+            "30": true
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "29": {
+        "id": 29,
+        "name": "traits",
+        "parents": {
+            "28": true
+        },
+        "_originalParent": 28,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "30": {
+        "id": 30,
+        "name": "traits",
+        "parents": {
+            "28": true
+        },
+        "_originalParent": 28,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    }
+}
