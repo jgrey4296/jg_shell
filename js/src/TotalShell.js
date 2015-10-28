@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,_,GraphNode,DSCtors,util){
+define(['./ReteDataStructures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,_,GraphNode,DSCtors,util){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
@@ -420,7 +420,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     //Remove a node from the parent/child lists
     //TODO: refactor
     CompleteShell.prototype.rm = function(id){
-        //is an id
+        //supplied a numeric id
         if(!isNaN(Number(id))){
             id = Number(id);
             //console.log("Removing:",id);

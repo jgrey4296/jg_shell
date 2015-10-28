@@ -6,8 +6,13 @@ require.config({
     paths:{
         "../libs/underscore": "/libs/underscore",
         underscore : "libs/underscore",
-        ReteDataStructures : 'libs/ReteDataStructures',
+        ReteDataStructures : 'src/ReteDataStructures',
         DataStructures : "src/DataStructures",
+        GraphNode : "src/GraphNode",
+        GraphStructureConstructors:"src/GraphStructureConstructors",
+        utils : "src/utils",
+        d3 : "libs/d3.min",
+        TotalShell : "src/TotalShell",
     },
     shim:{
         "../libs/underscore":{
@@ -23,7 +28,7 @@ require.config({
   Creates a single shell instance, a command map,
   and then the authoring environment d3 drawing code
 */
-require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
+require(['d3','TotalShell','underscore'],function(d3,Shell,_){
     try{
         console.log("Starting Total Authoring Shell");
         if(Shell === undefined) throw new Error("Shell is undefined");
@@ -362,12 +367,12 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
 
         //Draw a help window informing what commands are available
         var displayHelp = function(columnWidth,helpDataSubGrammar){
-            console.log(columnWidth + ":Available Commands:", helpDataSubGrammar);
+            //console.log(columnWidth + ":Available Commands:", helpDataSubGrammar);
             var helpText = ["Available Commands"].concat(_.keys(helpDataSubGrammar).map(function(d){
                 return d + " " + helpDataSubGrammar[d];
             }));
 
-            console.log("Help Text:",helpText);
+            //console.log("Help Text:",helpText);
             if(columnWidth === undefined){
                 console.warn("No columnWidth provided to displayHelp, assuming 200");
                 columnWidth = 200;
@@ -393,8 +398,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             helpWindow.select("rect").attr("width",columnWidth);
 
             //create a help window from the main svg
-
-            console.log("binding:",helpText);
+            //console.log("binding help text:",helpText);
             var boundSelection = helpWindow.selectAll("text").data(helpText);
 
             boundSelection.enter()
@@ -439,20 +443,20 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         //default to node view
                         currentCommandMode = "node";
                         //shift to rule view when appropriate
-                        console.log("Checking command type:",theShell.cwd.tags.type,theShell.cwd);
+                        //console.log("Checking command type:",theShell.cwd.tags.type,theShell.cwd);
                         if(theShell.cwd.tags.type === "rule"){
                             currentCommandMode = "rule";
                         };
-                        console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
+                        //console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
                         if(splitLine[0] === 'load' || splitLine[0] === 'save'){
-                            console.log("General Command",splitLine,splitLine.slice(1));
+                            //console.log("General Command",splitLine,splitLine.slice(1));
                             commands[splitLine[0]](theShell,splitLine.slice(1));
                         }else{
                             //get the command
                             var command = commands[currentCommandMode][splitLine[0]];
                             if (command !== undefined){
                                 //call the command, slicing off the command itself
-                                console.log("Calling command:",splitLine[0]);
+                                //console.log("Calling command:",splitLine[0]);
                                 command(theShell,splitLine.slice(1));
                             }else{
                                 console.log("unrecognised command: " + splitLine[0]);
@@ -505,7 +509,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
 
             //If cwd === node
             if(node.tags.type !== 'rule'){
-                console.log("Drawing nodes");
+                //console.log("Drawing nodes");
                 //setup columns
                 var columnWidth = calcWidth(usableWidth,columnNames.node.length);
                 if(Object.keys(columns).length !== columnNames.node.length){
@@ -522,7 +526,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     columnNames.node.map(function(d,i){
                         this[d] = initColumn(d,i,columnWidth);
                     },columns);
-                    console.log("Final Columns:",columns);
+                    //console.log("Final Columns:",columns);
                 }
                 drawNode(node,columnWidth);
             }else if(node.tags.type === "rule"){
@@ -560,7 +564,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 console.warn("No column width specified for drawNode, defaulting to 200");
                 columnWidth = 200;
             }
-            console.log("Drawing node:",node);
+            //console.log("Drawing node:",node);
             
             //draw in each column as is necessary:
             var nodeColumn = d3.select("#ShellNode");
@@ -616,7 +620,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 return this.allNodes[d];
             },theShell);
 
-            console.log("To Draw columns with:",childList,parentList);
+            //console.log("To Draw columns with:",childList,parentList);
             
             drawMultipleNodes('Parents',parentList,columnWidth);
             drawMultipleNodes('Children',childList,columnWidth);
@@ -700,8 +704,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
            @function drawMultipleNodes
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
-            console.log("Drawing Column:",baseContainer,childArray);
-            console.log("Column Length:",childArray.length);
+            //console.log("Drawing Column:",baseContainer,childArray);
+            //console.log("Column Length:",childArray.length);
             
             var containingNode = getColumnObject(baseContainer);
             var heightAvailable = containingNode.select("rect").attr("height");

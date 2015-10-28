@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
+define(['./ReteDataStructures','underscore'],function(RDS,_){
     var nextId = 0;
     //The main node type of the graph:
     var GraphNode = function(name,parentId,type,overRideId){
