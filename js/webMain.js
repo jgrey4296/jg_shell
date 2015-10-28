@@ -102,14 +102,6 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             "nci" : function(sh,values){
                 sh.addNode(values[0],'children','institution');
             },
-            //new role
-
-            //new activity
-
-            //new rule container
-
-            //new rule
-            
             //rm -> removeNode,
             "rm" : function(sh,values){
                 sh.rm(values[0]);
@@ -262,16 +254,20 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         var helpData = {
             node : {
                 "new"   : "$target $type $name",
-                "nc"    : "[n|i|r|a|rc] $name",
+                "nc"    : "[n | i | r | a | rc] $name",
+                "np"    : "[n | i | r | a | rc] $name",
                 "[ncn | nci]" : "$name",
                 "rm"    : "$id",
                 "cd"    : "[.. | $name | $id]",
                 "rename": "$name",
                 "set"   : "$field $parameter $value",
+                "link"  : "$target $id",
+                "linkr" : "$target $id",
                 "stash" : "",
                 "unstash":"",
-                "top" : "",
-                "prev" : "",
+                "top"   : "",
+                "prev"  : "",
+                "search" : "$target $pattern $focusType",
             },
             rule : {
                 "cd"    : "[.. | $name | $id]",
@@ -367,12 +363,16 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
         //Draw a help window informing what commands are available
         var displayHelp = function(columnWidth,helpDataSubGrammar){
             console.log(columnWidth + ":Available Commands:", helpDataSubGrammar);
-            var helpText = [["Available Commands ",""]].concat(_.pairs(helpDataSubGrammar));
+            var helpText = ["Available Commands"].concat(_.keys(helpDataSubGrammar).map(function(d){
+                return d + " " + helpDataSubGrammar[d];
+            }));
+
+            console.log("Help Text:",helpText);
             if(columnWidth === undefined){
                 console.warn("No columnWidth provided to displayHelp, assuming 200");
                 columnWidth = 200;
             }
-            var helpSize = 300;
+            var helpSize = 400;
             var helpWindow = d3.select("#helpWindow");
             if(helpWindow.empty()){
                 console.log("Initialising help window");
@@ -395,7 +395,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             //create a help window from the main svg
 
             console.log("binding:",helpText);
-            var boundSelection = helpWindow.selectAll("text").data(helpText,function(d){return d[1];});
+            var boundSelection = helpWindow.selectAll("text").data(helpText);
 
             boundSelection.enter()
                 .append("text")
@@ -406,7 +406,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     return "translate("+ (columnWidth * 0.5) + "," + (30 + i * 20) +")";
                 })
                 .text(function(d){
-                    return d[0] + ": " + d[1];
+                    return d;
                 });
 
             boundSelection.exit().remove();
@@ -439,7 +439,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         //default to node view
                         currentCommandMode = "node";
                         //shift to rule view when appropriate
-                        if(theShell.cwd.tags.type === "RuleNode"){
+                        console.log("Checking command type:",theShell.cwd.tags.type,theShell.cwd);
+                        if(theShell.cwd.tags.type === "rule"){
                             currentCommandMode = "rule";
                         };
                         console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
@@ -462,7 +463,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         console.log("Shell cwd state:",theShell.cwd);
                         commands.context(theShell);
                         //recheck the command type for displaying help
-                        if(theShell.cwd.tags.type === "RuleNode"){
+                        if(theShell.cwd.tags.type === "rule"){
                             currentCommandMode = "rule";
                         }else{
                             currentCommandMode = "node";
@@ -503,7 +504,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
 
             //If cwd === node
-            if(node.tags.type !== 'RuleNode'){
+            if(node.tags.type !== 'rule'){
                 console.log("Drawing nodes");
                 //setup columns
                 var columnWidth = calcWidth(usableWidth,columnNames.node.length);
@@ -524,7 +525,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                     console.log("Final Columns:",columns);
                 }
                 drawNode(node,columnWidth);
-            }else if(node.tags.type === "RuleNode"){
+            }else if(node.tags.type === "rule"){
                 //OTHERWISE: dealing with rules
                 console.log("Drawing rules");
                 //setup columns
@@ -639,10 +640,10 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 columnWidth = 200;
             }
             //main:
-            console.log("Drawing:",rule,ruleNode.rule);
+            console.log("Drawing:",rule);
             var ruleContainer = svg.select("#rule");
             //bind data
-            var bound = ruleContainer.selectAll("g").data([ruleNode.rule],function(d){
+            var bound = ruleContainer.selectAll("g").data([ruleNode],function(d){
                 return d.id;
             });
             //remove old data?
@@ -667,7 +668,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                 .attr("ry",10);
 
             //get data from the rule:
-            var bound = container.selectAll("text").data(theShell.nodeToStringList(node));
+            var bound = container.selectAll("text").data(theShell.ruleToStringList(ruleNode));
             //new stuff
             bound.enter().append("text")
                 .attr("text-anchor","middle")
@@ -684,8 +685,8 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             
             //note: currently draw multiple nodes expected
             //draw node information,bindings,tags, etc
-            drawMultipleNodes("conditions",ruleNode.rule.conditions,columnWidth);
-            drawMultipleNodes("actions",ruleNode.rule.actions,columnWidth);
+            drawMultipleNodes("conditions",ruleNode.conditions,columnWidth);
+            drawMultipleNodes("actions",ruleNode.actions,columnWidth);
             //TODO:
             //drawMultipleNodes("parents",[],columnWidth);
             //drawMultipleNodes("children",[],columnWidth);

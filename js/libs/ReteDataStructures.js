@@ -62,6 +62,8 @@ define(['underscore'],function(_){
 
     //Test: (wme.)a = 5
     var ConstantTest = function(testWmeField,operator,testValue){
+        this.tags = {};
+        this.tags.type = "constantTest";
         this.isConstantTest = true;
         this.field = testWmeField;
         this.operator = operator;
@@ -81,7 +83,9 @@ define(['underscore'],function(_){
         }
         this.constantTests = [];
         this.bindings = [];
-
+        this.tags = {};
+        this.tags.type = "condition";
+        
         if(tests !== undefined){
             tests.map(function(d){
                 var test = new ConstantTest(d[0],d[1],d[2]);
@@ -124,6 +128,8 @@ define(['underscore'],function(_){
     //pretty much just wraps an array of conditions
     var NCCCondition = function(conditions){
         this.isNCCCondition = true;
+        this.tags = {};
+        this.tags.type = "nccCondition";
         this.conditions = [];
         for(var i = 0; i < conditions.length; i++){
             //conditions should be in array form
@@ -246,6 +252,7 @@ define(['underscore'],function(_){
         this.values = {};
         //tag Data
         this.tags = {};
+        this.tags.type = "actionDescription";
         //the scope object to get things, like
         //general grammars, and the firing token?
         this.scope = {};

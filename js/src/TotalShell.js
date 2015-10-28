@@ -85,13 +85,16 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         //Extend the structure as necessary:
         if(DSCtors[type] !== undefined){
             console.log("Calling ctor:",type);
-            var children = _.flatten(DSCtors[type](newNode));
-            children.forEach(function(d){
-                if(this.allNodes[d.id] !== undefined){
-                    console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
-                }
-                this.allNodes[d.id] = d;
-            },this);
+            var newChildren = DSCtors[type](newNode);
+            if(newChildren && newChildren.length > 0){
+                var flatChildren = _.flatten(newChildren);
+                flatChildren.forEach(function(d){
+                    if(this.allNodes[d.id] !== undefined){
+                        console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
+                    }
+                    this.allNodes[d.id] = d;
+                },this);
+            }
         }else if(type !== 'GraphNode'){
             console.log("No ctor for:",type);
         }
@@ -128,12 +131,23 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
 
     //Utility functions for display Output:    
     CompleteShell.prototype.nodeToShortString = function(node,i){
-        return "(" + node.id + "): " + node.name + " (" + node.tags.type + ")";
+        if(node.name){
+            return "(" + node.id + "): " + node.name + " (" + node.tags.type + ")";
+        }else{
+            return "(" + node.id + "): (" + node.tags.type + ")";
+        }
     };
 
     CompleteShell.prototype.nodeToStringList = function(node){
         return [];
     };
+
+    CompleteShell.prototype.ruleToStringList = function(node){
+        var retList = [];
+        retList.push("(" + node.id +"): " + node.name);
+        return retList;
+    };
+    
     
     CompleteShell.prototype.getListsFromNode = function(node,fieldNameList){
         var allArrays = fieldNameList.map(function(d){
@@ -366,8 +380,8 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
         this.addLink(this.cwd,target,nodeToLink.id,nodeToLink.name);
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
-            var rtarget = 'parents';
-            if(target === 'parents') rtarget = 'children';
+            var rTarget = 'parents';
+            if(target === 'parents') rTarget = 'children';
             this.addLink(nodeToLink,rTarget,this.cwd.id,this.cwd.name);
             //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
         }
@@ -476,48 +490,48 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     //Rule modifiers:
     //----------------------------------------
     CompleteShell.prototype.addCondition = function(){
-        if(this.cwd.tags.type !== 'RuleNode'){
+        if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         var cond = new RDS.Condition();
-        this.cwd.rule.conditions.push(cond);
+        this.cwd.conditions.push(cond);
     };
 
     CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
-        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.rule.conditions);
-        if(this.cwd.tags.type !== 'RuleNode'){
+        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.conditions);
+        if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
 
-        if(this.cwd.rule.conditions[conditionNumber] === undefined){
-            console.log(conditionNumber,this.cwd.rule.conditions);
+        if(this.cwd.conditions[conditionNumber] === undefined){
+            console.log(conditionNumber,this.cwd.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
         var test = new RDS.ConstantTest(testField,op,value);
-        this.cwd.rule.conditions[conditionNumber].constantTests.push(test);
+        this.cwd.conditions[conditionNumber].constantTests.push(test);
     };
 
     //ie: toVar  <- wme.fromVar
     //a <- wme.first
     CompleteShell.prototype.addBinding = function(conditionNum,toVar,fromVar){
         console.log("Add binding to:",conditionNum,toVar,fromVar);
-        if(this.cwd.tags.type !== 'RuleNode'){
+        if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-        if(this.cwd.rule.conditions[conditionNum] === undefined){
+        if(this.cwd.conditions[conditionNum] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        this.cwd.rule.conditions[conditionNum].addBinding(toVar,fromVar);
+        this.cwd.conditions[conditionNum].addBinding(toVar,fromVar);
         
     };
 
     
     CompleteShell.prototype.addAction = function(valueArray){
-        if(this.cwd.tags.type !== 'RuleNode'){
+        if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         var actionDescription = new RDS.ActionDescription(valueArray[0], valueArray[1]);
-        this.cwd.rule.actions.push(actionDescription);
+        this.cwd.actions.push(actionDescription);
     };
     
     

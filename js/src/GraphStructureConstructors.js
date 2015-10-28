@@ -118,6 +118,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['rule'] = function(baseNode){
         baseNode.conditions = [];
         baseNode.actions = [];
+        return [];
     };
 
     //------------------------------
