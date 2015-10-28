@@ -157,7 +157,10 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             },
             //Search:
             "search" : function(sh,values){
-                throw new Error("Search unimplemented");
+                var returnedData = sh.search(values[0],values[1],values[2]);
+                if(returnedData){
+                    drawSearchColumn(returnedData,calcWidth(usableWidth,_.values(columnNames[currentCommandMode]).length));
+                }
             }
             
         };
@@ -312,6 +315,7 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
             "node" : ["Parents","ShellNode","Children"],
             "rule" : ["parents","conditions","rule","actions","children"]
         };
+        var currentCommandMode = "node";
         //the column objects, to be created per mode
         var columns = {};
         
@@ -433,18 +437,18 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         var splitLine = line.trim().split(" ");
                         //figure out what mode you are in
                         //default to node view
-                        var commandMode = "node";
+                        currentCommandMode = "node";
                         //shift to rule view when appropriate
                         if(theShell.cwd.tags.type === "RuleNode"){
-                            commandMode = "rule";
+                            currentCommandMode = "rule";
                         };
-                        console.log("Command mode: ", commandMode, "Commands: ", columnNames[commandMode]);
+                        console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
                         if(splitLine[0] === 'load' || splitLine[0] === 'save'){
                             console.log("General Command",splitLine,splitLine.slice(1));
                             commands[splitLine[0]](theShell,splitLine.slice(1));
                         }else{
                             //get the command
-                            var command = commands[commandMode][splitLine[0]];
+                            var command = commands[currentCommandMode][splitLine[0]];
                             if (command !== undefined){
                                 //call the command, slicing off the command itself
                                 console.log("Calling command:",splitLine[0]);
@@ -459,13 +463,13 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         commands.context(theShell);
                         //recheck the command type for displaying help
                         if(theShell.cwd.tags.type === "RuleNode"){
-                            commandMode = "rule";
+                            currentCommandMode = "rule";
                         }else{
-                            commandMode = "node";
+                            currentCommandMode = "node";
                         }
 
                         //Update the displayed help
-                        displayHelp(calcWidth(usableWidth,_.values(columnNames[commandMode]).length), helpData[commandMode]);
+                        displayHelp(calcWidth(usableWidth,_.values(columnNames[currentCommandMode]).length), helpData[currentCommandMode]);
 
                     }
                 }catch(err){
@@ -795,8 +799,62 @@ require(['libs/d3.min','src/TotalShell','underscore'],function(d3,Shell,_){
                         
         };
 
+        //------------------------------
+        // Search bar drawing:
+        //------------------------------
 
+        var drawSearchColumn = function(nodeList,columnWidth){
+            //convert data as needed:
+            var infoList = ["Search results:"].concat(nodeList.map(function(d){
+                return "(" + d.id + "): " + d.name;
+            }));
+
+            
+            //set up the container:
+            var searchColumn = d3.select("#searchColumn");
+            if(searchColumn.empty()){
+                searchColumn = d3.select("svg").append("g")
+                    .attr("id","searchColumn");
+            }
+
+            //draw the rectangle
+            var rect = searchColumn.append("rect")
+                .attr("width",(columnWidth * 0.8))
+                .attr("height",usableHeight)
+                .attr("rx",10)
+                .attr("ry",10)
+                .style("fill","black")
+                .attr("transform","translate(" + (columnWidth * 0.1) + ",0)");
+
+            searchColumn.selectAll("text").remove();
+
+            if(infoList.length === 1){
+                //there is only the results header, quit
+                searchColumn.remove();
+                return;
+            }
+            
+            //bind data
+            var boundSelection = searchColumn.selectAll("text").data(infoList);
+
+            //draw data
+            boundSelection.enter().append("text")
+                .attr("transform",function(d,i){
+                    return "translate("+
+                        (columnWidth * 0.5) + "," + (30 + i * 30) + ")";
+                })
+                .attr("text-anchor","middle")
+                .text(function(d){
+                    return d;
+                })
+                .style("fill","white");
+
+        };
+
+        //------------------------------
         //Startup:
+        //------------------------------
+
         //call the draw command to show the initial state
         console.log("Starting");
         commands.context(theShell);

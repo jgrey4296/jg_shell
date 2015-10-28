@@ -190,10 +190,29 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     */
     
     CompleteShell.prototype.search = function(target,regex,type){
-        if(type === 'value' || type === undefined){
-            return this.searchForValue(target,regex);
-        }else if(type === 'key' || type === "id"){
-            return this.searchForKey(target,regex);
+        //Switch parents and children around:
+        //This makes more sense as you can then "search children 3"
+        //and get back the children of node 3,
+        //while "search parents 3" will get the nodes that parent 3
+        var possibleTargets = {
+            "parents" : "children",
+            "children" : "parents"
+        };
+        
+        var targetToUse = possibleTargets[target] || target;
+
+        if(targetToUse === target){
+            if(type === "key"){
+                return this.searchForKey(target,regex);
+            }else{
+                return this.searchForValue(target,regex);
+            }
+        }else{
+            if(!isNaN(Number(regex))){
+                return this.searchForKey(targetToUse,regex);
+            }else{
+                return this.searchForValue(targetToUse,regex);
+            }
         }
     }
 
@@ -400,7 +419,8 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             //loop over all children and parents looking for name
             //and delete it
             var name = id;
-            var childRemoved = _.keys(this.cwd.children).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this);
+            var childRemoved = _.keys(this.cwd.children).map(function(d){ if(this.allNodes[d].name === name){ return this.allNodes[d];}},this).filter(function(d){ return d;});
+
             childRemoved.forEach(function(d){
                 delete d.parents[this.cwd.id];
                 delete this.cwd.children[d.id];
