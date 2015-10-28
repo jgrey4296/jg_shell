@@ -29,11 +29,9 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         this.tags['type'] = type || 'GraphNode';
         this.annotations = {};
 
-        //for if its a rule object:
-        // this.rule = {
-        //     conditions : [],
-        //     actions : [],
-        // };
+        //a rule node is supplemented in its ctor with:
+        //this.conditions
+        //this.actions
         
     };
 

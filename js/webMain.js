@@ -7,6 +7,8 @@ require.config({
         "../libs/underscore": "/libs/underscore",
         underscore : "libs/underscore",
         ReteDataStructures : 'src/ReteDataStructures',
+        ReteProcedures     : "src/ReteProcedures",
+        ReteComparisonOperators : "src/ReteComparisonOperators",
         DataStructures : "src/DataStructures",
         GraphNode : "src/GraphNode",
         GraphStructureConstructors:"src/GraphStructureConstructors",
@@ -142,9 +144,11 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             //Stashing:
             "stash" : function(sh,values){
                 sh.stash();
+                drawStash(sh._nodeStash);
             },
             "unstash" : function(sh,values){
                 sh.unstash();
+                drawStash(sh._nodeStash);
             },
             "top" : function(sh,values){
                 sh.top();
@@ -856,6 +860,41 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
 
         };
 
+        //Drawing Stash Helper:
+        var drawStash = function(valueArray){
+            var stashedList = valueArray.map(function(d){
+                return "(" + d.id + "): " + d.name;
+            }).reverse(); //reverse so last thing added is first thing drawn
+
+            var stashContainer = d3.select("#stashContainer");
+            if(stashContainer.empty()){
+                stashContainer = d3.select("svg").append("g")
+                    .attr("id","stashContainer")
+                    .attr("transform",function(){
+                        return "translate(" + (usableWidth * 0.3) + ","
+                            + (usableHeight * 0.935 ) + ")";
+                    });
+            }
+
+            stashContainer.selectAll("text").remove();
+
+            //draw a simple list of text
+            var boundTexts = stashContainer.selectAll("text").data(stashedList);
+
+            boundTexts.enter().append("text")
+                .attr("text-anchor","right")
+                .style("fill","black")
+                .attr("transform",function(d,i){
+                    return "translate(0," + (i * 15 ) + ")";
+                })
+                .text(function(d,i){
+                    return d;
+                });
+            
+        };
+
+
+        
         //------------------------------
         //Startup:
         //------------------------------

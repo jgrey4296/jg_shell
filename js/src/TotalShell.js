@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,_,GraphNode,DSCtors,util){
+define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,RPS,_,GraphNode,DSCtors,util){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
@@ -35,6 +35,9 @@ define(['./ReteDataStructures','underscore','./GraphNode','./GraphStructureConst
         //stashed locations:
         this._nodeStash = [];
         this.previousLocation = 0;
+
+        //Integrated Rete Net:
+        this.reteNet = new RDS.ReteNet();
         
     };
 
@@ -42,6 +45,25 @@ define(['./ReteDataStructures','underscore','./GraphNode','./GraphStructureConst
     //----------------------------------------
     //START OF METHODS:
 
+    //RETE INTEGRATION METHODS:
+    CompleteShell.prototype.compileRete = function(){
+        //take all defined rules
+        var rules = _.values(this.allNodes).filter(function(d){
+            return d.tags.type === 'rule';
+        });
+        //and add them to the rete net
+        //returning the action nodes of the net
+        var allActionNodes = rules.map(function(d){
+            var action = RPS.addRule(d,this.reteNet);
+            //TODO: store the returned node inside the shell's nodes?
+            return action;
+        },this);
+    };
+
+
+    //----------------------------------------
+
+    
     //Utility method to add children to a node:
     CompleteShell.prototype.addLink = function(node,target,id,name){
         if(isNaN(Number(id))){
@@ -568,18 +590,18 @@ define(['./ReteDataStructures','underscore','./GraphNode','./GraphStructureConst
 
     //Stashing and unstashing:
     CompleteShell.prototype.stash = function(){
-        this._nodeStash.push(this.cwd.id);
+        this._nodeStash.push(this.cwd);
     };
 
     CompleteShell.prototype.unstash = function(){
         if(this._nodeStash.length > 0){
-            this.cd(this._nodeStash.pop());
+            this.cd(this._nodeStash.pop().id);
         }
     };
 
     CompleteShell.prototype.top = function(){
         if(this._nodeStash.length > 0){
-            this.cd(this._nodeStash[this._nodeStash.length - 1]);
+            this.cd(this._nodeStash[this._nodeStash.length - 1].id);
         }
     };
     
