@@ -114,6 +114,7 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
 
     //add a node from its json representation
     CompleteShell.prototype.addNodeFromJson = function(obj){
+        //console.log("Loading Object:",obj);
         var newNode = new GraphNode(obj.name,obj._originalParent,obj.type,obj.id);
         _.keys(obj).forEach(function(d){
             newNode[d] = obj[d];
@@ -124,10 +125,39 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
             console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
         }
         this.allNodes[newNode.id] = newNode;
+
+        //If necessary (from older versions)
+        //swap the keys/values pairings in children/parents
+        var keys = _.keys(newNode.children);
+        if(keys.length > 0 && isNaN(Number(keys[0]))){
+            //console.log("Converting from old format");
+            newNode.children = this.convertObject(newNode.children);
+        }
+
+        keys = _.keys(newNode.parents);
+        if(keys.length > 0 && isNaN(Number(keys[0]))){
+            //console.log("Converting from old format");
+            newNode.parents = this.convertObject(newNode.parents);
+        }
+
+        
         
         return newNode;
     };
 
+    //switch the keys and values of an object
+    CompleteShell.prototype.convertObject = function(object){
+        var keys = _.keys(object);
+        var values = _.values(object);
+        var newObject = {};
+        _.zip(values,keys).forEach(function(d){
+            newObject[d[0]] = d[1];
+        });
+
+        return newObject;
+    };
+
+    
 
     //Utility functions for display Output:    
     CompleteShell.prototype.nodeToShortString = function(node,i){
@@ -558,17 +588,24 @@ define(['../libs/ReteDataStructures','underscore','./GraphNode','./GraphStructur
     //As nodes only store ID numbers, its non-cyclic. meaning json
     //should be straightforward.
     CompleteShell.prototype.exportJson = function(){
-        var graphJson = JSON.stringify(this.allNodes,undefined,4);
+        var graphJson = JSON.stringify(_.values(this.allNodes),undefined,4);
         console.log("Converted to JSON:",graphJson);
         return graphJson;
     };
 
     //Loading json data means creating
+    //assumes an... object of nodes, NOT an array
     CompleteShell.prototype.importJson = function(allNodes){
         console.log("importing type:", typeof allNodes);
-        _.values(allNodes).map(function(d){
-            this.addNodeFromJson(d);
-        },this);
+        if(allNodes instanceof Array){
+            allNodes.map(function(d){
+                this.addNodeFromJson(d);
+            },this);
+        }else{
+            _.values(allNodes).map(function(d){
+                this.addNodeFromJson(d);
+            },this);
+        }
         this.cwd = this.allNodes[0];
     };
 

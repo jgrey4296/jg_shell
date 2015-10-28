@@ -1,0 +1,375 @@
+{
+    "0": {
+        "id": 0,
+        "name": "dontStarve",
+        "parents": {},
+        "children": {
+            "3": "resources",
+            "4": "tools",
+            "5": "food",
+            "6": "mobs"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "1": {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {
+            "18": "nuts"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "2": {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {
+            "18": "nuts"
+        },
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    "3": {
+        "id": 3,
+        "name": "resources",
+        "parents": {
+            "0": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "7": "wood",
+            "8": "grass",
+            "9": "stone",
+            "10": "flint"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "4": {
+        "id": 4,
+        "name": "tools",
+        "parents": {
+            "0": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "11": "pickaxe",
+            "12": "axe",
+            "13": "pitchfork",
+            "14": "hammer",
+            "15": "shovel"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "5": {
+        "id": 5,
+        "name": "food",
+        "parents": {
+            "0": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "16": "berries",
+            "17": "meat",
+            "19": "flowers",
+            "20": "carrots"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "6": {
+        "id": 6,
+        "name": "mobs",
+        "parents": {
+            "0": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "21": "spiders",
+            "22": "pigmen",
+            "23": "penguins",
+            "24": "bosses"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "7": {
+        "id": 7,
+        "name": "wood",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "8": {
+        "id": 8,
+        "name": "grass",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "9": {
+        "id": 9,
+        "name": "stone",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "10": {
+        "id": 10,
+        "name": "flint",
+        "parents": {
+            "3": true
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "11": {
+        "id": 11,
+        "name": "pickaxe",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "12": {
+        "id": 12,
+        "name": "axe",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "13": {
+        "id": 13,
+        "name": "pitchfork",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "14": {
+        "id": 14,
+        "name": "hammer",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "15": {
+        "id": 15,
+        "name": "shovel",
+        "parents": {
+            "4": true
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "16": {
+        "id": 16,
+        "name": "berries",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "17": {
+        "id": 17,
+        "name": "meat",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "18": {
+        "id": 18,
+        "name": "nuts",
+        "parents": {
+            "1": "disconnectedFromParents"
+        },
+        "_originalParent": 5,
+        "children": {
+            "2": "disconnectedFromChildren"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "19": {
+        "id": 19,
+        "name": "flowers",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "20": {
+        "id": 20,
+        "name": "carrots",
+        "parents": {
+            "5": true
+        },
+        "_originalParent": 5,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "21": {
+        "id": 21,
+        "name": "spiders",
+        "parents": {
+            "6": true
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "22": {
+        "id": 22,
+        "name": "pigmen",
+        "parents": {
+            "6": true
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "23": {
+        "id": 23,
+        "name": "penguins",
+        "parents": {
+            "6": true
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    "24": {
+        "id": 24,
+        "name": "bosses",
+        "parents": {
+            "6": true
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    }
+}
