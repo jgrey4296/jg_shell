@@ -224,8 +224,8 @@ exports.TotalShellTests = {
         shell.addNode("test",'children');
         shell.addNode('test2','children');
         shell.addNode('aewaf','children');
-        var foundNodes = shell.search('children','test');
-        test.ok(foundNodes.length === 1);
+        var foundNodes = shell.search('parents','test');
+        test.ok(foundNodes.length === 1,foundNodes.length);
         test.ok(foundNodes[0].id === shell.cwd.id);
         test.done();
     },
@@ -235,7 +235,7 @@ exports.TotalShellTests = {
         var t1 = shell.addNode('test','children');
         var t2 = shell.addNode('test2','children');
         var t3 = shell.addNode('test3','parents');
-        var foundNodes = shell.search('parents',shell.cwd.id,'id');
+        var foundNodes = shell.search('children',shell.cwd.id,'id');
         test.ok(foundNodes.length === 2,foundNodes.length);
         test.ok(foundNodes[0].id === t1.id);
         test.ok(foundNodes[1].id === t2.id);

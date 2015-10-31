@@ -38,7 +38,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             if(ctors[children[d][0]]){
                 subChildren = ctors[children[d][0]](newObj,children[d][1]);
             }
-            return [newObj,subChildren];;
+            return [newObj,subChildren];
         });
         //add the created children's ids to the baseNode
         //but only the top level,not the children of the children.
@@ -117,16 +117,26 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //The Rule object:
     ctors['rule'] = function(baseNode){
         baseNode.conditions = [];
-        baseNode.actions = [];
+        baseNode.actions = {};
         return [];
+    };
+    
+    //------------------------------
+    //The action object:
+    ctors['action'] = function(baseNode){
+        baseNode.tags.actionType = "assert";
+        baseNode.tags.actionFocus = "wme";
+        //of the form: a : [+ 5]
+        //meaning: resultingWME.a = resultingWME.a + 5
+        baseNode.arithmeticActions = {};
     };
 
     //------------------------------
-    //The action object:
-    // ctors['action'] = function(baseNode){
-
-    // };
-
+    //wme object:
+    ctors['wme'] = function(baseNode){
+        baseNode.tags.type = "WME";
+    };
+    
     
     return ctors;
 });

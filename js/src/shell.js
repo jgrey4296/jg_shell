@@ -453,6 +453,7 @@ define([underscoreName],function(_){
        @return list of nodes
     */
     Shell.prototype.search = function(list,priorSearch){
+        var objs;
         var returnList = [];
         var startingPoint = this.nodes;
         if(priorSearch) startingPoint = priorSearch;
@@ -471,19 +472,19 @@ define([underscoreName],function(_){
         var keyNum = Number(valueStringPattern);
         //search for an id
         if(field && key && key === "id" && Number.isInteger(keyNum)){
-            var objs = _.map(startingPoint,function(d){
+            objs = _.map(startingPoint,function(d){
                 if(d && d[field]){
                     if(_.some(_.values(d[field]),function(e){
                         return e === keyNum;
                     })){
                         return d;
                     }
-                };
+                }
             }).filter(function(d){if(d)return true;});
             return objs;
             //search for a name
         }else if(field && key && key === "name" && valueStringPattern){
-            var objs = _.map(startingPoint,function(d){
+            objs = _.map(startingPoint,function(d){
                 if(_.some(_.keys(d[field]),function(e){
                     return pattern.test(e);
                 })){
@@ -494,7 +495,7 @@ define([underscoreName],function(_){
         }else if(field && key && valueStringPattern){
             //ie: search values aValue (~=) blah
             //search for node[field][key] ~= pattern
-            var objs = _.map(startingPoint,function(d){
+            objs = _.map(startingPoint,function(d){
                 if(d && d[field] && d[field][key]){
                     if(pattern.test(d[field][key])){
                         return d;
@@ -506,7 +507,7 @@ define([underscoreName],function(_){
             //ie: search parents (~=) bure
             //search for node[field] ~= pattern
             pattern = new RegExp(key);
-            var objs = _.map(startingPoint,function(d){
+            objs = _.map(startingPoint,function(d){
                 if(d && d[field]){
                     if(pattern.test(d[field])){
                         return d;

@@ -52,8 +52,8 @@ define(['underscore'],function(_){
             }            
         }
         
-        for(var i in bindings){
-            this.bindings[i] = bindings[i];
+        for(var j in bindings){
+            this.bindings[j] = bindings[j];
         }
 
         this.id = nextId;
@@ -140,129 +140,6 @@ define(['underscore'],function(_){
         nextId++;
     };
     
-
-    //----------------------------------------
-    //START OF RULE AND RULE UTILITIES
-    
-
-    //The rule/production that stores conditions and
-    //associated action
-    var Rule = function(name,conditions,action){
-        this.id = nextId++;
-        this.name = name;
-        this.actions = [];
-        this.tags = {};
-        this.tags.type = 'Rule';
-        if(action){
-            this.actions.push(action);
-        }
-        this.conditions = [];
-        //construct and add the conditions
-        if(conditions && conditions instanceof Array){
-            conditions.map(function(d){
-                if(d.length > 0){
-                    //not a negated condition
-                    if(d[0] !== '!'){
-                        var cond = new Condition(conditions[i][0],conditions[i][1],conditions[i][2]);
-                        this.conditions.push(cond);
-                    }else{
-                        //a negated condition
-                        var cond = new NCCCondition(conditions[1][0]);
-                        this.conditions.push(cond);
-                    }
-                }
-            });
-        }
-
-        //For integration with js_shell authoring:
-        this.ruleNode = null;
-    };
-
-    Rule.prototype.getBindingsArray = function(){
-        var bindings = [];
-        //for all conditions
-        console.log(this.conditions);
-        this.conditions.map(function(d){
-            if(d.bindings.length > 0){
-                d.bindings.map(function(e){
-                    var theString = e[0];
-                    bindings.push(theString);
-                });
-            }
-        });
-        console.log("Bindings array:",bindings);
-        return _.uniq(bindings);
-    };
-
-    //return a node for each action
-    //each node has a values list, of combined parameters,
-    //values, and tags, all as strings
-    Rule.prototype.getActionNodes = function(){
-        console.log("Getting action nodes:",this);
-        var actionObjects = this.actions.map(function(d,i){
-            //starting object
-            var action = {id:"a"+i,values:[]};
-            //add the type and focus
-            action.values.push(d.type + " + " + d.focus);
-            //values
-            action.values.push("Values: ");
-            action.values.push(Object.keys(d.values).map(function(e){
-                return e + " : " + d.values[e];
-            }));
-            //tags
-            action.values.push(["Tags: "]);
-            action.values.push(Object.keys(d.tags).map(function(e){
-                return e;
-            }));
-            action.values = _.flatten(action.values);
-            return action;
-        });
-        return actionObjects;
-    };
-
-    //return node for each condition,
-    //with a values field that has a list of strings that are tests
-    Rule.prototype.getConditionNodes = function(){
-        console.log("Mapping over:",this.conditions);
-        var conditionObjects = this.conditions.map(function(d,i){
-            var cond = {id:"c"+i,name:""};
-            cond.values = d.constantTests.map(function(e){
-                //TODO: convert operator to symbol
-                return e.field + " " + e.operator + " " + e.value;
-            });
-            return cond;
-        });
-        return conditionObjects;
-    };
-
-
-    //END OF RULE UTILITIES
-    //----------------------------------------
-    //Action description:
-    var ActionDescription = function(type,focus){
-        this.id = nextId++;
-        //possible Types:
-        //assert, retract, modify, aggregate?
-        this.type = type;
-        //possible foci:
-        //facts, performances, rule, customFunction, action, activity...?
-        this.focus = focus;
-        //Object of bindings to use from the input token
-        //when the action is fired
-        this.values = {};
-        //tag Data
-        this.tags = {};
-        this.tags.type = "actionDescription";
-        //the scope object to get things, like
-        //general grammars, and the firing token?
-        this.scope = {};
-    };
-
-    //method for js shell integration, used in webMain.drawMultipleNodes
-    ActionDescription.prototype.toShortString = function(){
-        return "(" + this.id + "): " + this.type + " (" + this.focus + ")";
-    };
-    
     //------------------------------
     
     //Utility storage of wme and its alphaMemory together
@@ -286,9 +163,9 @@ define(['underscore'],function(_){
         this.children = [];
         this.outputMemory = undefined;
         if(constantTest){
-            this.testField = constantTest['field'];
-            this.testValue = constantTest['value'];
-            this.operator = constantTest['operator'];
+            this.testField = constantTest.field;
+            this.testValue = constantTest.value;
+            this.operator = constantTest.operator;
         }else{
             this.passThrough = true;
         }
@@ -365,12 +242,16 @@ define(['underscore'],function(_){
         this.nearestAncestor = null;
     };
 
-    
-    var ActionNode = function(parent,action,name){
+    //Container object for a general graphnode action description    
+    var ActionNode = function(parent,action,ruleName,reteNet){
         ReteNode.call(this,parent);
         this.isActionNode = true;
         this.name = name;
         this.action = action;
+
+        //reference to retenet, to allow storage of results of firing:
+        this.reteNet = reteNet;
+        
     };
 
 
@@ -438,6 +319,7 @@ define(['underscore'],function(_){
         this.actions = [];
         this.allWMEs = [];
         this.allWMEs.__isAllWMEs = true;
+        this.lastActivatedRules = [];        
     };
 
     
@@ -460,8 +342,6 @@ define(['underscore'],function(_){
         "ConstantTest"     : ConstantTest,
         "Condition"        : Condition,
         "NCCCondition"    : NCCCondition,
-        "Rule"             : Rule,
-        "ActionDescription" : ActionDescription,
         "ActionNode"       : ActionNode,
         "ReteNet"          : ReteNet
     };

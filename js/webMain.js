@@ -9,6 +9,8 @@ require.config({
         ReteDataStructures : 'src/ReteDataStructures',
         ReteProcedures     : "src/ReteProcedures",
         ReteComparisonOperators : "src/ReteComparisonOperators",
+        ReteActions : "src/ReteActions",
+        ReteArithmeticActions : "src/ReteArithmeticActions",
         DataStructures : "src/DataStructures",
         GraphNode : "src/GraphNode",
         GraphStructureConstructors:"src/GraphStructureConstructors",
@@ -50,7 +52,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
 
         if(theShell === undefined){
             throw new Error("Shell is undefined");
-        };
+        }
         
         //utility function to check input values for commands:
         var valueCheck = function(list,requiredLength){
@@ -162,8 +164,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 if(returnedData){
                     drawSearchColumn(returnedData,calcWidth(usableWidth,_.values(columnNames[currentCommandMode]).length));
                 }
-            }
-            
+            }            
         };
 
         var ruleCommands = {
@@ -180,29 +181,79 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                     sh.addAction(values.slice(1));
                 }else if(values[0] === "test"){
                     sh.addTest(values[1],values[2],values[3],values[4]);
-                }else if(values[0] === "binding"){
-                    sh.addBinding(values[1],values[2],values[3]);
                 }                
             },
             //rm
             "rm" : function(sh,values){
-
-
+                //remove action
+                if(values[0] === 'action'){
+                    sh.removeAction(values.slice(1));
+                }
+                //condition
+                if(values[0] === 'condition'){
+                    sh.removeCondition(values.slice(1));
+                }                
+                //test
+                if(values[0] === 'test'){
+                    //condition number, test number
+                    sh.removeTest(values[1],values[2]);
+                }
             },
             //set -> setParameter
+            //set action 0 actionType
+            //set action 0 a #b
+            //set action 0 a 5
             "set" : function(sh,values){
-
+                //set actiontype
+                if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
+                    //set actionType 0 assert 
+                    sh.setActionValue(Number(values[1]),values[2]);
+                }
+                //action value
+                if(values[0] === "actionValue"){
+                    sh.set
+                }
+                //action arithmetic
+                //set arith 0 a + 6
+                if(values[0] === 'arith'){
+                    sh.setArithmetic(values[1],values[2],values[3],values[4]);
+                }                
+                //set test value
+                if(values[0] === 'test'){
+                    
+                }                
+                //binding
+                if(values[0] === 'binding'){
+                    sh.setBinding(values[1],values[2],values[3]);
+                }                
             },
-            //rename -> rename
+            //rename a rule?
             "rename" : function(sh,values){
-
-            },
-            //add Binding/
-            "add" : function(sh,values){
-
+                sh.rename(values[0]);
             },
         };
 
+
+        var reteCommands = {
+            "clear" : function(sh,values){
+                if(values[0] === 'complete'){
+                    sh.clearRete();
+                }else{
+                    sh.clearActivatedRules();
+                }
+            },
+            "compile" : function(sh,values){
+                sh.compileRete();
+            },
+            //full name: assert as wme:
+            "assert" : function(sh,values){
+                //assert the current node as a wme?
+                sh.assertChildren();
+            },
+        };
+
+
+        
         //aggregated commands
         var commands = {
             "node" : nodeCommands,
@@ -210,6 +261,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             //called after every command to update the view
             "context": function(sh,values){
                 draw(sh.cwd);
+                drawActivatedRules(sh.reteNet.activatedRules);
             },
             //Load a file from the server
             "load" : function(sh,values){
@@ -326,7 +378,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
         
         
         var calcWidth = function(availableWidth,noOfColumns){
-            return (availableWidth / (noOfColumns + 2))
+            return (availableWidth / (noOfColumns + 2));
         };
 
         var columnPosition = function(oneColWidth,columnNumber){
@@ -388,8 +440,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 //create the window
                 helpWindow = d3.select("svg").append("g")
                     .attr("transform",
-                          "translate(" + (usableWidth - columnWidth) + ","
-                          + (usableHeight - helpSize) + ")")
+                          "translate(" + (usableWidth - columnWidth) + "," + (usableHeight - helpSize) + ")")
                     .attr("id","helpWindow");
                 helpWindow.append("rect")
                 .style("fill","black")
@@ -450,7 +501,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                         //console.log("Checking command type:",theShell.cwd.tags.type,theShell.cwd);
                         if(theShell.cwd.tags.type === "rule"){
                             currentCommandMode = "rule";
-                        };
+                        }
                         //console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
                         if(splitLine[0] === 'load' || splitLine[0] === 'save'){
                             //console.log("General Command",splitLine,splitLine.slice(1));
@@ -508,6 +559,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
 
         //generic draw:
         var draw = function(node){
+            var columnWidth;
             //validate:
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
 
@@ -515,7 +567,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             if(node.tags.type !== 'rule'){
                 //console.log("Drawing nodes");
                 //setup columns
-                var columnWidth = calcWidth(usableWidth,columnNames.node.length);
+                columnWidth = calcWidth(usableWidth,columnNames.node.length);
                 if(Object.keys(columns).length !== columnNames.node.length){
                     console.log("Cleaning up columns");
                     //cleanup everything there at the moment
@@ -537,7 +589,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 //OTHERWISE: dealing with rules
                 console.log("Drawing rules");
                 //setup columns
-                var columnWidth = calcWidth(usableWidth,columnNames.rule.length);
+                columnWidth = calcWidth(usableWidth,columnNames.rule.length);
                 if(Object.keys(columns).length !== columnNames.rule.length){
                     console.log("Cleaning up columns");
                     //cleanup
@@ -676,25 +728,30 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 .attr("ry",10);
 
             //get data from the rule:
-            var bound = container.selectAll("text").data(theShell.ruleToStringList(ruleNode));
+            var boundText = container.selectAll("text").data(theShell.ruleToStringList(ruleNode));
             //new stuff
-            bound.enter().append("text")
+            boundText.enter().append("text")
                 .attr("text-anchor","middle")
                 .attr("transform",function(d,i){
-                    return "translate(" + (columnWidth * 0.4) + ","
-                        + (30 + i * 30) + ")";
+                    return "translate(" + (columnWidth * 0.4) + "," + (30 + i * 30) + ")";
                 });
             //old stuff
-            bound.exit().remove();
+            boundText.exit().remove();
             //remaining stuff
-            bound.text(function(d){
+            boundText.text(function(d){
                 return d;
             });
             
             //note: currently draw multiple nodes expected
             //draw node information,bindings,tags, etc
             drawMultipleNodes("conditions",ruleNode.conditions,columnWidth);
-            drawMultipleNodes("actions",ruleNode.actions,columnWidth);
+
+            var actions = _.keys(ruleNode.actions).map(function(d){
+                return this.allNodes[d];
+            },theShell);
+
+            
+            drawMultipleNodes("actions",actions,columnWidth);
             //TODO:
             //drawMultipleNodes("parents",[],columnWidth);
             //drawMultipleNodes("children",[],columnWidth);
@@ -708,7 +765,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
            @function drawMultipleNodes
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
-            //console.log("Drawing Column:",baseContainer,childArray);
+            console.log("Drawing Column:",baseContainer,childArray);
             //console.log("Column Length:",childArray.length);
             
             var containingNode = getColumnObject(baseContainer);
@@ -765,7 +822,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             //Draw tests if condition
             if(baseContainer !== "conditions"){
                 return;
-            };
+            }
 
             nodes.selectAll(".test").remove();
             
@@ -871,8 +928,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 stashContainer = d3.select("svg").append("g")
                     .attr("id","stashContainer")
                     .attr("transform",function(){
-                        return "translate(" + (usableWidth * 0.3) + ","
-                            + (usableHeight * 0.935 ) + ")";
+                        return "translate(" + (usableWidth * 0.3) + "," + (usableHeight * 0.935 ) + ")";
                     });
             }
 
@@ -893,7 +949,38 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             
         };
 
+        drawActivatedRules = function(list,columnWidth){
+            var firedRulesContainer = d3.select("#firedRules");
+            if(firedRulesContainer.empty()){
+                firedRulesContainer = d3.select("svg").append("g")
+                    .attr("id","firedRules")
+                    .attr("transform","translate(" + (usableWidth - columnWidth) + ",0)");
+            }
 
+            firedRulesContainer.append("rect")
+                .attr("width",columnWidth)
+                .attr("height",600)
+                .attr("rx",10)
+                .attr("ry",10);
+
+            firedRulesContainer.selectAll("text").remove();
+
+            var columnData = ["Activated Rules:"].concat(list);
+            
+            var texts = firedRulesContainer.selectAll("text").data(columnData);
+
+            texts.enter().append("text")
+                .attr("transform",function(d,i){
+                    return "translate(" + (columnWidth * 0.5) + "," + (30 + i * 20) + ")";
+                })
+                .attr("text-anchor","middle")
+                .text(function(d){
+                    return d;
+                });
+
+        };
+
+        
         
         //------------------------------
         //Startup:
@@ -904,9 +991,9 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
         commands.context(theShell);
         //Focus on the text input automatically on page load
         d3.select("#shellInput").node().focus();
-        displayHelp(calcWidth(usableWidth,3),helpData['node']);
+        displayHelp(calcWidth(usableWidth,3),helpData.node);
     }catch(e){
         alert("General Error: \n" + e.message);
         console.log("An Error Occurred:",e);
-    };
+    }
 });

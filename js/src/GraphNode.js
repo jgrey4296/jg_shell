@@ -5,7 +5,7 @@ if(typeof define !== 'function'){
 define(['./ReteDataStructures','underscore'],function(RDS,_){
     var nextId = 0;
     //The main node type of the graph:
-    var GraphNode = function(name,parentId,type,overRideId){
+    var GraphNode = function(name,parentId,parentName,type,overRideId){
         //Id and name for identification
         this.id = overRideId || nextId++;
         if(overRideId) nextId = overRideId + 1;
@@ -17,8 +17,8 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         //therefore no cycles, therefore json export
         this.parents = {};
         if(parentId !== undefined){
-            this._originalParent = parentId
-            this.parents[parentId] = true;//parent;
+            this._originalParent = parentId;
+            this.parents[parentId] = parentName;//parent;
         }
         
         this.children = {};
@@ -26,7 +26,7 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         //values and tags and annotations for data
         this.values = {};
         this.tags = {};
-        this.tags['type'] = type || 'GraphNode';
+        this.tags.type = type || 'GraphNode';
         this.annotations = {};
 
         //a rule node is supplemented in its ctor with:

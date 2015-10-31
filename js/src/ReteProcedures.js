@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructures,ConstantTestOperators){
+define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','underscore'],function(DataStructures,ConstantTestOperators,PossibleActions,_){
 
     
     //Trigger an alpha memory with a new wme to store
@@ -57,8 +57,14 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         }else{
             throw new Error("Unrecognised node:",alphaNode);
         }
-    }
+    };
 
+    var clearActivations = function(reteNet){
+        var temp = reteNet.lastActivatedRules;
+        reteNet.lastActivatedRules = [];
+        return temp;
+    };
+    
     //Assert a wme into the network
     var addWME = function(wmeData,reteNet){
         //activate the root node of the reteNet
@@ -89,32 +95,34 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
     var performJoinTests = function(joinNode,token,wme){
         var newBindings = {};
         //Populate with current bindings from token
-        for(var i in token.bindings){
-            newBindings[i] = token.bindings[i];
-        }
+        _.keys(token.bindings).forEach(function(key){
+            newBindings[key] = token.bindings[key];
+        });
 
-        //For all the bindings in this join node:
-        for(var i in joinNode.tests){
-            //get the bind test
-            var test = joinNode.tests[i];
-            
-            //get the wme value it references
-            var wmeValue = wme.data[test[1]];
-            if(wmeValue === undefined){
-                continue;
-            }
-            //If the binding exists in the token
-            if(newBindings[test[0]]){
-                if(newBindings[test[0]] === wmeValue){
-                    continue;
-                }else{
-                    return false; //not the same, break right out
-                } 
+        var successState = true;
+        
+        //add new bindings:
+        joinNode.tests.forEach(function(test){
+            var newValue = null;
+            if(test[1] === "#id"){
+                newValue = wme.id;
             }else{
-                newBindings[test[0]] = wmeValue;
+                newValue = wme.data[test[1]];
             }
+
+            if(newBindings[test[0]] === undefined){
+                newBindings[test[0]] = newValue;
+            }
+            if(newBindings[test[0]] !== newValue){
+                successState = false;
+            }
+        });
+
+        if(successState){
+            return newBindings;
+        }else{
+            return false;
         }
-        return newBindings;
     };
 
 
@@ -204,8 +212,8 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         }
 
         //remove from the unlinkedChildren Field
-        var index = node.alphaMemory.unlinkedChildren.map(function(d){ return d.id;}).indexOf(node.id);
-        node.alphaMemory.unlinkedChildren.splice(index,1);
+        var nodeIndex = node.alphaMemory.unlinkedChildren.map(function(d){ return d.id;}).indexOf(node.id);
+        node.alphaMemory.unlinkedChildren.splice(nodeIndex,1);
         
         
     };
@@ -244,8 +252,8 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
 
         //if no wmes block the token, pass it on down the network
         if(newToken.negJoinResults.length === 0){
-            for(var i in node.children){
-                var currChild = node.children[i];
+            for(var j in node.children){
+                var currChild = node.children[j];
                 leftActivate(currChild,newToken);
             }
         }
@@ -282,7 +290,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         if(token.isToken === undefined){
             throw new Error("nccNodeLeftActivation should be on a token");
         }
-        var newToken = token
+        var newToken = token;
         nccNode.items.unshift(newToken);
 
         //the partner's network MUST fire before the nccnode
@@ -326,8 +334,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         var possible_tokens = [];
         if(nccNode){
         possible_tokens = nccNode.items.map(function(d){
-            if(d.parentToken.id === ownersToken.id
-               && d.wme.id === ownersWme.id){
+            if(d.parentToken.id === ownersToken.id && d.wme.id === ownersWme.id){
                 return d;
             }}).filter(function(d){if(d) return true;});
         }
@@ -348,7 +355,6 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
     //alphaMemoryItem Cleanup, token Cleanup,
     //and negJoinResult Cleanup
     var removeWME = function(wme,reteNet){
-
         removeAlphaMemoryItemsForWME(wme);
         deleteAllTokensForWME(wme);
         deleteAllNegJoinResultsForWME(wme);
@@ -441,7 +447,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         removeTokenFromWME(token);
         removeTokenFromParentToken(token);
         
-        ifEmptyBetaMemoryUnlink(token.owningNode)
+        ifEmptyBetaMemoryUnlink(token.owningNode);
         ifEmptyNegNodeUnlink(token.owningNode,token.id);
 
         removeNegJoinResultsForToken(token);
@@ -561,9 +567,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
                 }
                 if(nccR.parent){
                     //remove the token from it's parent
-                    index = nccR.parent.children.map(function(t){return t.id;}).indexOf(nccR.id);
-                    if(index !== -1);{
-                        nccR.parent.children.splice(index,1);
+                    var nccRindex = nccR.parent.children.map(function(t){return t.id;}).indexOf(nccR.id);
+                    if(nccRindex !== -1);{
+                        nccR.parent.children.splice(nccRindex,1);
                     }
                 }
             });
@@ -624,11 +630,11 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         if(!node.isConstantTestNode){
             throw new Error("Node should be an alpha/constant test node");
         }
-        if(node.testField !== constantTest['field']
-           || node.testValue !== constantTest['value']){
+        if(node.testField !== constantTest.field
+           || node.testValue !== constantTest.value){
             return false;
         }
-        if(node.operator !== constantTest['operator']){
+        if(node.operator !== constantTest.operator){
             return false;
         }
         return true;
@@ -643,7 +649,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         }
         var newAlphaNode = new DataStructures.AlphaNode(parent,constantTest);
         return newAlphaNode;
-    }
+    };
     
     
     //added retenet parameter
@@ -764,11 +770,11 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
             alphaMemory.unlinkedChildren.unshift(removed[0]);
         }else if(alphaMemory.items.length === 0){
             //ALPHA IS EMPTY: UNLINK LEFT
-            var index = parent.children.map(function(d){
+            var newNodeIndex = parent.children.map(function(d){
                 return d.id;
             }).indexOf(newJoinNode.id);
-            var removed = parent.children.splice(index,1);
-            parent.unlinkedChildren.unshift(removed[0]);
+            var removedNode = parent.children.splice(newNodeIndex,1);
+            parent.unlinkedChildren.unshift(removedNode[0]);
         }
         //return new join node
         return newJoinNode;
@@ -797,7 +803,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
             alphaMemory.unlinkedChildren.push(removed[0]);
         }
         //return new negative node
-        return newNegativeNode
+        return newNegativeNode;
     };
 
 
@@ -829,17 +835,18 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
 
     var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha){
         var currentNode = parent;
+        var tests, alphaMemory;
         //for each condition
         for(var i in conditions){
             var condition = conditions[i];
             if(condition.isPositive){
                 currentNode = buildOrShareBetaMemoryNode(currentNode);
-                var tests = condition.bindings;
-                var alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                tests = condition.bindings;
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
                 currentNode = buildOrShareJoinNode(currentNode,alphaMemory,condition.bindings);
             }else if(condition.isNegative){
-                var tests = condition.bindings;
-                var alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                tests = condition.bindings;
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
                 currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
             }else if(condition.isNCCCondition){
                 currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha);
@@ -854,19 +861,38 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
     };
 
     var activateActionNode = function(actionNode,token){
-        actionNode.action.call(token);
+        //get the action it embodies:
+        var action = actionNode.action;
+        //get the type of function its going to call:
+        if(PossibleActions[action.tags.actionType] === undefined){
+            throw new Error("Unrecognised action type");
+        }
+        //bind the context of the action
+        var func = _.bind(PossibleActions[action.tags.actionType],action);
+        
+        //call the action with the token
+        var retValue = func(token,actionNode.reteNet);
+
+        //store the retValue in the reteNet.activatedRules
+        actionNode.reteNet.lastActivatedRules.push(retValue);
     };
 
-    
     var addRule = function(rule,reteNet){
         //build network with a dummy node for the parent
         var currentNode = buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,rule.conditions,reteNet.rootAlpha);
-        //build new action node
-        var actionNode = new DataStructures.ActionNode(currentNode,rule.action,rule.name);
+        //Build the actions that are triggered by the rule:
+        var actionNodes = _.values(rule.actions).map(function(d){
+            return new DataStructures.ActionNode(currentNode,d,rule.name,reteNet);
+        });
+        if(reteNet.actions[rule.name] === undefined){
+            reteNet.actions[rule.name] = [];
+        }
         //update node with matches
-        reteNet.actions[actionNode.name] = actionNode;
-        return actionNode;
-    }
+        actionNodes.forEach(function(d){
+            reteNet.actions[rule.name].push(d);
+        });
+        return actionNodes;
+    };
 
     //Utility leftActivation function to call
     //whichever specific type is needed
@@ -914,29 +940,30 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
     //essentially a 4 state switch:
     //betaMemory, joinNode, negativeNode, NCC
     var updateNewNodeWithMatchesFromAbove = function(newNode){
+        var i, token;
         var parent = newNode.parent;
         if(parent.isBetaMemory){
-            for(var i in parent.items){
+            for(i in parent.items){
                 leftActivate(newNode,parent.items[i]);
             }
         }else if(parent.isJoinNode){
             var savedChildren = parent.children;
             parent.children = [newNode];
-            for(var i in parent.alphaMemory.items){
+            for(i in parent.alphaMemory.items){
                 var item = parent.alphaMemory.items[i];
                 rightActivate(parent,item.wme);
             }
             parent.children = savedChildren;
         }else if(parent.isNegativeNode){
-            for(var i in parent.items){
-                var token = parent.items[i];
+            for(i in parent.items){
+                token = parent.items[i];
                 if(token.negJoinResults.length === 0){
                     leftActivate(newNode,token);
                 }
             }
         }else if(parent.isAnNCCNode){
-            for(var i in parent.items){
-                var token = parent.items[i];
+            for(i in parent.items){
+                token = parent.items[i];
                 if(token.nccResults.length === 0){
                     leftActivate(newNode,token);
                 }
@@ -960,6 +987,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
       +: call recursively on any parent that has no children
      */
     var deleteNodeAndAnyUnusedAncestors = function(node){
+        var index;
         //if NCC, delete partner to
         if(node.isAnNCCNode){
             deleteNodeAndAnyUnusedAncestors(node.partner);
@@ -979,7 +1007,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
 
         //clean up any associated alphamemory
         if(node.isJoinNode || node.isNegativeNode && node.alphaMemory){
-            var index = node.alphaMemory.children.map(function(d){ return d.id; }).indexOf(node.id);
+            index = node.alphaMemory.children.map(function(d){ return d.id; }).indexOf(node.id);
             if(index > -1){
                 node.alphaMemory.children.splice(index,1);
                 node.alphaMemory.referenceCount--;
@@ -993,7 +1021,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators'],function(DataStructu
         //remove the node from its parent
         if(node.parent){
             //check the child list:
-            var index = node.parent.children.map(function(d){
+            index = node.parent.children.map(function(d){
                 return d.id;
             }).indexOf(node.id);
             if(index !== -1){                            

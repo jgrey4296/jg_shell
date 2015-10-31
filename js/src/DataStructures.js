@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
+define(['./ReteDataStructures','underscore'],function(RDS,_){
     var nextId = 0;
     //The main node type of the graph:
     var GraphNode = function(name,parentId,type,overRideId){
@@ -17,7 +17,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //therefore no cycles, therefore json export
         this.parents = {};
         if(parent){
-            this._originalParent = parentId
+            this._originalParent = parentId;
             this.parents[parentId] = true;//parent;
         }
         
@@ -26,7 +26,7 @@ define(['../libs/ReteDataStructures','underscore'],function(RDS,_){
         //values and tags and annotations for data
         this.values = {};
         this.tags = {};
-        this.tags['type'] = type || 'GraphNode';
+        this.tags.type = type || 'GraphNode';
         this.annotations = {};
 
         //for if its a rule object:

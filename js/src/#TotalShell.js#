@@ -623,6 +623,7 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
         if(this.cwd.actions[actionNum] === undefined){
             throw new Error('Can not set action data on non-existent action');
         }
+        this.cwd.actions[actionNum].
     };
     
     //note: an action is still a node, so is still in allnodes

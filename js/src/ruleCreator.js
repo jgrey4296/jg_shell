@@ -189,8 +189,8 @@ define(['ReteDataStructures'],function(RDS){
         var action = this.cwr.actions[Number(actionNumber)];
         if(action){
             action.values[params[0]] = params[1];
-        };        
-    }
+        }        
+    };
     
     
     //--------------------
