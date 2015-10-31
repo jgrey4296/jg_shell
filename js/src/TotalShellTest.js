@@ -115,7 +115,7 @@ exports.TotalShellTests = {
         test.ok(shell.cwd.id === newRule.id);
         test.ok(newRule.tags.type === 'rule');
         test.ok(newRule.name === 'test1');
-        test.ok(newRule.actions.length === 0);
+        test.ok(_.keys(newRule.actions).length === 0);
         test.ok(newRule.conditions.length === 0);
         test.done();
     },

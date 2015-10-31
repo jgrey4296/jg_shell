@@ -11,9 +11,11 @@ require.config({
         ReteComparisonOperators : "src/ReteComparisonOperators",
         ReteActions : "src/ReteActions",
         ReteArithmeticActions : "src/ReteArithmeticActions",
-        DataStructures : "src/DataStructures",
         GraphNode : "src/GraphNode",
         GraphStructureConstructors:"src/GraphStructureConstructors",
+        NodeCommands : "src/NodeCommands",
+        RuleCommands : "src/RuleCommands",
+        ReteCommands : "src/ReteCommands",
         utils : "src/utils",
         d3 : "libs/d3.min",
         TotalShell : "src/TotalShell",
@@ -32,7 +34,7 @@ require.config({
   Creates a single shell instance, a command map,
   and then the authoring environment d3 drawing code
 */
-require(['d3','TotalShell','underscore'],function(d3,Shell,_){
+require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./ReteCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands){
     try{
         console.log("Starting Total Authoring Shell");
         if(Shell === undefined) throw new Error("Shell is undefined");
@@ -54,210 +56,16 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             throw new Error("Shell is undefined");
         }
         
-        //utility function to check input values for commands:
-        var valueCheck = function(list,requiredLength){
-            if(list.length !== requiredLength){
-                throw new Error("Incorrect number of arguments: " + list);
-            }
-        };
-        
         //----------------------------------------
         //COMMAND SECTION
         //----------------------------------------
         //Maps typed commands to methods on shell, in different modes
         console.log("Setting up commands");
-        var nodeCommands = {
-            //new -> addNode,
-            "new" : function(sh,values){
-                valueCheck(values,3,values);
-                //Expand out simplifications
-                console.log("new",values);
-                var target = values[0];
-                if(target === "child") target = "children";
-                if(target === "parent") target  = "parents";
-                console.log("Target:",target);
-                sh.addNode(values[2],target,values[1]);
-            },
-            //Shortcuts:
-            "nc" : function(sh,values){
-                var chars = {
-                    "n" : "node",
-                    "i" : "institution",
-                    "r" : "role",
-                    "a" : "activity",
-                    "rc": "rulecontainer",
-                };
-                if(chars[values[0]]){
-                    sh.addNode(values[1],'children',chars[values[0]]);
-                }
-            },
-            "np" : function(sh,values){
-                var chars = {
-                    "n" : "node",
-                    "i" : "institution",
-                    "r" : "role",
-                    "a" : "activity",
-                    "rc": "rulecontainer",
-                };
-                if(chars[values[0]]){
-                    sh.addNode(values[1],'parents',chars[values[0]]);
-                }
-            },
-            //New Child Node, ncn:
-            "ncn" : function(sh,values){
-                sh.addNode(values[0],'children','node');
-            },
-            //new child institution: nci
-            "nci" : function(sh,values){
-                sh.addNode(values[0],'children','institution');
-            },
-            //rm -> removeNode,
-            "rm" : function(sh,values){
-                sh.rm(values[0]);
-            },
-            //cd -> cd
-            "cd" : function(sh,values){
-                valueCheck(values,1);
-                sh.cd(values[0]);
-            },
-            //set -> setParameter
-            "set" : function(sh,values){
-                sh.setParameter(values[0],values[1],values[2]);
-            },
-            //link -> link
-            //TODO: detect if recursive connection or not
-            "link" : function(sh,values){
-                var target = values[0];
-                if(target === 'child') target = 'children';
-                if(target === 'parent') target = 'parents';
-                sh.link(target,values[1],false);
-            },
-            "linkr" : function(sh,values){
-                var target = values[0];
-                if(target === 'child') target = 'children';
-                if(target === 'parent') target = 'parents';
-                sh.link(target,values[1],true);
-
-            },
-            //rename -> rename
-            "rename" : function(sh,values){
-                sh.rename(values[0]);
-            },
-            //Stashing:
-            "stash" : function(sh,values){
-                sh.stash();
-                drawStash(sh._nodeStash);
-            },
-            "unstash" : function(sh,values){
-                sh.unstash();
-                drawStash(sh._nodeStash);
-            },
-            "top" : function(sh,values){
-                sh.top();
-            },
-            "prev" : function(sh,values){
-                sh.cd(sh.previousLocation);
-            },
-            //Search:
-            "search" : function(sh,values){
-                var returnedData = sh.search(values[0],values[1],values[2]);
-                if(returnedData){
-                    drawSearchColumn(returnedData,calcWidth(usableWidth,_.values(columnNames[currentCommandMode]).length));
-                }
-            }            
-        };
-
-        var ruleCommands = {
-            //cd
-            "cd" : function(sh,values){
-                valueCheck(values,1);
-                sh.cd(values[0]);
-            },
-            //new -> addCondition/test/action
-            "new" : function(sh,values){
-                if(values[0] === "condition"){
-                    sh.addCondition();
-                }else if(values[0] === "action"){
-                    sh.addAction(values.slice(1));
-                }else if(values[0] === "test"){
-                    sh.addTest(values[1],values[2],values[3],values[4]);
-                }                
-            },
-            //rm
-            "rm" : function(sh,values){
-                //remove action
-                if(values[0] === 'action'){
-                    sh.removeAction(values.slice(1));
-                }
-                //condition
-                if(values[0] === 'condition'){
-                    sh.removeCondition(values.slice(1));
-                }                
-                //test
-                if(values[0] === 'test'){
-                    //condition number, test number
-                    sh.removeTest(values[1],values[2]);
-                }
-            },
-            //set -> setParameter
-            //set action 0 actionType
-            //set action 0 a #b
-            //set action 0 a 5
-            "set" : function(sh,values){
-                //set actiontype
-                if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
-                    //set actionType 0 assert 
-                    sh.setActionValue(Number(values[1]),values[2]);
-                }
-                //action value
-                if(values[0] === "actionValue"){
-                    sh.set
-                }
-                //action arithmetic
-                //set arith 0 a + 6
-                if(values[0] === 'arith'){
-                    sh.setArithmetic(values[1],values[2],values[3],values[4]);
-                }                
-                //set test value
-                if(values[0] === 'test'){
-                    
-                }                
-                //binding
-                if(values[0] === 'binding'){
-                    sh.setBinding(values[1],values[2],values[3]);
-                }                
-            },
-            //rename a rule?
-            "rename" : function(sh,values){
-                sh.rename(values[0]);
-            },
-        };
-
-
-        var reteCommands = {
-            "clear" : function(sh,values){
-                if(values[0] === 'complete'){
-                    sh.clearRete();
-                }else{
-                    sh.clearActivatedRules();
-                }
-            },
-            "compile" : function(sh,values){
-                sh.compileRete();
-            },
-            //full name: assert as wme:
-            "assert" : function(sh,values){
-                //assert the current node as a wme?
-                sh.assertChildren();
-            },
-        };
-
-
         
         //aggregated commands
         var commands = {
-            "node" : nodeCommands,
-            "rule" : ruleCommands,
+            "node" : NodeCommands,
+            "rule" : RuleCommands,
             //called after every command to update the view
             "context": function(sh,values){
                 draw(sh.cwd);
@@ -296,20 +104,12 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 request.send(sh.exportJson());
             },
         };
-        //End of Commands
-        
-        //     //Get conditionless rules
-        //     //get actionless rules
-        //     //get testless conditions
-        //     //get ruleless conditions
 
-        //     //Get the next and previous rules by id
-        //     "next" : function(sh,values){
-        //         sh.moveTo(sh.cwd + 1);
-        //     },
-        //     "prev" : function(sh,values){
-        //         sh.moveTo(sh.cwd - 1);
-        //     },
+        //Import rete commands into general:
+        _.keys(ReteCommands).forEach(function(d){
+            this[d] = ReteCommands[d];
+        },commands);
+
 
         //the additional information for each major command
         var helpData = {
@@ -342,6 +142,11 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 "add"    : "",
                 
 
+            },
+            rete: {
+                "assert": "",
+                "compile" : "",
+                "clear" : "[complete]",
             },
         };
 
@@ -443,9 +248,9 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                           "translate(" + (usableWidth - columnWidth) + "," + (usableHeight - helpSize) + ")")
                     .attr("id","helpWindow");
                 helpWindow.append("rect")
-                .style("fill","black")
-                .attr("width",columnWidth)
-                .attr("height",helpSize);
+                    .style("fill","black")
+                    .attr("width",columnWidth)
+                    .attr("height",helpSize);
             }
 
             //resize the rectangle:
@@ -462,8 +267,8 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 .style("fill","white");
             
             boundSelection.attr("transform",function(d,i){
-                    return "translate("+ (columnWidth * 0.5) + "," + (30 + i * 20) +")";
-                })
+                return "translate("+ (columnWidth * 0.5) + "," + (30 + i * 20) +")";
+            })
                 .text(function(d){
                     return d;
                 });
@@ -503,8 +308,8 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                             currentCommandMode = "rule";
                         }
                         //console.log("Command mode: ", currentCommandMode, "Commands: ", columnNames[currentCommandMode]);
-                        if(splitLine[0] === 'load' || splitLine[0] === 'save'){
-                            //console.log("General Command",splitLine,splitLine.slice(1));
+                        if(commands[splitLine[0]] !== undefined){
+                            console.log("General Command",splitLine,splitLine.slice(1));
                             commands[splitLine[0]](theShell,splitLine.slice(1));
                         }else{
                             //get the command
@@ -746,12 +551,14 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             //draw node information,bindings,tags, etc
             drawMultipleNodes("conditions",ruleNode.conditions,columnWidth);
 
+            //convert stored action id's to action nodes for drawing
             var actions = _.keys(ruleNode.actions).map(function(d){
                 return this.allNodes[d];
             },theShell);
-
             
             drawMultipleNodes("actions",actions,columnWidth);
+
+            
             //TODO:
             //drawMultipleNodes("parents",[],columnWidth);
             //drawMultipleNodes("children",[],columnWidth);
@@ -820,10 +627,30 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
 
             //----------------------------------------
             //Draw tests if condition
-            if(baseContainer !== "conditions"){
+            if(baseContainer === "conditions"){
+                drawConditions(nodes,columnWidth);
                 return;
             }
 
+            if(baseContainer === "actions"){
+                drawActions(nodes,columnWidth);
+                return;
+            }
+        };
+
+
+        var drawActions = function(nodes,columnWidth){
+            //draw additional info for each action
+            //draw action type
+
+            //draw values
+            
+            //draw arithmetic actions
+
+            
+        };
+        
+        var drawConditions = function(nodes,columnWidth){
             nodes.selectAll(".test").remove();
             
             var testsPerCondition = nodes.selectAll(".test").data(function(d,i){
@@ -862,7 +689,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                         return d[0] + " <- wme." + d[1];
                     }
                 });
-                        
+            
         };
 
         //------------------------------
@@ -949,7 +776,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
             
         };
 
-        drawActivatedRules = function(list,columnWidth){
+        var drawActivatedRules = function(list,columnWidth){
             var firedRulesContainer = d3.select("#firedRules");
             if(firedRulesContainer.empty()){
                 firedRulesContainer = d3.select("svg").append("g")
@@ -975,7 +802,7 @@ require(['d3','TotalShell','underscore'],function(d3,Shell,_){
                 })
                 .attr("text-anchor","middle")
                 .text(function(d){
-                    return d;
+                    return "Activated Rule";
                 });
 
         };

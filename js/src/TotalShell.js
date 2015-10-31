@@ -5,10 +5,14 @@ if(typeof define !== 'function'){
 
 define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,RPS,_,GraphNode,DSCtors,util){
     if(RDS === undefined) throw new Error("RDS Not Loaded");
+    if(RPS === undefined) throw new Error("RPS Not Loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
-    
+
+    /**The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
+       @class CompleteShell
+    */
     var CompleteShell = function(){
         this.tags = {};
         this.tags.type = 'Shell';
@@ -43,7 +47,407 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
 
     //END OF DATA STRUCTURE
     //----------------------------------------
-    //START OF METHODS:
+    /*
+      Methods organised thus:
+      0) json loading and methods
+      1) addition of nodes, conditions, tests, actions,links etc
+      2) modification of nodes, conditions, tests, actions etc
+      3) deletion of nodes....
+
+      4) Rete Methods: clearing, compiling, assertion
+
+      5) utility to string methods
+
+      6) SEARCH
+
+      7) state change methods
+
+    */
+
+    //------------------------------
+    // JSON Method prototype
+    //------------------------------
+    
+    //export/import json
+    //As nodes only store ID numbers, its non-cyclic. meaning json
+    //should be straightforward.
+    CompleteShell.prototype.exportJson = function(){
+        var graphJson = JSON.stringify(_.values(this.allNodes),undefined,4);
+        console.log("Converted to JSON:",graphJson);
+        return graphJson;
+    };
+
+    //Loading json data means creating
+    //assumes an... object of nodes, NOT an array
+    CompleteShell.prototype.importJson = function(allNodes){
+        console.log("importing type:", typeof allNodes);
+        if(allNodes instanceof Array){
+            allNodes.map(function(d){
+                this.addNodeFromJson(d);
+            },this);
+        }else{
+            _.values(allNodes).map(function(d){
+                this.addNodeFromJson(d);
+            },this);
+        }
+        this.cwd = this.allNodes[0];
+    };
+
+    //add a node from its json representation
+    CompleteShell.prototype.addNodeFromJson = function(obj){
+        //console.log("Loading Object:",obj);
+        var newNode = new GraphNode(obj.name,obj._originalParent,obj.parents[obj._originalParent],obj.type,obj.id);
+        _.keys(obj).forEach(function(d){
+            newNode[d] = obj[d];
+        });
+        
+        if(newNode.id !== obj.id) throw new Error("Ids need to match");
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+
+        //If necessary (from older versions)
+        //swap the keys/values pairings in children/parents
+        var keys = _.keys(newNode.children);
+        if(keys.length > 0 && isNaN(Number(keys[0]))){
+            //console.log("Converting from old format");
+            newNode.children = this.convertObject(newNode.children);
+        }
+
+        keys = _.keys(newNode.parents);
+        if(keys.length > 0 && isNaN(Number(keys[0]))){
+            //console.log("Converting from old format");
+            newNode.parents = this.convertObject(newNode.parents);
+        }
+        return newNode;
+    };
+
+
+    //switch the keys and values of an object
+    //used for legacy json format
+    CompleteShell.prototype.convertObject = function(object){
+        var keys = _.keys(object);
+        var values = _.values(object);
+        var newObject = {};
+        _.zip(values,keys).forEach(function(d){
+            newObject[d[0]] = d[1];
+        });
+
+        return newObject;
+    };
+
+
+    //------------------------------
+    // addition method prototype
+    //------------------------------
+
+    
+    //Utility method to add children to a node:
+    CompleteShell.prototype.addLink = function(node,target,id,name){
+        if(isNaN(Number(id))){
+            throw new Error("Trying to link without providing a value id number");
+        }
+        if(node && node[target]){
+            node[target][Number(id)] = name;
+        }else{
+            throw new Error("Unrecognised target");
+        }
+    };
+
+    
+    //add a node manually / through user interface
+    CompleteShell.prototype.addNode = function(name,target,type){
+        //validate:
+        if(this.cwd[target] === undefined) throw new Error("Unknown target");
+        type = type || "GraphNode";
+        
+        var newNode;
+        if(target === 'parents' || target === 'parent'){
+            //if adding to parents,don't store the cwd as newnode's parent
+            newNode = new GraphNode(name,undefined,undefined,type);
+            //add the cwd to the newNodes children:
+            this.addLink(newNode,'children',this.cwd.id,this.cwd.name);
+            //newNode.children[this.cwd.id] = true;
+        }else{
+            newNode = new GraphNode(name,this.cwd.id,this.cwd.name,type);
+        }
+
+        //add to cwd:
+        //console.log("Linking new node:",newNode);
+        this.addLink(this.cwd,target,newNode.id,newNode.name);
+
+        //Store in allNodes:
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+
+        
+        //Extend the structure as necessary:
+        if(DSCtors[type] !== undefined){
+            console.log("Calling ctor:",type);
+            var newChildren = DSCtors[type](newNode);
+            if(newChildren && newChildren.length > 0){
+                var flatChildren = _.flatten(newChildren);
+                flatChildren.forEach(function(d){
+                    if(this.allNodes[d.id] !== undefined){
+                        console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
+                    }
+                    this.allNodes[d.id] = d;
+                },this);
+            }
+        }else if(type !== 'GraphNode'){
+            console.log("No ctor for:",type);
+        }
+
+        //If the cwd WAS disconnected in some way,
+        //remove it from that designation
+        if(this.cwd[target][this.disconnected.noParents.id]){
+            this.rm(this.disconnected.noParents.id);
+        }
+        if(this.cwd[target][this.disconnected.noChildren.id]){
+            this.rm(this.disconnected.noChildren.id);                
+        }
+        
+        return newNode;        
+    };
+
+    CompleteShell.prototype.addCondition = function(){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        var cond = new RDS.Condition();
+        this.cwd.conditions.push(cond);
+    };
+
+    CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
+        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.conditions);
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+
+        if(this.cwd.conditions[conditionNumber] === undefined){
+            console.log(conditionNumber,this.cwd.conditions);
+            throw new Error("Can't add a test to a non-existent condition");
+        }
+        var test = new RDS.ConstantTest(testField,op,value);
+        this.cwd.conditions[conditionNumber].constantTests.push(test);
+    };
+
+    
+    CompleteShell.prototype.addAction = function(valueArray){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+
+        //add an action node to cwd.actions
+        var newActions = valueArray.map(function(d){
+            console.log("Creating new action:",d);
+            return this.addNode(valueArray[0],'actions','action');
+        },this);
+        return newActions;        
+    };
+
+    //------------------------------
+    // modify method prototype
+    //------------------------------
+
+    CompleteShell.prototype.rename = function(name){
+        this.cwd.name = name;
+    };
+
+    CompleteShell.prototype.setParameter = function(field,parameter,value){
+        if(!this.cwd[field]) throw new Error("Unrecognised field");
+        if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
+            throw new Error("Bad field");
+        }
+        if(value !== undefined){
+            this.cwd[field][parameter] = value;
+        }else{
+            //if no value is specified, remove the entry
+            delete this.cwd[field][parameter];
+        }
+    };
+
+    
+    //TODO: should this be mutual?
+    CompleteShell.prototype.link = function(target,id,reciprocal){
+        //validate:
+        if(isNaN(Number(id))) throw new Error("id should be a global id number");
+        if(this.allNodes[id] === undefined){
+            throw new Error("Node for id " + id + " does not exist");
+        }
+        if(!this.cwd[target]) throw new Error("Unrecognised target");
+
+        //perform the link:
+        var nodeToLink = this.allNodes[id];
+        this.addLink(this.cwd,target,nodeToLink.id,nodeToLink.name);
+        //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
+        if(reciprocal){
+            var rTarget = 'parents';
+            if(target === 'parents') rTarget = 'children';
+            this.addLink(nodeToLink,rTarget,this.cwd.id,this.cwd.name);
+            //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
+        }
+    };
+
+
+    
+    //ie: toVar  <- wme.fromVar
+    //a <- wme.first
+    CompleteShell.prototype.setBinding = function(conditionNum,toVar,fromVar){
+        console.log("Add binding to:",conditionNum,toVar,fromVar);
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        if(this.cwd.conditions[conditionNum] === undefined){
+            throw new Error("Can't add binding to non=existent condition");
+        }
+        this.cwd.conditions[conditionNum].bindings[toVar] = fromVar;
+    };
+
+    CompleteShell.prototype.setArithmetic = function(actionNum,varName,op,value){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Arithmetic can only be applied to actions of rules");
+        }
+        if(this.cwd.actions[actionNum] === undefined){
+            throw new Error("Cannot add arithmetic to non-existent action");
+        }
+        this.cwd.actions[actionNum].arithmeticActions[varName] = [op,value];
+    };
+
+    
+    CompleteShell.prototype.setActionValue = function(actionNum,a,b){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Can't set action values on non-actions");
+        }
+        if(this.cwd.actions[actionNum] !== undefined){
+            if(b){
+                this.cwd.actions[actionNum].values[a] = b;
+            }else{
+                this.cwd.actions[actionNum].tags.actionType = a;
+            }
+        }
+    };
+
+    CompleteShell.prototype.setActionData = function(actionNum,varName,varValue){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error('Can not set action data on a non-rule');
+        }
+        if(this.cwd.actions[actionNum] === undefined){
+            throw new Error('Can not set action data on non-existent action');
+        }
+        this.cwd.actions[actionNum].values[varName] = varValue;
+    };
+
+    CompleteShell.prototype.setTest = function(conNum,testNum,field,op,val){
+        if(this.cwd.tags.type !== 'rule'){
+            throw new Error("Trying to set test on a non-rule node");
+        }
+        if(this.cwd.conditions[conNum] === undefined || this.cwd.conditions[conNum].constantTests[testNum] === undefined){
+            throw new Error("trying to set non-existent test");
+        }
+        this.cwd.conditions[conNum].constantTests[testNum].field = field;
+        this.cwd.conditions[conNum].constantTests[testNum].operator = op;
+        this.cwd.conditions[conNum].constantTests[testNum].value = val;
+    };
+
+    //------------------------------
+    // Removal Methods prototype
+    //------------------------------
+
+
+    //completely delete a node:
+    CompleteShell.prototype.deleteNode = function(id){
+        if(this.allNodes[id] === undefined){
+            throw new Error("unrecognised node to delete");
+        }
+        this.allNodes.splice(id,1);
+    };
+
+    CompleteShell.prototype.rm = function(nodeToDelete){
+        var removedNode = null;
+        if(!isNaN(Number(nodeToDelete))){
+            //delete numeric id node
+            removedNode = this.removeNumericId(Number(nodeToDelete),'parents');
+            if(!removedNode){
+                removedNode = this.removeNumericId(Number(nodeToDelete),'children');
+            }
+        }else{
+            throw new Error("Removing a node requires an id");
+        }
+
+        if(removedNode){
+            this.cleanupNode(removedNode,this.cwd);
+        }
+    };
+
+    CompleteShell.prototype.removeNumericId = function(id,target){
+        var removedNode = null;
+        if(this.cwd[target][id] !== undefined){
+            removedNode = this.allNodes[id];
+            delete this.cwd[target][id];
+        }
+        return removedNode;
+    };
+
+    CompleteShell.prototype.cleanupNode = function(node,owningNode){
+        //remove the owning node from any link in the node:
+        if(node.parents && node.parents[owningNode.id]){
+            delete node.parents[owningNode.id];
+        }
+        if(node.children && node.children[owningNode.id]){
+            delete node.children[owningNode.id];
+        }
+        
+        //if now parent-less:
+        if(_.values(node.parents).filter(function(d){return d;}).length === 0){
+            this.addLink(this.disconnected.noParents,'children',node.id,node.name);
+            this.addLink(node,'parents',this.disconnected.noParents.id,this.disconnected.noParents.name);
+        }
+        //if now child-less:
+        if(_.values(node.children).filter(function(d){return d;}).length === 0){
+            
+            this.addLink(this.disconnected.noChildren,'parents',node.id,node.name);
+            this.addLink(node,'children',this.disconnected.noChildren.id,this.disconnected.noChildren.name);
+        }
+    };
+    //RM FINISHED
+
+    
+    //note: an action is still a node, so is still in allnodes
+    CompleteShell.prototype.removeAction = function(actionNum){
+        if(this.cwd.actions[actionNum] === undefined){
+            throw new Error("Can't delete a non-existent action");
+        }
+        //remove from the rule
+        this.cwd.actions.splice(actionNum,1);
+        //remove from allnodes
+        
+    };
+
+    CompleteShell.prototype.removeCondition = function(condNum){
+        if(this.cwd.conditions[condNum] === undefined){
+            throw new Error("Can't delete an non-existent condition");
+        }
+        this.cwd.conditions.splice(condNum,1);
+    };
+
+    CompleteShell.prototype.removeTest = function(condNum,testNum){
+        if(this.cwd.conditions[condNum] === undefined || this.cwd.conditions[condNum].contantTests[testNum] === undefined){
+            throw new Error("can't delete a non-existent test");
+        }
+
+        this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
+    };
+
+
+
+    //------------------------------
+    // Rete Method prototype
+    //------------------------------
+    
     //RETE INTEGRATION METHODS:
     CompleteShell.prototype.clearRete = function(){
         this.reteNet = new RDS.ReteNet();
@@ -94,127 +498,18 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
     };
 
     
-    //----------------------------------------
-
+    //------------------------------
+    // Utility string method prototype
+    //------------------------------
+    CompleteShell.prototype.getNodeListByIds = function(idList){
+        var retList = idList.map(function(d){
+            if(this.allNodes[d]){
+                return this.allNodes[d];
+            }            
+        },this).filter(function(d){ return d;});
+        return retList;
+    };
     
-    //Utility method to add children to a node:
-    CompleteShell.prototype.addLink = function(node,target,id,name){
-        if(isNaN(Number(id))){
-            throw new Error("Trying to link without providing a value id number");
-        }
-        if(node && node[target]){
-            node[target][Number(id)] = name;
-        }else{
-            throw new Error("Unrecognised target");
-        }
-    };
-
-    
-    //add a node manually / through user interface
-    CompleteShell.prototype.addNode = function(name,target,type){
-        //validate:
-        if(this.cwd[target] === undefined) throw new Error("Unknown target");
-        type = type || "GraphNode";
-        
-        var newNode;
-        if(target === 'parents' || target === 'parent'){
-            //if adding to parents,don't store the cwd as newnode's parent
-            newNode = new GraphNode(name,undefined,undefined,type);
-            //add the cwd to the newNodes children:
-            this.addLink(newNode,'children',this.cwd.id,this.cwd.name);
-            //newNode.children[this.cwd.id] = true;
-        }else{
-            newNode = new GraphNode(name,this.cwd.id,this.cwd.name,type);
-        }
-
-        //add to cwd:
-        console.log("Linking new node:",newNode);
-        this.addLink(this.cwd,target,newNode.id,newNode.name);
-
-        //Store in allNodes:
-        if(this.allNodes[newNode.id] !== undefined){
-            console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
-        }
-        this.allNodes[newNode.id] = newNode;
-
-        
-        //Extend the structure as necessary:
-        if(DSCtors[type] !== undefined){
-            console.log("Calling ctor:",type);
-            var newChildren = DSCtors[type](newNode);
-            if(newChildren && newChildren.length > 0){
-                var flatChildren = _.flatten(newChildren);
-                flatChildren.forEach(function(d){
-                    if(this.allNodes[d.id] !== undefined){
-                        console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
-                    }
-                    this.allNodes[d.id] = d;
-                },this);
-            }
-        }else if(type !== 'GraphNode'){
-            console.log("No ctor for:",type);
-        }
-
-        //If the cwd WAS disconnected in some way,
-        //remove it from that designation
-        if(this.cwd[target][this.disconnected.noParents.id]){
-            this.rm(this.disconnected.noParents.id);
-        }
-        if(this.cwd[target][this.disconnected.noChildren.id]){
-            this.rm(this.disconnected.noChildren.id);                
-        }
-
-        
-        return newNode;        
-    };
-
-    //add a node from its json representation
-    CompleteShell.prototype.addNodeFromJson = function(obj){
-        //console.log("Loading Object:",obj);
-        var newNode = new GraphNode(obj.name,obj._originalParent,obj.parents[obj._originalParent],obj.type,obj.id);
-        _.keys(obj).forEach(function(d){
-            newNode[d] = obj[d];
-        });
-        
-        if(newNode.id !== obj.id) throw new Error("Ids need to match");
-        if(this.allNodes[newNode.id] !== undefined){
-            console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
-        }
-        this.allNodes[newNode.id] = newNode;
-
-        //If necessary (from older versions)
-        //swap the keys/values pairings in children/parents
-        var keys = _.keys(newNode.children);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.children = this.convertObject(newNode.children);
-        }
-
-        keys = _.keys(newNode.parents);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.parents = this.convertObject(newNode.parents);
-        }
-
-        
-        
-        return newNode;
-    };
-
-    //switch the keys and values of an object
-    CompleteShell.prototype.convertObject = function(object){
-        var keys = _.keys(object);
-        var values = _.values(object);
-        var newObject = {};
-        _.zip(values,keys).forEach(function(d){
-            newObject[d[0]] = d[1];
-        });
-
-        return newObject;
-    };
-
-    
-
     //Utility functions for display Output:    
     CompleteShell.prototype.nodeToShortString = function(node,i){
         if(node.name){
@@ -263,6 +558,10 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
 
     };
 
+    //------------------------------
+    // SEARCH method prototype
+    //------------------------------
+    
     /**
        SEARCH {whereToLook} {WhatToLookFor} {KeyOrValue}
 
@@ -373,8 +672,9 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
         return matchingNodes;
     };
 
-    
-    
+    //------------------------------    
+    // State Change method prototype
+    //------------------------------
     /**
        @params target The id (global) or name (local) to move to
     */
@@ -430,229 +730,6 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
         }
     };
     
-    CompleteShell.prototype.getNodeListByIds = function(idList){
-        var retList = idList.map(function(d){
-            if(this.allNodes[d]){
-                return this.allNodes[d];
-            }            
-        },this).filter(function(d){ return d;});
-        return retList;
-    };
-    
-    CompleteShell.prototype.setParameter = function(field,parameter,value){
-        if(!this.cwd[field]) throw new Error("Unrecognised field");
-        if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
-            throw new Error("Bad field");
-        }
-        if(value !== undefined){
-            this.cwd[field][parameter] = value;
-        }else{
-            //if no value is specified, remove the entry
-            delete this.cwd[field][parameter];
-        }
-    };
-    
-    
-    //TODO: should this be mutual?
-    CompleteShell.prototype.link = function(target,id,reciprocal){
-        //validate:
-        if(isNaN(Number(id))) throw new Error("id should be a global id number");
-        if(this.allNodes[id] === undefined){
-            throw new Error("Node for id " + id + " does not exist");
-        }
-        if(!this.cwd[target]) throw new Error("Unrecognised target");
-
-        //perform the link:
-        var nodeToLink = this.allNodes[id];
-        this.addLink(this.cwd,target,nodeToLink.id,nodeToLink.name);
-        //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
-        if(reciprocal){
-            var rTarget = 'parents';
-            if(target === 'parents') rTarget = 'children';
-            this.addLink(nodeToLink,rTarget,this.cwd.id,this.cwd.name);
-            //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
-        }
-    };
-
-    //completely delete a node:
-    CompleteShell.prototype.deleteNode = function(id){
-        if(this.allNodes[id] === undefined){
-            throw new Error("unrecognised node to delete");
-        }
-        this.allNodes.splice(id,1);
-    };
-
-    CompleteShell.prototype.rm = function(nodeToDelete){
-        var removedNode = null;
-        if(!isNaN(Number(nodeToDelete))){
-            //delete numeric id node
-            removedNode = this.removeNumericId(Number(nodeToDelete),'parents');
-            if(!removedNode){
-                removedNode = this.removeNumericId(Number(nodeToDelete),'children');
-            }
-        }else{
-            throw new Error("Removing a node requires an id");
-        }
-
-        if(removedNode){
-            this.cleanupNode(removedNode,this.cwd);
-        }
-    };
-
-    CompleteShell.prototype.removeNumericId = function(id,target){
-        var removedNode = null;
-        if(this.cwd[target][id] !== undefined){
-            removedNode = this.allNodes[id];
-            delete this.cwd[target][id];
-        }
-        return removedNode;
-    };
-
-    CompleteShell.prototype.cleanupNode = function(node,owningNode){
-        //remove the owning node from any link in the node:
-        if(node.parents && node.parents[owningNode.id]){
-            delete node.parents[owningNode.id];
-        }
-        if(node.children && node.children[owningNode.id]){
-            delete node.children[owningNode.id];
-        }
-    
-        //if now parent-less:
-        if(_.values(node.parents).filter(function(d){return d;}).length === 0){
-            this.addLink(this.disconnected.noParents,'children',node.id,node.name);
-            this.addLink(node,'parents',this.disconnected.noParents.id,this.disconnected.noParents.name);
-        }
-        //if now child-less:
-        if(_.values(node.children).filter(function(d){return d;}).length === 0){
-            
-            this.addLink(this.disconnected.noChildren,'parents',node.id,node.name);
-            this.addLink(node,'children',this.disconnected.noChildren.id,this.disconnected.noChildren.name);
-        }
-    };
-    //RM FINISHED
-
-    
-    CompleteShell.prototype.rename = function(name){
-        this.cwd.name = name;
-    };
-    
-    //------------------------------
-
-
-
-    //----------------------------------------
-    //Rule modifiers:
-    //----------------------------------------
-    CompleteShell.prototype.addCondition = function(){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-        var cond = new RDS.Condition();
-        this.cwd.conditions.push(cond);
-    };
-
-    CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
-        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.conditions);
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-
-        if(this.cwd.conditions[conditionNumber] === undefined){
-            console.log(conditionNumber,this.cwd.conditions);
-            throw new Error("Can't add a test to a non-existent condition");
-        }
-        var test = new RDS.ConstantTest(testField,op,value);
-        this.cwd.conditions[conditionNumber].constantTests.push(test);
-    };
-
-    
-    CompleteShell.prototype.addAction = function(valueArray){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-
-        //add an action node to cwd.actions
-        var newActions = valueArray.map(function(d){
-            return this.addNode(valueArray[0],'actions','action');
-        },this);
-        return newActions;        
-    };
-
-    
-    //ie: toVar  <- wme.fromVar
-    //a <- wme.first
-    CompleteShell.prototype.setBinding = function(conditionNum,toVar,fromVar){
-        console.log("Add binding to:",conditionNum,toVar,fromVar);
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-        if(this.cwd.conditions[conditionNum] === undefined){
-            throw new Error("Can't add binding to non=existent condition");
-        }
-        this.cwd.conditions[conditionNum].bindings[toVar] = fromVar;
-    };
-
-    CompleteShell.prototype.setArithmetic = function(actionNum,varName,op,value){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Arithmetic can only be applied to actions of rules");
-        }
-        if(this.cwd.actions[actionNum] === undefined){
-            throw new Error("Cannot add arithmetic to non-existent action");
-        }
-        this.cwd.actions[actionNum].arithmeticActions[varName] = [op,value];
-    };
-
-    
-    CompleteShell.prototype.setActionValue = function(actionNum,a,b){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Can't set action values on non-actions");
-        }
-        if(this.cwd.actions[actionNum] !== undefined){
-            if(b){
-                this.cwd.actions[actionNum].values[a] = b;
-            }else{
-                this.cwd.actions[actionNum].tags.actionType = a;
-            }
-        }
-    };
-
-    CompleteShell.prototype.setActionData = function(actionNum,varName,varValue){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error('Can not set action data on a non-rule');
-        }
-        if(this.cwd.actions[actionNum] === undefined){
-            throw new Error('Can not set action data on non-existent action');
-        }
-    };
-    
-    //note: an action is still a node, so is still in allnodes
-    CompleteShell.prototype.removeAction = function(actionNum){
-        if(this.cwd.actions[actionNum] === undefined){
-            throw new Error("Can't delete a non-existent action");
-        }
-        //remove from the rule
-        this.cwd.actions.splice(actionNum,1);
-        //remove from allnodes
-        
-    };
-
-    CompleteShell.prototype.removeCondition = function(condNum){
-        if(this.cwd.conditions[condNum] === undefined){
-            throw new Error("Can't delete an non-existent condition");
-        }
-        this.cwd.conditions.splice(condNum,1);
-    };
-
-    CompleteShell.prototype.removeTest = function(condNum,testNum){
-        if(this.cwd.conditions[condNum] === undefined || this.cwd.conditions[condNum].contantTests[testNum] === undefined){
-            throw new Error("can't delete a non-existent test");
-        }
-
-        this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
-    };
-
-    //----------------------------------------
-    
     //Stashing and unstashing:
     CompleteShell.prototype.stash = function(){
         this._nodeStash.push(this.cwd);
@@ -670,32 +747,6 @@ define(['./ReteDataStructures','./ReteProcedures','underscore','./GraphNode','./
         }
     };
     
-
-    //export/import json
-    //As nodes only store ID numbers, its non-cyclic. meaning json
-    //should be straightforward.
-    CompleteShell.prototype.exportJson = function(){
-        var graphJson = JSON.stringify(_.values(this.allNodes),undefined,4);
-        console.log("Converted to JSON:",graphJson);
-        return graphJson;
-    };
-
-    //Loading json data means creating
-    //assumes an... object of nodes, NOT an array
-    CompleteShell.prototype.importJson = function(allNodes){
-        console.log("importing type:", typeof allNodes);
-        if(allNodes instanceof Array){
-            allNodes.map(function(d){
-                this.addNodeFromJson(d);
-            },this);
-        }else{
-            _.values(allNodes).map(function(d){
-                this.addNodeFromJson(d);
-            },this);
-        }
-        this.cwd = this.allNodes[0];
-    };
-
     
     //Interface of potential objects, used in addNode lookup,
     //which defaults to lowercase

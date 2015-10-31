@@ -32,6 +32,13 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         //a rule node is supplemented in its ctor with:
         //this.conditions
         //this.actions
+
+        //an action is supplemented with:
+        //this.arithmeticActions
+
+        //a condition is supplemented by:
+        //tests
+        //bindings (or is this just the values?)
         
     };
 

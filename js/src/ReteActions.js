@@ -6,6 +6,7 @@ define(['./ReteArithmeticActions','underscore'],function(ArithmeticActions,_){
     //Action node possible actions:
     var actions = {};
 
+    //In place assertions (ie: for the current execution cycle, not the next one
     actions.in_place_assert = function(token,reteNet){
         //create the data object:
         var newWMEData = {};
@@ -35,6 +36,8 @@ define(['./ReteArithmeticActions','underscore'],function(ArithmeticActions,_){
         return {action: "asserted", payload: addWME(newWMEData,reteNet)};
     };
 
+
+    //In place retraction. ie: current cycle
     actions.in_place_retract = function(token,reteNet){
         //get all wmes the token touches:
         var wmes = [];
@@ -61,5 +64,10 @@ define(['./ReteArithmeticActions','underscore'],function(ArithmeticActions,_){
         return {action:"retracted",payload:toRetract};
     };
 
+    //What other actions might i want?
+    //aggregate
+    //modify
+    
+    
     return actions;
 });
