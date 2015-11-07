@@ -1,3 +1,7 @@
+/**
+   @file GraphNode
+   @purpose To define the base data structure for the shell
+*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }

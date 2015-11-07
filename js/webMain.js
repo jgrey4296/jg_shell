@@ -1,6 +1,8 @@
 /**Entry point for shell.html graph authoring program
    @file webMain
 */
+
+//Setup requirejs
 require.config({
     baseUrl: "/",
     paths:{
@@ -21,26 +23,22 @@ require.config({
         TotalShell : "src/TotalShell",
     },
     shim:{
-        "../libs/underscore":{
-            exports:'_'
-        },
         underscore :{
             exports:'_'
         },
     }
 });
 
-/*
-  Creates a single shell instance, a command map,
-  and then the authoring environment d3 drawing code
+/**The main web program. Creates a shell, visualises it, and listens for user input
+   @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
 */
-require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./ReteCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands){
-    try{
+require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils){
+    try{//A Top Level Try catch block:
         console.log("Starting Total Authoring Shell");
         if(Shell === undefined) throw new Error("Shell is undefined");
 
         //----------------------------------------
-        //VARIOUS GLOBALS
+        //GLOBALS
         //----------------------------------------
         var lastSetOfSearchResults = [];
         //COLOURS:
@@ -68,8 +66,12 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
             "rule" : RuleCommands,
             //called after every command to update the view
             "context": function(sh,values){
+                //draw main columns and nodes
                 draw(sh.cwd);
+                //draw additional elements:
                 drawActivatedRules(sh.reteNet.activatedRules);
+                drawStash(sh._nodeStash);
+                drawSearchColumn(sh.lastSearchResults,columnWidth);
             },
             //Load a file from the server
             "load" : function(sh,values){
@@ -179,8 +181,9 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
         };
         var currentCommandMode = "node";
         //the column objects, to be created per mode
-        var columns = {};
-        
+            var columns = {};
+            var columnWidth = 200;
+
         
         var calcWidth = function(availableWidth,noOfColumns){
             return (availableWidth / (noOfColumns + 2));
@@ -347,6 +350,10 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
                 //values
                 var theValue = (d3.select(this).node().value + d3.event.key);
                 //Display what has been detected:
+
+                //
+
+                
             }
         });
 
@@ -364,7 +371,6 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
 
         //generic draw:
         var draw = function(node){
-            var columnWidth;
             //validate:
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
 
@@ -640,20 +646,64 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
 
 
         var drawActions = function(nodes,columnWidth){
+            nodes.selectAll(".actionElement").remove();
             //draw additional info for each action
             //draw action type
-
             //draw values
-            
             //draw arithmetic actions
+            
+            //already bound node, so d = an action
+            var actionElements = nodes.selectAll(".actionElement").data(function(d,i){
+                var info = [];
+                info.push(d.tags.actionType + "{");
 
+                //TODO: align here
+                var textPairs = _.keys(d.values).map(function(key){
+                    return [key,d.values[key]];
+                });
+                console.log("TextPairs:",textPairs);
+                var alignedText = utils.textAlignPairs(textPairs);
+                console.log("AlignedPairs:",alignedText);
+                var finalText = alignedText.map(function(d){
+                    return d[0] + ": " + d[1];
+                });
+                info = info.concat(finalText);
+                info.push("}");
+
+                info.push("Arithmetic:");
+                _.keys(d.arithmeticActions).forEach(function(key){
+                    info.push(key + d.arithmeticActions[key][0] + d.arithmeticActions[key][1]);
+                });
+                console.log("Action info:",info);
+                return info;
+            });
+
+            actionElements.exit().remove();
+
+            var newActionInfo = actionElements.enter().append("g")
+                .classed("actionElement",true)
+                .attr("transform",function(d,i){
+                    return "translate("+ (columnWidth * 0.4) + "," + (50 + (i * 20)) + ")";
+                });
+            
+            newActionInfo.append("text")
+                .attr("text-anchor","middle");
+
+            actionElements.selectAll("text")
+                .text(function(d){
+                    return d;
+                });
             
         };
+
+
         
         var drawConditions = function(nodes,columnWidth){
-            nodes.selectAll(".test").remove();
-            
-            var testsPerCondition = nodes.selectAll(".test").data(function(d,i){
+            nodes.selectAll(".conditionElement").remove();
+
+            //function extracts information from the already bound node
+            //function(d,i)-> d = a condition
+            var testsPerCondition = nodes.selectAll(".conditionElement").data(function(d,i){
                 var tests = ["Tests:"];
                 tests = tests.concat(d.constantTests);
                 tests.push("Bindings:");
@@ -666,7 +716,7 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
 
             //CONTENT:
             var newTests = testsPerCondition.enter().append("g")
-                .classed("test",true)
+                .classed("conditionElement",true)
                 .attr("transform",function(d,i){
                     //50 because the condition header is 30.
                     return "translate(" + (columnWidth * 0.4) + "," + (50 + (i * 20)) + ")";
@@ -792,6 +842,7 @@ require(['d3','TotalShell','underscore',"./NodeCommands","./RuleCommands","./Ret
 
             firedRulesContainer.selectAll("text").remove();
 
+            //TODO: convert list to strings first
             var columnData = ["Activated Rules:"].concat(list);
             
             var texts = firedRulesContainer.selectAll("text").data(columnData);

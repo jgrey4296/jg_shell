@@ -1,7 +1,6 @@
-
 /**
-   Procedures for a rete net.
-   Addition of rules, activation, etc
+   @file ReteProcedures
+   @purpose to define the procedures and functions necessary to run a rete net
 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -9,7 +8,9 @@ if(typeof define !== 'function'){
 
 define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','underscore'],function(DataStructures,ConstantTestOperators,PossibleActions,_){
 
-    
+    /**
+       @function 
+     */
     //Trigger an alpha memory with a new wme to store
     var alphaMemoryActivation = function(alphaMem,wme){
         var newItem = new DataStructures.AlphaMemoryItem(wme,alphaMem);
@@ -22,6 +23,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //Trigger a constant test with a new wme
     var constantTestNodeActivation = function(alphaNode,wme){
         //test the wme using the constant test in the node
@@ -33,7 +37,12 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
             var value = alphaNode.testValue;
             var operator = alphaNode.operator;
             if(ConstantTestOperators[operator]){
-                testResult = ConstantTestOperators[operator](wmeFieldValue,value);
+                if(operator !== 'EQ' && operator !== 'NE'){
+                    testResult = ConstantTestOperators[operator](Number(wmeFieldValue),Number(value));
+                }else{
+                    testResult = ConstantTestOperators[operator](wmeFieldValue,value);
+                }
+                
             }
         }
         if(testResult){
@@ -48,6 +57,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return testResult;
     };
 
+    /**
+       @function 
+     */
     //Switchable activation function for alpha network stuff
     var alphaNodeActivation = function(alphaNode,wme){
         if(alphaNode.isAlphaMemory){
@@ -59,21 +71,32 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     var clearActivations = function(reteNet){
         var temp = reteNet.lastActivatedRules;
         reteNet.lastActivatedRules = [];
         return temp;
     };
-    
+
+    /**
+       @function 
+     */
     //Assert a wme into the network
     var addWME = function(wmeData,reteNet){
         //activate the root node of the reteNet
         var wme = new DataStructures.WME(wmeData);
+        console.log("Asserting:",wme);
         reteNet.allWMEs[wme.id] = wme;
         alphaNodeActivation(reteNet.rootAlpha,wme);
         return wme.id;
     };
-    
+
+
+    /**
+       @function 
+     */
     //trigger a beta memory to store a new token
     //bindings are from the join node, holding results of the NEW binding tests
     //old bindings are still in the token, the constructor of Token will combine the two
@@ -87,6 +110,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //compare a token and wme, using defined
     //bindings from a joinNode
     //returns false if they dont match,
@@ -126,6 +152,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     };
 
 
+    /**
+       @function 
+     */
     //Trigger a join node with a new token
     //will pull all wmes needed from the linked alphaMemory
     var joinNodeLeftActivation = function(node,token){
@@ -157,6 +186,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }//end of looping all wmes in alphamemory
     };
 
+    /**
+       @function 
+     */
     //Trigger a join node with a new wme
     //pulling all necessary tokens from the parent as needed
     var joinNodeRightActivation = function(node,wme){
@@ -185,6 +217,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //reconnect an unlinked join node to its alpha memory when there are
     //wmes in said alpha memory
     var relinkToAlphaMemory = function(node){
@@ -218,6 +253,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         
     };
 
+    /**
+       @function 
+     */
     //relink an unlinked join node to its betamemory when there are tokens
     //in said memory
     var relinkToBetaMemory = function(node){
@@ -230,6 +268,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //Trigger a negative node from a new token
     //brings in bindings, creates a new token as necessary,
     //combining bindings to.
@@ -260,6 +301,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         
     };
 
+    /**
+       @function 
+     */
     //trigger a negative node from a new wme,
     //getting all tokens stored, comparing to the wme.
     //any that the wme blocks, gets an additional negative Join result
@@ -281,6 +325,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //from a new token, trigger the subnetwork?
     var nccNodeLeftActivation = function(nccNode,token){
         //Create and store the incoming token from prior join node
@@ -315,6 +362,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //the nccPartnerNode is activated by a new token from the subnetwork
     //figure out who owns this new token from the main (positive) network
     var nccPartnerNodeLeftActivation = function(partner,token){
@@ -350,6 +400,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     //Remove/retract a wme from the network
     //has three main sections:
     //alphaMemoryItem Cleanup, token Cleanup,
@@ -379,6 +432,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
 
     };
 
+    /**
+       @function 
+     */
     var deleteAllTokensForWME = function(wme){
         //For all tokens
         while(wme.tokens.length > 0){
@@ -386,6 +442,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     var deleteAllNegJoinResultsForWME = function(wme){
         //unlink the negative Join results in the owning token
         wme.negJoinResults.forEach(function(jr){
@@ -403,7 +462,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         //completely clear negjoinresults
         wme.negJoinResults = [];
     };
-    
+
+    /**
+       @function 
+     */
     var unlinkAlphaMemory = function(alphaMemory){
         //if the alphaMem has no items: UNLINK
         if(alphaMemory.items.length === 0){
@@ -419,6 +481,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     var activateIfNegatedJRIsUnblocked = function(nJR){
         var currJoinResult = nJR;
         //if the negation clears, activate it
@@ -429,7 +494,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
             });
         }
     };
-    
+
+    /**
+       @function 
+     */
     //delete a token and all the tokens that rely on it
     //a bit of a frankenstein. Deletes the token,
     //deletes descendents, but also sets and cleans up 
@@ -462,6 +530,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     //finish of delete token.
 
 
+    /**
+       @function 
+     */
     //TOKEN DELETION HELPER FUNCTIONS
     var removeNegJoinResultsForToken = function(token){
         //remove Negative join results
@@ -478,7 +549,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     };
 
 
-    
+    /**
+       @function 
+     */
     //Now the utility functions for deleteing token:
     var removeTokenFromNode = function(token){
         //Deal with if the owning node is NOT an NCC
@@ -494,17 +567,23 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
             }
         }
     };
-    
-     var removeTokenFromWME = function(token){
+
+    /**
+       @function 
+     */
+    var removeTokenFromWME = function(token){
         //remove the token from the wme it is based on
-         if(token.wme && token.wme.tokens){
-             var index = token.wme.tokens.map(function(d){return d.id;}).indexOf(token.id);
-             if(index !== -1){
-                 token.wme.tokens.splice(index,1);
-             }
+        if(token.wme && token.wme.tokens){
+            var index = token.wme.tokens.map(function(d){return d.id;}).indexOf(token.id);
+            if(index !== -1){
+                token.wme.tokens.splice(index,1);
+            }
         }
     };
 
+    /**
+       @function 
+     */
     var removeTokenFromParentToken = function(token){
         //Remove the token from it's parent's child list
         if(token && token.parentToken){
@@ -514,10 +593,12 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
             }
         }
     };
-    
+
+    /**
+       @function 
+     */
     //Now Essentially switch on: BetaMemory, NegativeNode,
     //NCCNode, and NCCPartnerNode
-    
     var ifEmptyBetaMemoryUnlink = function(node){
         //BETAMEMORY
         if(node && node.isBetaMemory){
@@ -540,6 +621,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }        
     };
 
+    /**
+       @function 
+     */
     var ifEmptyNegNodeUnlink = function(node){
         if(node && node.isNegativeNode){
             //with elements
@@ -552,7 +636,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
-
+    /**
+       @function 
+     */
     var cleanupNCCResultsInToken = function(token){
         //NCCNODE
         if(token && token.owningNode && token.owningNode.isAnNCCNode){
@@ -581,6 +667,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     var cleanupNCCPartnerOwnedToken = function(token){
         //NCCPARTNERNODE
         if(token.owningNode
@@ -597,6 +686,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+    /**
+       @function 
+     */
     var ifNCCPartnerNodeActivateIfAppropriate = function(token){
         if(token && token.owningNode
            && token.owningNode.isAnNCCPartnerNode){
@@ -611,6 +703,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     };
 
 
+    /**
+       @function 
+     */
     //utility function to delete all descendents without deleting the token
     var deleteDescendentsOfToken = function(token){
         while(token.children.length > 0){
@@ -621,7 +716,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     //--------------------
     // Creation of Network:
     //--------------------
-    
+
+    /**
+       @function 
+     */
     //taking an alpha node and a ConstantTest
     var compareConstantNodeToTest = function(node,constantTest){
         if(!constantTest.isConstantTest){
@@ -639,7 +737,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
         return true;
     };
-    
+
+    /**
+       @function 
+     */
     var buildOrShareConstantTestNode = function(parent,constantTest){
         for(var i in parent.children){
             var node = parent.children[i];
@@ -651,7 +752,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return newAlphaNode;
     };
     
-    
+
+    /**
+       @function 
+     */
     //added retenet parameter
     //Reminder: Rule{Conditions[]},
     //          Condition{constantTests:[],bindings:[[]]}
@@ -672,7 +776,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         //run wmes in working memory against the alpha network
         return newAlphaMemory;
     };
-    
+
+    /**
+       @function 
+     */
     var buildOrShareBetaMemoryNode = function(parent){
         //if passed in the dummy top node, return it:
         if(parent.isBetaMemory === true){
@@ -696,7 +803,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return newBetaMemory;
     };
     
-    
+
+    /**
+       @function 
+     */
     //walk up from a join node until you find a node
     //connected to the specified alpha memory
     var findNearestAncestorWithAlphaMemory = function(node,alphaMemory){
@@ -714,7 +824,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         //recurse:
         return findNearestAncestorWithAlphaMemory(node.parent,alphaMemory);        
     };
-    
+
+    /**
+       @function 
+     */
     var compareJoinTests = function(firstTestSet,secondTestSet){
         if(firstTestSet.length === 0 && secondTestSet.length === 0){
             return true;
@@ -745,7 +858,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return false;
     };
     
-    
+    /**
+       @function 
+     */
     var buildOrShareJoinNode = function(parent,alphaMemory,tests){
         //see if theres a join node to use already
         var allChildren = parent.children.concat(parent.unlinkedChildren);
@@ -779,7 +894,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         //return new join node
         return newJoinNode;
     };
-    
+
+    /**
+       @function 
+     */
     var buildOrShareNegativeNode = function(parent,alphaMemory,tests){
         //see if theres an existing negative node to use
         for(var i in parent.children){
@@ -806,7 +924,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return newNegativeNode;
     };
 
-
+    /**
+       @function 
+    */
     var buildOrShareNCCNodes = function(parent,condition,rootAlpha){
         if(condition.isNCCCondition === undefined){
             throw new Error("BuildOrShareNCCNodes only takes NCCCondition");
@@ -832,7 +952,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return newNCC;
     };
 
-
+    /**
+       @function 
+    */
     var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha){
         var currentNode = parent;
         var tests, alphaMemory;
@@ -860,6 +982,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return finalBetaMemory;
     };
 
+    /**
+       @function 
+     */
     var activateActionNode = function(actionNode,token){
         //get the action it embodies:
         var action = actionNode.action;
@@ -873,15 +998,22 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         //call the action with the token
         var retValue = func(token,actionNode.reteNet);
 
+        //deal with the result:
+
+        
         //store the retValue in the reteNet.activatedRules
         actionNode.reteNet.lastActivatedRules.push(retValue);
     };
 
+    /**
+       @function 
+     */
     var addRule = function(rule,reteNet){
         //build network with a dummy node for the parent
         var currentNode = buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,rule.conditions,reteNet.rootAlpha);
         //Build the actions that are triggered by the rule:
         var actionNodes = _.values(rule.actions).map(function(d){
+            console.log("Adding action for:",d);
             return new DataStructures.ActionNode(currentNode,d,rule.name,reteNet);
         });
         if(reteNet.actions[rule.name] === undefined){
@@ -894,6 +1026,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return actionNodes;
     };
 
+    /**
+       @function 
+     */
     //Utility leftActivation function to call
     //whichever specific type is needed
     var leftActivate = function(node,token,wme,joinTestResults){
@@ -927,6 +1062,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         return token;
     };
 
+    /**
+       @function 
+     */
     var rightActivate = function(node,wme){
         if(node.isJoinNode){
             joinNodeRightActivation(node,wme);
@@ -937,6 +1075,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
 
+
+    /**
+       @function 
+     */
     //essentially a 4 state switch:
     //betaMemory, joinNode, negativeNode, NCC
     var updateNewNodeWithMatchesFromAbove = function(newNode){
@@ -971,7 +1113,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
         }
     };
     
-
+    /**
+       @function 
+    */
     var removeRule = function(actionNode){
         //delete from bottom up
         deleteNodeAndAnyUnusedAncestors(actionNode);
@@ -985,6 +1129,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
       remove any reference to the node from a parent
 
       +: call recursively on any parent that has no children
+    */
+    /**
+       @function 
      */
     var deleteNodeAndAnyUnusedAncestors = function(node){
         var index;
@@ -1045,6 +1192,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteActions','unde
     };
 
 
+    /**
+       @interface 
+     */
     var interface = {
         "addRule"   : addRule,
         "removeRule": removeRule,

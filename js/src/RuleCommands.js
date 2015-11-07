@@ -1,15 +1,19 @@
+/**
+   @file RuleCommands
+   @purpose To implement all user commands dealing with rules
+*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['./utils'],function(util){
     var ruleCommands = {
-        //cd
+        //** @command cd
         "cd" : function(sh,values){
             util.valueCheck(values,1);
             sh.cd(values[0]);
         },
-        //new -> addCondition/test/action
+        //** @command new -> addCondition/test/action
         "new" : function(sh,values){
             if(values[0] === "condition"){
                 sh.addCondition();
@@ -19,7 +23,7 @@ define(['./utils'],function(util){
                 sh.addTest(values[1],values[2],values[3],values[4]);
             }                
         },
-        //rm
+        //** @command rm
         "rm" : function(sh,values){
             //remove action
             if(values[0] === 'action'){
@@ -35,7 +39,7 @@ define(['./utils'],function(util){
                 sh.removeTest(values[1],values[2]);
             }
         },
-        //set -> setParameter
+        //** @command set
         //set action 0 actionType
         //set action 0 a #b
         //set action 0 a 5
@@ -63,7 +67,7 @@ define(['./utils'],function(util){
                 sh.setBinding(values[1],values[2],values[3]);
             }                
         },
-        //rename a rule?
+        //** @command rename
         "rename" : function(sh,values){
             sh.rename(values[0]);
         },

@@ -1,3 +1,7 @@
+/**
+   @file NodeCommands
+   @purpose to define the user actions that can be performed on a typical node in the shell
+*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -85,11 +89,9 @@ define(['./utils'],function(util){
         //Stashing:
         "stash" : function(sh,values){
             sh.stash();
-            drawStash(sh._nodeStash);
         },
         "unstash" : function(sh,values){
             sh.unstash();
-            drawStash(sh._nodeStash);
         },
         "top" : function(sh,values){
             sh.top();
@@ -100,9 +102,6 @@ define(['./utils'],function(util){
         //Search:
         "search" : function(sh,values){
             var returnedData = sh.search(values[0],values[1],values[2]);
-            if(returnedData){
-                drawSearchColumn(returnedData,calcWidth(usableWidth,_.values(columnNames[currentCommandMode]).length));
-            }
         }            
     };
 

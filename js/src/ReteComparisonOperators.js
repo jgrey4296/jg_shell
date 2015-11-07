@@ -1,3 +1,7 @@
+/**
+   @file ReteComparisonOperators
+   @purpose To define the possible operators available for constant test nodes
+ */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }

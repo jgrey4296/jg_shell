@@ -1,44 +1,60 @@
+/**
+   @file ReteActions
+   @purpose To define the functions that a triggered action can call
+*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteArithmeticActions','underscore'],function(ArithmeticActions,_){
+define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(ArithmeticActions,RDS,_){
+
+    if(ArithmeticActions === undefined){
+        throw new Error("Arithmetic Actions missing");
+    }
+
     //Action node possible actions:
     var actions = {};
 
-    //In place assertions (ie: for the current execution cycle, not the next one
-    actions.in_place_assert = function(token,reteNet){
+    //NOTE: these will be called after being bound to an action,
+    //so 'this' refers to the information stored in an action.
+
+    //not in place, returns a wme to be dealt with elsewhere
+    //** @action assert
+    actions.assert = function(token,reteNet){
         //create the data object:
-        var newWMEData = {};
         //initialise from the action's 'values' object
-        _.keys(this.values).forEach(function(key){
-            newWMEData[key] = null;
+        var newWMEData = _.reduce(_.keys(this.values),function(memo,key){
+            memo[key] = null;
             var v = this.values[key];
             //if the value starts with #, look it up in the token
             if(v[0] === "#"){
                 //cut off the #
-                newWMEData[key] = token.bindings[v.slice(1)];
+                memo[key] = token.bindings[v.slice(1)];
             }else{
-                newWMEData[key] = v;
+                memo[key] = v;
             }
-        },this);
+            return memo;
+        },{},this);
 
         //perform arithmetic:
         _.keys(this.arithmeticActions).forEach(function(key){
-            newWMEData[key] = Number(newWMEData[key]);
-            if(isNaN(newWMEData[key])) throw new Error("Arithmetic value should be convertable to a number");
+            var newVal = Number(newWMEData[key]);
+            if(isNaN(newVal)) throw new Error("Arithmetic value should be convertable to a number");
             //look up the function:
             //because the representation form is: a : ["+", 5]
             var action = ArithmeticActions[this.arithmeticActions[key][0]];
-            newWMEData[key] = action(newWMEData[key],this.arithmeticActions[key][1]);
+            newWMEData[key] = action(newVal,Number(this.arithmeticActions[key][1]));
         },this);
 
-        return {action: "asserted", payload: addWME(newWMEData,reteNet)};
+        console.log("Creating new WME from:",newWMEData);
+        var newWME = new RDS.WME(newWMEData);
+        return {action: "asserted", payload: newWME};
     };
 
 
     //In place retraction. ie: current cycle
-    actions.in_place_retract = function(token,reteNet){
+    //** @action retract
+    actions.retract = function(token,reteNet){
         //get all wmes the token touches:
         var wmes = [];
         var currToken = token;

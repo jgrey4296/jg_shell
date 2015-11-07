@@ -1,10 +1,14 @@
+/**
+   @file Tests to verify the shell
+
+ */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 var _ = require('underscore');
 
-var TotalShell = require('./TotalShell');
+var TotalShell = require('../src/TotalShell');
 
 var makeShell = function(){return new TotalShell.CompleteShell();};
 

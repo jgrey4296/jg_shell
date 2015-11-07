@@ -1,5 +1,7 @@
 //adapted from:
 //http://blog.kevinchisholm.com/javascript/node-js/making-a-simple-http-server-with-node-js-part-iv/
+
+//Imports
 var http = require('http');
 var fs = require('fs');
 var shell = fs.readFileSync('shell.html');
@@ -16,7 +18,11 @@ var extensions = {
     ".json": "application/json",
 };
 
-//Function for GET messages
+/**Process a get request
+   @function dealWithGet
+   @param request the recieved request object.
+   @param response the response object to write to
+ */
 var dealWithGet = function(request,response){
     //Default to shell.html if nothing else is requested
     var fileName = path.basename(request.url) || 'shell.html';
@@ -33,7 +39,7 @@ var dealWithGet = function(request,response){
         return;
     }
 
-    //Otherwise:
+    //Otherwise get the requested file:
     console.log("Opening: ", filePath);
     fs.exists(filePath,function(exists){
         if(exists){
@@ -56,7 +62,11 @@ var dealWithGet = function(request,response){
     });    
 };
 
-//function for POST messages
+/**Process a POST request, mainly saving a file
+   @function dealWithPost
+   @param request the recieved request data
+   @param response the outgoing response object to write to
+ */
 var dealWithPost = function(request,response){
     console.log("RECIEVED POST:",request.url);
     var values = request.url.split("=");
@@ -96,7 +106,12 @@ var dealWithPost = function(request,response){
 };
 
 
-//Copy a file:
+/**Backup a file prior to writing new data to it
+   @function copyFile
+   @param sourcePath the directory containing the file
+   @param fileName the file itself
+   @param cb the callback to call once the file is copied
+ */
 function copyFile(sourcePath,fileName,cb){
     console.log("Copying File");
     var cbCalled = false;
@@ -124,7 +139,9 @@ function copyFile(sourcePath,fileName,cb){
 
 
 //----------------------------------------
-//The server itself
+/**The server object, with a custom listen function
+   @object server
+ */
 var server = http.createServer(function(request,response){
     if(request.method === "GET"){
         dealWithGet(request,response);
@@ -132,5 +149,5 @@ var server = http.createServer(function(request,response){
         dealWithPost(request,response);
     }
 });
-server.listen(8888);//Run the server
+server.listen(8888);//Run the server on port 8888
 console.log("Simple Shell Server is listening");

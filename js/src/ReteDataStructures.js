@@ -1,6 +1,6 @@
 /**
-   Data structures required for a rete net:
-   Nodes, wmes, join results, tokens...
+   @file ReteDataStructures
+   @purpose to define the data structures required for rete
 */
 
 if(typeof define !== 'function'){
@@ -9,9 +9,11 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     var nextId = 0;
-    
-    //base WME structure.
-    //information stored in .data
+
+    /**
+       @data WME
+       @purpose to store facts in the rete net
+     */
     var WME = function(data){
         this.data = data;
         //Alpha memories the wme is part of
@@ -24,7 +26,10 @@ define(['underscore'],function(_){
         nextId++;
     };
 
-    //base token,
+    /**
+       @data Token
+       @purpose To combine intermediate results in the beta network
+     */
     //bindings are updated as the token progresses
     var Token = function(parentToken,wme,owningNode,bindings){
         this.isToken = true;
@@ -60,6 +65,13 @@ define(['underscore'],function(_){
         nextId++;        
     };
 
+    /**
+       @data ConstantTest
+       @purpose Defines an alpha node test
+       @param testWmeField
+       @param operator
+       @param testValue
+     */
     //Test: (wme.)a = 5
     var ConstantTest = function(testWmeField,operator,testValue){
         this.tags = {};
@@ -71,8 +83,11 @@ define(['underscore'],function(_){
         this.id = nextId;
         nextId++;
     };
-    
-    //condition:
+
+    /**
+       @data Condition
+       @purpose To hold tests and bindings of a rule
+     */
     //tests: triples (testField,operator,testValue)
     //bindings: tuples (wmeVar,boundVar)
     var Condition = function(tests,bindings,negative){
@@ -110,22 +125,10 @@ define(['underscore'],function(_){
         
     };
 
-    //Method for js_shell integration, used in webMain.drawMultipleNodes
-    Condition.prototype.toShortString = function(i){
-        var v = this.id;
-        if(i !== undefined){
-            v = i;
-        }        
-        return "( c_" + v + " )";
-    };
-    
-    Condition.prototype.addBinding = function(to,from){
-        this.bindings.push([to,from]);
-        this.bindings.sort();
-    };
-    
-
-    //pretty much just wraps an array of conditions
+    /**
+       @data NCCCondition
+       @purpose Wraps conditions to specify negated conditions
+     */
     var NCCCondition = function(conditions){
         this.isNCCCondition = true;
         this.tags = {};
@@ -141,7 +144,11 @@ define(['underscore'],function(_){
     };
     
     //------------------------------
-    
+
+    /**
+       @data AlphaMemoryItem
+       @purpose a Pairing of a wme with an alpha memory it resides in
+     */
     //Utility storage of wme and its alphaMemory together
     //used in alphamemory and WME
     var AlphaMemoryItem = function(wme,alphaMem){
@@ -150,7 +157,12 @@ define(['underscore'],function(_){
         this.id = nextId;
         nextId++;
     };
-    
+
+
+    /**
+       @data AlphaNode
+       @purpose a node to perform constant tests on newly asserted WMEs
+     */
     //A constant test node
     //constantTest = {field:"",value:"",operator:""};
     var AlphaNode = function(parent,constantTest){
@@ -172,7 +184,10 @@ define(['underscore'],function(_){
         nextId++;
     };
 
-   
+   /**
+      @data AlphaMemory
+      @purpose to store wmes that have passed through constant tests
+    */
     //Alpha Memory node
     var AlphaMemory = function(parent){
         this.isAlphaMemory = true;
@@ -196,7 +211,10 @@ define(['underscore'],function(_){
         nextId++;
     };
 
-    
+    /**
+       @data ReteNode
+       @purpose provides a base definition of a node in the rete network
+     */    
     //Base node for the beta network
     var ReteNode = function(parent){
         this.children = [];
@@ -208,6 +226,11 @@ define(['underscore'],function(_){
         nextId++;
     };
 
+    /**
+       @data BetaMemory
+       @inherits ReteNode
+       @purpose A Node to store tokens in the rete network
+     */
     //Beta Memory Stores tokens
     var BetaMemory = function(parent){
         ReteNode.call(this,parent);
@@ -224,6 +247,11 @@ define(['underscore'],function(_){
 
     };
 
+    /**
+       @data JoinNode
+       @inherits ReteNode
+       @purpose To combine tokens and wmes, according to binding tests
+     */
     //Join Node combines tokens with wmes
     //tests are the binding tuples from a condition
     var JoinNode = function(parent,alphaMemory,tests){
@@ -242,6 +270,10 @@ define(['underscore'],function(_){
         this.nearestAncestor = null;
     };
 
+    /**
+       @data ActionNode
+       @purpose A Node which, when activated, will cause the effects a rule describes
+     */
     //Container object for a general graphnode action description    
     var ActionNode = function(parent,action,ruleName,reteNet){
         ReteNode.call(this,parent);
@@ -255,8 +287,10 @@ define(['underscore'],function(_){
     };
 
 
-
-    
+    /**
+       @data NegativeJoinResult
+       @purpose To Store the combination of a token and a wme that blocks it from progressing through the network
+     */
     //Storage for a token blocked by a wme
     //Updates the owner token and wme as part of its construction
     var NegativeJoinResult = function(owner,wme){
@@ -272,6 +306,11 @@ define(['underscore'],function(_){
         nextId++;
     };
 
+
+    /**
+       @data NegativeNode
+       @purpose A Node that tests for the abscence of particular wmes
+     */
     //Negative Node:The node that gates token progression
     var NegativeNode = function(parent,alphaMemory,tests){
         if(tests.length === 0){
@@ -289,6 +328,10 @@ define(['underscore'],function(_){
         this.nearestAncestor = null;
     };
 
+    /**
+       @data NCCNode
+       @purpose The generalisation of the negative node to multiple conditions, forms the leaf of a subnetwork
+     */
     //NCC : gates token progression based on a subnetwork
     //SEE ALSO: NCCCondition
     //old: NegatedConjunctiveConditionNode
@@ -300,6 +343,10 @@ define(['underscore'],function(_){
     };
 
 
+    /**
+       @data NCCPartnerNode
+       @purpose to store potential partial matches in the subnetwork for a NCCNode
+     */
     //The partner of the NCC, connects to the subnetwork
     //old NegConjuConPartnerNode
     //var NCCPartner
@@ -313,6 +360,10 @@ define(['underscore'],function(_){
     };
     
 
+    /**
+       @data ReteNet
+       @purpose A Data structure to hold what you need to start a retenet.
+     */
     var ReteNet = function(){
         this.dummyBetaMemory = new BetaMemory();
         this.rootAlpha = new AlphaNode();
@@ -324,7 +375,9 @@ define(['underscore'],function(_){
 
     
     //--------------------
-    //DataStructures interface
+    /**
+       @interface ReteDataStructures
+     */
     var DataStructures = {
         "WME"              : WME,
         "Token"            : Token,

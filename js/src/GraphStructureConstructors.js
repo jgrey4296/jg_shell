@@ -1,3 +1,7 @@
+/**
+   @file GraphStructureConstructors
+   @purpose To define the functions that can enhance a basic new node
+ */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
