@@ -1,5 +1,6 @@
-/**Entry point for shell.html graph authoring program
+/**
    @file webMain
+   @purpose Defines the web interface, and drawing methods, for the shell
 */
 
 //Setup requirejs
@@ -29,8 +30,9 @@ require.config({
     }
 });
 
-/**The main web program. Creates a shell, visualises it, and listens for user input
+/**
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
+   @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
 require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils){
     try{//A Top Level Try catch block:
@@ -60,7 +62,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         //Maps typed commands to methods on shell, in different modes
         console.log("Setting up commands");
         
-        //aggregated commands
+        /**
+           @data commands
+           @purpose Object that stores all actions a user can perform
+         */
         var commands = {
             "node" : NodeCommands,
             "rule" : RuleCommands,
@@ -69,7 +74,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 //draw main columns and nodes
                 draw(sh.cwd);
                 //draw additional elements:
-                drawActivatedRules(sh.reteNet.activatedRules);
+                drawActivatedRules(sh.reteNet.activatedRules,columnWidth);
                 drawStash(sh._nodeStash);
                 drawSearchColumn(sh.lastSearchResults,columnWidth);
             },
@@ -107,13 +112,13 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             },
         };
 
-        //Import rete commands into general:
+        //Import rete commands into root level of general:
         _.keys(ReteCommands).forEach(function(d){
             this[d] = ReteCommands[d];
         },commands);
 
 
-        //the additional information for each major command
+        //** @data helpData @purpose For displaying reference of commands
         var helpData = {
             node : {
                 "new"   : "$target $type $name",
@@ -229,7 +234,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         //DISPLAY FUNCTIONS SECTION
         //----------------------------------------
 
-        //Draw a help window informing what commands are available
+        /**
+           @function displayHelp
+           @purpose Draw a help window, and display the help text for commands
+         */
         var displayHelp = function(columnWidth,helpDataSubGrammar){
             //console.log(columnWidth + ":Available Commands:", helpDataSubGrammar);
             var helpText = ["Available Commands"].concat(_.keys(helpDataSubGrammar).map(function(d){
@@ -284,11 +292,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         //note: uses lookup to the commands object.
         
         /*
-          Main selection here sets up parsing from input
+          @purpose Main selection here sets up parsing from input
           and clearing after the user presses enter.
         */
         console.log("Setting up Text input");
-        //TODO: change this to keydown
         d3.select('#shellInput').on("keydown",function(e){
             if(d3.event.keyCode === 13){ //ie:"Enter"
                 console.log(".");
@@ -351,9 +358,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 var theValue = (d3.select(this).node().value + d3.event.key);
                 //Display what has been detected:
 
-                //
-
-                
             }
         });
 
@@ -369,7 +373,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .attr('width',usableWidth)
             .attr('height',window.innerHeight - 30);
 
-        //generic draw:
+        /**
+           @function draw
+           @purpose draws a node or a rule, switching modes as necessary
+         */
         var draw = function(node){
             //validate:
             if(!(node && node.tags && node.tags.type)) throw new Error("Unexpected node");
@@ -422,6 +429,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         };
 
         //----------------------------------------
+        /**
+           @function drawNode
+           @purpose Draws a single node in the centre column, and parent/child nodes
+           for the other two columns
+         */
         var drawNode = function(node,columnWidth){
             //validate:
             if(node === undefined){
@@ -495,8 +507,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         };
 
         
-        /**Renders the current rule 
+        /**
            @function drawRule
+           @purpose Renders the current rule 
            @param rule The RuleNode object to draw, that contains the rule Object
         */
         var drawRule = function(ruleNode,columnWidth){
@@ -572,10 +585,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
         //------------------------------
 
-        /**Draw a column of conditions
+        /**
+           @function drawMultipleNodes
+           @purpose Draw a column of conditions
            @param baseContainer The container column to use
            @param childArray The array of information to render
-           @function drawMultipleNodes
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
             console.log("Drawing Column:",baseContainer,childArray);
@@ -645,6 +659,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         };
 
 
+        /**
+           @function drawActions
+           @purpose Draws the actions that are part of a rule, showing the values and arithmetic of the action
+         */
         var drawActions = function(nodes,columnWidth){
             nodes.selectAll(".actionElement").remove();
             //draw additional info for each action
@@ -697,7 +715,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         };
 
 
-        
+        /**
+           @function drawConditions
+           @purpose Draws conditions, rendering the internal tests and bindings as well
+         */        
         var drawConditions = function(nodes,columnWidth){
             nodes.selectAll(".conditionElement").remove();
 
@@ -746,6 +767,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         // Search bar drawing:
         //------------------------------
 
+
+        /**
+           @function drawSearchColumn
+           @purpose draws the results of a search
+         */
         var drawSearchColumn = function(nodeList,columnWidth){
             //convert data as needed:
             var infoList = ["Search results:"].concat(nodeList.map(function(d){
@@ -794,7 +820,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
         };
 
-        //Drawing Stash Helper:
+
+        /**
+           @function drawStash
+           @purpose Draws the stack of temporary nodes
+         */
         var drawStash = function(valueArray){
             var stashedList = valueArray.map(function(d){
                 return "(" + d.id + "): " + d.name;
@@ -826,13 +856,19 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             
         };
 
+        /**
+           @function drawActivatedRules
+           @purpose
+           @param list
+           @param columnWidth
+         */
         var drawActivatedRules = function(list,columnWidth){
             var firedRulesContainer = d3.select("#firedRules");
             if(firedRulesContainer.empty()){
                 firedRulesContainer = d3.select("svg").append("g")
                     .attr("id","firedRules")
-                    .attr("transform","translate(" + (usableWidth - columnWidth) + ",0)");
-            }
+                    .attr("transform","translate(" + (usableWidth - columnWidth) + "," + (drawOffset + 20)+ ")");
+
 
             firedRulesContainer.append("rect")
                 .attr("width",columnWidth)
@@ -840,6 +876,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 .attr("rx",10)
                 .attr("ry",10);
 
+            }
+            
             firedRulesContainer.selectAll("text").remove();
 
             //TODO: convert list to strings first

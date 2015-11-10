@@ -8,6 +8,10 @@ if(typeof define !== 'function'){
 
 define([],function(){
 
+    /**
+       @data reteCommands
+       @purpose describes the user actions that can be performed in the shell regarding the rete net
+     */
     var reteCommands = {
         //** @command clear
         "clear" : function(sh,values){

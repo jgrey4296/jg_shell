@@ -1,8 +1,0 @@
-1: write drawActions
-2: move draw calls out of nodecommands
-3: look into conditions being nodes too.(totally can be)
-4: get a full chain: authored rule + asserted wme-> new fact
-
-5: limit test declarations to have correct operators
-
-6: figure out nccconditions and negative conditions in the shell

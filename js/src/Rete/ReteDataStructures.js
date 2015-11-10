@@ -11,11 +11,38 @@ define(['underscore'],function(_){
     var nextId = 0;
 
     /**
+       @data ReteNet
+       @purpose A Data structure to hold what you need to start a retenet.
+     */
+    var ReteNet = function(){
+        this.dummyBetaMemory = new BetaMemory();
+        this.rootAlpha = new AlphaNode();
+        this.actions = [];
+        this.allWMEs = [];
+        this.allWMEs.__isAllWMEs = true;
+        this.lastActivatedRules = [];
+
+        //Automatic retraction capabilities:
+        this.currentTime = 0;
+        //Wmes asserted at currentTime,
+        //retracted at currentTime + n;
+        this.wmeLifeTimes = {
+            assertions: [],
+            retractions: [],
+        };
+    };
+
+    /**
        @data WME
        @purpose to store facts in the rete net
      */
-    var WME = function(data){
+    var WME = function(data,assertTime,retractTime){
         this.data = data;
+        //The lifetime of the wme. Asserted at time lifeTime[0],
+        //retracted at time lifeTime[1]:
+        if(assertTime === undefined) assertTime = 0;
+        if(retractTime === undefined) retractTime = 0;
+        this.lifeTime = [assertTime,retractTime];
         //Alpha memories the wme is part of
         this.alphaMemoryItems = [];
         //Tokens the wme is part of
@@ -359,19 +386,6 @@ define(['underscore'],function(_){
         this.id = nextId;
     };
     
-
-    /**
-       @data ReteNet
-       @purpose A Data structure to hold what you need to start a retenet.
-     */
-    var ReteNet = function(){
-        this.dummyBetaMemory = new BetaMemory();
-        this.rootAlpha = new AlphaNode();
-        this.actions = [];
-        this.allWMEs = [];
-        this.allWMEs.__isAllWMEs = true;
-        this.lastActivatedRules = [];        
-    };
 
     
     //--------------------

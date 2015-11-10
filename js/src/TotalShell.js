@@ -14,9 +14,10 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
 
-    /**The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
+    /**
        @class CompleteShell
        @constructor
+       @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
     */
     var CompleteShell = function(){
         this.tags = {};
@@ -55,20 +56,15 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
     //END OF DATA STRUCTURE
     //----------------------------------------
     /*
-      Methods organised thus:
+      Methods organised as follows:
       0) json loading and methods
       1) addition of nodes, conditions, tests, actions,links etc
       2) modification of nodes, conditions, tests, actions etc
       3) deletion of nodes....
-
       4) Rete Methods: clearing, compiling, assertion
-
       5) utility to string methods
-
       6) SEARCH
-
       7) state change methods
-
     */
 
     //------------------------------
@@ -287,6 +283,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
             throw new Error("Can't add a test to a non-existent condition");
         }
 
+        //Check the operator is a defined one
         if(RCO[op] === undefined){
             throw new Error("Unrecognised operator");
         }
