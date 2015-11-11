@@ -2,8 +2,39 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures'],function(RDS){
+define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
 
+    /**
+       @function buildOrShareNetworkForConditions
+       @purpose to add all given conditions to the network
+    */
+    var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha){
+        var currentNode = parent;
+        var tests, alphaMemory;
+        //for each condition
+        for(var i in conditions){
+            var condition = conditions[i];
+            if(condition.isPositive){
+                currentNode = buildOrShareBetaMemoryNode(currentNode);
+                tests = condition.bindings;
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                currentNode = buildOrShareJoinNode(currentNode,alphaMemory,condition.bindings);
+            }else if(condition.isNegative){
+                tests = condition.bindings;
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
+            }else if(condition.isNCCCondition){
+                currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha);
+            }else{
+                console.error("Problematic Condition:",condition);
+                throw new Error("Unrecognised condition type");
+            }
+        }
+        //return current node
+        var finalBetaMemory = buildOrShareBetaMemoryNode(currentNode);
+        return finalBetaMemory;
+    };
+    
     /**
        @function buildOrShareConstantTestNode
        @purpose Reuse, or create a new, constant test node, for the given test
@@ -12,11 +43,11 @@ define(['./ReteDataStructures'],function(RDS){
         //Todo: write this as a functional select/find
         for(var i in parent.children){
             var node = parent.children[i];
-            if(compareConstantNodeToTest(node,constantTest)){
+            if(ReteUtil.compareConstantNodeToTest(node,constantTest)){
                 return node;
             }
         }
-        var newAlphaNode = new DataStructures.AlphaNode(parent,constantTest);
+        var newAlphaNode = new RDS.AlphaNode(parent,constantTest);
         return newAlphaNode;
     };
     
@@ -39,7 +70,7 @@ define(['./ReteDataStructures'],function(RDS){
         }
         //else: create the alpha memory
         //ctor will update the current node's outputMemory field
-        var newAlphaMemory = new DataStructures.AlphaMemory(currentNode);
+        var newAlphaMemory = new RDS.AlphaMemory(currentNode);
         //run wmes in working memory against the alpha network
         return newAlphaMemory;
     };
@@ -64,7 +95,7 @@ define(['./ReteDataStructures'],function(RDS){
         }
         //else: create a new beta memory
         //ctor should update  parent's children
-        var newBetaMemory = new DataStructures.BetaMemory(parent);
+        var newBetaMemory = new RDS.BetaMemory(parent);
         //update it with matches
         updateNewNodeWithMatchesFromAbove(newBetaMemory);
         //return new beta memory
@@ -72,26 +103,6 @@ define(['./ReteDataStructures'],function(RDS){
     };
     
 
-    /**
-       @function findNearestAncestorWithAlphaMemory
-       @recursive
-       @purpose To go up the network, to find appropriate beta network elements linked to the alphamemory
-    */
-    var findNearestAncestorWithAlphaMemory = function(node,alphaMemory){
-        //base conditions:
-        if(node.dummy){ return null;}
-        if(node.isJoinNode || node.isNegativeNode){
-            if(node.alphaMemory.id === alphaMemory.id){
-                return node;
-            }
-        }
-        //switch recursion into the partner clause
-        if(node.isAnNCCNode){
-            return findNearestAncestorWithAlphaMemory(node.partner.parent,alphaMemory);
-        }
-        //recurse:
-        return findNearestAncestorWithAlphaMemory(node.parent,alphaMemory);        
-    };
 
     
     /**
@@ -103,16 +114,16 @@ define(['./ReteDataStructures'],function(RDS){
         var allChildren = parent.children.concat(parent.unlinkedChildren);
         for(var i in allChildren){
             var child = allChildren[i];
-            if(child.isJoinNode && child.alphaMemory.id === alphaMemory.id && compareJoinTests(child.tests,tests)){
+            if(child.isJoinNode && child.alphaMemory.id === alphaMemory.id && ReteUtil.compareJoinTests(child.tests,tests)){
                 //return it
                 return child;
             }
         }
         //else: create a new join node
         //increment alphamemories reference count in the constructor
-        var newJoinNode = new DataStructures.JoinNode(parent,alphaMemory,tests);
+        var newJoinNode = new RDS.JoinNode(parent,alphaMemory,tests);
         //set the nearest ancestor
-        newJoinNode.nearestAncestor = findNearestAncestorWithAlphaMemory(parent,alphaMemory);
+        newJoinNode.nearestAncestor = ReteUtil.findNearestAncestorWithAlphaMemory(parent,alphaMemory);
 
         //if either parent memory is empty, unlink
         if(parent.items.length === 0){
@@ -142,12 +153,12 @@ define(['./ReteDataStructures'],function(RDS){
             var child = parent.children[i];
             if(child.isNegativeNode
                && child.alphaMemory.id === alphaMemory.id
-               && compareJoinTests(child.tests,tests)){
+               && ReteUtil.compareJoinTests(child.tests,tests)){
                 return child;
             }
         }
-        var newNegativeNode = new DataStructures.NegativeNode(parent,alphaMemory,tests);
-        newNegativeNode.nearestAncestor = findNearestAncestorWithAlphaMemory(parent,alphaMemory);
+        var newNegativeNode = new RDS.NegativeNode(parent,alphaMemory,tests);
+        newNegativeNode.nearestAncestor = ReteUtil.findNearestAncestorWithAlphaMemory(parent,alphaMemory);
         //update with matches
         updateNewNodeWithMatchesFromAbove(newNegativeNode);
         //unlink if it has no tokens
@@ -180,8 +191,8 @@ define(['./ReteDataStructures'],function(RDS){
             }
         }
         //else: build NCC and Partner nodes
-        var newNCC = new DataStructures.NCCNode(parent);
-        var newNCCPartner = new DataStructures.NCCPartnerNode(bottomOfSubNetwork,condition.conditions.length);
+        var newNCC = new RDS.NCCNode(parent);
+        var newNCCPartner = new RDS.NCCPartnerNode(bottomOfSubNetwork,condition.conditions.length);
         newNCC.partner = newNCCPartner;
         newNCCPartner.nccNode = newNCC;
         //update NCC
@@ -191,38 +202,49 @@ define(['./ReteDataStructures'],function(RDS){
         return newNCC;
     };
 
+
     /**
-       @function buildOrShareNetworkForConditions
-       @purpose to add all given conditions to the network
-    */
-    var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha){
-        var currentNode = parent;
-        var tests, alphaMemory;
-        //for each condition
-        for(var i in conditions){
-            var condition = conditions[i];
-            if(condition.isPositive){
-                currentNode = buildOrShareBetaMemoryNode(currentNode);
-                tests = condition.bindings;
-                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
-                currentNode = buildOrShareJoinNode(currentNode,alphaMemory,condition.bindings);
-            }else if(condition.isNegative){
-                tests = condition.bindings;
-                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
-                currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
-            }else if(condition.isNCCCondition){
-                currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha);
-            }else{
-                console.error("Problematic Condition:",condition);
-                throw new Error("Unrecognised condition type");
+       @function updateNewNodeWithMatchesFromAbove
+       @purpose pulls tokens down from parent upon new creation
+     */
+    //essentially a 4 state switch:
+    //betaMemory, joinNode, negativeNode, NCC
+    var updateNewNodeWithMatchesFromAbove = function(newNode){
+        var i, token;
+        var parent = newNode.parent;
+        if(parent.isBetaMemory){
+            for(i in parent.items){
+                leftActivate(newNode,parent.items[i]);
+            }
+        }else if(parent.isJoinNode){
+            var savedChildren = parent.children;
+            parent.children = [newNode];
+            for(i in parent.alphaMemory.items){
+                var item = parent.alphaMemory.items[i];
+                rightActivate(parent,item.wme);
+            }
+            parent.children = savedChildren;
+        }else if(parent.isNegativeNode){
+            for(i in parent.items){
+                token = parent.items[i];
+                if(token.negJoinResults.length === 0){
+                    leftActivate(newNode,token);
+                }
+            }
+        }else if(parent.isAnNCCNode){
+            for(i in parent.items){
+                token = parent.items[i];
+                if(token.nccResults.length === 0){
+                    leftActivate(newNode,token);
+                }
             }
         }
-        //return current node
-        var finalBetaMemory = buildOrShareBetaMemoryNode(currentNode);
-        return finalBetaMemory;
     };
 
 
-    var interface = {};
+    
+    var interface = {
+        "buildOrShareNetworkForConditions" : buildOrShareNetworkForConditions,
+    };
     return interface;
 });

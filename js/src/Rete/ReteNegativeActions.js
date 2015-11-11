@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures'],function(RDS){
+define(['./ReteDataStructures','./ReteUtilities','./ReteTestExecution','./ReteActivations','./ReteDeletion'],function(RDS,ReteUtil,ReteTestExecution,ReteActivations,ReteDeletion){
     
     /**
        @function negativeNodeLeftActivation
@@ -12,18 +12,18 @@ define(['./ReteDataStructures'],function(RDS){
     //combining bindings to.
     var negativeNodeLeftActivation = function(node,token){
         if(node.items.length === 1){
-            relinkToAlphaMemory(node);
+            ReteUtil.relinkToAlphaMemory(node);
         }
         var newToken = token;
         node.items.unshift(newToken);
 
         for(var i in node.alphaMemory.items){
             var currWme = node.alphaMemory.items[i].wme;
-            var joinTestResult = performJoinTests(node,newToken,currWme);
+            var joinTestResult = ReteTestExecution.performJoinTests(node,newToken,currWme);
             if(joinTestResult){
                 //adds itself to the token and
                 //wme as necessary to block the token
-                var joinResult = new DataStructures.NegativeJoinResult(newToken,currWme);
+                var joinResult = new RDS.NegativeJoinResult(newToken,currWme);
             }
         }
 
@@ -31,7 +31,7 @@ define(['./ReteDataStructures'],function(RDS){
         if(newToken.negJoinResults.length === 0){
             for(var j in node.children){
                 var currChild = node.children[j];
-                leftActivate(currChild,newToken);
+                ReteActivations.leftActivate(currChild,newToken);
             }
         }
         
@@ -49,14 +49,14 @@ define(['./ReteDataStructures'],function(RDS){
         
         for(var i in node.items){
             var currToken = node.items[i];
-            var joinTestResult = performJoinTests(node,currToken,wme);
+            var joinTestResult = ReteTestExecution.performJoinTests(node,currToken,wme);
             if(joinTestResult){
                 if(currToken.negJoinResults.length === 0){
-                    deleteDescendentsOfToken(currToken);
+                    ReteDeletion.deleteDescendentsOfToken(currToken);
                 }
                 //Adds itself to the currToken and wme as
                 //necessary
-                var negJoinResult = new DataStructures.NegativeJoinResult(currToken,wme);
+                var negJoinResult = new RDS.NegativeJoinResult(currToken,wme);
             }
         }
     };
@@ -93,7 +93,7 @@ define(['./ReteDataStructures'],function(RDS){
         if(newToken.nccResults.length === 0){
             for(var i in nccNode.children){
                 var currChild = nccNode.children[i];
-                leftActivate(currChild,newToken);
+                ReteActivations.leftActivate(currChild,newToken);
             }
         }
     };
@@ -129,7 +129,7 @@ define(['./ReteDataStructures'],function(RDS){
             //so update it:
             possible_tokens[0].nccResults.unshift(newToken);
             newToken.parent = possible_tokens[0];
-            deleteDescendentsOfToken(possible_tokens[0]);
+            ReteDeletion.deleteDescendentsOfToken(possible_tokens[0]);
         }else{        
             //else no owner:
             partner.newResultBuffer.unshift(newToken);
@@ -146,7 +146,7 @@ define(['./ReteDataStructures'],function(RDS){
         if(currJoinResult.owner.negJoinResults.length === 0){
             currJoinResult.owner.owningNode.children.forEach(function(child){
                 //activate the token for all its owners children
-                leftActivate(child,currJoinResult.owner);
+                ReteActivations.leftActivate(child,currJoinResult.owner);
             });
         }
     };
@@ -210,7 +210,7 @@ define(['./ReteDataStructures'],function(RDS){
            && token.owningNode.isAnNCCPartnerNode){
             if(token.parentToken.nccResults.length === 0){
                 token.owningNode.nccNode.children.forEach(function(d){
-                    leftActivate(d,token.parentToken);
+                    ReteActivations.leftActivate(d,token.parentToken);
                 });
                 return true;
             }
@@ -218,6 +218,15 @@ define(['./ReteDataStructures'],function(RDS){
         return false;
     };
     
-    var interface = {};
+    var interface = {
+        "activateIfNegatedJRIsUnblocked" : activateIfNegatedJRIsUnblocked,
+        "cleanupNCCResultsInToken" : cleanupNCCResultsInToken,
+        "cleanupNCCPartnerOwnedToken" : cleanupNCCPartnerOwnedToken,
+        "ifNCCPartnerNodeActivateIfAppropriate" : ifNCCPartnerNodeActivateIfAppropriate,
+        "negativeNodeLeftActivation" : negativeNodeLeftActivation,
+        "nccNodeLeftActivation" : nccNodeLeftActivation,
+        "nccPartnerNodeLeftActivation" : nccPartnerNodeLeftActivation
+        "negativeNodeRightActivation" : negativeNodeRightActivation
+    };
     return interface;
 });

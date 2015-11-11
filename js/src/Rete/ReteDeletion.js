@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures',function(RDS){
+define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],function(RDS,ReteUtil,ReteNegActions){
     
     /**
        @function removeAlphaMemoryItemsForWME
@@ -16,7 +16,7 @@ define(['./ReteDataStructures',function(RDS){
             if(index !== -1){ item.alphaMemory.items.splice(index,1);}
             //unlink the alphaMemory itself if it is now empty
             //will unlink if am.items.length === 0
-            unlinkAlphaMemory(item.alphaMemory);
+            ReteUtil.unlinkAlphaMemory(item.alphaMemory);
             //clear the item's links
             item.alphaMemory = undefined;
             item.wme = undefined;
@@ -49,7 +49,7 @@ define(['./ReteDataStructures',function(RDS){
             if(index !== -1){
                 jr.owner.negJoinResults.splice(index,1);
             }
-            activateIfNegatedJRIsUnblocked(jr);
+            ReteNegActions.activateIfNegatedJRIsUnblocked(jr);
             //remove internal references:
             jr.owner = undefined;
             jr.wme = undefined;
@@ -80,14 +80,14 @@ define(['./ReteDataStructures',function(RDS){
         removeTokenFromWME(token);
         removeTokenFromParentToken(token);
         
-        ifEmptyBetaMemoryUnlink(token.owningNode);
-        ifEmptyNegNodeUnlink(token.owningNode,token.id);
+        ReteUtil.ifEmptyBetaMemoryUnlink(token.owningNode);
+        ReteUtil.ifEmptyNegNodeUnlink(token.owningNode,token.id);
 
         removeNegJoinResultsForToken(token);
 
-        cleanupNCCResultsInToken(token);
-        cleanupNCCPartnerOwnedToken(token);
-        ifNCCPartnerNodeActivateIfAppropriate(token);
+        ReteNegActions.cleanupNCCResultsInToken(token);
+        ReteNegActions.cleanupNCCPartnerOwnedToken(token);
+        ReteNegActions.ifNCCPartnerNodeActivateIfAppropriate(token);
         
         //dealloc token:
         //console.log("Dealloc'd Token:",token);
@@ -232,7 +232,7 @@ define(['./ReteDataStructures',function(RDS){
                 node.parent.children.splice(index,1);
             }else{
                 //check the unlinked children list:
-                index = node.parent.unlinkedChildren.map(function(d){ return d.id;}).indexOf(node.id);                 
+                index = node.parent.unlinkedChildren.map(function(d){ return d.id;}).indexOf(node.id);
                 if(index !== -1){
                     node.parent.unlinkedChildren.splice(index,1);
                 }
@@ -251,6 +251,12 @@ define(['./ReteDataStructures',function(RDS){
 
 
     
-    var interface = {};
+    var interface = {
+        "deleteDescendentsOfToken" : deleteDescendentsOfToken
+        "removeAlphaMemoryItemsForWME" : removeAlphaMemoryItemsForWME,
+        "deleteAllTokensForWME" : deleteAllTokensForWME,
+        "deleteAllNegJoinResultsForWME" : deleteAllNegJoinResultsForWME,
+        "deleteNodeAndAnyUnusedAncestors" : deleteNodeAndAnyUnusedAncestors,
+    };
     return interface;
 });

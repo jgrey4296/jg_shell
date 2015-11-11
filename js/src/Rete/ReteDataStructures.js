@@ -20,8 +20,11 @@ define(['underscore'],function(_){
         this.actions = [];
         this.allWMEs = [];
         this.allWMEs.__isAllWMEs = true;
+        
         this.lastActivatedRules = [];
 
+        this.previousActivations = [];
+        
         //Automatic retraction capabilities:
         this.currentTime = 0;
         //Wmes asserted at currentTime,

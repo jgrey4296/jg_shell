@@ -1,18 +1,24 @@
+/**
+   @file ReteInterface
+   @purpose Provides functions for operating on a retenet object
+ */
+
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 //** @requires ReteDataStructures
-define(['./ReteDataStructures'],function(RDS){
+define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetworkBuilding'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding){
     
     /**
        @function clearActivations
        @purpose To clear the record of the last activated rules, for new activations
+       @note pushes the cleared activations in a record array in the rete object
      */
     var clearActivations = function(reteNet){
-        var temp = reteNet.lastActivatedRules;
+        var previousActivations = reteNet.lastActivatedRules;
         reteNet.lastActivatedRules = [];
-        return temp;
+        reteNet.previousActivations.push(previousActivations);
     };
 
     /**
@@ -40,9 +46,9 @@ define(['./ReteDataStructures'],function(RDS){
        @purpose to clean up all places a wme is stored, and remove its consequences
      */
     var removeWME = function(wme,reteNet){
-        removeAlphaMemoryItemsForWME(wme);
-        deleteAllTokensForWME(wme);
-        deleteAllNegJoinResultsForWME(wme);
+        ReteDeletion.removeAlphaMemoryItemsForWME(wme);
+        ReteDeletion.deleteAllTokensForWME(wme);
+        ReteDeltition.deleteAllNegJoinResultsForWME(wme);
     };
 
     
@@ -75,14 +81,17 @@ define(['./ReteDataStructures'],function(RDS){
        @purpose steps the retenet forwards by one step. asserts new wmes, and then retracts old wmes
        @TODO figure out if this is in the correct order. should it be the otherway around
      */
-        var incrementTime = function(reteNet){
-            reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){
-                alphaNodeActivation(reteNet.rootAlpha,wme);
-            });
+    var incrementTime = function(reteNet){
+        //assert everything schdeuled
+        reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){
+            ReteActivations.alphaNodeActivation(reteNet.rootAlpha,wme);
+        });
 
-            reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){
-                removeWME(wme,reteNet);
-            });
+        //retract everything scheduled
+        reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){
+            removeWME(wme,reteNet);
+        });
+        //increment the time
         reteNet.currentTime++;
     };
 
@@ -93,12 +102,14 @@ define(['./ReteDataStructures'],function(RDS){
      */
     var addRule = function(rule,reteNet){
         //build network with a dummy node for the parent
-        var currentNode = buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,rule.conditions,reteNet.rootAlpha);
+        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,rule.conditions,reteNet.rootAlpha);
         //Build the actions that are triggered by the rule:
         var actionNodes = _.values(rule.actions).map(function(d){
             console.log("Adding action for:",d);
-            return new DataStructures.ActionNode(currentNode,d,rule.name,reteNet);
+            return new RDS.ActionNode(currentNode,d,rule.name,reteNet);
         });
+
+        //initialise the action storage for this rule
         if(reteNet.actions[rule.name] === undefined){
             reteNet.actions[rule.name] = [];
         }
@@ -115,10 +126,18 @@ define(['./ReteDataStructures'],function(RDS){
     */
     var removeRule = function(actionNode){
         //delete from bottom up
-        deleteNodeAndAnyUnusedAncestors(actionNode);
+        ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
     };
 
     
-    var interface = {};
+    var interface = {
+        "clearActivations" : clearActivations,
+        "addWME" : addWME,
+        "removeWME" : removeWME,
+        "incrementTime" : incrementTime,
+        "addRule" : addRule,
+        "removeRule" : removeRule,
+
+    };
     return interface;    
 });

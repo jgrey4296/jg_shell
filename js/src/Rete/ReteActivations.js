@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures'],function(RDS){
+define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./ReteTestExecution','./ReteActions','./ReteNegativeActions'],function(RDS,ConstantTestOperators,ReteUtil,ReteTestExecution,PossibleActions,ReteNegativeActions){
 
     /**
        @function alphaMemoryActivation
@@ -99,7 +99,7 @@ define(['./ReteDataStructures'],function(RDS){
         //If necessary, relink or unlink the
         //parent betamemory or alphamemory
         if(node.parent.items && node.parent.items.length > 0){
-            relinkToAlphaMemory(node);
+            ReteUtil.relinkToAlphaMemory(node);
             if(node.alphaMemory.items.length === 0){
                 //unlink beta memory if alphamemory is empty
                 var index = node.parent.children.map(function(d){return d.id;}).indexOf(node.id);
@@ -114,7 +114,7 @@ define(['./ReteDataStructures'],function(RDS){
         //to be combined into tokens
         for(var i in node.alphaMemory.items){
             var currWME = node.alphaMemory.items[i].wme;
-            var joinTestResult = performJoinTests(node,token,currWME);
+            var joinTestResult = ReteTestExecution.performJoinTests(node,token,currWME);
             if(joinTestResult !== false){
                 for(var j in node.children){
                     var currChild = node.children[i];
@@ -133,7 +133,7 @@ define(['./ReteDataStructures'],function(RDS){
     var joinNodeRightActivation = function(node,wme){
         //relink or unlink as necessary
         if(node.alphaMemory.items.length === 1){
-            relinkToBetaMemory(node);
+            ReteUtil.relinkToBetaMemory(node);
             if(node.parent.items.length === 0){
                 var index = node.alphaMemory.children.map(function(d){ return d.id; }).indexOf(node.id);
                 var unlinked = node.alphaMemory.children.splice(index,1);
@@ -146,7 +146,7 @@ define(['./ReteDataStructures'],function(RDS){
         for(var i in node.parent.items){
             var currToken = node.parent.items[i];
             //console.log("--------\nComparing: ",currToken.bindings,"\n To: ",wme.data,"\n using: ",node.tests);
-            var joinTestResult = performJoinTests(node,currToken,wme);
+            var joinTestResult = ReteTestExecution.performJoinTests(node,currToken,wme);
             if(joinTestResult !== false){
                 for(var j in node.children){
                     var currNode = node.children[j];
@@ -192,7 +192,7 @@ define(['./ReteDataStructures'],function(RDS){
         //Construct a new token if supplied the correct
         //parameters
         if(joinTestResults && wme){
-            token = new DataStructures.Token(token,wme,node,joinTestResults);
+            token = new RDS.Token(token,wme,node,joinTestResults);
             //owning node is the node going into, rather than coming out of
         }
         //Activate the node:
@@ -206,11 +206,11 @@ define(['./ReteDataStructures'],function(RDS){
         }else if(node.isJoinNode){
             joinNodeLeftActivation(node,token);
         }else if(node.isNegativeNode){
-            negativeNodeLeftActivation(node,token);
+            ReteNegativeActions.negativeNodeLeftActivation(node,token);
         }else if(node.isAnNCCNode){
-            nccNodeLeftActivation(node,token);
+            ReteNegativeActions.nccNodeLeftActivation(node,token);
         }else if(node.isAnNCCPartnerNode){
-            nccPartnerNodeLeftActivation(node,token);
+            ReteNegativeActions.nccPartnerNodeLeftActivation(node,token);
         }else if(node.isActionNode){
             activateActionNode(node,token);
         }else{
@@ -227,13 +227,17 @@ define(['./ReteDataStructures'],function(RDS){
         if(node.isJoinNode){
             joinNodeRightActivation(node,wme);
         }else if(node.isNegativeNode){
-            negativeNodeRightActivation(node,wme);
+            ReteNegativeActions.negativeNodeRightActivation(node,wme);
         }else{
             throw new Error("Tried to rightActivate Unrecognised node");
         }
     };
 
 
-    var interface = {};
+    var interface = {
+        "leftActivate" : leftActivate,
+        "rightActivate" : rightActivate,
+        "alphaNodeActivation" : alphaNodeActivation,
+    };
     return interface;
 });

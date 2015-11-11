@@ -125,43 +125,6 @@ define(['./ReteDataStructures'],function(RDS){
     };
 
     
-    /**
-       @function updateNewNodeWithMatchesFromAbove
-       @purpose pulls tokens down from parent upon new creation
-     */
-    //essentially a 4 state switch:
-    //betaMemory, joinNode, negativeNode, NCC
-    var updateNewNodeWithMatchesFromAbove = function(newNode){
-        var i, token;
-        var parent = newNode.parent;
-        if(parent.isBetaMemory){
-            for(i in parent.items){
-                leftActivate(newNode,parent.items[i]);
-            }
-        }else if(parent.isJoinNode){
-            var savedChildren = parent.children;
-            parent.children = [newNode];
-            for(i in parent.alphaMemory.items){
-                var item = parent.alphaMemory.items[i];
-                rightActivate(parent,item.wme);
-            }
-            parent.children = savedChildren;
-        }else if(parent.isNegativeNode){
-            for(i in parent.items){
-                token = parent.items[i];
-                if(token.negJoinResults.length === 0){
-                    leftActivate(newNode,token);
-                }
-            }
-        }else if(parent.isAnNCCNode){
-            for(i in parent.items){
-                token = parent.items[i];
-                if(token.nccResults.length === 0){
-                    leftActivate(newNode,token);
-                }
-            }
-        }
-    };
 
     /**
        @function compareConstantNodeToTest
@@ -219,8 +182,40 @@ define(['./ReteDataStructures'],function(RDS){
         return false;
     };
 
+    /**
+       @function findNearestAncestorWithAlphaMemory
+       @recursive
+       @purpose To go up the network, to find appropriate beta network elements linked to the alphamemory
+    */
+    var findNearestAncestorWithAlphaMemory = function(node,alphaMemory){
+        //base conditions:
+        if(node.dummy){ return null;}
+        if(node.isJoinNode || node.isNegativeNode){
+            if(node.alphaMemory.id === alphaMemory.id){
+                return node;
+            }
+        }
+        //switch recursion into the partner clause
+        if(node.isAnNCCNode){
+            return findNearestAncestorWithAlphaMemory(node.partner.parent,alphaMemory);
+        }
+        //recurse:
+        return findNearestAncestorWithAlphaMemory(node.parent,alphaMemory);        
+    };
+
+
     
     
-    var interface = {};
+    //------------------------------
+    var interface = {
+        "unlinkAlphaMemory" : unlinkAlphaMemory,
+        "relinkToAlphaMemory" : relinkToAlphaMemory,
+        "ifEmptyBetaMemoryUnlink" : ifEmptyBetaMemoryUnlink,
+        "ifEmptyNegNodeUnlink" : ifEmptyNegNodeUnlink,
+        "relinkToBetaMemory" : relinkToBetaMemory,
+        "compareJoinTests" : compareJoinTests,
+        "compareConstantNodeToTest" : compareConstantNodeToTest,
+        "findNearestAncestorWithAlphaMemory" : findNearestAncestorWithAlphaMemory,
+    };
     return interface;    
 });

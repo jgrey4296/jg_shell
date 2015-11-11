@@ -44,6 +44,8 @@ define(['./ReteDataStuctures'],function(RDS){
     };
 
     
-    var interface = {};
+    var interface = {
+        "performJoinTests" : performJoinTests,
+    };
     return interface;
 });
