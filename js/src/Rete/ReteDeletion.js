@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],function(RDS,ReteUtil,ReteNegActions){
+define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
     
     /**
        @function removeAlphaMemoryItemsForWME
@@ -210,9 +210,12 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
      */
     //utility function to delete all descendents without deleting the token
     var deleteDescendentsOfToken = function(token){
+        var unblockedTokens = [];
         while(token.children.length > 0){
-            deleteTokenAndDescendents(token.children[0]);
+            var newUnblockedTokens = deleteTokenAndDescendents(token.children[0]);
+            unblockedTokens = unblockedTokens.concat(newUnblockedTokens);
         }
+        return unblockedTokens;
     };
 
     
@@ -226,9 +229,11 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
        activates NCC's that are no longer blocked
      */
     var deleteTokenAndDescendents = function(token){
+        var unblockedTokens = [];
         //Recursive call:
         while(token.children.length > 0){
-            deleteTokenAndDescendents(token.children[0]);
+            var newUnblockedTokens = deleteTokenAndDescendents(token.children[0]);
+            unblockedTokens = unblockedTokens.concat(newUnblockedTokens);
         }
 
         //Base Cases:
@@ -244,10 +249,15 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
 
         cleanupNCCResultsInToken(token);
         cleanupNCCPartnerOwnedToken(token);
-        ifNCCPartnerNodeActivateIfAppropriate(token);
-        
-        //dealloc token:
-        //console.log("Dealloc'd Token:",token);
+        //ReteActivations.ifNCCPartnerNodeActivateIfAppropriate(token);
+
+        if(token && token.owningNode
+           && token.owningNode.isAnNCCPartnerNode
+           && token.parentToken.nccResults.length === 0){
+            unblockedTokens.push(token);
+        }
+                
+        return unblockedTokens;
     };
 
     /**
@@ -300,23 +310,6 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
         }
     };
 
-    /**
-       @function ifNCCPartnerNodeActivateIfAppropriate
-     */
-    var ifNCCPartnerNodeActivateIfAppropriate = function(token){
-        if(token && token.owningNode
-           && token.owningNode.isAnNCCPartnerNode){
-            if(token.parentToken.nccResults.length === 0){
-                token.owningNode.nccNode.children.forEach(function(d){
-                    ReteActivations.leftActivate(d,token.parentToken);
-                });
-                return true;
-            }
-        }
-        return false;
-    };
-
-    
 
     
     var interface = {
