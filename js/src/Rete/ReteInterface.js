@@ -30,7 +30,7 @@ define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetwo
         //Create the wme:
         if(assertionTime === undefined) assertionTime = reteNet.currentTime;
         if(retractionTime === undefined) retractionTime = reteNet.currentTime;
-        var wme = new DataStructures.WME(wmeData,assertionTime,retractionTime);
+        var wme = new RDS.WME(wmeData,assertionTime,retractionTime);
         console.log("Asserting:",wme);
         //Add it to the input WME Buffer:
         addToAssertionList(reteNet,wme,assertionTime);
@@ -48,7 +48,7 @@ define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetwo
     var removeWME = function(wme,reteNet){
         ReteDeletion.removeAlphaMemoryItemsForWME(wme);
         ReteDeletion.deleteAllTokensForWME(wme);
-        ReteDeltition.deleteAllNegJoinResultsForWME(wme);
+        ReteDeletion.deleteAllNegJoinResultsForWME(wme);
     };
 
     
@@ -131,6 +131,7 @@ define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetwo
 
     
     var interface = {
+        "ReteNet" : RDS.ReteNet,
         "clearActivations" : clearActivations,
         "addWME" : addWME,
         "removeWME" : removeWME,

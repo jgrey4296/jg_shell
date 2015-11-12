@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStuctures'],function(RDS){
+define(['./ReteDataStructures'],function(RDS){
 
     /**
        @function performJoinTests

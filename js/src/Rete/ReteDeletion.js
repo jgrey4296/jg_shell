@@ -60,41 +60,6 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
 
 
     /**
-       @function deleteTokenAndDescendents
-       @purpose To remove a token and clean it 
-       delete a token and all the tokens that rely on it
-       a bit of a frankenstein. Deletes the token,
-       deletes descendents, but also sets and cleans up 
-       left unlinking of join nodes, AND
-       activates NCC's that are no longer blocked
-     */
-    var deleteTokenAndDescendents = function(token){
-        //Recursive call:
-        while(token.children.length > 0){
-            deleteTokenAndDescendents(token.children[0]);
-        }
-
-        //Base Cases:
-        //remove memory items
-        removeTokenFromNode(token);
-        removeTokenFromWME(token);
-        removeTokenFromParentToken(token);
-        
-        ReteUtil.ifEmptyBetaMemoryUnlink(token.owningNode);
-        ReteUtil.ifEmptyNegNodeUnlink(token.owningNode,token.id);
-
-        removeNegJoinResultsForToken(token);
-
-        ReteNegActions.cleanupNCCResultsInToken(token);
-        ReteNegActions.cleanupNCCPartnerOwnedToken(token);
-        ReteNegActions.ifNCCPartnerNodeActivateIfAppropriate(token);
-        
-        //dealloc token:
-        //console.log("Dealloc'd Token:",token);
-    };
-
-
-    /**
        @function removeNegJoinResultsForToken
        @purpose to delete any blocked tokens in negative conditions
      */
@@ -163,17 +128,6 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
     };
 
     
-    /**
-       @function deleteDescendentsOfToken
-       @purpose simplification of removing children of a token, but not the token itself
-       @utility
-     */
-    //utility function to delete all descendents without deleting the token
-    var deleteDescendentsOfToken = function(token){
-        while(token.children.length > 0){
-            deleteTokenAndDescendents(token.children[0]);
-        }
-    };
 
     
     /*
@@ -249,10 +203,124 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteNegativeActions'],functi
     };
 
 
+        /**
+       @function deleteDescendentsOfToken
+       @purpose simplification of removing children of a token, but not the token itself
+       @utility
+     */
+    //utility function to delete all descendents without deleting the token
+    var deleteDescendentsOfToken = function(token){
+        while(token.children.length > 0){
+            deleteTokenAndDescendents(token.children[0]);
+        }
+    };
+
+    
+    /**
+       @function deleteTokenAndDescendents
+       @purpose To remove a token and clean it 
+       delete a token and all the tokens that rely on it
+       a bit of a frankenstein. Deletes the token,
+       deletes descendents, but also sets and cleans up 
+       left unlinking of join nodes, AND
+       activates NCC's that are no longer blocked
+     */
+    var deleteTokenAndDescendents = function(token){
+        //Recursive call:
+        while(token.children.length > 0){
+            deleteTokenAndDescendents(token.children[0]);
+        }
+
+        //Base Cases:
+        //remove memory items
+        removeTokenFromNode(token);
+        removeTokenFromWME(token);
+        removeTokenFromParentToken(token);
+        
+        ReteUtil.ifEmptyBetaMemoryUnlink(token.owningNode);
+        ReteUtil.ifEmptyNegNodeUnlink(token.owningNode,token.id);
+
+        removeNegJoinResultsForToken(token);
+
+        cleanupNCCResultsInToken(token);
+        cleanupNCCPartnerOwnedToken(token);
+        ifNCCPartnerNodeActivateIfAppropriate(token);
+        
+        //dealloc token:
+        //console.log("Dealloc'd Token:",token);
+    };
+
+    /**
+       @function cleanupNCCResultsInToken
+     */
+    var cleanupNCCResultsInToken = function(token){
+        //NCCNODE
+        if(token && token.owningNode && token.owningNode.isAnNCCNode){
+            //for all the nccResult tokens, delete them
+            token.nccResults.forEach(function(nccR){
+                //remove the nccR token from its linked wme
+                if(nccR.wme){
+                    var index = nccR.wme.tokens.map(function(d){return d.id;}).indexOf(nccR.id);
+                    if(index !== -1){
+                        nccR.wme.tokens.splice(index,1);
+                    }
+                }
+                if(nccR.parent){
+                    //remove the token from it's parent
+                    var nccRindex = nccR.parent.children.map(function(t){return t.id;}).indexOf(nccR.id);
+                    if(nccRindex !== -1);{
+                        nccR.parent.children.splice(nccRindex,1);
+                    }
+                }
+            });
+            //clear the nccResults
+            token.nccResults = [];
+            return true;
+        }else{
+            return false;
+        }
+    };
+
+    /**
+       @function cleanupNCCPartnerOwnedToken
+     */
+    var cleanupNCCPartnerOwnedToken = function(token){
+        //NCCPARTNERNODE
+        if(token.owningNode
+           && token.owningNode.isAnNCCPartnerNode
+           && token.parentToken){
+            //remove from owner.nccResults:
+            var index = token.parentToken.nccResults.map(function(d){return d.id;}).indexOf(token.id);
+            if(index !== -1){
+                token.parentToken.nccResults.splice(index,1);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    };
+
+    /**
+       @function ifNCCPartnerNodeActivateIfAppropriate
+     */
+    var ifNCCPartnerNodeActivateIfAppropriate = function(token){
+        if(token && token.owningNode
+           && token.owningNode.isAnNCCPartnerNode){
+            if(token.parentToken.nccResults.length === 0){
+                token.owningNode.nccNode.children.forEach(function(d){
+                    ReteActivations.leftActivate(d,token.parentToken);
+                });
+                return true;
+            }
+        }
+        return false;
+    };
+
+    
 
     
     var interface = {
-        "deleteDescendentsOfToken" : deleteDescendentsOfToken
+        "deleteDescendentsOfToken" : deleteDescendentsOfToken,
         "removeAlphaMemoryItemsForWME" : removeAlphaMemoryItemsForWME,
         "deleteAllTokensForWME" : deleteAllTokensForWME,
         "deleteAllNegJoinResultsForWME" : deleteAllNegJoinResultsForWME,

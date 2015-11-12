@@ -10,7 +10,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
        Trigger an alpha memory with a new wme to store
      */
     var alphaMemoryActivation = function(alphaMem,wme){
-        var newItem = new DataStructures.AlphaMemoryItem(wme,alphaMem);
+        var newItem = new RDS.AlphaMemoryItem(wme,alphaMem);
         alphaMem.items.unshift(newItem);
         wme.alphaMemoryItems.unshift(newItem);
 

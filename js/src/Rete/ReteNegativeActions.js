@@ -152,80 +152,12 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteTestExecution','./ReteAc
     };
 
     
-    /**
-       @function cleanupNCCResultsInToken
-     */
-    var cleanupNCCResultsInToken = function(token){
-        //NCCNODE
-        if(token && token.owningNode && token.owningNode.isAnNCCNode){
-            //for all the nccResult tokens, delete them
-            token.nccResults.forEach(function(nccR){
-                //remove the nccR token from its linked wme
-                if(nccR.wme){
-                    var index = nccR.wme.tokens.map(function(d){return d.id;}).indexOf(nccR.id);
-                    if(index !== -1){
-                        nccR.wme.tokens.splice(index,1);
-                    }
-                }
-                if(nccR.parent){
-                    //remove the token from it's parent
-                    var nccRindex = nccR.parent.children.map(function(t){return t.id;}).indexOf(nccR.id);
-                    if(nccRindex !== -1);{
-                        nccR.parent.children.splice(nccRindex,1);
-                    }
-                }
-            });
-            //clear the nccResults
-            token.nccResults = [];
-            return true;
-        }else{
-            return false;
-        }
-    };
-
-    /**
-       @function cleanupNCCPartnerOwnedToken
-     */
-    var cleanupNCCPartnerOwnedToken = function(token){
-        //NCCPARTNERNODE
-        if(token.owningNode
-           && token.owningNode.isAnNCCPartnerNode
-           && token.parentToken){
-            //remove from owner.nccResults:
-            var index = token.parentToken.nccResults.map(function(d){return d.id;}).indexOf(token.id);
-            if(index !== -1){
-                token.parentToken.nccResults.splice(index,1);
-            }
-            return true;
-        }else{
-            return false;
-        }
-    };
-
-    /**
-       @function ifNCCPartnerNodeActivateIfAppropriate
-     */
-    var ifNCCPartnerNodeActivateIfAppropriate = function(token){
-        if(token && token.owningNode
-           && token.owningNode.isAnNCCPartnerNode){
-            if(token.parentToken.nccResults.length === 0){
-                token.owningNode.nccNode.children.forEach(function(d){
-                    ReteActivations.leftActivate(d,token.parentToken);
-                });
-                return true;
-            }
-        }
-        return false;
-    };
     
     var interface = {
         "activateIfNegatedJRIsUnblocked" : activateIfNegatedJRIsUnblocked,
-        "cleanupNCCResultsInToken" : cleanupNCCResultsInToken,
-        "cleanupNCCPartnerOwnedToken" : cleanupNCCPartnerOwnedToken,
-        "ifNCCPartnerNodeActivateIfAppropriate" : ifNCCPartnerNodeActivateIfAppropriate,
         "negativeNodeLeftActivation" : negativeNodeLeftActivation,
         "nccNodeLeftActivation" : nccNodeLeftActivation,
-        "nccPartnerNodeLeftActivation" : nccPartnerNodeLeftActivation
+        "nccPartnerNodeLeftActivation" : nccPartnerNodeLeftActivation,
         "negativeNodeRightActivation" : negativeNodeRightActivation
     };
     return interface;
