@@ -7,9 +7,8 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','underscore','./GraphNode','./GraphStructureConstructors','./utils'],function(RDS,RPS,RCO,_,GraphNode,DSCtors,util){
-    if(RDS === undefined) throw new Error("RDS Not Loaded");
-    if(RPS === undefined) throw new Error("RPS Not Loaded");
+define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStructureConstructors','./utils'],function(Rete,_,GraphNode,DSCtors,util){
+    if(Rete === undefined) throw new Error("Rete not loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
     if(_ === undefined) throw new Error("Underscore not loaded");
@@ -49,7 +48,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
         this.lastSearchResults = [];
 
         //Integrated Rete Net:
-        this.reteNet = new RDS.ReteNet();
+        this.reteNet = new Rete.ReteNet();
         
     };
 
@@ -259,7 +258,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-        var cond = new RDS.Condition();
+        var cond = new Rete.Condition();
         this.cwd.conditions.push(cond);
     };
 
@@ -284,11 +283,11 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
         }
 
         //Check the operator is a defined one
-        if(RCO[op] === undefined){
+        if(Rete.CompOperators[op] === undefined){
             throw new Error("Unrecognised operator");
         }
         
-        var test = new RDS.ConstantTest(testField,op,value);
+        var test = new Rete.ConstantTest(testField,op,value);
         this.cwd.conditions[conditionNumber].constantTests.push(test);
     };
 
@@ -640,7 +639,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
        @purpose Completely reset the retenet, by building a new one
      */
     CompleteShell.prototype.clearRete = function(){
-        this.reteNet = new RDS.ReteNet();
+        this.reteNet = new Rete.ReteNet();
     };
 
     /**
@@ -659,7 +658,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
        @TODO check this, may be a duplicate.
      */
     CompleteShell.prototype.clearActivationsOfReteNet = function(){
-        return RPS.clearActivations(this.reteNet);
+        return Rete.clearActivations(this.reteNet);
     };
 
     /**
@@ -687,7 +686,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
         //returning the action nodes of the net
         this.allActionNodes = copiedRules.map(function(d){
             console.log("Adding rule:",d);
-            var action = RPS.addRule(d,this.reteNet);
+            var action = Rete.addRule(d,this.reteNet);
             //TODO: store the returned node inside the shell's nodes?
             return action;
         },this);
@@ -730,7 +729,7 @@ define(['./ReteDataStructures','./ReteProcedures','./ReteComparisonOperators','u
         }
 
         var newWMEs = array.map(function(d){
-            return RPS.addWME(d,this.reteNet);
+            return Rete.addWME(d,this.reteNet);
         },this);
         
         return newWMEs;

@@ -8,7 +8,7 @@ if(typeof define !== 'function'){
 }
 
 //** @requires ReteDataStructures
-define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetworkBuilding'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding){
+define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetworkBuilding','./ReteComparisonOperators'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
     
     /**
        @function clearActivations
@@ -132,6 +132,9 @@ define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetwo
     
     var interface = {
         "ReteNet" : RDS.ReteNet,
+        "Condition" : RDS.Condition,
+        "ConstantTest" : RDS.ConstantTest,
+        "CompOperators" : RCO,
         "clearActivations" : clearActivations,
         "addWME" : addWME,
         "removeWME" : removeWME,
