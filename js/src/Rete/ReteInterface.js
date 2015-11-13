@@ -8,7 +8,7 @@ if(typeof define !== 'function'){
 }
 
 //** @requires ReteDataStructures
-define(['./ReteDataStructures','./ReteDeletion','./ReteActivations','./ReteNetworkBuilding','./ReteComparisonOperators'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
+define(['Rete/ReteDataStructures','Rete/ReteDeletion','Rete/ReteActivations','Rete/ReteNetworkBuilding','Rete/ReteComparisonOperators'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
     
     /**
        @function clearActivations

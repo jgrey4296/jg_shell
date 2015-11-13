@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStructureConstructors','./utils'],function(Rete,_,GraphNode,DSCtors,util){
+define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','./utils'],function(Rete,_,GraphNode,DSCtors,util){
     if(Rete === undefined) throw new Error("Rete not loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
@@ -705,16 +705,7 @@ define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStru
         var children = _.keys(this.cwd.children).map(function(d){
             return this.allNodes[d].values;
         },this);
-
-        //TODO: store the wmes somewhere?
         this.assertWMEList(children);
-
-        console.log("Finished Assertions")
-        console.log("Activations:",this.reteNet.lastActivatedRules);
-
-        //TODO: here, i could go through the assertions and modify the shell
-        //using the wmes as command inputs
-        //which would allow rule modification...
     };
 
     /**
@@ -727,7 +718,6 @@ define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStru
         if(!(array instanceof Array)){
             throw new Error("Asserting should be in the form of an array");
         }
-
         var newWMEs = array.map(function(d){
             return Rete.addWME(d,this.reteNet);
         },this);
@@ -735,6 +725,11 @@ define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStru
         return newWMEs;
     };
 
+    CompleteShell.prototype.stepTime = function(){
+        Rete.incrementTime(this.reteNet);
+        console.log("Events:",this.reteNet.lastActivatedRules);
+    };
+    
     
     //------------------------------
     // Utility string method prototype

@@ -48,6 +48,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
 
         console.log("Creating new WME from:",newWMEData);
         var newWME = new RDS.WME(newWMEData);
+        //To be returned to activateActionNode
         return {action: "asserted", payload: newWME};
     };
 

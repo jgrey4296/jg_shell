@@ -34,6 +34,11 @@ define([],function(){
             //assert the current node as a wme?
             sh.assertChildren();
         },
+        "ruleStep" : function(sh,values){
+            console.log("Rete Time Step");
+            sh.stepTime();
+
+        },
     };
 
     return reteCommands;

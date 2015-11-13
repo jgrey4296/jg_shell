@@ -872,7 +872,13 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         var drawActivatedRules = function(list){
             //setup the data:
             console.log("drawing activated rules:",list);
+            //Split into assertions and retractions:
 
+
+            
+
+
+            
             
             //Select/Setup the container
             var firedRulesContainer = d3.select("#firedRules");
