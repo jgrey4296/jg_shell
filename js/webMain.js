@@ -43,6 +43,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .range([0,20])
             .domain([0,20]);
         var colourScale = d3.scale.category20b();
+
+        var maxNumberOfNodesInAColumn = 10;
+        var maxNumberOfChildrenVisible = 40;
         
         //The simulated shell:
         var theShell = new Shell.CompleteShell();
@@ -137,9 +140,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 "new condition" : " ",
                 "new action" : "$type $focus",
                 "new test" : "$num $field $op $value",
-                "new binding" : "$bind $source",
                 "rm"     : "",
-                "set"    : "",
+                "set"    : "[binding | arith | actionValue | actionType | test] [values]",
                 "rename" :"",
                 "add"    : "",
                 
@@ -177,7 +179,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         //The columns for the different modes:
         var columnNames = {
             "node" : ["Parents","ShellNode","Children"],
-            "rule" : ["parents","conditions","rule","actions","children"]
+            "rule" : ["PotentialFacts","conditions","rule","actions","PotentialActions"]
         };
         var currentCommandMode = "node";
         //the column objects, to be created per mode
@@ -511,6 +513,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             drawMultipleNodes('Parents',parentList,columnWidth);
             drawMultipleNodes('Children',childList,columnWidth);
             
+            
         };
 
         
@@ -586,7 +589,16 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
             
             //TODO:
+            //for the institution the rule is located in:
+            //get all defined fact templates
+            //get all implied fact templates
+            //draw them in the potential condition list
             //drawMultipleNodes("parents",[],columnWidth);
+            
+            //for the institution the rule is located in
+            //get all defined action templates
+            //get all implied action templates
+            //draw them in the potential action list
             //drawMultipleNodes("children",[],columnWidth);
         };
 
@@ -600,69 +612,50 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
             console.log("Drawing Column:",baseContainer,childArray);
-            //console.log("Column Length:",childArray.length);
-            
             var containingNode = getColumnObject(baseContainer);
-            var heightAvailable = containingNode.select("rect").attr("height");
-            heightAvailable -= 20; //-20 for top and bottom
-
-            var gOffset = function(i){
-                return (drawOffset + (i * (heightAvailable / childArray.length)));
-            };
-            
-            //bind the data
-            var nodes = containingNode.selectAll(".node")
-                .data(childArray,function(d,i){
-                    return baseContainer + d.id;
+            //If There are too many nodes:
+            if(childArray.length > maxNumberOfChildrenVisible){
+                childArray = childArray.slice(0,maxNumberOfChildrenVisible);
+            }
+            if(childArray.length > maxNumberOfNodesInAColumn){
+                var nodes = drawNodes(containingNode,collapseData(childArray),columnWidth);
+                //transform to displayable representation:
+                var texts = nodes.selectAll("text").data(function(d,i){
+                    return ["Aggregate of " + d.noOfValues + " nodes"].concat(d.values.map(function(e){return "Id: " + e.id +", " + e.name;}));
                 });
-            
-            //remove any old nodes
-            nodes.exit().remove();
-            //create each new node
-            var inodes = nodes.enter().append("g")
-                .classed("node",true);
 
-            //append to the enter selection:
-            inodes.append("rect")
-                .style("fill",function(d){
-                    return colourScale(scaleToColour(_.values(d.constantTests).length));
-                })
-                .attr("width",(columnWidth * 0.8))
-            //this transform causes cascade transforms for header text
-            //and context text
-                .attr("transform","translate(0,10)")
-                .attr("rx",10)
-                .attr("ry",10);
-
-            //HEADER TEXT:
-            inodes.append("text")
-                .style("text-anchor","middle")
-            //* 0.4 because the overall container is shifted by 0.1
-            //30 because the rect is down by 10
-                .attr("transform","translate(" + (columnWidth * 0.4)+",30)")
-                .text(function(d,i){
+                //Draw the text:
+                texts.enter().append("text")
+                    .style("text-anchor","middle")
+                    .attr("transform",function(d,i){
+                        return "translate(" + (columnWidth * 0.4)+"," + (30 + i * 15) + ")";
+                    })
+                    .text(function(d,i){
+                        return d;
+                    });
+                
+            }else{//There ARENT too many nodes:
+                var nodes = drawNodes(containingNode,childArray,columnWidth);
+                //HEADER TEXT:
+                nodes.append("text")
+                    .style("text-anchor","middle")
+                //* 0.4 because the overall container is shifted by 0.1
+                //30 because the rect is down by 10
+                    .attr("transform","translate(" + (columnWidth * 0.4)+",30)")
+                    .text(function(d,i){
                     return theShell.nodeToShortString(d,i);
-                });
-            
-            //update selection:
-            nodes.selectAll("rect")
-                .attr("height",(heightAvailable / childArray.length) - 5);
-
-            nodes.attr("transform",function(d,i){
-                return "translate(" + (columnWidth * 0.1) + "," + gOffset(i) + ")";
-            });
-
-            //----------------------------------------
-            //Draw tests if condition
-            if(baseContainer === "conditions"){
-                drawConditions(nodes,columnWidth);
-                return;
-            }
-
-            if(baseContainer === "actions"){
-                drawActions(nodes,columnWidth);
-                return;
-            }
+                    });
+                //Draw tests if condition
+                if(baseContainer === "conditions"){
+                    drawConditions(nodes,columnWidth);
+                    return;
+                }
+                
+                if(baseContainer === "actions"){
+                    drawActions(nodes,columnWidth);
+                    return;
+                }
+            }            
         };
 
 
@@ -770,6 +763,93 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             
         };
 
+
+        /**
+           @function collapseData
+           @purpose Collapses a list of too much data to groups of data
+           @param an array
+           @return an array of arrays, none of which are larger than the global
+           maxNumberOfNodesInAColumn
+         */
+        var collapseData = function(array){
+            console.log("Collapsing:",array);
+            //collapse into groups
+            var reducedArr = array.reduce(function(memo,curr,i){
+                if(i % maxNumberOfNodesInAColumn === 0){
+                    memo.push([]);
+                }
+                memo[memo.length-1].push(curr);
+                return memo;
+            },[]);
+
+            //convert to a usable object representation
+            var objArray = reducedArr.map(function(d){
+                return {
+                    tags : {type: "aggregate"},
+                    noOfValues : d.length,
+                    values: d,
+                    id: d[0].id || 0,
+                }
+            });
+            console.log("Resulting aggregate:",objArray);
+            return objArray;
+        };
+
+
+        /**
+           @function drawNodes
+           @purpose generic draw a bunch of nodes, returning the selection for further details
+           @param baseContainer
+           @param childArray
+           @param columnWidth
+           @returns created node selection
+         */
+        var drawNodes = function(containingNode,array,columnWidth){
+
+            var heightAvailable = containingNode.select("rect").attr("height");
+            heightAvailable -= 20; //-20 for top and bottom
+            //function to calculate the g's vertical offset
+            var gOffset = function(i){
+                return (drawOffset + (i * (heightAvailable / array.length)));
+            };
+            
+            //clear old data
+            containingNode.selectAll(".node").remove();
+            
+            //bind the data            
+            var nodes = containingNode.selectAll(".node")
+                .data(array,function(d,i){
+                    return d.id;
+                });            
+
+            //create each new node
+            var inodes = nodes.enter().append("g")
+                .classed("node",true);
+
+            //append to the enter selection:
+            inodes.append("rect")
+                .style("fill",function(d){
+                    return colourScale(scaleToColour(_.values(d.constantTests).length));
+                })
+                .attr("width",(columnWidth * 0.8))
+            //this transform causes cascade transforms for header text
+            //and context text
+                .attr("transform","translate(0,10)")
+                .attr("rx",10)
+                .attr("ry",10);
+            
+            //update selection:
+            nodes.selectAll("rect")
+                .attr("height",(heightAvailable / array.length) - 5);
+
+            nodes.attr("transform",function(d,i){
+                return "translate(" + (columnWidth * 0.1) + "," + gOffset(i) + ")";
+            });
+
+            return inodes;
+        };
+        
+        
         //------------------------------
         // Search bar drawing:
         //------------------------------
@@ -779,12 +859,13 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
            @function drawSearchColumn
            @purpose draws the results of a search
          */
-        var drawSearchColumn = function(nodeList,columnWidth){
+        var drawSearchColumn = function(nodeList){
             //convert data as needed:
             var infoList = ["Search results:"].concat(nodeList.map(function(d){
                 return "(" + d.id + "): " + d.name;
             }));
 
+            console.log("Search Results to Draw:",infoList);
             
             //set up the container:
             var searchColumn = d3.select("#searchColumn");
@@ -872,7 +953,27 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         var drawActivatedRules = function(list){
             //setup the data:
             console.log("drawing activated rules:",list);
+            //Split into assertions and retractions:
 
+            var assertions = _.filter(list,function(e){
+                return e.action === 'asserted';
+            });
+            var retractions = _.filter(list,function(e){
+                return e.action === 'retracted';
+            });
+
+            var assertText = assertions.map(function(e){
+                return "Assert:" + JSON.stringify(e.payload.data);
+            });
+            var retractText = retractions.map(function(e){
+                return "Retract:" + JSON.stringify(e.payload.data);
+            });
+
+            var totalText = assertText.concat(retractText);
+            
+            //Add the text:
+            var columnData = ["Activated Rules:"].concat(totalText);
+            
             
             //Select/Setup the container
             var firedRulesContainer = d3.select("#firedRules");
@@ -894,9 +995,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             //Clear
             firedRulesContainer.selectAll("text").remove();
 
-            //Add the text:
-            var columnData = ["Activated Rules:"].concat(list);
-            
+            //Bind data:
             var texts = firedRulesContainer.selectAll("text").data(columnData);
 
             texts.enter().append("text")

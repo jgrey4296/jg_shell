@@ -91,6 +91,9 @@ define(['Rete/ReteDataStructures','Rete/ReteDeletion','Rete/ReteActivations','Re
         reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){
             removeWME(wme,reteNet);
         });
+
+        //TODO: import all the events in lastActivatedRules into the relevant lists
+        
         //increment the time
         reteNet.currentTime++;
     };

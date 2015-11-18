@@ -124,6 +124,16 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         baseNode.actions = {};
         return [];
     };
+
+    //------------------------------
+    //Condition Object:?
+    ctors['condition'] = function(baseNode){
+        baseNode.isPositive = true;
+        baseNode.constantTests = [];
+        baseNode.bindings = [];
+        return [];
+    };
+
     
     //------------------------------
     //The action object:

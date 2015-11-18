@@ -38,6 +38,9 @@ define(['./utils'],function(util){
                 //condition number, test number
                 sh.removeTest(values[1],values[2]);
             }
+            if(values[0] === 'binding'){
+                sh.removeBinding(values[1],values[2]);
+            }
         },
         //** @command set
         //set action 0 actionType
@@ -70,6 +73,9 @@ define(['./utils'],function(util){
         //** @command rename
         "rename" : function(sh,values){
             sh.rename(values[0]);
+        },
+        "infer" : function(sh,values){
+            sh.extractFactPrototypes();
         },
     };
 

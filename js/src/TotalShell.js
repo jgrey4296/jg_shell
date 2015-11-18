@@ -629,6 +629,30 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
         this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
     };
 
+    /**
+       @method removeBinding
+       @param conditionNumber
+       @param boundVar
+     */
+    CompleteShell.prototype.removeBinding = function(condNum,boundVar){
+        console.log("removing binding:",condNum,boundVar);
+        if(this.cwd.conditions[condNum] === undefined){
+            throw new Error("can't delete from a non-existing condition");
+        }
+
+        var condition = this.cwd.conditions[condNum];
+        var index = 0;
+        for(; index < condition.bindings.length; index++){
+            if(condition.bindings[index][0] === boundVar){
+                break;
+            }
+        }
+        if(index < condition.bindings.length){
+            condition.bindings.splice(index,1);
+        }
+        
+    }
+    
     //------------------------------
     // Rete Integration Methods
     //------------------------------
@@ -765,6 +789,8 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
         console.log("NTSS:",node);
         if(node.tags.type === "action"){
             return "(" + i + "): " + node.name;
+        }else if(node.tags.type === "aggregate"){
+            return "Group of: " + node.noOfValues;            
         }else if(node.name){
             return "(" + node.id + "): " + node.name + " (" + node.tags.type + ")";
         }else{
@@ -912,6 +938,7 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
                 this.lastSearchResults = this.searchForValue(targetToUse,regex);
             }
         }
+        console.log("Search Results:",this.lastSearchResults);
         return this.lastSearchResults;
     };
 
@@ -1112,6 +1139,43 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
         }
     };
     
+
+    //------------------------------
+    //Prototype extraction:
+
+    /**
+       @method extractFactPrototypes
+       @purpose to extract the prototypes of facts in rules, for comparison to existing prototypes
+       @TODO currently filtering out NCCConditions, and retractions
+    */
+    CompleteShell.prototype.extractFactPrototypes = function(){
+        this.allRules = _.values(this.allNodes).filter(function(d){
+            return d.tags.type === "rule";
+        });
+        
+        //all constantTestPrototypes:
+        var constTestPrototypes = _.flatten(this.allRules.map(function(rule){
+            return (rule.conditions.filter(function(cond){
+                return cond.isNCCCondition === undefined;
+            }).map(function(cond){
+                return cond.constantTests.reduce(function(memo,currTest){
+                    memo[currTest.field] = currTest.value;
+                    return memo;
+                },{});
+            }));
+        }));
+
+        console.log("Inferred Test Prototypes:",constTestPrototypes);
+
+        
+        //Combine together:
+        return {
+            "testPrototypes":constTestPrototypes,
+        }
+    };
+
+
+
     
     /**
        @interface The interface of the TotalShell file
