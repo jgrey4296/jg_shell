@@ -150,6 +150,24 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['wme'] = function(baseNode){
         baseNode.tags.type = "WME";
     };
+
+    //------------------------------
+    //Paper Criticism template based on rappoports rules (see dennet)
+    ctors['paper'] = function(baseNode){
+        var children = [
+            "position","pointsOfAgreement","thingsLearned","rebuttal"
+            //possible: inconsistency, counter-example, wider context - see sontag
+        ];
+
+        var createdChildren = children.map(function(d){
+            return new GraphNode(d,baseNode.id);
+        });
+
+        createdChildren.forEach(function(d){
+            baseNode.children[d.id] = true;
+        });
+        return createdChildren;        
+    }
     
     
     return ctors;

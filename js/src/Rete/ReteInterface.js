@@ -2,13 +2,21 @@
    @file ReteInterface
    @purpose Provides functions for operating on a retenet object
  */
+var imports = ["ReteDataStructures","ReteDeletion","ReteActivations","ReteNetworkBuilding","ReteComparisonOperators"];
 
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
+    imports = imports.map(function(d){
+        return "./"+d;
+    });
+}else{
+    imports = imports.map(function(d){
+        return "Rete/"+d;
+    });
 }
 
 //** @requires ReteDataStructures
-define(['Rete/ReteDataStructures','Rete/ReteDeletion','Rete/ReteActivations','Rete/ReteNetworkBuilding','Rete/ReteComparisonOperators'],function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
+define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
     
     /**
        @function clearActivations

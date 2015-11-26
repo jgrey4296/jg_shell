@@ -1,5 +1,5 @@
-var ds = require('../dataStructures');
-var p = require('../procedures');
+var ds = require('../src/Rete/ReteDataStructures');
+var p = require('../src/Rete/ReteProcedures');
 var _ = require('../libs/underscore');
 
 exports.procedureTests = {

@@ -5,9 +5,13 @@
  */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
+    var imports = ["./Rete/ReteInterface","../libs/underscore","./Node/GraphNode","./Node/GraphStructureConstructors","./utils"];
+}else{
+    var imports = ['ReteInterface','underscore','GraphNode','GraphStructureConstructors','./utils'];
+
 }
 
-define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','./utils'],function(Rete,_,GraphNode,DSCtors,util){
+define(imports,function(Rete,_,GraphNode,DSCtors,util){
     if(Rete === undefined) throw new Error("Rete not loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
@@ -1154,10 +1158,11 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
         });
         
         //all constantTestPrototypes:
-        var constTestPrototypes = _.flatten(this.allRules.map(function(rule){
-            return (rule.conditions.filter(function(cond){
+        
+        var constTestPrototypes = _.flatten(this.allRules.map(function(rule){ //for all rules
+            return (rule.conditions.filter(function(cond){ //get all positive conditions
                 return cond.isNCCCondition === undefined;
-            }).map(function(cond){
+            }).map(function(cond){ //create an object from the tests of each condition
                 return cond.constantTests.reduce(function(memo,currTest){
                     memo[currTest.field] = currTest.value;
                     return memo;
@@ -1165,6 +1170,13 @@ define(['ReteInterface','underscore','GraphNode','GraphStructureConstructors','.
             }));
         }));
 
+        //TODO: fold individual prototypes into same objects with lists of possible values
+        var combinedPrototypes = constTestPRototypes.reduce(function(obj){
+
+        },{});
+
+        
+       
         console.log("Inferred Test Prototypes:",constTestPrototypes);
 
         

@@ -108,6 +108,14 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 request.open("POST","saveData="+values[0],true);
                 request.send(sh.exportJson());
             },
+            "json" : function(sh,values){
+                var text = sh.exportJson();
+                var myWindow = window.open("",'_blank');
+                myWindow.document.write(text);
+            },
+            "files" : function(sh,values){
+                window.open("./data/","_blank");
+            }
         };
 
         //Import rete commands into root level of general:
@@ -179,7 +187,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         //The columns for the different modes:
         var columnNames = {
             "node" : ["Parents","ShellNode","Children"],
-            "rule" : ["PotentialFacts","conditions","rule","actions","PotentialActions"]
+            "rule" : ["conditions","rule","actions"]
         };
         var currentCommandMode = "node";
         //the column objects, to be created per mode
@@ -395,7 +403,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 //console.log("Drawing nodes");
                 //setup columns
                 columnWidth = calcWidth(usableWidth,columnNames.node.length);
-                if(Object.keys(columns).length !== columnNames.node.length){
+                if(_.difference(columnNames.node,_.keys(columns)).length > 0){
+                //if(Object.keys(columns).length !== columnNames.node.length){
                     console.log("Cleaning up columns");
                     //cleanup everything there at the moment
                     Object.keys(columns).map(function(d){
@@ -414,13 +423,14 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 drawNode(node,columnWidth);
             }else if(node.tags.type === "rule"){
                 //OTHERWISE: dealing with rules
-                console.log("Drawing rules");
+                //console.log("Drawing rules");
                 //setup columns
                 columnWidth = calcWidth(usableWidth,columnNames.rule.length);
-                if(Object.keys(columns).length !== columnNames.rule.length){
-                    console.log("Cleaning up columns");
+                if(_.difference(columnNames.rule,_.keys(columns)).length > 0){
+                //if(_.keys(columns).length !== columnNames.rule.length){
+                    //console.log("Cleaning up columns");
                     //cleanup
-                    Object.keys(columns).map(function(d){
+                    _.keys(columns).map(function(d){
                         d3.select("#"+d).remove();
                     });
                     //re-init
@@ -524,7 +534,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         */
         var drawRule = function(ruleNode,columnWidth){
             //validation
-            if(rule === undefined){
+            if(ruleNode === undefined){
                 //Cleanup
                 d3.select("#rule").select("#mainRuleInfo").remove();
                 return;
@@ -534,7 +544,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 columnWidth = 200;
             }
             //main:
-            console.log("Drawing:",rule);
+            //console.log("Drawing:",ruleNode);
             var ruleContainer = svg.select("#rule");
             //bind data
             var bound = ruleContainer.selectAll("g").data([ruleNode],function(d){
@@ -611,7 +621,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
            @param childArray The array of information to render
         */
         var drawMultipleNodes = function(baseContainer,childArray,columnWidth){
-            console.log("Drawing Column:",baseContainer,childArray);
+            //console.log("Drawing Column:",baseContainer,childArray);
             var containingNode = getColumnObject(baseContainer);
             //If There are too many nodes:
             if(childArray.length > maxNumberOfChildrenVisible){
@@ -679,9 +689,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 var textPairs = _.keys(d.values).map(function(key){
                     return [key,d.values[key]];
                 });
-                console.log("TextPairs:",textPairs);
+                //console.log("TextPairs:",textPairs);
                 var alignedText = utils.textAlignPairs(textPairs);
-                console.log("AlignedPairs:",alignedText);
+                //console.log("AlignedPairs:",alignedText);
                 var finalText = alignedText.map(function(d){
                     return d[0] + ": " + d[1];
                 });
@@ -692,7 +702,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 _.keys(d.arithmeticActions).forEach(function(key){
                     info.push(key + d.arithmeticActions[key][0] + d.arithmeticActions[key][1]);
                 });
-                console.log("Action info:",info);
+                //console.log("Action info:",info);
                 return info;
             });
 
@@ -729,7 +739,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 tests = tests.concat(d.constantTests);
                 tests.push("Bindings:");
                 tests = tests.concat(d.bindings);
-                console.log("Output tests:",tests);
+                //console.log("Output tests:",tests);
                 return tests;
             });
 
@@ -772,7 +782,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
            maxNumberOfNodesInAColumn
          */
         var collapseData = function(array){
-            console.log("Collapsing:",array);
+            //console.log("Collapsing:",array);
             //collapse into groups
             var reducedArr = array.reduce(function(memo,curr,i){
                 if(i % maxNumberOfNodesInAColumn === 0){
@@ -791,7 +801,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                     id: d[0].id || 0,
                 }
             });
-            console.log("Resulting aggregate:",objArray);
+            //console.log("Resulting aggregate:",objArray);
             return objArray;
         };
 
@@ -865,7 +875,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 return "(" + d.id + "): " + d.name;
             }));
 
-            console.log("Search Results to Draw:",infoList);
+            //console.log("Search Results to Draw:",infoList);
             
             //set up the container:
             var searchColumn = d3.select("#searchColumn");
@@ -952,7 +962,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
          */
         var drawActivatedRules = function(list){
             //setup the data:
-            console.log("drawing activated rules:",list);
+            //console.log("drawing activated rules:",list);
             //Split into assertions and retractions:
 
             var assertions = _.filter(list,function(e){

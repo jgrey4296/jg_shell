@@ -2,11 +2,20 @@
    @file RuleCommands
    @purpose To implement all user commands dealing with rules
 */
+
+var imports = ["utils"];
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
+    imports = imports.map(function(d){
+        return "./"+d;
+    });
+}else{
+    imports = imports.map(function(d){
+        return d;
+    });
 }
 
-define(['./utils'],function(util){
+define(imports,function(util){
     var ruleCommands = {
         //** @command cd
         "cd" : function(sh,values){

@@ -2,11 +2,20 @@
    @file NodeCommands
    @purpose to define the user actions that can be performed on a typical node in the shell
 */
+
+var imports = ["utils"];
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
+    imports = imports.map(function(d){
+        return "./"+d;
+    });
+}else{
+    imports = imports.map(function(d){
+        return "./"+d;
+    });
 }
 
-define(['./utils'],function(util){
+define(imports,function(util){
     //All of the commands for the normal node mode of the shell
     var nodeCommands = {
         //new -> addNode,
