@@ -1,4 +1,4 @@
-var ReteNet = require('./ReteInterface');
+var ReteNet = require('../src/Rete/ReteInterface');
 
 exports.ReteTests = {
 

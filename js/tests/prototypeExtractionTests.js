@@ -43,11 +43,12 @@ exports.prototypeExtractionTests = {
         console.log("Proto2:",proto2);
         
         var conditionDifference = _.difference(proto1,proto2);
-        console.log("Difference:",conditionDifference);
+        console.log("Condition Difference:",conditionDifference);
 
         test.ok(conditionDifference.length === 0); //all conditions should be satisfied by assertions
-
+                
         var assertionDifference = _.difference(proto2,proto1);
+        console.log("Assertion difference:",assertionDifference);
         test.ok(assertionDifference.length === 1); //1 assertion is not used
 
         
