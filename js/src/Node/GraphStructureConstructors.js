@@ -14,6 +14,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     //THE INSTITUTION OBJECT
     ctors['institution'] = function(baseNode){
+        baseNode.tags.type = 'institution';
         //Object of child name + type + subchildren
         var children = {
             "Roles" : ['container',
@@ -69,6 +70,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //THE GENERIC CONTAINER OBJECT
     //Assumes children are GraphNodes
     ctors['container'] = function(baseNode,list){
+        baseNode.tags.type = 'container';
         var createdChildren = list.map(function(d){
             return new GraphNode(d,baseNode.id);
         });
@@ -82,6 +84,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //------------------------------
     //THE ACVITITY OBJECT
     ctors['activity'] = function(baseNode){
+        baseNode.tags.type = 'activity';
         var children = [
             "rules","community","divisionOfLabour","actions"
         ];
@@ -105,6 +108,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //------------------------------
     //THE ROLE OBJECT
     ctors['role'] = function(baseNode){
+        baseNode.tags.type = 'role';
         var children = ["ConstitutiveRules","RegulativeRules"];
         var createdChildren = children.map(function(d){
             return new GraphNode(d,baseNode.id);
@@ -120,6 +124,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //------------------------------
     //The Rule object:
     ctors['rule'] = function(baseNode){
+        baseNode.tags.type = 'rule';
         baseNode.conditions = [];
         baseNode.actions = {};
         return [];
@@ -128,12 +133,31 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //------------------------------
     //Condition Object:?
     ctors['condition'] = function(baseNode){
+        console.log("GraphStructure: condition, firing");
+        baseNode.tags.type = 'condition';
         baseNode.isPositive = true;
         baseNode.constantTests = [];
         baseNode.bindings = [];
         return [];
     };
 
+    //Negative condition:
+    ctors['negCondition'] = function(baseNode){
+        baseNode.isNegative = true;
+        baseNode.tags.type = 'condition';
+        baseNode.constantTests = [];
+        baseNode.bindings = [];
+        return [];
+    };
+
+    //negated conjunctive condition
+    ctors['negConjCondition'] = function(baseNode){
+        baseNode.isNCCCondition = true;
+        baseNode.tags.type = 'negConjCondition';
+        baseNode.conditions = [];
+        
+        return [];
+    };
     
     //------------------------------
     //The action object:

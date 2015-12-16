@@ -25,12 +25,16 @@ define(imports,function(util){
         //** @command new -> addCondition/test/action
         "new" : function(sh,values){
             if(values[0] === "condition"){
-                sh.addCondition();
+                sh.addNode(null,'conditions','condition');
             }else if(values[0] === "action"){
                 sh.addAction(values.slice(1));
             }else if(values[0] === "test"){
                 sh.addTest(values[1],values[2],values[3],values[4]);
-            }                
+            }else if(values[0] === "negCondition"){
+                sh.addNode(null,'conditions','negCondition');
+            }else if(values[0] === "negConjCondition"){
+                sh.addNode(null,'conditions','negConjCondition');
+            }
         },
         //** @command rm
         "rm" : function(sh,values){

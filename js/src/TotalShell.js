@@ -255,19 +255,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
     /**
        @class CompleteShell
-       @method addCondition
-       @purpose Add a new condition to the current rule
-    */
-    CompleteShell.prototype.addCondition = function(){
-        if(this.cwd.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-        var cond = new Rete.Condition();
-        this.cwd.conditions.push(cond);
-    };
-
-    /**
-       @class CompleteShell
        @method addTest
        @purpose Add a constant test to a specified condition of the current rule
        @param conditionNumber The position in the condition array to add the test to

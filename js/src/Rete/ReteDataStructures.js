@@ -114,65 +114,7 @@ define(['underscore'],function(_){
         nextId++;
     };
 
-    /**
-       @data Condition
-       @purpose To hold tests and bindings of a rule
-     */
-    //tests: triples (testField,operator,testValue)
-    //bindings: tuples (wmeVar,boundVar)
-    var Condition = function(tests,bindings,negative){
-        if(!negative){
-            this.isPositive = true;
-        }else{
-            this.isNegative = true;
-        }
-        this.constantTests = [];
-        this.bindings = [];
-        this.tags = {};
-        this.tags.type = "condition";
-        
-        if(tests !== undefined){
-            tests.map(function(d){
-                var test = new ConstantTest(d[0],d[1],d[2]);
-                this.constantTests.push(test);
-            });
-        }
-
-        if(bindings !== undefined){
-            bindings.map(function(d){
-                var binding = [d[0],d[1]];
-                this.bindings.push(binding);
-            });
-        }
-        
-        this.bindings.sort(function(a,b){
-            if(a[0] < b[0]) return -1;
-            if(a[0] > b[0]) return 1;
-            return 0;
-        });
-        this.id = nextId++;
-        console.log("Created condition:",this);
-        
-    };
-
-    /**
-       @data NCCCondition
-       @purpose Wraps conditions to specify negated conditions
-     */
-    var NCCCondition = function(conditions){
-        this.isNCCCondition = true;
-        this.tags = {};
-        this.tags.type = "nccCondition";
-        this.conditions = [];
-        for(var i = 0; i < conditions.length; i++){
-            //conditions should be in array form
-            var cond = new Condition(conditions[i][0],conditions[i][1],conditions[i][2]);
-            this.conditions.push(cond);
-        }
-        this.id = nextId;
-        nextId++;
-    };
-    
+     
     //------------------------------
 
     /**
