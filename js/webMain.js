@@ -36,15 +36,20 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //----------------------------------------
     //GLOBALS
     //----------------------------------------
-    var lastSetOfSearchResults = [];
-    //COLOURS:
-    var scaleToColour = d3.scale.linear()
-        .range([0,20])
-        .domain([0,20]);
-    var colourScale = d3.scale.category20b();
-
     var maxNumberOfNodesInAColumn = 10;
     var maxNumberOfChildrenVisible = 40;
+
+    //Commands stored in here:
+    var commands = {};
+    //Help texts:
+    var helpData = {};
+
+    var currentCommandMode = "node";
+    //The columns for the different modes:
+    var columnNames = {
+        "node" : ["Parents","ShellNode","Children"],
+        "rule" : ["conditions","rule","actions"]
+    };
     
     //The simulated shell:
     var theShell = new Shell.CompleteShell();
@@ -52,6 +57,99 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     if(theShell === undefined){
         throw new Error("Shell is undefined");
     }
+
+    var lastSetOfSearchResults = [];
+    //COLOURS:
+    var scaleToColour = d3.scale.linear()
+        .range([0,20])
+        .domain([0,20]);
+    var colourScale = d3.scale.category20b();
+    
+    //----------------------------------------
+    //DRAWING GlOBAL VARIABLES SECTION
+    //----------------------------------------
+    console.log("Initialising Drawing variables");
+    //The y offset for rectangles so they
+    //arent at the very top of the screen
+    var colours =  {
+            grey : d3.rgb(19,21,27),
+            text : d3.rgb(237,255,255),
+            textBlue : d3.rgb(98,188,238),
+            textGrey : d3.rgb(132,146,154),
+            darkBlue : d3.rgb(23,50,77),
+            darkerBlue : d3.rgb(20,38,60),
+            lightBlue: d3.rgb(53,99,142),
+            green : d3.rgb(108,141,7),
+        };
+
+    
+    var drawOffset = 50;
+    //The height of the bottom supplemental columns
+    var supplementalHeight = 300;
+    var supplementalWidth = 200;
+    var usableWidth = window.innerWidth - 30;
+    var usableHeight = window.innerHeight - 30;
+    //Setup the svg for drawing
+    var svg = d3.select('body').append('svg')
+        .attr('width',usableWidth)
+        .attr('height',window.innerHeight - 30)
+        .style("background",colours.darkerBlue);
+
+    //the column objects, to be created per mode
+    var columns = {};
+    var columnWidth = 200;
+    var helpSize = 400;
+
+    //Utility functions:
+    var HalfWidth = function(){
+        return (window.innerWidth - 10) * 0.5;
+    };
+    var HalfHeight = function(){
+        return (window.innerHeight - 30) * 0.5;
+    };
+    
+    var calcWidth = function(availableWidth,noOfColumns){
+        return (availableWidth / (noOfColumns + 2));
+    };
+
+    var columnPosition = function(oneColWidth,columnNumber){
+        return oneColWidth + (oneColWidth * columnNumber);
+    };
+
+    var getColumnObject = function(columnName){
+        if(columns[columnName] === undefined){
+            console.log("Available columns:",columns);
+            throw new Error("Unrecognised column name:" + columnName);
+        }
+        return columns[columnName];
+    };
+
+    //helper function to setup a column:        
+    var initColumn = function(name,columnNumber,columnWidth){
+        var newColumn = svg.append("g").attr("id",name)
+            .attr("transform","translate(" +
+                  columnPosition(columnWidth,columnNumber) + ",0)");
+
+        //display a title for the column
+        newColumn.append("text").text(name)
+            .style("text-anchor","middle")
+            .attr("transform","translate("+ (columnWidth * 0.5)+",40)")
+            .style("fill",colours.textBlue);
+
+        //display the column as a rectangle
+        newColumn.append("rect")
+            .attr("width",columnWidth-20)
+            .attr("height",window.innerHeight - 200)
+            .style("opacity",1)
+            .attr("rx",10)
+            .attr("ry",10)
+            .attr("transform","translate(10,"+drawOffset+")")
+            .style("fill",colours.grey);
+        return newColumn;
+    };
+
+
+    
     
     //----------------------------------------
     //COMMAND SECTION
@@ -63,7 +161,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
        @data commands
        @purpose Object that stores all actions a user can perform
     */
-    var commands = {
+    commands = {
         "node" : NodeCommands,
         "rule" : RuleCommands,
         //called after every command to update the view
@@ -124,116 +222,43 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
 
     //** @data helpData @purpose For displaying reference of commands
-    var helpData = {
+    helpData = {
         node : {
-            "new"   : "$target $type $name",
-            "nc"    : "[n | i | r | a | rc] $name",
-            "np"    : "[n | i | r | a | rc] $name",
-            "[ncn | nci]" : "$name",
-            "rm"    : "$id",
-            "cd"    : "[.. | $name | $id]",
-            "rename": "$name",
-            "set"   : "$field $parameter $value",
-            "link"  : "$target $id",
-            "linkr" : "$target $id",
-            "stash" : "",
-            "unstash":"",
-            "top"   : "",
-            "prev"  : "",
-            "search" : "$target $pattern $focusType",
+            "new"   : ["$target $type $name", "Add a node to the graph"],
+            "nc"    : [ "[n | i | r | a | rc] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities, ruleContainers"],
+            "np"    : [ "[n | i | r | a | rc] $name", " Shortcuts for adding parents"],
+            "[ncn | nci]" : [ "$name", "new child node/institution"],
+            "rm"    : [ "$id", " Remove a node by id number"],
+            "cd"    : [ "[.. | $name | $id]", " Move to a node by name or id"],
+            "rename": [ "$name", " Rename a node"],
+            "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType"],
+            "link"  : [ "$target $id", " Link two existing nodes"],
+            "linkr" : [ "$target $id", " Link two existing nodes reciprocally"],
+            "stash" : [ "", " Add the current node to the temp stack"],
+            "unstash": ["", " Pop off and move to the head of the temp stack"],
+            "top"   : [ "", " Move to the top of the temp stack"],
+            "prev"  : [ "", " Move to the node previously at "],
+            "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches"],
         },
         rule : {
-            "cd"    : "[.. | $name | $id]",
-            "new condition" : " ",
-            "new action" : "$type $focus",
-            "new test" : "$num $field $op $value",
-            "rm"     : "",
-            "set"    : "[binding | arith | actionValue | actionType | test] [values]",
-            "rename" :"",
-            "add"    : "",
+            "cd"    : [ "[.. | $name | $id]", ""],
+            "new condition" : [ " ", ""],
+            "new action" : [ "$type $focus", ""],
+            "new test" : [ "$num $field $op $value", ""],
+            "rm"     : [ "", ""],
+            "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", ""],
+            "rename" : ["", ""],
+            "add"    : [ "", ""],
             
 
         },
         rete: {
-            "assert": "",
-            "compile" : "",
-            "clear" : "[complete]",
-        },
-    };
-
-
-    
-    //Utility functions:
-    var HalfWidth = function(){
-        return (window.innerWidth - 10) * 0.5;
-    };
-    var HalfHeight = function(){
-        return (window.innerHeight - 30) * 0.5;
-    };
-
-    //----------------------------------------
-    //DRAWING VARIABLES SECTION
-    //----------------------------------------
-    console.log("Initialising Drawing variables");
-    //The y offset for rectangles so they
-    //arent at the very top of the screen
-    var drawOffset = 50;
-    //The height of the bottom supplemental columns
-    var supplementalHeight = 300;
-    var supplementalWidth = 200;
-    var usableWidth = window.innerWidth - 30;
-    var usableHeight = window.innerHeight - 30;
-    //The columns for the different modes:
-    var columnNames = {
-        "node" : ["Parents","ShellNode","Children"],
-        "rule" : ["conditions","rule","actions"]
-    };
-    var currentCommandMode = "node";
-    //the column objects, to be created per mode
-    var columns = {};
-    var columnWidth = 200;
-
-    
-    var calcWidth = function(availableWidth,noOfColumns){
-        return (availableWidth / (noOfColumns + 2));
-    };
-
-    var columnPosition = function(oneColWidth,columnNumber){
-        return oneColWidth + (oneColWidth * columnNumber);
-    };
-
-    var getColumnObject = function(columnName){
-        if(columns[columnName] === undefined){
-            console.log("Available columns:",columns);
-            throw new Error("Unrecognised column name:" + columnName);
+            "assert": [ "", ""],
+            "compile" : [ "", ""],
+            "clear" : [ "[complete]", ""],
         }
-        return columns[columnName];
     };
 
-
-    //helper function to setup a column:        
-    var initColumn = function(name,columnNumber,columnWidth){
-        var newColumn = svg.append("g").attr("id",name)
-            .attr("transform","translate(" +
-                  columnPosition(columnWidth,columnNumber) + ",0)");
-
-        //display a title for the column
-        newColumn.append("text").text(name)
-            .style("text-anchor","middle")
-            .attr("transform","translate("+ (columnWidth * 0.5)+",40)");
-
-        //display the column as a rectangle
-        newColumn.append("rect")
-            .attr("width",columnWidth-20)
-            .attr("height",window.innerHeight - 200)
-            .style("opacity",0.5)
-            .attr("rx",10)
-            .attr("ry",10)
-            .attr("transform","translate(10,"+drawOffset+")");
-        return newColumn;
-    };
-
-    
     //----------------------------------------
     //DISPLAY FUNCTIONS SECTION
     //----------------------------------------
@@ -246,11 +271,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     */
     var displayHelp = function(helpDataSubGrammar){
         //Create the text to be displayed
-        var helpText = ["Available Commands"].concat(_.keys(helpDataSubGrammar).map(function(d){
-            return d + " " + helpDataSubGrammar[d];
+        var startText = "Current Mode: " + currentCommandMode;
+        var helpText = [startText,"Available Commands: ",""].concat(_.keys(helpDataSubGrammar).map(function(d){
+            return d + " " + helpDataSubGrammar[d].join(" ---> ");
         }));
-
-        var helpSize = 400;
 
         //Get the container:
         var helpWindow = d3.select("#helpWindow");
@@ -261,7 +285,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                       "translate(" + (usableWidth * 0.25) + "," + (usableHeight * 0.25) + ")")
                 .attr("id","helpWindow");
             helpWindow.append("rect")
-                .style("fill","darkblue")
+                .style("fill",colours.darkBlue)
                 .attr("width",usableWidth * 0.5)
                 .attr("height",helpSize)
                 .attr("rx",10)
@@ -278,11 +302,12 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
         boundSelection.enter()
             .append("text")
-            .style("text-anchor","middle")
-            .style("fill","white");
+            .style("text-anchor","left")
+            .style("fill",colours.textBlue);
         
         boundSelection.attr("transform",function(d,i){
-            return "translate("+ (usableWidth * 0.25) + "," + (30 + i * 20) +")";
+            return "translate("+ (usableWidth * 0.02)
+                + "," + (30 + i * 20) +")";
         })
             .text(function(d){
                 return d;
@@ -360,10 +385,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             //HERE would be the automatic selection and display of possible
             //values
             var theValue = (d3.select(this).node().value + d3.event.key);
-
             var textArray = theValue.split(" ");
             var last = textArray.pop();
-            
             if(last === 'help'){
                 console.log("Help!");
                 displayHelp(helpData[currentCommandMode]);
@@ -371,9 +394,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 console.log("Clearing help");
                 d3.select("#helpWindow").remove();
             }
-            
-            //Display what has been detected:
-
+            //todo: Display what has been detected:
         }
     });
 
@@ -383,11 +404,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //----------------------------------------
     //DRAWING SETUP SECTION
     //----------------------------------------
-    
-    //Setup the svg for drawing
-    var svg = d3.select('body').append('svg')
-        .attr('width',usableWidth)
-        .attr('height',window.innerHeight - 30);
 
     /**
        @function draw
@@ -496,7 +512,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 return "translate(" + (columnWidth * 0.4) + "," + (15 + i * 15) + ")";
             })
             .style("text-anchor","middle")
-            .style("fill","white");
+            .style("fill",colours.textBlue);
         //remove old text:
         boundText.exit().remove();
         //now set the text of all existing texts
@@ -577,7 +593,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .attr("text-anchor","middle")
             .attr("transform",function(d,i){
                 return "translate(" + (columnWidth * 0.4) + "," + (30 + i * 30) + ")";
-            });
+            })
+            .style("fill",colours.textBlue);
         //old stuff
         boundText.exit().remove();
         //remaining stuff
@@ -645,7 +662,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 })
                 .text(function(d,i){
                     return d;
-                });
+                })
+                .style("fill",colours.textBlue);
             
         }else{//There ARENT too many nodes:
             var nodes = drawNodes(containingNode,childArray,columnWidth);
@@ -657,7 +675,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 .attr("transform","translate(" + (columnWidth * 0.4)+",30)")
                 .text(function(d,i){
                     return theShell.nodeToShortString(d,i);
-                });
+                })
+                .style("fill",colours.textBlue);
             //Draw tests if condition
             if(baseContainer === "conditions"){
                 drawConditions(nodes,columnWidth);
@@ -718,7 +737,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             });
         
         newActionInfo.append("text")
-            .attr("text-anchor","middle");
+            .attr("text-anchor","middle")
+            .style("fill",colours.textBlue);
 
         actionElements.selectAll("text")
             .text(function(d){
@@ -757,7 +777,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             });
 
         newTests.append("text")
-            .attr("text-anchor","middle");
+            .attr("text-anchor","middle")
+            .style("fill",colours.textBlue);
 
         //Draw the specific forms you can get in conditions:
         testsPerCondition.selectAll("text")
@@ -773,7 +794,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                     return d[0] + " <- wme." + d[1];
                 }
             });
-        
     };
 
 
@@ -867,7 +887,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     // Search bar drawing:
     //------------------------------
 
-
     /**
        @function drawSearchColumn
        @purpose draws the results of a search
@@ -917,7 +936,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .text(function(d){
                 return d;
             })
-            .style("fill","white");
+            .style("fill",colours.textBlue);
 
     };
 
@@ -947,7 +966,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
         boundTexts.enter().append("text")
             .attr("text-anchor","right")
-            .style("fill","black")
+            .style("fill",colours.textBlue)
             .attr("transform",function(d,i){
                 return "translate(0," + (i * 15 ) + ")";
             })
@@ -1019,11 +1038,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .text(function(d){
                 return d;
             })
-            .style("fill","white");
+            .style("fill",colours.textBlue);
 
     };
-
-    
     
     //------------------------------
     //Startup:
