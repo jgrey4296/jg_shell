@@ -692,9 +692,13 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             return d.tags.type === 'rule';
         });
 
+        //Reify each rule rather than use id's
         var copiedRules = rules.map(function(rule){
             var copy = _.clone(rule);
             copy.actions = _.keys(rule.actions).map(function(id){
+                return this.allNodes[id];
+            },this);
+            copy.conditions = _.keys(rule.conditions).map(function(id){
                 return this.allNodes[id];
             },this);
             return copy;
@@ -839,7 +843,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             }
         },this);
 
-        var additional = ["|Additional:|"].concat(_.keys(node));
+        var additional = ["","| All Keys::|"].concat(_.keys(node));
 
         var finalArrays = _.flatten(allArrays.concat(additional));
         

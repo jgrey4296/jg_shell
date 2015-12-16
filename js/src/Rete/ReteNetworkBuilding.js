@@ -12,24 +12,28 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
         var currentNode = parent;
         var tests, alphaMemory;
         //for each condition
-        for(var i in conditions){
-            var condition = conditions[i];
-            if(condition.isPositive){
+        conditions.forEach(function(condition){
+            if(condition.tags.type !== 'condition' && condition.tags.type !== 'negConjCondition'
+               && condition.tags.type !== 'negCondition'){
+                throw new Error("Inappropriate condition format");
+            }
+            
+            if(condition.tags.isPositive){
                 currentNode = buildOrShareBetaMemoryNode(currentNode);
                 tests = condition.bindings;
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
                 currentNode = buildOrShareJoinNode(currentNode,alphaMemory,condition.bindings);
-            }else if(condition.isNegative){
+            }else if(condition.tags.isNegative){
                 tests = condition.bindings;
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
                 currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
-            }else if(condition.isNCCCondition){
+            }else if(condition.tags.isNCCCondition){
                 currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha);
             }else{
                 console.error("Problematic Condition:",condition);
                 throw new Error("Unrecognised condition type");
             }
-        }
+        });
         //return current node
         var finalBetaMemory = buildOrShareBetaMemoryNode(currentNode);
         return finalBetaMemory;
@@ -59,10 +63,11 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
     */
     var buildOrShareAlphaMemory = function(condition,root){
         var currentNode = root;
-        for(var i in condition.constantTests){
-            var constantTest = condition.constantTests[i];
-            currentNode = buildOrShareConstantTestNode(currentNode,constantTest);
-        }
+
+        currentNode = condition.constantTests.reduce(function(m,v){
+            return buildOrShareConstantTestNode(m,v);
+        },currentNode);
+        
         //see if there is an existing memory for this condition.
         //if so, return existing alphamemory
         if(currentNode.outputMemory !== undefined){
@@ -178,7 +183,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose construction of NCCConditions
     */
     var buildOrShareNCCNodes = function(parent,condition,rootAlpha){
-        if(condition.isNCCCondition === undefined){
+        if(condition.tags.isNCCCondition === undefined){
             throw new Error("BuildOrShareNCCNodes only takes NCCCondition");
         }
         //build a network for the conditions

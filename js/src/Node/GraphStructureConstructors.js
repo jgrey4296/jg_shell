@@ -136,7 +136,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         console.log("GraphStructure: condition, firing");
         baseNode.tags.type = 'condition';
         baseNode.tags.isPositive = true;
-        baseNode.isPositive = true;
         baseNode.constantTests = [];
         baseNode.bindings = [];
         return [];
@@ -144,7 +143,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     //Negative condition:
     ctors['negCondition'] = function(baseNode){
-        baseNode.isNegative = true;
         baseNode.tags.isNegative = true;
         baseNode.tags.type = 'condition';
         baseNode.constantTests = [];
@@ -154,7 +152,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     //negated conjunctive condition
     ctors['negConjCondition'] = function(baseNode){
-        baseNode.isNCCCondition = true;
         baseNode.tags.isNCCCondition = true;
         baseNode.tags.type = 'negConjCondition';
         baseNode.conditions = [];

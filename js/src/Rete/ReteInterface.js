@@ -110,6 +110,8 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     /**
        @function addRule
        @purpose to build a network for a given rule
+       @note Assumes the rule's actions and conditions are objects, not id's.
+       @note see TotalShell::compileRete
      */
     var addRule = function(rule,reteNet){
         //build network with a dummy node for the parent
@@ -143,7 +145,6 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     
     var interface = {
         "ReteNet" : RDS.ReteNet,
-        "Condition" : RDS.Condition,
         "ConstantTest" : RDS.ConstantTest,
         "CompOperators" : RCO,
         "clearActivations" : clearActivations,
