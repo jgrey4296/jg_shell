@@ -198,6 +198,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @return the newly created node
     */
     CompleteShell.prototype.addNode = function(name,target,type){
+        if(name === null) {
+            name = "anon";
+            console.warn("making an anonymous node");
+        }
         //validate input:
         if(this.cwd[target] === undefined) throw new Error("Unknown target");
         type = type || "GraphNode";
@@ -589,7 +593,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             throw new Error("Can't delete a non-existent action");
         }
         //remove from the rule
-        this.cwd.actions.splice(actionNum,1);
+        delete this.cwd.actions[actionNum];
         //remove from allnodes
     };
 
@@ -602,7 +606,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.conditions[condNum] === undefined){
             throw new Error("Can't delete an non-existent condition");
         }
-        this.cwd.conditions.splice(condNum,1);
+        delete this.cwd.conditions[condNum];
     };
 
     /**
@@ -779,7 +783,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.nodeToShortString = function(node,i){
         console.log("NTSS:",node);
         if(node.tags.type === "action"){
-            return "(" + i + "): " + node.name;
+            return "(" + node.id + "): " + node.name;
         }else if(node.tags.type === "aggregate"){
             return "Group of: " + node.noOfValues;            
         }else if(node.name){
@@ -834,7 +838,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                 console.log("Could not find:",d,node);
             }
         },this);
-        return _.flatten(allArrays);
+
+        var additional = ["|Additional:|"].concat(_.keys(node));
+
+        var finalArrays = _.flatten(allArrays.concat(additional));
+        
+        return finalArrays;
     };
 
     /**

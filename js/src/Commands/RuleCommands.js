@@ -25,7 +25,7 @@ define(imports,function(util){
         //** @command new -> addCondition/test/action
         "new" : function(sh,values){
             if(values[0] === "condition"){
-                sh.addNode(null,'conditions','condition');
+               sh.addNode(null,'conditions','condition');
             }else if(values[0] === "action"){
                 sh.addAction(values.slice(1));
             }else if(values[0] === "test"){

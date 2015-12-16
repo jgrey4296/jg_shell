@@ -352,8 +352,6 @@ define(['underscore'],function(_){
         "NCCPartnerNode"   : NCCPartnerNode ,
         "Test"             : ConstantTest,
         "ConstantTest"     : ConstantTest,
-        "Condition"        : Condition,
-        "NCCCondition"    : NCCCondition,
         "ActionNode"       : ActionNode,
         "ReteNet"          : ReteNet
     };
