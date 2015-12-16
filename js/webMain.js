@@ -109,8 +109,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         },
         "json" : function(sh,values){
             var text = sh.exportJson();
-            var myWindow = window.open("",'_blank');
-            myWindow.document.write(text);
+            //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
+            var myWindow = window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },
         "files" : function(sh,values){
             window.open("./data/","_blank");
@@ -587,7 +587,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         
         //note: currently draw multiple nodes expected
         //draw node information,bindings,tags, etc
-        drawMultipleNodes("conditions",ruleNode.conditions,columnWidth);
+        var conditionList = _.keys(ruleNode.conditions).map(function(d){
+            return this.allNodes[d];
+        },theShell);
+        
+        drawMultipleNodes("conditions",conditionList,columnWidth);
 
         //convert stored action id's to action nodes for drawing
         var actions = _.keys(ruleNode.actions).map(function(d){
