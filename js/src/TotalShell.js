@@ -95,13 +95,16 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param allNodes an array or object of key:object pairs describing all nodes to load
      */
     CompleteShell.prototype.importJson = function(allNodes){
-        console.log("importing type:", typeof allNodes);
+        //console.log("importing type:", typeof allNodes,allNodes.length);
+        //clear the shell:
+        this.allNodes = [];
+        
         if(allNodes instanceof Array){
-            allNodes.map(function(d){
+            allNodes.forEach(function(d){
                 this.addNodeFromJson(d);
             },this);
         }else{
-            _.values(allNodes).map(function(d){
+            _.values(allNodes).forEach(function(d){
                 this.addNodeFromJson(d);
             },this);
         }

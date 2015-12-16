@@ -1,0 +1,97 @@
+[
+    {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": "test1",
+            "4": "test2"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 3,
+        "name": "test1",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "5": "test3",
+            "6": "test4"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 4,
+        "name": "test2",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 5,
+        "name": "test3",
+        "parents": {
+            "3": "test1"
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 6,
+        "name": "test4",
+        "parents": {
+            "3": "test1"
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    }
+]

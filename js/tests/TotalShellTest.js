@@ -120,7 +120,7 @@ exports.TotalShellTests = {
         test.ok(newRule.tags.type === 'rule');
         test.ok(newRule.name === 'test1');
         test.ok(_.keys(newRule.actions).length === 0);
-        test.ok(newRule.conditions.length === 0);
+        test.ok(_.values(newRule.conditions).length === 0);
         test.done();
     },
 
@@ -260,6 +260,19 @@ exports.TotalShellTests = {
         test.done();
     },
 
+
+    importJsonTest : function(test){
+        var test1Data = require('./testData/test1.json');
+        var shell = makeShell();
+
+        test.ok(_.keys(shell.allNodes).length === 3);
+        shell.importJson(test1Data);
+        test.ok(_.keys(shell.allNodes).length === 7,_.keys(shell.allNodes));
+        
+        test.done();
+    },
+
+    
     //TODO:
     //search for an id
 
