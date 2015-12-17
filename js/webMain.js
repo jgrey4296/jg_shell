@@ -4,6 +4,8 @@
 */
 
 //Setup requirejs
+//For soe server: baseUrl -> /~jgrey/src
+//and libs -> /~jgrey/libs
 require.config({
     baseUrl: "/src",
     paths:{
