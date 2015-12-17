@@ -414,7 +414,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //----------------------------------------
 
     //----------------------------------------
-    //DRAWING SETUP SECTION
+    //DRAWING SECTION
     //----------------------------------------
 
     /**

@@ -16,7 +16,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
     var actions = {};
 
     //NOTE: these will be called after being bound to an action,
-    //so 'this' refers to the information stored in an action.
+    //so 'this' refers to the information stored in an action/the action object itself.
 
     //not in place, returns a wme to be dealt with elsewhere
     //** @action assert
@@ -65,7 +65,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
             currToken = currToken.parentToken;
         }
 
-        //get the wmes to remove:
+        //get the wme ids to remove:
         var wmeIDs = _.values(token.bindings);
 
         //filter the wmeList by the wmeIDs:

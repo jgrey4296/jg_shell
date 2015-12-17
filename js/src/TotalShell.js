@@ -1136,7 +1136,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         });
         
         //all constantTestPrototypes:
-        
         var constTestPrototypes = _.flatten(this.allRules.map(function(rule){ //for all rules
             return (rule.conditions.filter(function(cond){ //get all positive conditions
                 return cond.isNCCCondition === undefined;
