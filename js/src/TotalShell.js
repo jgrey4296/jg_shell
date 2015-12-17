@@ -286,7 +286,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
         
         var test = new Rete.ConstantTest(testField,op,value);
-        this.cwd.conditions[conditionNumber].constantTests.push(test);
+        this.allNodes[conditionNumber].constantTests.push(test);
     };
 
     /**
@@ -392,7 +392,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.conditions[conditionNum] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        this.cwd.conditions[conditionNum].bindings.push([toVar,fromVar]);
+        var condition = this.allNodes[conditionNum];
+        //condition.bindings.push([toVar,fromVar]);
+        condition.bindings[toVar] = fromVar;
         console.log(this.cwd.conditions[conditionNum].bindings);
     };
 
@@ -413,11 +415,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Arithmetic can only be applied to actions of rules");
         }
-        if(_.keys(this.cwd.actions).length < actionNum){
+        if(this.cwd.actions[actionNum] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
-        var actionId = _.keys(this.cwd.actions)[actionNum];
-        var action = this.allNodes[actionId];
+        var action = this.allNodes[actionNum];
 
         if(action === undefined){
             throw new Error("Could not find action");
@@ -444,39 +445,40 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Can't set action values on non-actions");
         }
-        if(_.keys(this.cwd.actions).length > actionNum){
-            var actionId = _.keys(this.cwd.actions)[actionNum];
-            console.log("Action Id:",actionId);
-            var action = this.allNodes[actionId];
-            console.log(action);
+        if(this.cwd.actions[actionNum] !== undefined){
+            var action = this.allNodes[actionNum];
             if(b){
                 action.values[a] = b;
             }else{
-                action.tags.actionType = a;
+                delete action.values[a];
             }
         }else{
             throw new Error("Unrecognised action");
         }
     };
 
-    //* @deprecated
-    /*
-    CompleteShell.prototype.setActionData = function(actionNum,varName,varValue){
+    /**
+       @class CompleteShell
+       @method setActionType
+       @param actionNum
+       @param a the type
+     */
+    CompleteShell.prototype.setActionType = function(actionNum,a){
         if(this.cwd.tags.type !== 'rule'){
-            throw new Error('Can not set action data on a non-rule');
+            throw new Error("Can't set action type for non-rules");
         }
-
-        var actionId = _.keys(this.cwd.actions)[actionNum];
-        var action = this.allNodes[actionId];
-                
-        if(action === undefined){
-            throw new Error('Can not set action data on non-existent action');
+        if(this.cwd.actions[actionNum] !== undefined){
+            var action = this.allNodes[actionNum];
+            if(a){
+                action.tags.actionType = a;
+            }else{
+                throw new Error("Setting action type requires a type be specified");
+            }
+        }else{
+            throw new Error("Unrecognised action");
         }
-        
-        action.values[varName] = varValue;
     };
-    */
-
+    
     /**
        @class CompleteShell
        @method setTest
@@ -623,8 +625,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.conditions[condNum] === undefined || this.cwd.conditions[condNum].constantTests[testNum] === undefined){
             throw new Error("can't delete a non-existent test");
         }
-
-        this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
+        this.allNodes[condNum].constantTests.splice(testNum,1);
+        //this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
     };
 
     /**
@@ -637,18 +639,13 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.conditions[condNum] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
-
-        var condition = this.cwd.conditions[condNum];
-        var index = 0;
-        for(; index < condition.bindings.length; index++){
-            if(condition.bindings[index][0] === boundVar){
-                break;
-            }
-        }
-        if(index < condition.bindings.length){
+        var condition = this.allNodes[condNum];//this.cwd.conditions[condNum];
+        var index = _.find(condition.bindings,function(d){
+            return d[0] === boundVar;
+        });
+        if(index !== undefined){
             condition.bindings.splice(index,1);
         }
-        
     }
     
     //------------------------------
@@ -1032,30 +1029,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @params target The id (global) or name (local) to move to
     */
     CompleteShell.prototype.cd = function(target){
-        if(this.cwd.tags.type !== "action"){
             this.cdNode(target);
-        }else{
-            this.cdRule(target);
-        }
     };
 
-    /**
-       @class CompleteShell
-       @method cdRule
-       @stub
-       @utility
-       @purpose to move to components of a rule
-       @param target
-     */
-    //cd based on relative position in rule, not by global id
-    CompleteShell.prototype.cdRule = function(target){
-        //if target[0] === "c": cd to condition
-
-        //if(target[0] === "a": cd to action
-
-    };
-
-    
     /**
        @class CompleteShell
        @method cdNode
@@ -1065,7 +1041,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.cdNode = function(target){
         this.previousLocation = this.cwd.id;
-        //TODO: cd into a rule
         //If a number:
         if(target === ".."){
             console.log("cd : ..");

@@ -26,8 +26,8 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         var newWMEData = _.reduce(_.keys(this.values),function(memo,key){
             memo[key] = null;
             var v = this.values[key];
-            //if the value starts with #, look it up in the token
-            if(v[0] === "#"){
+            //if the value starts with #, look it up in the token list
+            if(v[0] === "#" || v[0] === "$"){
                 //cut off the #
                 memo[key] = token.bindings[v.slice(1)];
             }else{

@@ -63,7 +63,7 @@ define(imports,function(util){
             //set actiontype
             if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
                 //set actionType 0 assert 
-                sh.setActionValue(Number(values[1]),values[2]);
+                sh.setActionType(Number(values[1]),values[2]);
             }
             //action value
             if(values[0] === "actionValue"){

@@ -224,38 +224,45 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //** @data helpData @purpose For displaying reference of commands
     helpData = {
         node : {
-            "new"   : ["$target $type $name", "Add a node to the graph"],
-            "nc"    : [ "[n | i | r | a | rc] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities, ruleContainers"],
-            "np"    : [ "[n | i | r | a | rc] $name", " Shortcuts for adding parents"],
-            "[ncn | nci]" : [ "$name", "new child node/institution"],
-            "rm"    : [ "$id", " Remove a node by id number"],
-            "cd"    : [ "[.. | $name | $id]", " Move to a node by name or id"],
-            "rename": [ "$name", " Rename a node"],
-            "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType"],
-            "link"  : [ "$target $id", " Link two existing nodes"],
-            "linkr" : [ "$target $id", " Link two existing nodes reciprocally"],
-            "stash" : [ "", " Add the current node to the temp stack"],
-            "unstash": ["", " Pop off and move to the head of the temp stack"],
-            "top"   : [ "", " Move to the top of the temp stack"],
-            "prev"  : [ "", " Move to the node previously at "],
-            "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches"],
+            "helpGeneral" : ["", "Display General Commands Help"],
+            "new"   : ["$target $type $name", "Add a node to the graph."],
+            "nc"    : [ "[n | i | r | a ] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities."],
+            "np"    : [ "[n | i | r | a ] $name", " Shortcuts for adding parents."],
+            "[ncn | nci]" : [ "$name", "new child node/institution."],
+            "rm"    : [ "$id", " Remove a node by id number."],
+            "cd"    : [ "[.. | $name | $id]", " Move to a node by name or id."],
+            "rename": [ "$name", " Rename a node."],
+            "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType."],
+            "link"  : [ "$target $id", " Link two existing nodes."],
+            "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
+            "stash" : [ "", " Add the current node to the temp stack."],
+            "unstash": ["", " Pop off and move to the head of the temp stack."],
+            "top"   : [ "", " Move to the top of the temp stack."],
+            "prev"  : [ "", " Move to the node previously you were at before the current node. "],
+            "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
         },
         rule : {
-            "cd"    : [ "[.. | $name | $id]", ""],
-            "new condition" : [ " ", ""],
-            "new action" : [ "$type $focus", ""],
-            "new test" : [ "$num $field $op $value", ""],
-            "rm"     : [ "", ""],
-            "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", ""],
-            "rename" : ["", ""],
-            "add"    : [ "", ""],
+            "helpGeneral" : [ "", "Display General Commands Help"],
+            "cd"    : [ "[.. | $name | $id]", "Move to other nodes."],
+            "new condition" : [ " ", " Create a new condition for the current rule. (IF)"],
+            "new action" : [ "$name+", " Create a new action for the current rule. (THEN)"],
+            "new test" : [ "$num $field $op $value", " Create a constant test for the condition id'd."],
+            "rm"     : [ "[condition | action] $id", " Remove a condition/action/test"],
+            "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", " Set values of conditions/actions"],
+            "rename" : ["", " Rename the rule"],
+            "add"    : [ "", " ???"],
             
 
         },
-        rete: {
-            "assert": [ "", ""],
-            "compile" : [ "", ""],
-            "clear" : [ "[complete]", ""],
+        general: {
+            "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
+            "save"  : [ "$fileName", " Save to a specified file. With paired server ONLY"],
+            "json"  : [ "", " Open a tab with the shell as json"],
+            "files" : [ "", " Display a list of available files to load"],
+            "assert": [ "", " Assert all children of the cwd as wmes"],
+            "compile" : [ "", " Compile all rules in the shell into the rete net"],
+            "ruleStep" : [ "", " Perform the actions of the fired rules from the last assertion"],
+            "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
         }
     };
 
@@ -377,7 +384,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
 
                 }
             }catch(err){
-                alert("Input error: \n" + err.message);
+                //alert("Input error: \n" + err.message);
                 console.log("Input Error:",err);
             }
         }else{
@@ -390,6 +397,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             if(last === 'help'){
                 console.log("Help!");
                 displayHelp(helpData[currentCommandMode]);
+            }else if(last === 'helpGeneral'){
+                console.log("Help General");
+                displayHelp(helpData['general']);
             }else{
                 console.log("Clearing help");
                 d3.select("#helpWindow").remove();
@@ -761,7 +771,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             var tests = ["Tests:"];
             tests = tests.concat(d.constantTests);
             tests.push("Bindings:");
-            tests = tests.concat(d.bindings);
+            tests = tests.concat(_.pairs(d.bindings));
             //console.log("Output tests:",tests);
             return tests;
         });

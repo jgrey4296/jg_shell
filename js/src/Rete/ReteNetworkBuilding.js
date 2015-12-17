@@ -115,6 +115,11 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose To reuse, or create a new, join node linking an alpha memory and betamemory
      */
     var buildOrShareJoinNode = function(parent,alphaMemory,tests){
+        //convert tests if necessary:
+        if(!(tests instanceof Array)){
+            tests = _.pairs(tests);
+        }
+        
         //see if theres a join node to use already
         var allChildren = parent.children.concat(parent.unlinkedChildren);
         for(var i in allChildren){

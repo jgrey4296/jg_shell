@@ -137,7 +137,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         baseNode.tags.type = 'condition';
         baseNode.tags.isPositive = true;
         baseNode.constantTests = [];
-        baseNode.bindings = [];
+        baseNode.bindings = {};
         return [];
     };
 

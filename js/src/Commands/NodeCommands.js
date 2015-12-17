@@ -40,6 +40,8 @@ define(imports,function(util){
             };
             if(chars[values[0]]){
                 sh.addNode(values[1],'children',chars[values[0]]);
+            }else{
+                sh.addNode(values[1],'children',values[0]);
             }
         },
         "np" : function(sh,values){
@@ -52,6 +54,8 @@ define(imports,function(util){
             };
             if(chars[values[0]]){
                 sh.addNode(values[1],'parents',chars[values[0]]);
+            }else{
+                sh.addNode(values[1],'parents',values[0]);
             }
         },
         //New Child Node, ncn:
