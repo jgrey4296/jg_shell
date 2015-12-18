@@ -39,6 +39,14 @@ define([],function(){
             sh.stepTime();
 
         },
+        "help" : function(sh,values){
+            return {
+                "assert": [ "", " Assert all children of the cwd as wmes"],
+                "compile" : [ "", " Compile all rules in the shell into the rete net"],
+                "ruleStep" : [ "", " Perform the actions of the fired rules from the last assertion"],
+                "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
+            };
+        },
     };
 
     return reteCommands;

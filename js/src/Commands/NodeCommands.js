@@ -18,6 +18,9 @@ if(typeof define !== 'function'){
 define(imports,function(util){
     //All of the commands for the normal node mode of the shell
     var nodeCommands = {
+        "draw" : function(sh,values){
+
+        },
         //new -> addNode,
         "new" : function(sh,values){
             util.valueCheck(values,3,values);
@@ -115,9 +118,41 @@ define(imports,function(util){
         //Search:
         "search" : function(sh,values){
             var returnedData = sh.search(values[0],values[1],values[2]);
-        }            
+        },
+        "help" : function(sh,values){
+            return {
+            "helpGeneral" : ["", "Display General Commands Help"],
+            "new"   : ["$target $type $name", "Add a node to the graph."],
+            "nc"    : [ "[n | i | r | a ] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities."],
+            "np"    : [ "[n | i | r | a ] $name", " Shortcuts for adding parents."],
+            "[ncn | nci]" : [ "$name", "new child node/institution."],
+            "rm"    : [ "$id", " Remove a node by id number."],
+            "cd"    : [ "[.. | $name | $id]", " Move to a node by name or id."],
+            "rename": [ "$name", " Rename a node."],
+            "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType."],
+            "link"  : [ "$target $id", " Link two existing nodes."],
+            "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
+            "stash" : [ "", " Add the current node to the temp stack."],
+            "unstash": ["", " Pop off and move to the head of the temp stack."],
+            "top"   : [ "", " Move to the top of the temp stack."],
+            "prev"  : [ "", " Move to the node previously you were at before the current node. "],
+            "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
+            };
+        }
     };
 
+    //Utility functions:
+    var drawNode = function(node){
+        //todo
+        //draw a node and its parents/children
+
+    };
+
+
+
+
+
+    
     return nodeCommands;
 });
 

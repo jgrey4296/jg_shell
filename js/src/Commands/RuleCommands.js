@@ -90,6 +90,20 @@ define(imports,function(util){
         "infer" : function(sh,values){
             sh.extractFactPrototypes();
         },
+
+        "help" : function(sh,values){
+            return {
+                "helpGeneral" : [ "", "Display General Commands Help"],
+                "cd"    : [ "[.. | $name | $id]", "Move to other nodes."],
+                "new condition" : [ " ", " Create a new condition for the current rule. (IF)"],
+                "new action" : [ "$name+", " Create a new action for the current rule. (THEN)"],
+                "new test" : [ "$num $field $op $value", " Create a constant test for the condition id'd."],
+                "rm"     : [ "[condition | action] $id", " Remove a condition/action/test"],
+                "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", " Set values of conditions/actions"],
+                "rename" : ["", " Rename the rule"],
+                "add"    : [ "", " ???"],
+            };
+        },
     };
 
     
