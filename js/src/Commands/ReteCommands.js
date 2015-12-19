@@ -14,7 +14,7 @@ define([],function(){
      */
     var reteCommands = {
         //** @command clear
-        "clear" : function(sh,values){
+        "clear" : function(globalData,values){
             console.log("Clearing RETE");
             if(values[0] === 'complete'){
                 sh.clearRete();
@@ -23,23 +23,23 @@ define([],function(){
             }
         },
         //** @command compile
-        "compile" : function(sh,values){
+        "compile" : function(globalData,values){
             console.log("Compiling Rete");
             sh.compileRete();
         },
         //** @command assert
         //full name: assert as wme:
-        "assert" : function(sh,values){
+        "assert" : function(globalData,values){
             console.log("Asserting rete");
             //assert the current node as a wme?
             sh.assertChildren();
         },
-        "ruleStep" : function(sh,values){
+        "ruleStep" : function(globalData,values){
             console.log("Rete Time Step");
             sh.stepTime();
 
         },
-        "help" : function(sh,values){
+        "help" : function(globalData,values){
             return {
                 "assert": [ "", " Assert all children of the cwd as wmes"],
                 "compile" : [ "", " Compile all rules in the shell into the rete net"],

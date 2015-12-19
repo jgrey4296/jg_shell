@@ -2,7 +2,6 @@
    @file NodeCommands
    @purpose to define the user actions that can be performed on a typical node in the shell
 */
-
 var imports = ["utils"];
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -16,13 +15,15 @@ if(typeof define !== 'function'){
 }
 
 define(imports,function(util){
+    var columnNames = ["Parents","Node","Children"];
+    
     //All of the commands for the normal node mode of the shell
     var nodeCommands = {
-        "draw" : function(sh,values){
+        "draw" : function(globalData,values){
 
         },
         //new -> addNode,
-        "new" : function(sh,values){
+        "new" : function(globalData,values){
             util.valueCheck(values,3,values);
             //Expand out simplifications
             console.log("new",values);
@@ -33,7 +34,7 @@ define(imports,function(util){
             sh.addNode(values[2],target,values[1]);
         },
         //node creation Shortcuts:
-        "nc" : function(sh,values){
+        "nc" : function(globalData,values){
             var chars = {
                 "n" : "node",
                 "i" : "institution",
@@ -47,7 +48,7 @@ define(imports,function(util){
                 sh.addNode(values[1],'children',values[0]);
             }
         },
-        "np" : function(sh,values){
+        "np" : function(globalData,values){
             var chars = {
                 "n" : "node",
                 "i" : "institution",
@@ -62,36 +63,36 @@ define(imports,function(util){
             }
         },
         //New Child Node, ncn:
-        "ncn" : function(sh,values){
+        "ncn" : function(globalData,values){
             sh.addNode(values[0],'children','node');
         },
         //new child institution: nci
-        "nci" : function(sh,values){
+        "nci" : function(globalData,values){
             sh.addNode(values[0],'children','institution');
         },
         //------------------------------
         //rm -> removeNode,
-        "rm" : function(sh,values){
+        "rm" : function(globalData,values){
             sh.rm(values[0]);
         },
         //cd -> cd
-        "cd" : function(sh,values){
+        "cd" : function(globalData,values){
             util.valueCheck(values,1);
             sh.cd(values[0]);
         },
         //set -> setParameter
-        "set" : function(sh,values){
+        "set" : function(globalData,values){
             sh.setParameter(values[0],values[1],values[2]);
         },
         //link -> link
         //TODO: detect if recursive connection or not
-        "link" : function(sh,values){
+        "link" : function(globalData,values){
             var target = values[0];
             if(target === 'child') target = 'children';
             if(target === 'parent') target = 'parents';
             sh.link(target,values[1],false);
         },
-        "linkr" : function(sh,values){
+        "linkr" : function(globalData,values){
             var target = values[0];
             if(target === 'child') target = 'children';
             if(target === 'parent') target = 'parents';
@@ -99,27 +100,27 @@ define(imports,function(util){
 
         },
         //rename -> rename
-        "rename" : function(sh,values){
+        "rename" : function(globalData,values){
             sh.rename(values[0]);
         },
         //Stashing:
-        "stash" : function(sh,values){
+        "stash" : function(globalData,values){
             sh.stash();
         },
-        "unstash" : function(sh,values){
+        "unstash" : function(globalData,values){
             sh.unstash();
         },
-        "top" : function(sh,values){
+        "top" : function(globalData,values){
             sh.top();
         },
-        "prev" : function(sh,values){
+        "prev" : function(globalData,values){
             sh.cd(sh.previousLocation);
         },
         //Search:
-        "search" : function(sh,values){
+        "search" : function(globalData,values){
             var returnedData = sh.search(values[0],values[1],values[2]);
         },
-        "help" : function(sh,values){
+        "help" : function(globalData,values){
             return {
             "helpGeneral" : ["", "Display General Commands Help"],
             "new"   : ["$target $type $name", "Add a node to the graph."],

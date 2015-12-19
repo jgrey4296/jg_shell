@@ -2,11 +2,11 @@
 define(['underscore'],function(_){
 
     var CommandTemplate = {
-        "someCommand" : function(sh,values,globalData){
+        "someCommand" : function(globalData,values){
 
         },
 
-        "draw" : function(sh,values,globalData){
+        "draw" : function(globalData,values){
 
         },        
     };

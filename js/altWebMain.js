@@ -49,17 +49,12 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             "rete" : ReteCommands,
             "general" : GeneralCommands,
         },
+        //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [
-            "rete","general"
+            "node","rete","general"
         ],
-
         
         currentCommandMode : "node",
-        //The columns for the different modes:
-        columnNames : {
-            "node" : ["Parents","ShellNode","Children"],
-            "rule" : ["conditions","rule","actions"]
-        },
     
         //The simulated shell:
         theShell : new Shell.CompleteShell(),

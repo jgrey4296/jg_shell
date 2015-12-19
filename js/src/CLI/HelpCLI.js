@@ -20,6 +20,7 @@ define(['underscore','d3'],function(_,d3){
             }else if(globalData.commands[globalData.currentCommandMode].help !== undefined){
                 helpObject = globalData.commands[globalData.currentCommandMode].help;
             }
+            //Draw
             drawHelp(helpObject,globalData);
         }else{
             d3.select("#helpWindow").remove();

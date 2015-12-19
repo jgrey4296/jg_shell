@@ -10,12 +10,17 @@ if(typeof define !== 'function'){
 define(['underscore'],function(_){
 
     var GeneralCommands = {
-        "mode" : function(sh,values,globalData){
+        "mode" : function(globalData,values){
             //get the available modes
+            var modes = _.keys(globalData.commands);
             //if one of them is specified, use it,
-            //else default to node mode
+            if(modes.indexOf(values[0]) > -1){
+                globalData.currentCommandMode = values[0];
+            }else{
+                globalData.currentCommandMode = modes[0];
+            }
         },
-        "context": function(sh,values){
+        "context": function(globalData,values){
             //draw main columns and nodes
             draw(sh.cwd);
             //draw additional elements:
@@ -24,7 +29,7 @@ define(['underscore'],function(_){
             drawSearchColumn(sh.lastSearchResults);
         },
         //Load a file from the server
-        "load" : function(sh,values){
+        "load" : function(globalData,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
                 if(request.readyState===4){
@@ -43,7 +48,7 @@ define(['underscore'],function(_){
             request.send();
         },
         //Save the current graph to the server
-        "save" : function(sh,values){
+        "save" : function(globalData,values){
             console.log("Saving:",values);
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
@@ -55,16 +60,16 @@ define(['underscore'],function(_){
             request.open("POST","saveData="+values[0],true);
             request.send(sh.exportJson());
         },
-        "json" : function(sh,values){
+        "json" : function(globalData,values){
             var text = sh.exportJson();
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
             var myWindow = window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },
-        "files" : function(sh,values){
+        "files" : function(globalData,values){
             window.open("./data/","_blank");
         },
 
-        "help" : function(sh,values){
+        "help" : function(globalData,values){
             return {
                 "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
                 "save"  : [ "$fileName", " Save to a specified file. With paired server ONLY"],

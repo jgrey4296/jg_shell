@@ -16,14 +16,16 @@ if(typeof define !== 'function'){
 }
 
 define(imports,function(util){
+    var columnNames = ["Conditions","Rule","Actions"];
+    
     var ruleCommands = {
         //** @command cd
-        "cd" : function(sh,values){
+        "cd" : function(globalData,values){
             util.valueCheck(values,1);
             sh.cd(values[0]);
         },
         //** @command new -> addCondition/test/action
-        "new" : function(sh,values){
+        "new" : function(globalData,values){
             if(values[0] === "condition"){
                sh.addNode(null,'conditions','condition');
             }else if(values[0] === "action"){
@@ -37,7 +39,7 @@ define(imports,function(util){
             }
         },
         //** @command rm
-        "rm" : function(sh,values){
+        "rm" : function(globalData,values){
             //remove action
             if(values[0] === 'action'){
                 sh.removeAction(values.slice(1));
@@ -59,7 +61,7 @@ define(imports,function(util){
         //set action 0 actionType
         //set action 0 a #b
         //set action 0 a 5
-        "set" : function(sh,values){
+        "set" : function(globalData,values){
             //set actiontype
             if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
                 //set actionType 0 assert 
@@ -84,14 +86,14 @@ define(imports,function(util){
             }                
         },
         //** @command rename
-        "rename" : function(sh,values){
+        "rename" : function(globalData,values){
             sh.rename(values[0]);
         },
-        "infer" : function(sh,values){
+        "infer" : function(globalData,values){
             sh.extractFactPrototypes();
         },
 
-        "help" : function(sh,values){
+        "help" : function(globalData,values){
             return {
                 "helpGeneral" : [ "", "Display General Commands Help"],
                 "cd"    : [ "[.. | $name | $id]", "Move to other nodes."],
