@@ -7,21 +7,24 @@ define(['underscore','d3'],function(_,d3){
 
     //Main function called
     var HelpCLI = function(currentLine,globalData){
-        var textArray = theValue.split(" ");
-        var lastArr = textArray.pop().split("#");
-        if(lastArr[0] === "help"){
+        var textArray = currentLine.split(" ");
+        //Get the last thing typed, and split it
+        var commandNameArray = textArray.pop().split("#");
+        if(commandNameArray[0] === "help"){
             console.log("Help!");
             //Get the help text object:
-            var helpObject = {};
+            var helpObject = null;
             //if the user specifies a mode
-            if(last.length > 1 && globalData.commands[lastArr[1]]){
-                helpObject = globalData.commands[lastArr[1]].help;
+            if(commandNameArray.length > 1 && globalData.commands[commandNameArray[1]]){
+                helpObject = globalData.commands[commandNameArray[1]].help();
             //otherwise use current command mode:
             }else if(globalData.commands[globalData.currentCommandMode].help !== undefined){
-                helpObject = globalData.commands[globalData.currentCommandMode].help;
+                helpObject = globalData.commands[globalData.currentCommandMode].help();
             }
             //Draw
-            drawHelp(helpObject,globalData);
+            if(helpObject){
+                drawHelp(helpObject,globalData);
+            }
         }else{
             d3.select("#helpWindow").remove();
         }
@@ -49,7 +52,7 @@ define(['underscore','d3'],function(_,d3){
             helpWindow.append("rect")
                 .style("fill",globalData.colours.darkBlue)
                 .attr("width",globalData.usableWidth * 0.5)
-                .attr("height",global.helpSize)
+                .attr("height",globalData.helpSize)
                 .attr("rx",10)
                 .attr("ry",10);
         }

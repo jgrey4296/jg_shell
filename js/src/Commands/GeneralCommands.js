@@ -22,11 +22,11 @@ define(['underscore'],function(_){
         },
         "context": function(globalData,values){
             //draw main columns and nodes
-            draw(sh.cwd);
+            draw(globalData.shell.cwd);
             //draw additional elements:
-            drawActivatedRules(sh.reteNet.lastActivatedRules);
-            drawStash(sh._nodeStash);
-            drawSearchColumn(sh.lastSearchResults);
+            drawActivatedRules(globalData.shell.reteNet.lastActivatedRules);
+            drawStash(globalData.shell._nodeStash);
+            drawSearchColumn(globalData.shell.lastSearchResults);
         },
         //Load a file from the server
         "load" : function(globalData,values){
@@ -36,7 +36,7 @@ define(['underscore'],function(_){
                     try{
                         var receivedJson = JSON.parse(request.responseText);
                         console.log("Received JSON:",receivedJson);
-                        sh.importJson(receivedJson);
+                        globalData.shell.importJson(receivedJson);
                         commands.context(theShell);
                     }catch(err){
                         alert("Error loading data: \n" + err.message);
@@ -58,10 +58,10 @@ define(['underscore'],function(_){
                 }
             };
             request.open("POST","saveData="+values[0],true);
-            request.send(sh.exportJson());
+            request.send(globalData.shell.exportJson());
         },
         "json" : function(globalData,values){
-            var text = sh.exportJson();
+            var text = globalData.shell.exportJson();
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
             var myWindow = window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },

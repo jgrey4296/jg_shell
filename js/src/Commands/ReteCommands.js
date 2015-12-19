@@ -17,26 +17,26 @@ define([],function(){
         "clear" : function(globalData,values){
             console.log("Clearing RETE");
             if(values[0] === 'complete'){
-                sh.clearRete();
+                globalData.shell.clearRete();
             }else{
-                sh.clearActivatedRules();
+                globalData.shell.clearActivatedRules();
             }
         },
         //** @command compile
         "compile" : function(globalData,values){
             console.log("Compiling Rete");
-            sh.compileRete();
+            globalData.shell.compileRete();
         },
         //** @command assert
         //full name: assert as wme:
         "assert" : function(globalData,values){
             console.log("Asserting rete");
             //assert the current node as a wme?
-            sh.assertChildren();
+            globalData.shell.assertChildren();
         },
         "ruleStep" : function(globalData,values){
             console.log("Rete Time Step");
-            sh.stepTime();
+            globalData.shell.stepTime();
 
         },
         "help" : function(globalData,values){

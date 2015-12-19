@@ -57,7 +57,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         currentCommandMode : "node",
     
         //The simulated shell:
-        theShell : new Shell.CompleteShell(),
+        shell : new Shell.CompleteShell(),
 
         lastSetOfSearchResults : [],
 
@@ -89,13 +89,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         halfHeight : this.usableHeight * 0.5,
         
         //The main svg:
-        svg : d3.select("body").append("svg")
-            .attr("width",this.usableWidth)
-            .attr("height",this.usableHeight)
-            .style("background",this.colours.darkerBlue),
-
+        svg : null,
         //Columns:
-        columns : {}
+        columns : {},
 
     //Utility Functions:
         calcWidth : function(avaiableWidth,noOfColumns){
@@ -116,8 +112,27 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         initColumn : function(name,columnNumber,columnWidth){
             //todo
         },
+
+        lookupOrFallBack : function(commandName,globalData){
+            var commandToExecute;
+            if(globalData.commands[globalData.currentCommandMode]
+               && globalData.commands[globalData.currentCommandMode][commandName]){
+                commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
+            }else{        
+                //command not found, fallback
+                var fallBacks = _.clone(globalData.commandFallBackOrder);
+                while(fallBacks.length > 0){
+                    var currentFallback = fallBacks.shift();
+                    if(globalData.commands[currentFallback][commandName] !== undefined){
+                        commandToExecute = globalData.commands[currentFallback][commandName];
+                    }
+                }
+            }
+            return commandToExecute;
+        },
+
+        
     };
-    
     //End of utilities
     //--------------------
     //Set up CLI:
@@ -141,7 +156,15 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //----------------------------------------
     //Startup:
     //set focus:
-    d3.select("#shellInput").node().focus();    
+    d3.select("#shellInput").node().focus();
+    //Setup the svg:
+    globalData.svg = d3.select("body").append("svg")
+        .attr("width",globalData.usableWidth)
+        .attr("height",globalData.usableHeight)
+        .style("background",globalData.colours.darkerBlue);
+
+    MainCommandCLI("",globalData);
+    
 });
 
 
