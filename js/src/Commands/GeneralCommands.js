@@ -13,12 +13,20 @@ define(['underscore'],function(_){
         "mode" : function(globalData,values){
             //get the available modes
             var modes = _.keys(globalData.commands);
+            var newMode;
             //if one of them is specified, use it,
             if(modes.indexOf(values[0]) > -1){
-                globalData.currentCommandMode = values[0];
+                 newMode = values[0];
             }else{
-                globalData.currentCommandMode = modes[0];
+                //otherwise default to the first mode
+                newMode = modes[0];
             }
+
+            //cleanup the current mode
+            globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
+            
+            //Change to new mode
+            globalData.currentCommandMode = newMode;
         },
         "context": function(globalData,values){
             //draw main columns and nodes

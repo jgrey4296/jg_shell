@@ -26,7 +26,7 @@ define(['underscore'],function(_){
         var drawCommand = globalData.lookupOrFallBack("draw",globalData);
         if(drawCommand && typeof drawCommand === 'function'){
             try{
-                globalData.commands[globalData.currentCommandMode].draw(globalData);
+                drawCommand(globalData);
             }catch(e){
                 console.error("Draw Error:",e);
             }

@@ -8,7 +8,11 @@ define(['underscore'],function(_){
 
         "draw" : function(globalData,values){
 
-        },        
+        },
+
+        "cleanup" : function(globalData,values){
+
+        },
     };
 
     return CommandTemplate;

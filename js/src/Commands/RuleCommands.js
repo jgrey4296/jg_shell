@@ -7,6 +7,14 @@ define(['d3'],function(d3){
     var columnNames = ["Conditions","Rule","Actions"];
     
     var ruleCommands = {
+        "draw" : function(globalData,values){
+            d3.select("svg").append("circle")
+                .attr("r",50)
+                .style("fill","red");
+        },
+        "cleanup" : function(globalData, values){
+            d3.selectAll("circle").remove();
+        },
         //** @command cd
         "cd" : function(globalData,values){
             globalData.shell.cd(values[0]);

@@ -3,17 +3,85 @@
    @purpose to define the user actions that can be performed on a typical node in the shell
 */
 
-define(['d3'],function(d3){
+define(['d3','utils'],function(d3,util){
     var columnNames = ["Parents","Node","Children"];
     
     //All of the commands for the normal node mode of the shell
     var nodeCommands = {
         //The draw command
         "draw" : function(globalData,values){
-            globalData.svg.append("rect")
-                .attr("width",300)
-                .attr("height",400)
-                .style("fill","red");
+            var colWidth = globalData.calcWidth(globalData.usableWidth,columnNames.length);
+            var halfWidth = globalData.halfWidth();
+            //get the data:
+            var cwdData = globalData.shell.cwd;
+            var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
+            var childrenData = _.keys(cwdData.children).map(function(d){
+                return this.allNodes[d];
+            },globalData.shell);
+            var parentsData = _.keys(cwdData.parents).map(function(d){
+                return this.allNodes[d];
+            },globalData.shell);
+
+            
+            //if necessary, init the containers
+            var mainContainer = util.selectOrShare('mainContainer');
+
+            //draw the node
+            var node = mainContainer.selectAll(".node").data([cwdData],function(d){ return d.id; });
+            node.exit().remove();
+            node.enter().append("g").classed("node",true)
+                .attr("transform","translate(" + globalData.halfWidth() + ",100)");
+            node.append("rect")
+                .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
+                .attr("transform","translate("+ (- (colWidth * 0.5)) +",0)")
+                .style("fill",globalData.colours.darkBlue)
+                .attr("rx",0)
+                .attr("ry",0)
+                .transition()
+                .attr("rx",10)
+                .attr("ry",10);
+
+            node.selectAll("text").remove();
+            var boundText = node.selectAll("text").data(nodeText);
+            boundText.enter().append("text")
+                .style("text-anchor","middle")
+                .attr("transform",function(d,i){
+                    return "translate(0,"+ (15 + i * 15) + ")";
+                })
+                .style("fill",globalData.colours.textBlue)
+                .text(function(d){
+                    return d;
+                });
+
+            //draw its parents
+            var parents = util.drawGroup(globalData,mainContainer, "parent", parentsData, (globalData.halfWidth() - (colWidth * 2)), colWidth);
+            //draw children
+            var children = util.drawGroup(globalData,mainContainer, "child", childrenData, (globalData.halfWidth() + colWidth), colWidth);
+            
+        },
+        "cleanup" : function(globalData, values){
+            d3.selectAll(".node").remove();
+            d3.selectAll(".parent").remove();
+            d3.selectAll(".child").remove();
+        },
+        "inspect" : function(globalData,values){
+            var id = Number(values.shift());
+            //get the node of this number.
+            d3.selectAll(".parent")
+                .select("rect")
+                    .transition().duration(500)
+                    .style("fill",function(d){
+                        if(d.id === id) return "blue";
+                        return "red";
+                    });
+
+            d3.selectAll(".child")
+                    .select("rect")
+                    .transition().duration(500)
+                    .style("fill",function(d){
+                        if(d.id === id) return "blue";
+                        return "red";
+                    });
         },
         //new -> addNode,
         "new" : function(globalData,values){
@@ -132,14 +200,6 @@ define(['d3'],function(d3){
             };
         }
     };
-
-    //Utility functions:
-    var drawNode = function(node){
-        //todo
-        //draw a node and its parents/children
-
-    };
-
 
     
     return nodeCommands;

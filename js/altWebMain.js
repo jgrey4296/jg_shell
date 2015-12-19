@@ -47,7 +47,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             "node" : NodeCommands,
             "rule" : RuleCommands,
             "rete" : ReteCommands,
-            "general" : GeneralCommands,
+            "general" : GeneralCommands
         },
         //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [
@@ -85,8 +85,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         usableHeight : window.innerHeight - 30,
         helpSize : 400,
 
-        halfWidth : this.usableWidth * 0.5,
-        halfHeight : this.usableHeight * 0.5,
+        halfWidth : function(){ return this.usableWidth * 0.5},
+        halfHeight : function(){ return this.usableHeight * 0.5},
         
         //The main svg:
         svg : null,
@@ -94,12 +94,12 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         columns : {},
 
     //Utility Functions:
-        calcWidth : function(avaiableWidth,noOfColumns){
+        calcWidth : function(availableWidth,noOfColumns){
             return availableWidth / (noOfColumns + 2);
         },
 
         columnPosition : function(oneColWidth,columnNumber){
-            return oneColWidth + (oneColWidht * columnNumber);
+            return oneColWidth + (oneColWidth * columnNumber);
         },
    
         getColumnObject : function(columnName){
@@ -117,9 +117,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             var commandToExecute;
             if(globalData.commands[globalData.currentCommandMode]
                && globalData.commands[globalData.currentCommandMode][commandName]){
+                console.log("Command Search: Found");
                 commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
             }else{        
                 //command not found, fallback
+                console.log("Command Search: Fallback");
                 var fallBacks = _.clone(globalData.commandFallBackOrder);
                 while(fallBacks.length > 0){
                     var currentFallback = fallBacks.shift();
@@ -161,7 +163,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     globalData.svg = d3.select("body").append("svg")
         .attr("width",globalData.usableWidth)
         .attr("height",globalData.usableHeight)
-        .style("background",globalData.colours.darkerBlue);
+        .style("background",globalData.colours.grey);
 
     MainCommandCLI("",globalData);
     
