@@ -117,7 +117,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             var commandToExecute;
             if(globalData.commands[globalData.currentCommandMode]
                && globalData.commands[globalData.currentCommandMode][commandName]){
-                console.log("Command Search: Found");
+                //console.log("Command Search: Found");
                 commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
             }else{        
                 //command not found, fallback

@@ -158,8 +158,8 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['negCondition'] = function(baseNode){
         baseNode.tags.isNegative = true;
         baseNode.tags.type = 'condition';
-        baseNode.constantTests = [];
-        baseNode.bindings = [];
+        baseNode.constantTests = {};
+        baseNode.bindings = {};
         return [];
     };
 
@@ -167,7 +167,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['negConjCondition'] = function(baseNode){
         baseNode.tags.isNCCCondition = true;
         baseNode.tags.type = 'negConjCondition';
-        baseNode.conditions = [];
+        baseNode.conditions = {};
         
         return [];
     };

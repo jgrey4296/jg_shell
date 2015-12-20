@@ -29,15 +29,20 @@ define(['d3','utils'],function(d3,util){
         },
         //** @command new -> addCondition/test/action
         "new" : function(globalData,values){
-            if(values[0] === "condition"){
+            var type = values.shift();
+            if(type === "condition"){
                globalData.shell.addNode(null,'conditions','condition');
-            }else if(values[0] === "action"){
-                globalData.shell.addAction(values.slice(1));
-            }else if(values[0] === "test"){
-                globalData.shell.addTest(values[1],values.slice(2));
-            }else if(values[0] === "negCondition"){
+            }else if(type === "action"){
+                globalData.shell.addAction(values);
+            }else if(type === "test"){
+                var target = values.shift();
+                while(values.length >= 3){
+                    var testParams = values.splice(0,3);
+                    globalData.shell.addTest(target,testParams);
+                }
+            }else if(type === "negCondition"){
                 globalData.shell.addNode(null,'conditions','negCondition');
-            }else if(values[0] === "negConjCondition"){
+            }else if(type === "negConjCondition"){
                 globalData.shell.addNode(null,'conditions','negConjCondition');
             }
         },

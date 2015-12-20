@@ -8,27 +8,25 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @function buildOrShareNetworkForConditions
        @purpose to add all given conditions to the network
     */
-    var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha){
+    var buildOrShareNetworkForConditions = function(parent,conditions,rootAlpha,allNodes){
         var currentNode = parent;
-        var tests, alphaMemory;
+        var alphaMemory;
         //for each condition
         conditions.forEach(function(condition){
             if(condition.tags.type !== 'condition' && condition.tags.type !== 'negConjCondition'
                && condition.tags.type !== 'negCondition'){
                 throw new Error("Inappropriate condition format");
             }
-            
+            var tests = _.pairs(condition.bindings);            
             if(condition.tags.isPositive){
                 currentNode = buildOrShareBetaMemoryNode(currentNode);
-                tests = condition.bindings;
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
-                currentNode = buildOrShareJoinNode(currentNode,alphaMemory,condition.bindings);
+                currentNode = buildOrShareJoinNode(currentNode,alphaMemory,tests);
             }else if(condition.tags.isNegative){
-                tests = condition.bindings;
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
                 currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
             }else if(condition.tags.isNCCCondition){
-                currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha);
+                currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha,allNodes);
             }else{
                 console.error("Problematic Condition:",condition);
                 throw new Error("Unrecognised condition type");
@@ -43,15 +41,15 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @function buildOrShareConstantTestNode
        @purpose Reuse, or create a new, constant test node, for the given test
      */
-    var buildOrShareConstantTestNode = function(parent,constantTest){
+    var buildOrShareConstantTestNode = function(parent,constantTestSpec){
         //Todo: write this as a functional select/find
         for(var i in parent.children){
             var node = parent.children[i];
-            if(ReteUtil.compareConstantNodeToTest(node,constantTest)){
+            if(ReteUtil.compareConstantNodeToTest(node,constantTestSpec)){
                 return node;
             }
         }
-        var newAlphaNode = new RDS.AlphaNode(parent,constantTest);
+        var newAlphaNode = new RDS.AlphaNode(parent,constantTestSpec);
         return newAlphaNode;
     };
     
@@ -61,10 +59,13 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose Create alpha network as necessary, stick an alpha memory on the end
        @reminder Rule{Conditions[]}, Condition{constantTests:[],bindings:[[]]}
     */
-    var buildOrShareAlphaMemory = function(condition,root){
+    var buildOrShareAlphaMemory = function(condition,root,allNodes){
         var currentNode = root;
-
-        currentNode = condition.constantTests.reduce(function(m,v){
+        var constantTests = _.keys(condition.constantTests).map(function(d){
+            return this[d];
+        },allNodes);
+        
+        currentNode = constantTests.reduce(function(m,v){
             return buildOrShareConstantTestNode(m,v);
         },currentNode);
         
@@ -158,6 +159,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose To reuse, or build a new, negative node
      */
     var buildOrShareNegativeNode = function(parent,alphaMemory,tests){
+        if(!(tests instanceof Array)) tests = _.pairs(tests);
         //see if theres an existing negative node to use
         for(var i in parent.children){
             var child = parent.children[i];
@@ -187,12 +189,15 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @function buildOrShareNCCNodes
        @purpose construction of NCCConditions
     */
-    var buildOrShareNCCNodes = function(parent,condition,rootAlpha){
+    var buildOrShareNCCNodes = function(parent,condition,rootAlpha,allNodes){
         if(condition.tags.isNCCCondition === undefined){
             throw new Error("BuildOrShareNCCNodes only takes NCCCondition");
         }
         //build a network for the conditions
-        var bottomOfSubNetwork = buildOrShareNetworkForConditions(parent,condition.conditions,rootAlpha);
+        var conditions = _.keys(condition.conditions).map(function(d){
+            return this[d];
+        },allNodes);
+        var bottomOfSubNetwork = buildOrShareNetworkForConditions(parent,conditions,rootAlpha,allNodes);
         //find an existing NCCNode with partner to use
         for(var i in parent.children){
             var child = parent.children[i];

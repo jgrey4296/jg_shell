@@ -269,7 +269,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param value The constant value to test against
      */
     CompleteShell.prototype.addTest = function(conditionId,testParams){
-        console.log("Adding test:",conditionId,testField,op,value,this.cwd.conditions);
+        console.log("Adding test:",conditionId,testParams,this.cwd.conditions);
         //check you're in a rule
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
@@ -280,7 +280,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             throw new Error("Can't add a test to a non-existent condition");
         }
         //Check the operator is a defined one
-        if(Rete.CompOperators[op] === undefined){
+        if(Rete.CompOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
         //Create the test
@@ -600,12 +600,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose remove an action from the current rule
        @note: an action is still a node, so is still in allnodes
      */
-    CompleteShell.prototype.removeAction = function(actionNum){
-        if(this.cwd.actions[actionNum] === undefined){
+    CompleteShell.prototype.removeAction = function(actionId){
+        if(this.cwd.actions[actionId] === undefined){
             throw new Error("Can't delete a non-existent action");
         }
         //remove from the rule
-        delete this.cwd.actions[actionNum];
+        delete this.cwd.actions[actionId];
         //remove from allnodes
     };
 
@@ -614,11 +614,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @method removeCondition
        @purpose remove a condition, and its tests, from a rule
      */
-    CompleteShell.prototype.removeCondition = function(condNum){
-        if(this.cwd.conditions[condNum] === undefined){
+    CompleteShell.prototype.removeCondition = function(condId){
+        if(this.cwd.conditions[condId] === undefined){
             throw new Error("Can't delete an non-existent condition");
         }
-        delete this.cwd.conditions[condNum];
+        delete this.cwd.conditions[condId];
     };
 
     /**
@@ -628,11 +628,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param condNum
        @param testNum
      */
-    CompleteShell.prototype.removeTest = function(condNum,testNum){
+    CompleteShell.prototype.removeTest = function(condId,testId){
         if(this.cwd.conditions[condNum] === undefined || this.cwd.conditions[condNum].constantTests[testNum] === undefined){
             throw new Error("can't delete a non-existent test");
         }
-        this.allNodes[condNum].constantTests.splice(testNum,1);
+        delete this.allNodes[condId].constantTests[testId];
         //this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
     };
 
@@ -699,28 +699,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         var rules = _.values(this.allNodes).filter(function(d){
             return d.tags.type === 'rule';
         });
-
-        //Reify each rule rather than use id's
-        var copiedRules = rules.map(function(rule){
-            var copy = _.clone(rule);
-            copy.actions = _.keys(rule.actions).map(function(id){
-                return this.allNodes[id];
-            },this);
-            copy.conditions = _.keys(rule.conditions).map(function(id){
-                return this.allNodes[id];
-            },this);
-
-            return copy;
-        },this);
-
+        
         console.log("Compiling copied rules:",copiedRules);
         //and add them to the rete net
         //returning the action nodes of the net
-        this.allActionNodes = copiedRules.map(function(d){
+        this.allActionNodes = rule.map(function(d){
             console.log("Adding rule:",d);
-            var action = Rete.addRule(d,this.reteNet);
+            var actions = Rete.addRule(d,this.reteNet,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
-            return action;
+            return actions;
         },this);
 
         console.log("All action nodes:",this.allActionNodes);

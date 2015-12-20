@@ -137,7 +137,7 @@ define(['underscore'],function(_){
      */
     //A constant test node
     //constantTest = {field:"",value:"",operator:""};
-    var AlphaNode = function(parent,constantTest){
+    var AlphaNode = function(parent,constantTestSpec){
         this.id = nextId;
         this.isConstantTestNode = true;
         this.parent = parent;
@@ -146,10 +146,10 @@ define(['underscore'],function(_){
         }
         this.children = [];
         this.outputMemory = undefined;
-        if(constantTest){
-            this.testField = constantTest.field;
-            this.testValue = constantTest.value;
-            this.operator = constantTest.operator;
+        if(constantTestSpec){
+            this.testField = constantTestSpec.values.field;
+            this.testValue = constantTestSpec.values.value;
+            this.operator = constantTestSpec.values.operator;
         }else{
             this.passThrough = true;
         }

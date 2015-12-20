@@ -89,12 +89,11 @@ define(['d3','utils'],function(d3,util){
         //new -> addNode,
         "new" : function(globalData,values){
             //Expand out simplifications
-            console.log("new",values);
             var target = values[0];
             if(target === "child") target = "children";
             if(target === "parent") target  = "parents";
             console.log("Target:",target);
-            globalData.shell.addNode(values[2],target,values[1]);
+            globalData.shell.addNode(values[2],target,values[1],values.slice(3));
         },
         //node creation Shortcuts:
         "nc" : function(globalData,values){

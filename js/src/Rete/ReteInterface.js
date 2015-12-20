@@ -113,9 +113,13 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @note Assumes the rule's actions and conditions are objects, not id's.
        @note see TotalShell::compileRete
      */
-    var addRule = function(rule,reteNet){
+    var addRule = function(rule,reteNet,allNodes){
+        var conditions = _.keys(rule.conditions).map(function(d){
+            return this[d];
+        },allNodes);
+                
         //build network with a dummy node for the parent
-        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,rule.conditions,reteNet.rootAlpha);
+        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes);
         //Build the actions that are triggered by the rule:
         var actionNodes = _.values(rule.actions).map(function(d){
             console.log("Adding action for:",d);

@@ -131,18 +131,18 @@ define(['./ReteDataStructures'],function(RDS){
        @purpose compare an existing constant test node to a constant test that wants to be built
      */
     //taking an alpha node and a ConstantTest
-    var compareConstantNodeToTest = function(node,constantTest){
-        if(!constantTest.isConstantTest){
+    var compareConstantNodeToTest = function(node,constantTestSpec){
+        if(!constantTestSpec.tags.isConstantTest){
             throw new Error("constantTest should be a ConstantTest Object");
         }
         if(!node.isConstantTestNode){
             throw new Error("Node should be an alpha/constant test node");
         }
-        if(node.testField !== constantTest.field
-           || node.testValue !== constantTest.value){
+        if(node.testField !== constantTestSpec.values.field
+           || node.testValue !== constantTest.values.value){
             return false;
         }
-        if(node.operator !== constantTest.operator){
+        if(node.operator !== constantTestSpec.values.operator){
             return false;
         }
         return true;
@@ -153,6 +153,10 @@ define(['./ReteDataStructures'],function(RDS){
        @purpose Compare specified join tests, to see if a join node is the same as one needed
     */
     var compareJoinTests = function(firstTestSet,secondTestSet){
+        if(!(secondTestSet instanceof Array)){
+            secondTestSet = _.pairs(secondTestSet);
+        }
+        
         if(firstTestSet.length === 0 && secondTestSet.length === 0){
             return true;
         }
