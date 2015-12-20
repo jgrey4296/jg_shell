@@ -131,12 +131,25 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
 
     //------------------------------
+    //todo: update rete procedures to tast for tags
+    ctors['test'] = function(baseNode,params){
+        console.log("Creating a test");
+        baseNode.tags.type = 'constantTest';
+        baseNode.tags.isConstantTest = true;
+        baseNode.values.field = params[0];
+        baseNode.values.operator = params[1];
+        baseNode.values.value = params[2];        
+        return [];
+    };
+    
+    
+    //------------------------------
     //Condition Object:?
     ctors['condition'] = function(baseNode){
         console.log("GraphStructure: condition, firing");
         baseNode.tags.type = 'condition';
         baseNode.tags.isPositive = true;
-        baseNode.constantTests = [];
+        baseNode.constantTests = {};
         baseNode.bindings = {};
         return [];
     };
@@ -161,9 +174,12 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     
     //------------------------------
     //The action object:
-    ctors['action'] = function(baseNode){
+    ctors['action'] = function(baseNode,values){
         baseNode.tags.actionType = "assert";
         baseNode.tags.actionFocus = "wme";
+        while(values.length >= 2){
+            baseNode.values[values.shift()] = values.shift();
+        }
         //of the form: a : [+ 5]
         //meaning: resultingWME.a = resultingWME.a + 5
         baseNode.arithmeticActions = {};

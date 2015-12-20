@@ -28,9 +28,11 @@ define(['d3','utils'],function(d3,util){
 
             //draw the node
             var node = mainContainer.selectAll(".node").data([cwdData],function(d){ return d.id; });
+            //Removal:
             node.exit().remove();
+            
             node.enter().append("g").classed("node",true)
-                .attr("transform","translate(" + globalData.halfWidth() + ",100)");
+                .attr("transform","translate(" + halfWidth + ",100)");
             node.append("rect")
                 .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
                 .attr("transform","translate("+ (- (colWidth * 0.5)) +",0)")
@@ -43,6 +45,7 @@ define(['d3','utils'],function(d3,util){
 
             node.selectAll("text").remove();
             var boundText = node.selectAll("text").data(nodeText);
+
             boundText.enter().append("text")
                 .style("text-anchor","middle")
                 .attr("transform",function(d,i){
@@ -54,9 +57,9 @@ define(['d3','utils'],function(d3,util){
                 });
 
             //draw its parents
-            var parents = util.drawGroup(globalData,mainContainer, "parent", parentsData, (globalData.halfWidth() - (colWidth * 2)), colWidth);
+            var parents = drawGroup(globalData,mainContainer, "parent", parentsData, (globalData.halfWidth() - (colWidth * 2)), colWidth);
             //draw children
-            var children = util.drawGroup(globalData,mainContainer, "child", childrenData, (globalData.halfWidth() + colWidth), colWidth);
+            var children = drawGroup(globalData,mainContainer, "child", childrenData, (globalData.halfWidth() + colWidth), colWidth);
             
         },
         "cleanup" : function(globalData, values){
@@ -162,19 +165,6 @@ define(['d3','utils'],function(d3,util){
         "rename" : function(globalData,values){
             globalData.shell.rename(values[0]);
         },
-        //Stashing:
-        "stash" : function(globalData,values){
-            globalData.shell.stash();
-        },
-        "unstash" : function(globalData,values){
-            globalData.shell.unstash();
-        },
-        "top" : function(globalData,values){
-            globalData.shell.top();
-        },
-        "prev" : function(globalData,values){
-            globalData.shell.cd(sh.previousLocation);
-        },
         //Search:
         "search" : function(globalData,values){
             globalData.lastSetOfSearchResults = globalData.shell.search(values[0],values[1],values[2]);
@@ -192,15 +182,87 @@ define(['d3','utils'],function(d3,util){
             "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType."],
             "link"  : [ "$target $id", " Link two existing nodes."],
             "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
-            "stash" : [ "", " Add the current node to the temp stack."],
-            "unstash": ["", " Pop off and move to the head of the temp stack."],
-            "top"   : [ "", " Move to the top of the temp stack."],
-            "prev"  : [ "", " Move to the node previously you were at before the current node. "],
             "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
             };
         }
     };
 
+    //--------------------
+    //Utils
+    
+    var drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
+        console.log("drawing:",data);
+        var amtOfSpace, heightOfNode,
+            animationLength = 100;
+        if(data.length > 0){
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
+        }else{
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - 20);
+        }
+        var boundGroup = container.selectAll("."+className)
+            .data(data,function(d,i){ return d.id; });
+
+        //exit selection
+        boundGroup.exit().selectAll("rect")
+            .transition()
+            .duration(animationLength)
+            .style("fill","red");
+
+        boundGroup.exit().selectAll("text").transition()
+            .style("opacity",0);
+        
+        boundGroup.exit().transition().delay(animationLength).remove();
+
+        //entry selection
+        var entryGroup = boundGroup.enter().append("g")
+            .classed(className, true)
+            .attr("transform","translate(" + xLocation + ",100)");
+
+
+        //create
+        entryGroup.append("rect")
+            .attr("width",0)
+            .attr("height",0)
+            .style("fill",globalData.colours.lightBlue)
+            .style("opacity",0)
+            .attr("rx",0)
+            .attr("ry",0);
+       
+
+        entryGroup.append("text")
+            .style("text-anchor","middle")
+            .style("fill","white")
+            .style("opacity",0);
+
+
+        //update selection
+        //transition to updated sizes etc
+        boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
+                return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+        })
+            .selectAll("text")
+            .attr("transform","translate(" + (groupWidth * 0.5) + "," +
+                  (heightOfNode * 0.5) + ")");
+
+        
+        boundGroup.selectAll("rect")
+            .transition().delay(animationLength*3).duration(animationLength)
+            .attr("width",groupWidth)
+            .attr("height",heightOfNode)
+            .attr("rx",10)
+            .attr("ry",10)
+            .style("opacity",1);
+
+        boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
+            .text(function(d){ return d.id + " : " + d.name; })
+            .style("opacity",1);
+        
+        return boundGroup;
+    };
+
+    
     
     return nodeCommands;
 });

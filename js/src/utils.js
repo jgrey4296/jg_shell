@@ -68,43 +68,75 @@ define(['underscore','d3'],function(_,d3){
         return container;
     }
 
-
+    //Generic draw group function, modes will typically create their own version
     util.drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
+        console.log("drawing:",data);
+        var amtOfSpace, heightOfNode,
+            animationLength = 100;
+        if(data.length > 0){
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
+        }else{
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - 20);
+        }
         var boundGroup = container.selectAll("."+className)
-            .data(data,function(d){ return d.id; });
-        boundGroup.exit().remove();
+            .data(data,function(d,i){ return d.id; });
+
+        //exit selection
+        boundGroup.exit().selectAll("rect")
+            .transition()
+            .duration(animationLength)
+            .style("fill","red");
+
+        boundGroup.exit().selectAll("text").transition()
+            .style("opacity",0);
+        
+        boundGroup.exit().transition().delay(animationLength).remove();
+
+        //entry selection
         var entryGroup = boundGroup.enter().append("g")
             .classed(className, true)
-            .attr("transform",function(d,i){
-                return "translate(" + xLocation + "," + (150 + i * 100) + ")";
-            })
+            .attr("transform","translate(" + xLocation + ",100)");
 
-        
+
+        //create
         entryGroup.append("rect")
-            .attr("width",groupWidth)
-            .attr("height",50)
+            .attr("width",0)
+            .attr("height",0)
             .style("fill",globalData.colours.lightBlue)
             .style("opacity",0)
             .attr("rx",0)
-            .attr("ry",0)
-            .transition().duration(250)
-            .delay(function(d,i){ return i * 30 })
+            .attr("ry",0);
+       
+
+        entryGroup.append("text")
+            .style("text-anchor","middle")
+            .style("fill","white")
+            .style("opacity",0);
+
+
+        //update selection
+        //transition to updated sizes etc
+        boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
+                return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+        })
+            .selectAll("text")
+            .attr("transform","translate(" + (groupWidth * 0.5) + "," +
+                  (heightOfNode * 0.5) + ")");
+
+        
+        boundGroup.selectAll("rect")
+            .transition().delay(animationLength*3).duration(animationLength)
+            .attr("width",groupWidth)
+            .attr("height",heightOfNode)
             .attr("rx",10)
             .attr("ry",10)
             .style("opacity",1);
 
-
-        entryGroup.append("text")
-            .style("text-anchor","middle")
-            .attr("transform","translate(" + (groupWidth * 0.5) + ",25)")
+        boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
             .text(function(d){ return d.id + " : " + d.name; })
-            .style("fill","white")
-            .style("opacity",0)
-            .transition().delay(function(d,i){
-                return 100 + i * 10;
-            }).duration(500)
             .style("opacity",1);
-
         
         return boundGroup;
     };

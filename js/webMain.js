@@ -972,10 +972,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         }
 
         stashContainer.selectAll("text").remove();
-
         //draw a simple list of text
         var boundTexts = stashContainer.selectAll("text").data(stashedList);
-
         boundTexts.enter().append("text")
             .attr("text-anchor","right")
             .style("fill",colours.textBlue)
@@ -985,7 +983,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             .text(function(d,i){
                 return d;
             });
-        
     };
 
     /**

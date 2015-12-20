@@ -181,7 +181,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     */
     CompleteShell.prototype.addLink = function(node,target,id,name){
         if(isNaN(Number(id))){
-            throw new Error("Trying to link without providing a value id number");
+            throw new Error("Trying to link without providing a valid id number");
         }
         if(node && node[target]){
             node[target][Number(id)] = name;
@@ -200,7 +200,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
        @return the newly created node
     */
-    CompleteShell.prototype.addNode = function(name,target,type){
+    CompleteShell.prototype.addNode = function(name,target,type,values){
         if(name === null) {
             name = "anon";
             console.warn("making an anonymous node");
@@ -229,12 +229,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
         }
         this.allNodes[newNode.id] = newNode;
-
         
         //Extend the structure of the new node as necessary:
         if(DSCtors[type] !== undefined){
             console.log("Calling ctor:",type);
-            var newChildren = DSCtors[type](newNode);
+            var newChildren = DSCtors[type](newNode,values);
             if(newChildren && newChildren.length > 0){
                 var flatChildren = _.flatten(newChildren);
                 flatChildren.forEach(function(d){
@@ -269,24 +268,35 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param op The operator to use in the test
        @param value The constant value to test against
      */
-    CompleteShell.prototype.addTest = function(conditionNumber,testField,op,value){
-        console.log("Adding test:",conditionNumber,testField,op,value,this.cwd.conditions);
+    CompleteShell.prototype.addTest = function(conditionId,testParams){
+        console.log("Adding test:",conditionId,testField,op,value,this.cwd.conditions);
+        //check you're in a rule
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-
-        if(this.cwd.conditions[conditionNumber] === undefined){
-            console.log(conditionNumber,this.cwd.conditions);
+        //check the specified condition exists
+        if(this.cwd.conditions[conditionId] === undefined){
+            console.log(conditionId,this.cwd.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
-
         //Check the operator is a defined one
         if(Rete.CompOperators[op] === undefined){
             throw new Error("Unrecognised operator");
         }
-        
-        var test = new Rete.ConstantTest(testField,op,value);
-        this.allNodes[conditionNumber].constantTests.push(test);
+        //Create the test
+        var test = new GraphNode("anonTest",conditionId,"anonCondition",
+                                 'constantTest');
+        //link it to the condition
+        this.addLink(this.allNodes[conditionId],"constantTests",test.id,"anonTest");
+        //store the test as a node
+        if(this.allNodes[test.id] !== undefined){
+            console.warn("Assigning test to existing node: ", test,this.allNodes[test.id]);
+        }
+        this.allNodes[test.id] = test;
+
+        //extend the node to be a test
+        if(DSCtors['test'] === undefined) throw new Error("No ctor for test");
+        DSCtors['test'](test,testParams);
     };
 
     /**
@@ -302,11 +312,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
 
         //add an action node to cwd.actions
-        var newActions = valueArray.map(function(d){
-            console.log("Creating new action:",d);
-            return this.addNode(d,'actions','action');
-        },this);
-        return newActions;        
+        var newAction = this.addNode(valueArray.shift(),'actions','action',valueArray);
+        return newAction;
     };
 
     //------------------------------
@@ -686,6 +693,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose Retrieve all defined rules, add them to the rete net
      */    
     CompleteShell.prototype.compileRete = function(){
+        console.log("Compiling Rules");
         //take all defined rules
         //TODO: make this all rules that are descendents of the current node?
         var rules = _.values(this.allNodes).filter(function(d){
@@ -701,6 +709,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             copy.conditions = _.keys(rule.conditions).map(function(id){
                 return this.allNodes[id];
             },this);
+
             return copy;
         },this);
 

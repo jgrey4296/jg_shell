@@ -3,17 +3,25 @@
    @purpose To implement all user commands dealing with rules
 */
 
-define(['d3'],function(d3){
+define(['d3','utils'],function(d3,util){
     var columnNames = ["Conditions","Rule","Actions"];
     
     var ruleCommands = {
         "draw" : function(globalData,values){
-            d3.select("svg").append("circle")
-                .attr("r",50)
-                .style("fill","red");
+            if(globalData.shell.cwd.tags.type === "rule"){
+                drawRule(globalData);
+            }else if(globalData.shell.cwd.tags.type === "condition"){
+                //todo
+            }else if(globalData.shell.cwd.tags.type === "action"){
+                //todo
+            }else if(globalData.shell.cwd.tags.type === "constantTest"){
+                //todo
+            }
         },
         "cleanup" : function(globalData, values){
-            d3.selectAll("circle").remove();
+            d3.select("#mainContainer").selectAll(".condition").remove();
+            d3.select("#mainContainer").selectAll(".action").remove();
+            d3.select("#mainContainer").select(".rule").remove();
         },
         //** @command cd
         "cd" : function(globalData,values){
@@ -26,7 +34,7 @@ define(['d3'],function(d3){
             }else if(values[0] === "action"){
                 globalData.shell.addAction(values.slice(1));
             }else if(values[0] === "test"){
-                globalData.shell.addTest(values[1],values[2],values[3],values[4]);
+                globalData.shell.addTest(values[1],values.slice(2));
             }else if(values[0] === "negCondition"){
                 globalData.shell.addNode(null,'conditions','negCondition');
             }else if(values[0] === "negConjCondition"){
@@ -103,6 +111,153 @@ define(['d3'],function(d3){
         },
     };
 
+    //--------------------
+    //utils:
+
+    //draw a set of condtions or actions
+    //conditions need to draw tests and bindings, negative status, or conditions
+    //actions need to draw
+    var drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
+        console.log("drawing:",data);
+        var amtOfSpace, heightOfNode,
+            animationLength = 100;
+        if(data.length > 0){
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
+        }else{
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - 20);
+        }
+        
+        var boundGroup = container.selectAll("."+className)
+            .data(data,function(d,i){ return d.id; });
+
+        //exit selection
+        boundGroup.exit().selectAll("rect")
+            .transition()
+            .duration(animationLength)
+            .style("fill","red");
+
+        boundGroup.exit().selectAll("text").transition()
+            .style("opacity",0);
+        
+        boundGroup.exit().transition().delay(animationLength).remove();
+
+        //entry selection
+        var entryGroup = boundGroup.enter().append("g")
+            .classed(className, true)
+            .attr("transform","translate(" + xLocation + ",100)");
+
+
+        //create
+        entryGroup.append("rect")
+            .attr("width",0)
+            .attr("height",0)
+            .style("fill",globalData.colours.lightBlue)
+            .style("opacity",0)
+            .attr("rx",0)
+            .attr("ry",0);
+       
+
+        entryGroup.append("text")
+            .style("text-anchor","middle")
+            .style("fill","white")
+            .style("opacity",0);
+
+
+        //update selection
+        //transition to updated sizes etc
+        boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
+                return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+        })
+            .selectAll("text")
+            .attr("transform","translate(" + (groupWidth * 0.5) + "," +
+                  (heightOfNode * 0.5) + ")");
+
+        
+        boundGroup.selectAll("rect")
+            .transition().delay(animationLength*3).duration(animationLength)
+            .attr("width",groupWidth)
+            .attr("height",heightOfNode)
+            .attr("rx",10)
+            .attr("ry",10)
+            .style("opacity",1);
+
+        boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
+            .text(function(d){ return d.id + " : " + d.name; })
+            .style("opacity",1);
+        
+        return boundGroup;
+    };
+
+    /**
+       @function drawRule
+       @purpose draws a rule
+     */
+    var drawRule = function(globalData){
+            console.log("Drawing rule");
+            var colWidth = globalData.calcWidth(globalData.usableWidth,columnNames.length);
+            var halfWidth = globalData.halfWidth();
+            //get the data:
+            var cwdData = globalData.shell.cwd;
+            var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
+            var conditionData, actionData;
+            if(cwdData.conditions){
+                conditionData = _.keys(cwdData.conditions).map(function(d){
+                    return this.allNodes[d];
+                },globalData.shell);
+            }else{
+                conditionData = [];
+            }
+
+            if(cwdData.actions){
+                actionData = _.keys(cwdData.actions).map(function(d){
+                    return this.allNodes[d];
+                },globalData.shell);
+            }else{
+                actionData = [];
+            }
+
+            //container
+            var mainContainer = util.selectOrShare("mainContainer");
+            
+            //draw rule
+            var rule = mainContainer.selectAll(".rule").data([cwdData],function(d){
+                return d.id;
+            });
+
+            rule.exit().remove();
+
+            rule.enter().append("g").classed("rule",true)
+                .attr("transform","translate(" + halfWidth + ",100)");
+            rule.append("rect")
+                .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
+                .attr("transform","translate(" + (- (colWidth * 0.5)) + ",0)")
+                .style("fill",globalData.colours.darkBlue)
+                .attr("rx",0).attr("ry",0)
+                .transition()
+                .attr("rx",10).attr("ry",10);
+
+            rule.selectAll("text").remove();
+            var boundText = rule.selectAll("text").data(nodeText);
+            boundText.enter().append("text")
+                .style("text-anchor","middle")
+                .attr("transform",function(d,i){
+                    return "translate(0," + (15 + i * 15) + ")";
+                })
+                .style("fill",globalData.colours.textBlue)
+                .text(function(d){
+                    return d;
+                });
+            //draw conditions
+            var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth);
+            //draw actions
+            var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth), colWidth);
+            //draw nodes the conditions test
+            //draw nodes the actions create
+    };
+
+    
     
     return ruleCommands;
 

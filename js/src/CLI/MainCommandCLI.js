@@ -22,7 +22,7 @@ define(['underscore'],function(_){
             console.warn("No function specified to execute: " + currentLine);
         }
         
-        //call draw command
+        //call the mode specific draw command
         var drawCommand = globalData.lookupOrFallBack("draw",globalData);
         if(drawCommand && typeof drawCommand === 'function'){
             try{
@@ -33,6 +33,11 @@ define(['underscore'],function(_){
         }else{
             throw new Error("No Draw Command Found");
         }
+
+        //Draw the general draw command:
+        if(globalData.commands.general.draw && typeof globalData.commands.general.draw === 'function'){
+            globalData.commands.general.draw(globalData);
+        }        
     };
     
     return MainCommandCLI;
