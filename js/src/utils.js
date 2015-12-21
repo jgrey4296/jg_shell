@@ -71,15 +71,10 @@ define(['underscore','d3'],function(_,d3){
     //Generic draw group function, modes will typically create their own version
     util.drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
         console.log("drawing:",data);
-        var amtOfSpace, heightOfNode,
+        var heightOfNode = util.calculateNodeHeight((globalData.usableHeight - 100),
+                                                    20,
+                                                    data.length),
             animationLength = 100;
-        if(data.length > 0){
-            amtOfSpace = (globalData.usableHeight - 100);
-            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
-        }else{
-            amtOfSpace = (globalData.usableHeight - 100);
-            heightOfNode = (amtOfSpace - 20);
-        }
         var boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
 
@@ -141,6 +136,15 @@ define(['underscore','d3'],function(_,d3){
         return boundGroup;
     };
 
+    //calculate, given an size of an area, how far apart node are,
+    // and the number of items: the size of each individual node
+    util.calculateNodeHeight = function(amtOfSpace,separatorSpace,dataLength){
+        if(dataLength > 0){
+            return (amtOfSpace - (dataLength * separatorSpace)) / dataLength;
+        }else{
+            return (amtOfSpace - separatorSpace);
+        }
+    };
     
     return util;
 });

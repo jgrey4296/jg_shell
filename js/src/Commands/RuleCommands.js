@@ -4,7 +4,6 @@
 */
 
 define(['d3','utils'],function(d3,util){
-    var columnNames = ["Conditions","Rule","Actions"];
     
     var ruleCommands = {
         "draw" : function(globalData,values){
@@ -122,18 +121,9 @@ define(['d3','utils'],function(d3,util){
     //draw a set of condtions or actions
     //conditions need to draw tests and bindings, negative status, or conditions
     //actions need to draw
-    var drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
+    var drawGroup = function(globalData,container,className,data,xLocation,groupWidth,heightOfNode){
         console.log("drawing:",data);
-        var amtOfSpace, heightOfNode,
-            animationLength = 100;
-        if(data.length > 0){
-            amtOfSpace = (globalData.usableHeight - 100);
-            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
-        }else{
-            amtOfSpace = (globalData.usableHeight - 100);
-            heightOfNode = (amtOfSpace - 20);
-        }
-        
+        var animationLength = 100;
         var boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
 
@@ -156,6 +146,7 @@ define(['d3','utils'],function(d3,util){
 
         //create
         entryGroup.append("rect")
+            .classed("groupRect",true)
             .attr("width",0)
             .attr("height",0)
             .style("fill",globalData.colours.lightBlue)
@@ -165,6 +156,7 @@ define(['d3','utils'],function(d3,util){
        
 
         entryGroup.append("text")
+            .classed("groupText",true)
             .style("text-anchor","middle")
             .style("fill","white")
             .style("opacity",0);
@@ -174,13 +166,14 @@ define(['d3','utils'],function(d3,util){
         //transition to updated sizes etc
         boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
                 return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
-        })
-            .selectAll("text")
+        });
+        
+        boundGroup.selectAll(".groupText")
             .attr("transform","translate(" + (groupWidth * 0.5) + "," +
-                  (heightOfNode * 0.5) + ")");
+                  (15) + ")");
 
         
-        boundGroup.selectAll("rect")
+        boundGroup.selectAll(".groupRect")
             .transition().delay(animationLength*3).duration(animationLength)
             .attr("width",groupWidth)
             .attr("height",heightOfNode)
@@ -188,7 +181,7 @@ define(['d3','utils'],function(d3,util){
             .attr("ry",10)
             .style("opacity",1);
 
-        boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
+        boundGroup.selectAll(".groupText").transition().delay(animationLength*3).duration(animationLength)
             .text(function(d){ return d.id + " : " + d.name; })
             .style("opacity",1);
         
@@ -201,7 +194,7 @@ define(['d3','utils'],function(d3,util){
      */
     var drawRule = function(globalData){
             console.log("Drawing rule");
-            var colWidth = globalData.calcWidth(globalData.usableWidth,columnNames.length);
+            var colWidth = globalData.calcWidth(globalData.usableWidth,3);
             var halfWidth = globalData.halfWidth();
             //get the data:
             var cwdData = globalData.shell.cwd;
@@ -254,14 +247,77 @@ define(['d3','utils'],function(d3,util){
                 .text(function(d){
                     return d;
                 });
-            //draw conditions
-            var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth);
+
+        //Draw the conditions and actions:
+        var amtOfSpace = (globalData.usableHeight - 100);
+        var separatorSpace = 20;
+        var conditionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,conditionData.length);
+        var actionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,actionData.length);
+        
+        //draw conditions
+        var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth,conditionNodeHeight);
+        drawConditions(globalData,conditions,colWidth, conditionNodeHeight);
+        
             //draw actions
-            var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth), colWidth);
+        var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth), colWidth,actionNodeHeight);
             //draw nodes the conditions test
             //draw nodes the actions create
     };
 
+    /**
+       @function drawConditions
+       @purpose Add condition specific nodes to a selection
+     */
+    var drawConditions = function(globalData,existingSelection,nodeWidth,heightOfNode){
+        //Draw tests
+        existingSelection.each(function(d,i){
+            //get the tests
+            var tests = _.keys(d.constantTests).map(function(g){
+                return globalData.shell.allNodes[g];
+            });
+            var separator = 5;
+            var heightOfTests = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + 5)),separator,tests.length);
+            //bind them
+            var boundTests = d3.select(this).selectAll(".test").data(tests,function(d){return d.id;});
+
+            //exit Selection
+            boundTests.exit().remove();
+            
+            //enter selection
+            var newTests = boundTests.enter().append("g").classed("test",true);
+
+            boundTests.attr("transform",function(e,i){
+                    return "translate(10,"+ ((heightOfNode * 0.1 + 5) + (i * (heightOfTests + separator))) + ")";
+                });
+
+            //create
+            newTests.append("rect")
+                .classed("conditionRect",true);
+
+            newTests.append("text")
+                .classed("testText",true);
+            
+            boundTests.selectAll(".conditionRect")
+                .attr("width",(nodeWidth - 20))
+                .attr("height",heightOfTests)
+                .style("fill","red")
+                .attr("rx",10)
+                .attr("ry",10);
+
+            boundTests.selectAll(".testText")
+                .text(function(d){
+                    return "(" + d.id + "): " + d.values.field + " "
+                        + d.values.operator + " " + d.values.value;
+                })
+                //.style("text-anchor","middle")
+                .attr("transform","translate(" + (10)
+                      + "," + (heightOfTests * 0.5) + ")");
+            
+        });
+        
+        //draw bindings
+
+    };
     
     
     return ruleCommands;

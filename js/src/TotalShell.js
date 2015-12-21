@@ -243,8 +243,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                     this.allNodes[d.id] = d;
                 },this);
             }
-        }else if(type !== 'GraphNode'){
-            console.log("No ctor for:",type);
+        }else if(type !== 'GraphNode' && type !== 'node'){
+            console.warn("No ctor for:",type);
         }
 
         //If the cwd WAS disconnected in some way,
@@ -391,18 +391,18 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @ie: toVar = wme.fromVar
      */
-    CompleteShell.prototype.setBinding = function(conditionNum,toVar,fromVar){
-        console.log("Add binding to:",conditionNum,toVar,fromVar);
+    CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar){
+        console.log("Add binding to:",conditionId,toVar,fromVar);
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-        if(this.cwd.conditions[conditionNum] === undefined){
+        if(this.cwd.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        var condition = this.allNodes[conditionNum];
+        var condition = this.allNodes[conditionId];
         //condition.bindings.push([toVar,fromVar]);
         condition.bindings[toVar] = fromVar;
-        console.log(this.cwd.conditions[conditionNum].bindings);
+        console.log(this.cwd.conditions[conditionId].bindings);
     };
 
     /**
@@ -416,16 +416,16 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @TODO allow bindings in the rhs/value field
      */
-    CompleteShell.prototype.setArithmetic = function(actionNum,varName,op,value){
-        console.log("Setting arithmetic of:",actionNum,varName,op,value);
+    CompleteShell.prototype.setArithmetic = function(actionId,varName,op,value){
+        console.log("Setting arithmetic of:",actionId,varName,op,value);
         console.log(_.keys(this.cwd.actions));
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Arithmetic can only be applied to actions of rules");
         }
-        if(this.cwd.actions[actionNum] === undefined){
+        if(this.cwd.actions[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
-        var action = this.allNodes[actionNum];
+        var action = this.allNodes[actionId];
 
         if(action === undefined){
             throw new Error("Could not find action");
@@ -448,12 +448,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @note If only a is supplied, sets the action's actionType tag
      */
-    CompleteShell.prototype.setActionValue = function(actionNum,a,b){
+    CompleteShell.prototype.setActionValue = function(actionId,a,b){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Can't set action values on non-actions");
         }
-        if(this.cwd.actions[actionNum] !== undefined){
-            var action = this.allNodes[actionNum];
+        if(this.cwd.actions[actionId] !== undefined){
+            var action = this.allNodes[actionId];
             if(b){
                 action.values[a] = b;
             }else{
@@ -470,12 +470,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param actionNum
        @param a the type
      */
-    CompleteShell.prototype.setActionType = function(actionNum,a){
+    CompleteShell.prototype.setActionType = function(actionId,a){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Can't set action type for non-rules");
         }
-        if(this.cwd.actions[actionNum] !== undefined){
-            var action = this.allNodes[actionNum];
+        if(this.cwd.actions[actionId] !== undefined){
+            var action = this.allNodes[actionId];
             if(a){
                 action.tags.actionType = a;
             }else{
@@ -496,16 +496,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param op The operator to test using
        @param val the value to test against
      */
-    CompleteShell.prototype.setTest = function(conNum,testNum,field,op,val){
+    CompleteShell.prototype.setTest = function(conditionId,testId,field,op,val){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to set test on a non-rule node");
         }
-        if(this.cwd.conditions[conNum] === undefined || this.cwd.conditions[conNum].constantTests[testNum] === undefined){
+        if(this.cwd.conditions[conditionId] === undefined || this.cwd.conditions[conditionId].constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
-        this.cwd.conditions[conNum].constantTests[testNum].field = field;
-        this.cwd.conditions[conNum].constantTests[testNum].operator = op;
-        this.cwd.conditions[conNum].constantTests[testNum].value = val;
+        var test = this.allNodes[testId];
+        test.values.field = field;
+        test.values.operator = op;
+        test.values.value = value;
     };
 
     //------------------------------
@@ -522,7 +523,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.allNodes[id] === undefined){
             throw new Error("unrecognised node to delete");
         }
-        this.allNodes.splice(id,1);
+        delete this.allNodes(id);
     };
 
     /**
@@ -531,11 +532,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose remove a node link from the cwd
        @param nodeToDelete The node object to remove from the cwd
      */
-    CompleteShell.prototype.rm = function(nodeToDelete){
+    CompleteShell.prototype.rm = function(nodeToDelete,target){
+        if(target === undefined) target = 'parents';
         var removedNode = null;
         if(!isNaN(Number(nodeToDelete))){
             //delete numeric id node
-            removedNode = this.removeNumericId(Number(nodeToDelete),'parents');
+            removedNode = this.removeNumericId(Number(nodeToDelete),target);
             if(!removedNode){
                 removedNode = this.removeNumericId(Number(nodeToDelete),'children');
             }
@@ -629,7 +631,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param testNum
      */
     CompleteShell.prototype.removeTest = function(condId,testId){
-        if(this.cwd.conditions[condNum] === undefined || this.cwd.conditions[condNum].constantTests[testNum] === undefined){
+        if(this.cwd.conditions[condId] === undefined || this.cwd.conditions[condId].constantTests[testId] === undefined){
             throw new Error("can't delete a non-existent test");
         }
         delete this.allNodes[condId].constantTests[testId];
@@ -641,17 +643,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param conditionNumber
        @param boundVar
      */
-    CompleteShell.prototype.removeBinding = function(condNum,boundVar){
-        console.log("removing binding:",condNum,boundVar);
-        if(this.cwd.conditions[condNum] === undefined){
+    CompleteShell.prototype.removeBinding = function(condId,boundVar){
+        console.log("removing binding:",condId,boundVar);
+        if(this.cwd.conditions[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
-        var condition = this.allNodes[condNum];//this.cwd.conditions[condNum];
-        var index = _.find(condition.bindings,function(d){
-            return d[0] === boundVar;
-        });
-        if(index !== undefined){
-            condition.bindings.splice(index,1);
+        var condition = this.allNodes[condId];
+        if(condition.bindings[boundVar] !== undefined){
+            delete condition.bindings[boundVar];
         }
     }
     
@@ -869,7 +868,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @stub
      */
     CompleteShell.prototype.pwd = function(){
-
+        throw new Error("Unimplemented: pwd");
     };
 
     //------------------------------
