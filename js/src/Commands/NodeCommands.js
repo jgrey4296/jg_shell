@@ -60,7 +60,17 @@ define(['d3','utils'],function(d3,util){
             var parents = drawGroup(globalData,mainContainer, "parent", parentsData, (globalData.halfWidth() - (colWidth * 2)), colWidth);
             //draw children
             var children = drawGroup(globalData,mainContainer, "child", childrenData, (globalData.halfWidth() + colWidth), colWidth);
-            
+
+            //figure out parent path:
+            var path = pathExtraction(globalData,10).join(" --> ");
+            var pathText = d3.select("#pathText");
+            if(pathText.empty()){
+                pathText = d3.select("svg").append("text").attr("id","pathText")
+                    .style("fill","white")
+                    .attr("transform","translate(" + (globalData.usableWidth * 0.5) + ",50)")
+                    .style("text-anchor","middle");
+            }
+            pathText.text(path);            
         },
         "cleanup" : function(globalData, values){
             d3.selectAll(".node").remove();
@@ -261,6 +271,20 @@ define(['d3','utils'],function(d3,util){
         return boundGroup;
     };
 
+
+    var pathExtraction = function(globalData,depth){
+        var path = [];
+        var shell = globalData.shell;
+        var cwd = shell.cwd;
+        while(cwd._originalParent !== undefined && depth > 0){
+            path.push(cwd.name + "(" + cwd.id +")");
+            cwd = shell.allNodes[cwd._originalParent];
+            depth--;
+        }
+        console.log("Final path:",path);
+        return path.reverse();
+    };
+    
     
     
     return nodeCommands;

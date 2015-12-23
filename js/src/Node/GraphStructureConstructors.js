@@ -15,7 +15,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //THE INSTITUTION OBJECT
     ctors['institution'] = function(baseNode){
         baseNode.tags.type = 'institution';
-        //Object of child name + type + subchildren
+        //Object of: {childName : [type, subchildren] }
         var children = {
             "Roles" : ['container',
                        ['incumbent','challenger','controlled','exempt']],
@@ -208,7 +208,17 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         });
         return createdChildren;        
     }
-    
+
+    //--------------------
+    //an FSM
+    ctors['fsm'] = function(baseNode){
+        baseNode.tags.type = 'fsm';
+        baseNode.incomingEvents = {};
+        baseNode.outgoingEvents = {};
+        return [];
+    };
+
+
     
     return ctors;
 });

@@ -37,6 +37,9 @@ define(['underscore'],function(_){
         //this.conditions
         //this.actions
 
+        //an fsm is supplemented with:
+        //this.events
+        
         //an action is supplemented with:
         //this.arithmeticActions
 

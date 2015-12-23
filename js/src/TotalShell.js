@@ -41,7 +41,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         //AllRules:
         this.allRules = [];
         this.allRulesByName = {};
-        //current node/rule
+        //current node/rule, as an ACTUAL OBJECT, NOT AN ID
         this.cwd = this.root;
 
         //stashed locations:
