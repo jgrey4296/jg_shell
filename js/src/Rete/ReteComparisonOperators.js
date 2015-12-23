@@ -9,7 +9,7 @@ if(typeof define !== 'function'){
 //Define an object of comparisons able to
 //be used in constant tests
 define([],function(){
-
+    //See general utils file for converting to string
     var ConstantTestOperators = {
         "EQ" : function(a,b){
             return a===b;

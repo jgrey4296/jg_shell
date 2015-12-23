@@ -133,7 +133,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //------------------------------
     //todo: update rete procedures to tast for tags
     ctors['test'] = function(baseNode,params){
-        console.log("Creating a test");
+        console.log("Creating a test",params);
         baseNode.tags.type = 'constantTest';
         baseNode.tags.isConstantTest = true;
         baseNode.values.field = params[0];

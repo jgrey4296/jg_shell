@@ -202,11 +202,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     */
     CompleteShell.prototype.addNode = function(name,target,type,values){
         if(name === null) {
-            name = "anon";
+            name = type || "anon";
             console.warn("making an anonymous node");
         }
         //validate input:
-        if(this.cwd[target] === undefined) throw new Error("Unknown target");
+        if(this.cwd[target] === undefined){ //throw new Error("Unknown target");
+            console.warn("Creating target: ",target,this.cwd);
+            this.cwd[target] = {};
+        }
         type = type || "GraphNode";
         
         var newNode;
@@ -275,7 +278,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         //check the specified condition exists
-        if(this.cwd.conditions[conditionId] === undefined){
+        if(this.cwd.conditions[conditionId] === undefined
+          || this.allNodes[conditionId] === undefined){
             console.log(conditionId,this.cwd.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
@@ -283,9 +287,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(Rete.CompOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
+        var condition = this.allNodes[conditionId];
         //Create the test
-        var test = new GraphNode("anonTest",conditionId,"anonCondition",
-                                 'constantTest');
+        var test = new GraphNode(null,conditionId,condition.name,'constantTest');
         //link it to the condition
         this.addLink(this.allNodes[conditionId],"constantTests",test.id,"anonTest");
         //store the test as a node
@@ -631,10 +635,16 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param testNum
      */
     CompleteShell.prototype.removeTest = function(condId,testId){
-        if(this.cwd.conditions[condId] === undefined || this.cwd.conditions[condId].constantTests[testId] === undefined){
+        console.log("removing:",condId,testId,this.cwd);
+        if(this.cwd.conditions[condId] === undefined ||
+           this.allNodes[condId] === undefined ||
+           this.allNodes[condId].constantTests[testId] === undefined){
             throw new Error("can't delete a non-existent test");
         }
-        delete this.allNodes[condId].constantTests[testId];
+        var condition = this.allNodes[condId];
+        if(condition.constantTests[testId] !== undefined){
+            delete condition.constantTests[testId];
+        }
         //this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
     };
 
@@ -645,12 +655,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.removeBinding = function(condId,boundVar){
         console.log("removing binding:",condId,boundVar);
-        if(this.cwd.conditions[condId] === undefined){
+        if(this.cwd.conditions[condId] === undefined
+          || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
         var condition = this.allNodes[condId];
         if(condition.bindings[boundVar] !== undefined){
             delete condition.bindings[boundVar];
+        }else{
+            console.warn("Could not find binding:",boundVar,condition);
         }
     }
     

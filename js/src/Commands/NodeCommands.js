@@ -200,7 +200,7 @@ define(['d3','utils'],function(d3,util){
     //Utils
     
     var drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
-        console.log("drawing:",data);
+        //console.log("drawing:",data);
         var amtOfSpace, heightOfNode,
             animationLength = 100;
         if(data.length > 0){
@@ -281,7 +281,6 @@ define(['d3','utils'],function(d3,util){
             cwd = shell.allNodes[cwd._originalParent];
             depth--;
         }
-        console.log("Final path:",path);
         return path.reverse();
     };
     

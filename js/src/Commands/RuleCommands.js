@@ -122,7 +122,7 @@ define(['d3','utils'],function(d3,util){
     //conditions need to draw tests and bindings, negative status, or conditions
     //actions need to draw
     var drawGroup = function(globalData,container,className,data,xLocation,groupWidth,heightOfNode){
-        console.log("drawing:",data);
+        //console.log("drawing:",data);
         var animationLength = 100;
         var boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
@@ -193,62 +193,62 @@ define(['d3','utils'],function(d3,util){
        @purpose draws a rule
      */
     var drawRule = function(globalData){
-            console.log("Drawing rule");
-            var colWidth = globalData.calcWidth(globalData.usableWidth,3);
-            var halfWidth = globalData.halfWidth();
-            //get the data:
-            var cwdData = globalData.shell.cwd;
-            var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
-            var conditionData, actionData;
-            if(cwdData.conditions){
-                conditionData = _.keys(cwdData.conditions).map(function(d){
-                    return this.allNodes[d];
-                },globalData.shell);
-            }else{
-                conditionData = [];
-            }
-
-            if(cwdData.actions){
-                actionData = _.keys(cwdData.actions).map(function(d){
-                    return this.allNodes[d];
-                },globalData.shell);
-            }else{
-                actionData = [];
-            }
-
-            //container
-            var mainContainer = util.selectOrShare("mainContainer");
-            
-            //draw rule
-            var rule = mainContainer.selectAll(".rule").data([cwdData],function(d){
-                return d.id;
-            });
-
-            rule.exit().remove();
-
-            rule.enter().append("g").classed("rule",true)
-                .attr("transform","translate(" + halfWidth + ",100)");
-            rule.append("rect")
-                .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
-                .attr("transform","translate(" + (- (colWidth * 0.5)) + ",0)")
-                .style("fill",globalData.colours.darkBlue)
-                .attr("rx",0).attr("ry",0)
-                .transition()
-                .attr("rx",10).attr("ry",10);
-
-            rule.selectAll("text").remove();
-            var boundText = rule.selectAll("text").data(nodeText);
-            boundText.enter().append("text")
-                .style("text-anchor","middle")
-                .attr("transform",function(d,i){
+        //console.log("Drawing rule");
+        var colWidth = globalData.calcWidth(globalData.usableWidth,3);
+        var halfWidth = globalData.halfWidth();
+        //get the data:
+        var cwdData = globalData.shell.cwd;
+        var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
+        var conditionData, actionData;
+        if(cwdData.conditions){
+            conditionData = _.keys(cwdData.conditions).map(function(d){
+                return this.allNodes[d];
+            },globalData.shell);
+        }else{
+            conditionData = [];
+        }
+        
+        if(cwdData.actions){
+            actionData = _.keys(cwdData.actions).map(function(d){
+                return this.allNodes[d];
+            },globalData.shell);
+        }else{
+            actionData = [];
+        }
+        
+        //container
+        var mainContainer = util.selectOrShare("mainContainer");
+        
+        //draw rule
+        var rule = mainContainer.selectAll(".rule").data([cwdData],function(d){
+            return d.id;
+        });
+        
+        rule.exit().remove();
+        
+        rule.enter().append("g").classed("rule",true)
+            .attr("transform","translate(" + halfWidth + ",100)");
+        rule.append("rect")
+            .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
+            .attr("transform","translate(" + (- (colWidth * 0.5)) + ",0)")
+            .style("fill",globalData.colours.darkBlue)
+            .attr("rx",0).attr("ry",0)
+            .transition()
+            .attr("rx",10).attr("ry",10);
+        
+        rule.selectAll("text").remove();
+        var boundText = rule.selectAll("text").data(nodeText);
+        boundText.enter().append("text")
+            .style("text-anchor","middle")
+            .attr("transform",function(d,i){
                     return "translate(0," + (15 + i * 15) + ")";
                 })
-                .style("fill",globalData.colours.textBlue)
-                .text(function(d){
+            .style("fill",globalData.colours.textBlue)
+            .text(function(d){
                     return d;
                 });
 
-        //Draw the conditions and actions:
+        //Calculate sizes:
         var amtOfSpace = (globalData.usableHeight - 100);
         var separatorSpace = 20;
         var conditionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,conditionData.length);
@@ -256,67 +256,119 @@ define(['d3','utils'],function(d3,util){
         
         //draw conditions
         var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth,conditionNodeHeight);
-        drawConditions(globalData,conditions,colWidth, conditionNodeHeight);
+        //Annotate conditions:
+        annotateConditions(globalData,conditions,colWidth, conditionNodeHeight);
         
-            //draw actions
+        //draw actions
         var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth), colWidth,actionNodeHeight);
-            //draw nodes the conditions test
-            //draw nodes the actions create
+        //annotate actions:
+        annotateActions(globalData,actions,colWidth,actionNodeHeight);
+        
+        //draw nodes the conditions test
+        //draw nodes the actions create
     };
 
     /**
        @function drawConditions
        @purpose Add condition specific nodes to a selection
      */
-    var drawConditions = function(globalData,existingSelection,nodeWidth,heightOfNode){
-        //Draw tests
+    var annotateConditions = function(globalData,existingSelection,nodeWidth,heightOfNode){
+        console.log("Annotating Conditions");
+        //add details to each element of the selection, to describe it as a condition
+        var separator = 5;
         existingSelection.each(function(d,i){
-            //get the tests
+            //get the data
             var tests = _.keys(d.constantTests).map(function(g){
                 return globalData.shell.allNodes[g];
             });
-            var separator = 5;
-            var heightOfTests = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + 5)),separator,tests.length);
-            //bind them
-            var boundTests = d3.select(this).selectAll(".test").data(tests,function(d){return d.id;});
-
-            //exit Selection
-            boundTests.exit().remove();
+            var bindings = _.pairs(d.bindings);
             
-            //enter selection
-            var newTests = boundTests.enter().append("g").classed("test",true);
+            //calculate sizes
+            var heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
 
-            boundTests.attr("transform",function(e,i){
-                    return "translate(10,"+ ((heightOfNode * 0.1 + 5) + (i * (heightOfTests + separator))) + ")";
-                });
-
-            //create
-            newTests.append("rect")
-                .classed("conditionRect",true);
-
-            newTests.append("text")
-                .classed("testText",true);
+            //annotate tests
+            var boundTests = d3.select(this).selectAll(".test").data(tests,function(e){ return e.id; });
             
-            boundTests.selectAll(".conditionRect")
-                .attr("width",(nodeWidth - 20))
-                .attr("height",heightOfTests)
-                .style("fill","red")
-                .attr("rx",10)
-                .attr("ry",10);
+            util.annotate(boundTests,"test",
+                          (heightOfNode * 0.1 + separator),
+                          heightOfInteriorNodes,separator,
+                          10, nodeWidth, "red",
+                          function(e,i){
+                              return "(" + e.id + "): wme." + e.values.field + " "
+                                  + util.operatorToString(e.values.operator) + " " + e.values.value;
+                          });
 
-            boundTests.selectAll(".testText")
-                .text(function(d){
-                    return "(" + d.id + "): " + d.values.field + " "
-                        + d.values.operator + " " + d.values.value;
-                })
-                //.style("text-anchor","middle")
-                .attr("transform","translate(" + (10)
-                      + "," + (heightOfTests * 0.5) + ")");
+            //annotate bindings
+            var boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; });
+            util.annotate(boundBindings,"binding",
+                          (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
+                          heightOfInteriorNodes,separator,
+                          10, nodeWidth, "green",
+                          function(e,i){
+                              return e[0] + " <-- wme." + e[1];
+                          });
+        });
+    };
+                               
+    var annotateActions = function(globalData,existingSelection,nodeWidth,nodeHeight){
+        console.log("Annotating Actions");
+        var separator = 5;
+        existingSelection.each(function(d,i){
+            //get the data
+            var actionType = [d.tags.actionType];
+            var actionFocus = [d.tags.actionFocus];
+            var actionValues = _.pairs(d.values);
+            var arithActions = _.pairs(d.arithmeticActions);
+
+            //calculate sizes:
+            var totalDataPoints = actionType.length + actionFocus.length
+                + actionValues.length + arithActions.length;
+            var heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
+
+            var offset = nodeHeight * 0.1 + separator;
+            //annotate each section:
+            //actionType:
+
+            var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;});
+            util.annotate(boundActionType,"actionType",
+                          offset,
+                          heightOfInteriorNodes, separator,
+                          10, nodeWidth, "red",
+                          function(e,i){ return "ActType: " + e; });
+
+            //actionFocus:
+            offset += actionType.length * (heightOfInteriorNodes + separator);
+            
+            var boundActionFocus = d3.select(this).selectAll(".actionFocus").data(actionFocus,function(e){return e;});
+            util.annotate(boundActionFocus,"actionFocus",
+                          offset,
+                          heightOfInteriorNodes,separator,
+                          10, nodeWidth,"orange",
+                          function(e,i){ return "ActFocus: " + e; });
+
+            //actionValues:
+            offset += actionFocus.length * (heightOfInteriorNodes + separator);
+            
+            var boundActionValues = d3.select(this).selectAll(".actionValue").data(actionValues,function(e,i) { return e[0] + e[1]; });
+            util.annotate(boundActionValues,"actionValue",
+                          offset,
+                          heightOfInteriorNodes, separator,
+                          10, nodeWidth, "yellow",
+                          function(e,i){ return e[0] + ": " + e[1]; });
+            
+            //arithActions:
+            offset += actionValues.length * (heightOfInteriorNodes + separator);
+
+            var boundArithActions = d3.select(this).selectAll(".arithAction").data(arithActions,function(e,i){return e[0] + e[1][0] + e[1][1]; });
+            util.annotate(boundArithActions,"arithAction",
+                          offset,
+                          heightOfInteriorNodes,separator,
+                          10,nodeWidth,"green",
+                          function(e,i){
+                              return e[0] + " " + e[1][0] + " " + e[1][1];
+                          });
             
         });
-        
-        //draw bindings
-
     };
     
     

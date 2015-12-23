@@ -145,6 +145,59 @@ define(['underscore','d3'],function(_,d3){
             return (amtOfSpace - separatorSpace);
         }
     };
+
+    util.operatorToString = function(operatorName){
+        var conversion = {
+            "EQ" : "==",
+            "LT" : "<",
+            "GT" : ">",
+            "LTE" : "<=",
+            "GTE" : ">=",
+            "NE" : "!=="
+        };
+
+        if(conversion[operatorName]){
+            return conversion[operatorName];
+        }else{
+            console.warn("No conversion for operator:",operatorName);
+            return operatorName;
+        }
+    };
+
+    util.annotate = function(boundDom,className,
+                              verticalOffset,nodeHeight,verticalSeparator,
+                              horizontalOffset,nodeWidth,colour,textFunction){
+
+        //Exit Selection:
+        boundDom.exit().remove();
+
+        //enter selection:
+        var enter = boundDom.enter().append("g").classed(className,true);
+
+        //create new
+        enter.append("rect")
+            .classed(className + "rect", true);
+        enter.append("text")
+            .classed(className + "text", true);
+        
+
+        //update:
+        boundDom.attr("transform",function(e,i){
+            return "translate(" + horizontalOffset + ","
+                + ((verticalOffset + (i * (nodeHeight + verticalSeparator)))) + ")";
+        });
+        boundDom.selectAll("."+className+"rect")
+            .attr("width",nodeWidth - (horizontalOffset * 2))
+            .attr("height",nodeHeight)
+            .style("fill",colour)
+            .attr("rx",10).attr("ry",10);
+
+        boundDom.selectAll("."+className+"text")
+            .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.5) + ")")
+            .text(textFunction);
+
+    };
+
     
     return util;
 });
