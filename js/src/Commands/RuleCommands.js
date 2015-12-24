@@ -24,7 +24,8 @@ define(['d3','utils'],function(d3,util){
         },
         //** @command cd
         "cd" : function(globalData,values){
-            globalData.shell.cd(values[0]);
+            console.warn("cd for rule mode has been deactivated");
+            //globalData.shell.cd(values[0]);
         },
         //** @command new -> addCondition/test/action
         "new" : function(globalData,values){

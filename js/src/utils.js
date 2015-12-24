@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','d3'],function(_,d3){
+define(['underscore'],function(_){
 
     var util = {};
     
@@ -57,7 +57,8 @@ define(['underscore','d3'],function(_,d3){
        @param containerName The id of the container. ie: node
        @note the containerName does not include the #
     */
-    util.selectOrShare = function(containerName,parent){
+    util.selectOrShare = function(containerName,parent,d3){
+        if(!d3) throw new Error("No d3");
         var container;
         if(parent === undefined) parent = d3.select("svg");        
         container = parent.select("#"+containerName);

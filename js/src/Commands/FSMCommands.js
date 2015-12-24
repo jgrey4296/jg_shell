@@ -1,6 +1,6 @@
 /**
    @file FSMCommands
-   @purpose defines the commands for the FSM mode
+   @purpose Defines how to interact with an FSM
  */
 
 define(['underscore'],function(_){
@@ -14,12 +14,25 @@ define(['underscore'],function(_){
         },
         //add an event to the current node's events
         //values = [eventName,targetId]
-        "event" : function(globalData,values){
-
+        "add" : function(globalData,values){
+            var focus = values.shift();
+            if(focus === "state"){
+                var stateName = values.shift();
+            }else if(focus === "event"){
+                var from = values.shift();
+                var to = values.shift();
+                var name = values.shift();
+                //globalData.shell.addNode(from,to,name);
+            }
         },
         //remove an event from the current node's events
         "rm" : function(globalData,values){
+            var focus = values.shift();
+            if(focus === "state"){
 
+            }else if(focus === "event"){
+
+            }
         },
         
 

@@ -24,7 +24,7 @@ define(['d3','utils'],function(d3,util){
 
             
             //if necessary, init the containers
-            var mainContainer = util.selectOrShare('mainContainer');
+            var mainContainer = util.selectOrShare('mainContainer',undefined,d3);
 
             //draw the node
             var node = mainContainer.selectAll(".node").data([cwdData],function(d){ return d.id; });
