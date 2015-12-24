@@ -199,6 +199,20 @@ define(['underscore'],function(_){
 
     };
 
+    //repeatedly truncate text until it fits in a certain amount of space;
+    //TODO: customise
+    util.truncateDrawnText = function(d){
+        var bbox = this.getBBox();
+        var maxLength = d.name.length - 4;
+        while( bbox.wdith > 10 && maxLength > 10){
+            d.shortName = d.name.slice(0,maxLength) + "...";
+            //d3.select(this).text(d.shortName);
+            bbox = this.getBBox();
+            maxLength -= 2;
+        }
+    };
+
+    
     
     return util;
 });

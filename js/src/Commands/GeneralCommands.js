@@ -131,8 +131,67 @@ define(['underscore','d3'],function(_,d3){
     };
 
     var drawSearchResults = function(globalData,searchData){
-        //TODO
+        //calculate sizes:
+        var colWidth = globalData.calcWidth(globalData.usableWidth,7);
+        
+        //take the search results,
+        var searchResults = d3.select("#searchResults");
+        if(searchResults.empty()){
+            searchResults = d3.select("svg").append("g")
+                .attr("id","searchResults")
+                .attr("transform","translate(0," + (globalData.usableHeight * 0.1) + ")")
 
+            searchResults.append("rect")
+                .attr("width",100)
+                .attr("height", (globalData.usableHeight * 0.8))
+                .style("fill","red")
+                .attr("rx",5).attr("ry",5);
+        };
+
+        //Draw
+        if(searchData.length > 0){
+            searchResults.append("text").classed("searchText",true)
+                .attr("transform","translate(" + (colWidth * 0.5) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                .text("Search Results:")
+                .style("fill","black")
+                .style("text-anchor","middle");
+            
+            searchResults.select("rect").transition()
+                .attr("width",colWidth);
+
+            var bound = searchResults.selectAll(".searchResult").data(searchData,function(d){ return d.id; });
+
+            bound.exit().remove();
+            
+            var enter = bound.enter().append("g").classed("searchResult",true);
+
+            enter.append("rect").classed("resultRect",true)
+                .attr("width",(colWidth * 0.8))
+                .style("fill","black");
+
+            enter.append("text").classed("resultText",true)
+                .style("fill","white");
+
+            //update selection
+            searchResults.selectAll(".searchResult").transition()
+                .attr("transform",function(d,i){
+                    return "translate(" + (colWidth * 0.1) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / searchData.length))) + ")";
+                });
+
+            bound.selectAll(".resultRect").transition()
+                .attr("height",((globalData.usableHeight * 0.6)/searchData.length));
+
+            bound.selectAll(".resultText").transition()
+                .text(function(d) { return d.id + ": " + d.name; })
+                .attr("transform","translate(" + (colWidth * 0.05) + "," + (((globalData.usableHeight * 0.6) / searchData.length) * 0.5) + ")");
+            
+        }else{
+            //shrink the window back
+            searchResults.selectAll(".searchResult").remove();
+            searchResults.selectAll(".searchText").remove();
+            searchResults.select("rect").transition()
+                .attr("width",10);
+        }
     };
     
     
