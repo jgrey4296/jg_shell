@@ -15,6 +15,9 @@ define(['d3','utils'],function(d3,util){
             //get the data:
             var cwdData = globalData.shell.cwd;
             var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
+            var nodeTextHeight = 20;
+            var nodeTextSeparator = 2;
+            
             var childrenData = _.keys(cwdData.children).map(function(d){
                 return this.allNodes[d];
             },globalData.shell);
@@ -31,10 +34,10 @@ define(['d3','utils'],function(d3,util){
             //Removal:
             node.exit().remove();
             
-            node.enter().append("g").classed("node",true)
+            var enterNode = node.enter().append("g").classed("node",true)
                 .attr("transform","translate(" + halfWidth + ",100)");
-            node.append("rect")
-                .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
+            enterNode.append("rect")
+
                 .attr("transform","translate("+ (- (colWidth * 0.5)) +",0)")
                 .style("fill",globalData.colours.darkBlue)
                 .attr("rx",0)
@@ -43,15 +46,37 @@ define(['d3','utils'],function(d3,util){
                 .attr("rx",10)
                 .attr("ry",10);
 
-            node.selectAll("text").remove();
-            var boundText = node.selectAll("text").data(nodeText);
+            node.selectAll("rect")
+                .attr("width",colWidth).attr("height",(nodeText.length * (nodeTextHeight + nodeTextSeparator) + 30))
+            
+            node.selectAll(".nodeText").remove();
+            //Draw the node's text:
+            console.log("NodeText:",nodeText);
+            var boundText = node.selectAll(".nodeText").data(nodeText);
 
-            boundText.enter().append("text")
-                .style("text-anchor","middle")
-                .attr("transform",function(d,i){
-                    return "translate(0,"+ (15 + i * 15) + ")";
-                })
-                .style("fill",globalData.colours.textBlue)
+            var enter = boundText.enter().append("g").classed("nodeText",true)
+
+            enter.each(function(d,i){
+                if(d.length === 0) return;
+                
+                d3.select(this).append("rect")
+                    .attr("width",(colWidth * 0.8))
+                    .attr("height",(nodeTextHeight))
+                    .style("fill",globalData.colours.darkerBlue);
+
+                d3.select(this).append("text").classed("nodeTextActual",true)
+                    .style("text-anchor","middle")
+                    .style("fill",globalData.colours.textBlue)
+                    .attr("transform","translate(" + (colWidth * 0.4) + "," + (nodeTextHeight * 0.75) + ")");
+            });
+
+            
+            //update
+            node.selectAll(".nodeText").attr("transform",function(d,i){
+                return "translate(" + (colWidth * -0.4) + "," + (15 + (i * (nodeTextHeight + nodeTextSeparator))) + ")";
+            });
+
+            node.selectAll(".nodeTextActual")
                 .text(function(d){
                     return d;
                 });
