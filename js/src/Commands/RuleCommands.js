@@ -218,7 +218,7 @@ define(['d3','utils'],function(d3,util){
         }
         
         //container
-        var mainContainer = util.selectOrShare("mainContainer");
+        var mainContainer = util.selectOrShare("mainContainer",d3);
         
         //draw rule
         var rule = mainContainer.selectAll(".rule").data([cwdData],function(d){
