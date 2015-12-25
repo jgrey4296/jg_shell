@@ -7,7 +7,13 @@ define(['underscore'],function(_){
 
     var FSMCommands = {
         "draw" : function(globalData,values){
+            //draw central node
 
+
+            //draw states
+
+            //draw events/activities
+            
         },
         "cleanup" : function(globalData,values){
 

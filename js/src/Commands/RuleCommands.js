@@ -9,12 +9,8 @@ define(['d3','utils'],function(d3,util){
         "draw" : function(globalData,values){
             if(globalData.shell.cwd.tags.type === "rule"){
                 drawRule(globalData);
-            }else if(globalData.shell.cwd.tags.type === "condition"){
-                //todo
-            }else if(globalData.shell.cwd.tags.type === "action"){
-                //todo
-            }else if(globalData.shell.cwd.tags.type === "constantTest"){
-                //todo
+            }else{
+                console.warn("Not a rule");
             }
         },
         "cleanup" : function(globalData, values){
@@ -24,8 +20,15 @@ define(['d3','utils'],function(d3,util){
         },
         //** @command cd
         "cd" : function(globalData,values){
-            console.warn("cd for rule mode has been deactivated");
-            //globalData.shell.cd(values[0]);
+            //switch back to node mode
+            var modes = _.keys(globalData.commands);
+            if(modes.indexOf('node') !== -1){
+                globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
+                globalData.currentCommandMode = modes[modes.indexOf('node')];
+                //execute cd
+                var cd = globalData.lookupOrFallBack('cd',globalData);
+                cd(globalData,values);
+            }
         },
         //** @command new -> addCondition/test/action
         "new" : function(globalData,values){
@@ -200,6 +203,8 @@ define(['d3','utils'],function(d3,util){
         //get the data:
         var cwdData = globalData.shell.cwd;
         var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
+        var ruleTextHeight = 20;
+        var ruleTextSeparator = 2;
         var conditionData, actionData;
         if(cwdData.conditions){
             conditionData = _.keys(cwdData.conditions).map(function(d){
@@ -230,25 +235,47 @@ define(['d3','utils'],function(d3,util){
         rule.enter().append("g").classed("rule",true)
             .attr("transform","translate(" + halfWidth + ",100)");
         rule.append("rect")
-            .attr("width",colWidth).attr("height",(nodeText.length * 15 + 30))
+            .classed("ruleRect",true)
             .attr("transform","translate(" + (- (colWidth * 0.5)) + ",0)")
             .style("fill",globalData.colours.darkBlue)
             .attr("rx",0).attr("ry",0)
             .transition()
             .attr("rx",10).attr("ry",10);
         
-        rule.selectAll("text").remove();
-        var boundText = rule.selectAll("text").data(nodeText);
-        boundText.enter().append("text")
-            .style("text-anchor","middle")
-            .attr("transform",function(d,i){
-                    return "translate(0," + (15 + i * 15) + ")";
-                })
-            .style("fill",globalData.colours.textBlue)
-            .text(function(d){
-                    return d;
-                });
+        
+        
+        rule.selectAll(".ruleText").remove();
+        var boundText = rule.selectAll(".ruleText").data(nodeText);
 
+        var enter = boundText.enter().append("g").classed("ruleText",true);
+
+        enter.each(function(d,i){
+                if(d.length === 0) return;
+                
+                d3.select(this).append("rect")
+                    .attr("width",(colWidth * 0.8))
+                    .attr("height",(ruleTextHeight))
+                    .style("fill",globalData.colours.darkerBlue);
+
+                d3.select(this).append("text").classed("ruleTextActual",true)
+                    .style("text-anchor","middle")
+                    .style("fill",globalData.colours.textBlue)
+                .attr("transform","translate(" + (colWidth * 0.4) + "," + (ruleTextHeight * 0.75) + ")");
+        });
+
+        //update
+        rule.selectAll(".ruleText").attr("transform",function(d,i){
+            return "translate(" + (colWidth * -0.4) + "," + (15 + (i * (ruleTextHeight + ruleTextSeparator))) + ")";
+        });
+        
+        rule.selectAll(".ruleTextActual")
+            .text(function(d){
+                return d;
+            });
+
+        rule.selectAll(".ruleRect")
+            .attr("width",colWidth).attr("height",(nodeText.length * (ruleTextHeight + ruleTextSeparator) + 30));
+        
         //Calculate sizes:
         var amtOfSpace = (globalData.usableHeight - 100);
         var separatorSpace = 20;
@@ -283,6 +310,10 @@ define(['d3','utils'],function(d3,util){
                 return globalData.shell.allNodes[g];
             });
             var bindings = _.pairs(d.bindings);
+            //todo: get negative || negConj
+            //if negConj: draw sub conditions, and annotate them
+            //if negative, draw a negative notation
+
             
             //calculate sizes
             var heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);

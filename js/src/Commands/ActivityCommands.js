@@ -8,7 +8,9 @@ define(['underscore'],function(_){
     var ActivityCommands = {
 
         "draw" : function(globalData,values){
+            //draw the activity pyramid?
 
+            
         },
         "cleanup" : function(globalData, values){
 

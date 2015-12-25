@@ -36,8 +36,8 @@ define(['d3','utils'],function(d3,util){
             
             var enterNode = node.enter().append("g").classed("node",true)
                 .attr("transform","translate(" + halfWidth + ",100)");
+            
             enterNode.append("rect")
-
                 .attr("transform","translate("+ (- (colWidth * 0.5)) +",0)")
                 .style("fill",globalData.colours.darkBlue)
                 .attr("rx",0)
@@ -54,7 +54,7 @@ define(['d3','utils'],function(d3,util){
             console.log("NodeText:",nodeText);
             var boundText = node.selectAll(".nodeText").data(nodeText);
 
-            var enter = boundText.enter().append("g").classed("nodeText",true)
+            var enter = boundText.enter().append("g").classed("nodeText",true);
 
             enter.each(function(d,i){
                 if(d.length === 0) return;
@@ -198,10 +198,6 @@ define(['d3','utils'],function(d3,util){
         //rename -> rename
         "rename" : function(globalData,values){
             globalData.shell.rename(values[0]);
-        },
-        //Search:
-        "search" : function(globalData,values){
-            globalData.lastSetOfSearchResults = globalData.shell.search(values[0],values[1],values[2]);
         },
         "help" : function(globalData,values){
             return {

@@ -42,6 +42,10 @@ define(['underscore','d3'],function(_,d3){
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
+        //Search:
+        "search" : function(globalData,values){
+            globalData.lastSetOfSearchResults = globalData.shell.search(values[0],values[1],values[2]);
+        },
         "draw" : function(globalData,values){
             //Draw the Stash:
             drawStash(globalData,globalData.shell._nodeStash);
@@ -150,12 +154,13 @@ define(['underscore','d3'],function(_,d3){
 
         //Draw
         if(searchData.length > 0){
-            searchResults.append("text").classed("searchText",true)
-                .attr("transform","translate(" + (colWidth * 0.5) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
-                .text("Search Results:")
-                .style("fill","black")
-                .style("text-anchor","middle");
-            
+            if(searchResults.selectAll(".searchText").empty()){
+                searchResults.append("text").classed("searchText",true)
+                    .attr("transform","translate(" + (colWidth * 0.5) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                    .text("Search Results:")
+                    .style("fill","black")
+                    .style("text-anchor","middle");
+            }
             searchResults.select("rect").transition()
                 .attr("width",colWidth);
 
