@@ -270,7 +270,7 @@ define(['d3','utils'],function(d3,util){
 
         //update selection
         //transition to updated sizes etc
-        container.selectAll("."+className).transition().delay(animationLength).attr("transform",function(d,i){
+        boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
                 return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
         });
            
