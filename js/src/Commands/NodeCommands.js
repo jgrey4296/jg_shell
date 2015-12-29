@@ -235,6 +235,8 @@ define(['d3','utils'],function(d3,util){
             .data(data,function(d,i){ return d.id; });
 
         //exit selection
+        console.log("exiting:",boundGroup.exit());
+        
         boundGroup.exit().selectAll("rect")
             .transition()
             .duration(animationLength)
@@ -250,8 +252,7 @@ define(['d3','utils'],function(d3,util){
             .classed(className, true)
             .attr("transform","translate(" + xLocation + ",100)");
 
-
-        //create
+        //create in the entry selection
         entryGroup.append("rect")
             .attr("width",0)
             .attr("height",0)
@@ -269,15 +270,11 @@ define(['d3','utils'],function(d3,util){
 
         //update selection
         //transition to updated sizes etc
-        boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
+        container.selectAll("."+className).transition().delay(animationLength).attr("transform",function(d,i){
                 return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
-        })
-            .selectAll("text")
-            .attr("transform","translate(" + (groupWidth * 0.5) + "," +
-                  (heightOfNode * 0.5) + ")");
-
-        
-        boundGroup.selectAll("rect")
+        });
+           
+        container.selectAll("."+className).selectAll("rect")
             .transition().delay(animationLength*3).duration(animationLength)
             .attr("width",groupWidth)
             .attr("height",heightOfNode)
@@ -285,7 +282,10 @@ define(['d3','utils'],function(d3,util){
             .attr("ry",10)
             .style("opacity",1);
 
-        boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
+        container.selectAll("."+className).selectAll("text")
+            .transition().delay(animationLength*3).duration(animationLength)
+            .attr("transform","translate(" + (groupWidth * 0.5) + "," +
+                  (heightOfNode * 0.5) + ")")
             .text(function(d){ return d.id + " : " + d.name; })
             .style("opacity",1);
         

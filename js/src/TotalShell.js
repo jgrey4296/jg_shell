@@ -915,6 +915,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     */
 
 
+    //eg: search name root
+    //    search tags type
+    //    search tags type GraphNode
+    //    search children 0
+    //    search children blah
+
+
+    
     /**
        @class CompleteShell
        @method search
@@ -924,8 +932,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param type id or key, to look for an id number or a text string
        @return a list of nodes
      */
-    
-    CompleteShell.prototype.search = function(target,regex,type){
+    CompleteShell.prototype.search = function(values){
+        var target = values[0],
+            regex = values[1],
+            type = values[2];
         //Switch parents and children around:
         //This makes more sense as you can then "search children 3"
         //and get back the children of node 3,

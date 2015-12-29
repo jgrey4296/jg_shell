@@ -44,7 +44,7 @@ define(['underscore','d3'],function(_,d3){
         },
         //Search:
         "search" : function(globalData,values){
-            globalData.lastSetOfSearchResults = globalData.shell.search(values[0],values[1],values[2]);
+            globalData.lastSetOfSearchResults = globalData.shell.search(values);
         },
         "draw" : function(globalData,values){
             //Draw the Stash:
@@ -135,6 +135,7 @@ define(['underscore','d3'],function(_,d3){
     };
 
     var drawSearchResults = function(globalData,searchData){
+        console.log("drawing search results:",searchData);
         //calculate sizes:
         var colWidth = globalData.calcWidth(globalData.usableWidth,7);
         
