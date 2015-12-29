@@ -4,7 +4,7 @@
 //Imports
 var http = require('http');
 var fs = require('fs');
-var shell = fs.readFileSync('shell.html');
+var shell = fs.readFileSync('index.html');
 var path = require('path');
 
 //Supported File extensions -> mimetype
@@ -25,7 +25,7 @@ var extensions = {
  */
 var dealWithGet = function(request,response){
     //Default to shell.html if nothing else is requested
-    var fileName = path.basename(request.url) || 'shell.html';
+    var fileName = path.basename(request.url) || 'index.html';
     var dirName = path.dirname(request.url);
     var ext = path.extname(fileName);
     var filePath = path.join(".",dirName,fileName);

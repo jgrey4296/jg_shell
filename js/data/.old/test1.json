@@ -1,0 +1,66 @@
+[
+    {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": "blah",
+            "4": "blah2"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 3,
+        "name": "blah",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 4,
+        "name": "blah2",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    }
+]

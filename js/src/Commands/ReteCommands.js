@@ -32,11 +32,12 @@ define([],function(){
         "assert" : function(globalData,values){
             console.log("Asserting rete");
             //assert the current node as a wme?
-            globalData.shell.assertChildren();
+            globalData.shell.assertWMEs();
         },
         "ruleStep" : function(globalData,values){
             console.log("Rete Time Step");
-            globalData.shell.stepTime();
+            var actions = globalData.shell.stepTime();
+            //todo: draw the actions being performed this step
 
         },
         "help" : function(globalData,values){

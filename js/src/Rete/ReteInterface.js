@@ -37,7 +37,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     var addWME = function(wmeData,reteNet,retractionTime,assertionTime){
         //Create the wme:
         if(assertionTime === undefined) assertionTime = reteNet.currentTime;
-        if(retractionTime === undefined) retractionTime = reteNet.currentTime;
+        if(retractionTime === undefined) retractionTime = 0;
         var wme = new RDS.WME(wmeData,assertionTime,retractionTime);
         console.log("Asserting:",wme);
         //Add it to the input WME Buffer:
@@ -90,20 +90,44 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @TODO figure out if this is in the correct order. should it be the otherway around
      */
     var incrementTime = function(reteNet){
-        //assert everything schdeuled
-        reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){
-            ReteActivations.alphaNodeActivation(reteNet.rootAlpha,wme);
-        });
-
         //retract everything scheduled
-        reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){
-            removeWME(wme,reteNet);
+        if(reteNet.wmeLifeTimes.retractions.length > reteNet.currentTime){
+        reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){ removeWME(wme,reteNet); });
+        }
+        console.log("retractions finished");
+        //assert everything schdeuled
+        if(reteNet.wmeLifeTimes.assertions.length > reteNet.currentTime){
+        reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){  ReteActivations.alphaNodeActivation(reteNet.rootAlpha,wme); });
+        }
+        
+        
+        //At this point: newly activated action instructions are in
+        //reteNet.lastActivatedRules
+        var newWMEs = [];
+        //import all the events in lastActivatedRules into the relevant lists
+        reteNet.lastActivatedRules.forEach(function(activeRule){
+            if(activeRule.action === "assert"){
+                activeRule.resultingWME = addWME(activeRule.payload,reteNet,
+                                    activeRule.assertTime,
+                                    activeRule.retractTime);
+            }else if(activeRule.action === "retract"){
+                activeRule.payload.forEach(function(wme){
+                    removeWME(wme,reteNet);
+                });
+            }else if(activeRule.action === "modify"){
+                throw new Error("modify not implemented yet");
+            }else{
+                //possibly unknown actions should not error,
+                //as they will be used in whatever interfaces with the net
+                console.error(activeRule);
+                throw new Error("unknown action to perform:");
+            }
         });
-
-        //TODO: import all the events in lastActivatedRules into the relevant lists
         
         //increment the time
         reteNet.currentTime++;
+
+        return newWMEs;
     };
 
 
@@ -121,9 +145,10 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         //build network with a dummy node for the parent
         var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes);
         //Build the actions that are triggered by the rule:
-        var actionNodes = _.values(rule.actions).map(function(d){
-            console.log("Adding action for:",d);
-            return new RDS.ActionNode(currentNode,d,rule.name,reteNet);
+        var actionNodes = _.keys(rule.actions).map(function(actionId){
+            console.log("Adding action for:",actionId);
+            var actionDescription = allNodes[actionId];
+            return new RDS.ActionNode(currentNode,actionDescription,rule.name,reteNet);
         });
 
         //initialise the action storage for this rule

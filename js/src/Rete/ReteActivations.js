@@ -13,7 +13,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         var newItem = new RDS.AlphaMemoryItem(wme,alphaMem);
         alphaMem.items.unshift(newItem);
         wme.alphaMemoryItems.unshift(newItem);
-
+        //console.log("AlphaMemory activated:",alphaMem,wme);
         for(var i in alphaMem.children){
             var child = alphaMem.children[i];
             rightActivate(child,wme);
@@ -31,19 +31,21 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         if(alphaNode.passThrough){
             testResult = true;
         }else{
-            var wmeFieldValue = wme.data[alphaNode.testField];
+            var wmeFieldValue = wme.data.values[alphaNode.testField];
             var value = alphaNode.testValue;
             var operator = alphaNode.operator;
             if(ConstantTestOperators[operator]){
                 if(operator !== 'EQ' && operator !== 'NE'){
                     testResult = ConstantTestOperators[operator](Number(wmeFieldValue),Number(value));
                 }else{
+                    //console.log("testing:",wmeFieldValue,operator,value,alphaNode,wme);
                     testResult = ConstantTestOperators[operator](wmeFieldValue,value);
                 }
                 
             }
         }
         if(testResult){
+            //console.log("successful constant test result",testResult,wme,alphaNode);
             for(var i in alphaNode.children){
                 var child = alphaNode.children[i];
                 alphaNodeActivation(child,wme);
@@ -52,6 +54,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
                 alphaNodeActivation(alphaNode.outputMemory,wme);
             }
         }
+        //console.log("ConstantTest Result:",alphaNode,wme,testResult);
         return testResult;
     };
 
@@ -177,6 +180,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         //deal with the result:
         
         //store the retValue in the reteNet.activatedRules
+        //ie: {action:"assert",payload:wme}
         actionNode.reteNet.lastActivatedRules.push(retValue);
     };
 

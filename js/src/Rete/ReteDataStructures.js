@@ -252,10 +252,8 @@ define(['underscore'],function(_){
         this.isActionNode = true;
         this.name = name;
         this.action = action;
-
         //reference to retenet, to allow storage of results of firing:
         this.reteNet = reteNet;
-        
     };
 
 

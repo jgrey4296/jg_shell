@@ -686,18 +686,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose Clear the record of recently activated rules
      */
     CompleteShell.prototype.clearActivatedRules = function(){
-        this.reteNet.activatedRules = [];
+        Rete.clearActivations(this.reteNet);
     };
     
-    /**
-       @class CompleteShell
-       @method clearActivationsOfReteNet
-       @purpose To clear the record of activations
-       @TODO check this, may be a duplicate.
-     */
-    CompleteShell.prototype.clearActivationsOfReteNet = function(){
-        return Rete.clearActivations(this.reteNet);
-    };
 
     /**
        @class CompleteShell
@@ -705,21 +696,19 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose Retrieve all defined rules, add them to the rete net
      */    
     CompleteShell.prototype.compileRete = function(){
-        console.log("Compiling Rules");
         //take all defined rules
         //TODO: make this all rules that are descendents of the current node?
         var rules = _.values(this.allNodes).filter(function(d){
             return d.tags.type === 'rule';
         });
-        
-        console.log("Compiling copied rules:",copiedRules);
+        console.log("Compiling rules:",rules);
         //and add them to the rete net
         //returning the action nodes of the net
-        this.allActionNodes = rule.map(function(d){
+        this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
             var actions = Rete.addRule(d,this.reteNet,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
-            return actions;
+            return {"rule": d, "actions" :actions};
         },this);
 
         console.log("All action nodes:",this.allActionNodes);
@@ -732,11 +721,16 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        using each nodes' values field
        @TODO: be able to detect bindings and resolve them prior to assertion?
      */
-    CompleteShell.prototype.assertChildren = function(){
-        var children = _.keys(this.cwd.children).map(function(d){
-            return this.allNodes[d].values;
-        },this);
-        this.assertWMEList(children);
+    CompleteShell.prototype.assertWMEs = function(){
+        //get all the wmes
+        var wmes = _.values(this.allNodes).map(function(node){
+            if(node.tags.wme !== undefined){
+                return node;
+            }
+        },this).filter(function(d){ return d !== undefined; });
+
+        //assert them
+        this.assertWMEList(wmes);
     };
 
     /**
@@ -749,16 +743,19 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(!(array instanceof Array)){
             throw new Error("Asserting should be in the form of an array");
         }
+        //create wme objects out of them
         var newWMEs = array.map(function(d){
             return Rete.addWME(d,this.reteNet);
         },this);
-        
+        console.log("New WMES:",newWMEs);
         return newWMEs;
     };
 
     CompleteShell.prototype.stepTime = function(){
+        console.log(this.reteNet);
         Rete.incrementTime(this.reteNet);
         console.log("Events:",this.reteNet.lastActivatedRules);
+        return this.reteNet.lastActivatedRules;
     };
     
     

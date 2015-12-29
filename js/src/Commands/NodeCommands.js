@@ -51,7 +51,7 @@ define(['d3','utils'],function(d3,util){
             
             node.selectAll(".nodeText").remove();
             //Draw the node's text:
-            console.log("NodeText:",nodeText);
+            //console.log("NodeText:",nodeText);
             var boundText = node.selectAll(".nodeText").data(nodeText);
 
             var enter = boundText.enter().append("g").classed("nodeText",true);
@@ -235,8 +235,6 @@ define(['d3','utils'],function(d3,util){
             .data(data,function(d,i){ return d.id; });
 
         //exit selection
-        console.log("exiting:",boundGroup.exit());
-        
         boundGroup.exit().selectAll("rect")
             .transition()
             .duration(animationLength)

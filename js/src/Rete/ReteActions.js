@@ -15,6 +15,12 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
     //Action node possible actions:
     var actions = {};
 
+    //each function returns an object of the form:
+    //{ action: "", payload: {}, (assertionTime,retractionTime)? }
+    //Rete Interface.incrementTime uses the action to modify the
+    //state of the retenet, and so muc have an implemented condition for each
+    //function defined here
+    
     //NOTE: these will be called after being bound to an action,
     //so 'this' refers to the information stored in an action/the action object itself.
 
@@ -47,10 +53,15 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         },this);
 
         console.log("Creating new WME from:",newWMEData);
-        //Create the wme
-        var newWME = new RDS.WME(newWMEData);
+        //Actually, DONT create the wme, just store the data for it
+        //var newWME = new RDS.WME(newWMEData);
         //To be returned to activateActionNode
-        return {action: "asserted", payload: newWME};
+        return {
+            action: "assert",
+            payload: newWMEData,
+            assertTime: reteNet.currentTime+1, //assume next timestep
+            retractTime: 0, //assume never
+        };
     };
 
 
@@ -74,12 +85,12 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         });
 
         //retract the wmes
-        toRetract.forEach(function(wme){
-            removeWME(wme,reteNet);
-        });
+        // toRetract.forEach(function(wme){
+        //     removeWME(wme,reteNet);
+        // });
         
         //return the list of all retracted wmes:
-        return {action:"retracted",payload:toRetract};
+        return {action:"retract",payload:toRetract};
     };
 
     //What other actions might i want?

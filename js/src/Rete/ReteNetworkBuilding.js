@@ -20,10 +20,10 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
             var tests = _.pairs(condition.bindings);            
             if(condition.tags.isPositive){
                 currentNode = buildOrShareBetaMemoryNode(currentNode);
-                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha,allNodes);
                 currentNode = buildOrShareJoinNode(currentNode,alphaMemory,tests);
             }else if(condition.tags.isNegative){
-                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha);
+                alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha,allNodes);
                 currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests);
             }else if(condition.tags.isNCCCondition){
                 currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha,allNodes);
@@ -42,6 +42,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose Reuse, or create a new, constant test node, for the given test
      */
     var buildOrShareConstantTestNode = function(parent,constantTestSpec){
+        
         //Todo: write this as a functional select/find
         for(var i in parent.children){
             var node = parent.children[i];

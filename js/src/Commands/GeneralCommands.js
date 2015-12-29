@@ -135,7 +135,7 @@ define(['underscore','d3'],function(_,d3){
     };
 
     var drawSearchResults = function(globalData,searchData){
-        console.log("drawing search results:",searchData);
+        //console.log("drawing search results:",searchData);
         //calculate sizes:
         var colWidth = globalData.calcWidth(globalData.usableWidth,7);
         

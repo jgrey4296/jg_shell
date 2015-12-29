@@ -139,7 +139,7 @@ define(['./ReteDataStructures'],function(RDS){
             throw new Error("Node should be an alpha/constant test node");
         }
         if(node.testField !== constantTestSpec.values.field
-           || node.testValue !== constantTest.values.value){
+           || node.testValue !== constantTestSpec.values.value){
             return false;
         }
         if(node.operator !== constantTestSpec.values.operator){

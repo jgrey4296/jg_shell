@@ -301,7 +301,7 @@ define(['d3','utils'],function(d3,util){
        @purpose Add condition specific nodes to a selection
      */
     var annotateConditions = function(globalData,existingSelection,nodeWidth,heightOfNode){
-        console.log("Annotating Conditions");
+        //console.log("Annotating Conditions");
         //add details to each element of the selection, to describe it as a condition
         var separator = 5;
         existingSelection.each(function(d,i){
@@ -343,7 +343,7 @@ define(['d3','utils'],function(d3,util){
     };
                                
     var annotateActions = function(globalData,existingSelection,nodeWidth,nodeHeight){
-        console.log("Annotating Actions");
+        //console.log("Annotating Actions");
         var separator = 5;
         existingSelection.each(function(d,i){
             //get the data

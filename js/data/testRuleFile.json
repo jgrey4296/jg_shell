@@ -1,0 +1,182 @@
+[
+    {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": "Facts",
+            "4": "Rules"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 3,
+        "name": "Facts",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "5": "testWME1",
+            "6": "testWME2"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 4,
+        "name": "Rules",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "7": "testRule"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 5,
+        "name": "testWME1",
+        "parents": {
+            "3": "Facts"
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {
+            "a": "5"
+        },
+        "tags": {
+            "type": "node",
+            "wme": "1"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 6,
+        "name": "testWME2",
+        "parents": {
+            "3": "Facts"
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {
+            "a": "3"
+        },
+        "tags": {
+            "type": "node",
+            "wme": "1"
+        },
+        "annotations": {}
+    },
+    {
+        "id": 7,
+        "name": "testRule",
+        "parents": {
+            "4": "Rules"
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "rule"
+        },
+        "annotations": {},
+        "conditions": {
+            "8": "condition"
+        },
+        "actions": {
+            "9": "testAction"
+        }
+    },
+    {
+        "id": 8,
+        "name": "condition",
+        "parents": {
+            "7": "testRule"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "condition",
+            "isPositive": true
+        },
+        "annotations": {},
+        "constantTests": {
+            "10": "anonTest"
+        },
+        "bindings": {}
+    },
+    {
+        "id": 9,
+        "name": "testAction",
+        "parents": {
+            "7": "testRule"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {
+            "message": "fired"
+        },
+        "tags": {
+            "type": "action",
+            "actionType": "assert",
+            "actionFocus": "wme"
+        },
+        "annotations": {},
+        "arithmeticActions": {}
+    },
+    {
+        "id": 10,
+        "name": null,
+        "parents": {
+            "8": "condition"
+        },
+        "_originalParent": "8",
+        "children": {},
+        "values": {
+            "field": "a",
+            "operator": "EQ",
+            "value": "5"
+        },
+        "tags": {
+            "type": "constantTest",
+            "isConstantTest": true
+        },
+        "annotations": {}
+    }
+]
