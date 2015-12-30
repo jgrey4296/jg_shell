@@ -44,6 +44,7 @@ define(['underscore','d3'],function(_,d3){
         },
         //Search:
         "search" : function(globalData,values){
+            globalData.lastSearch = "(?)."+values.join(".");
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
         },
         "refine" : function(globalData,values){
@@ -187,14 +188,17 @@ define(['underscore','d3'],function(_,d3){
         if(searchData.length > 0){
             if(searchResults.selectAll(".searchText").empty()){
                 searchResults.append("text").classed("searchText",true)
-                    .attr("transform","translate(" + (colWidth * 0.5) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                    .attr("transform","translate(" + (colWidth * 0.1) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
                     .text("Search Results:")
-                    .style("fill","black")
-                    .style("text-anchor","middle");
+                    .style("fill","white")
+                    .style("text-anchor","start");
             }
             searchResults.select("rect").transition()
                 .attr("width",colWidth);
 
+            searchResults.select(".searchText")
+                .text("Search results: " + globalData.lastSearch);
+            
             var bound = searchResults.selectAll(".searchResult").data(searchData,function(d){ return d.id; });
 
             bound.exit().remove();
@@ -215,7 +219,8 @@ define(['underscore','d3'],function(_,d3){
                 });
 
             bound.selectAll(".resultRect").transition()
-                .attr("height",((globalData.usableHeight * 0.6)/searchData.length));
+                .attr("height",((globalData.usableHeight * 0.6)/searchData.length) -5)
+                .attr("rx",10).attr("ry",10);
 
             bound.selectAll(".resultText").transition()
                 .text(function(d) { return d.id + ": " + d.name; })
