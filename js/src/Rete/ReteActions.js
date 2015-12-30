@@ -59,6 +59,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         return {
             action: "assert",
             payload: newWMEData,
+            token : token,
             assertTime: reteNet.currentTime+1, //assume next timestep
             retractTime: 0, //assume never
         };
@@ -90,7 +91,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         // });
         
         //return the list of all retracted wmes:
-        return {action:"retract",payload:toRetract};
+        return {action:"retract",payload:toRetract, token: token};
     };
 
     //What other actions might i want?

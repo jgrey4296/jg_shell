@@ -19,11 +19,22 @@ define(['underscore'],function(_){
         this.rootAlpha = new AlphaNode();
         this.actions = [];
         this.allWMEs = [];
-        this.allWMEs.__isAllWMEs = true;
         
         this.lastActivatedRules = [];
-
         this.previousActivations = [];
+
+        this.allReteNodes = {};
+        //Storage of individual node types:
+        this.allReteNodesByType = {
+            "constantTests" : {},
+            "alphaMemories" : {},
+            "betaMemories" : {},
+            "joinNodes" : {},
+            "negativeNodes" : {},
+            "nccNodes" : {},
+            "nccPartnerNodes" : {},
+            "actionNodes" : {},
+        };
         
         //Automatic retraction capabilities:
         this.currentTime = 0;
@@ -35,6 +46,36 @@ define(['underscore'],function(_){
         };
     };
 
+    //Utility method:
+    ReteNet.prototype.storeNode = function(node){
+        this.allReteNodes[node.id] = node;
+        var storeTarget = "unknown";
+        if(node.isConstantTestNode){
+            storeTarget = "constantTests";
+        }else if(node.isAlphaMemory){
+            storeTarget = "alphaMemories";
+        }else if(node.isBetaMemory){
+            storeTarget = "betaMemories";
+        }else if(node.isJoinNode){
+            storeTarget = "joinNodes";
+        }else if(node.isActionNode){
+            storeTarget = "actionNodes";
+        }else if(node.isNegativeNode){
+            storeTarget = "negativeNodes";
+        }else if(node.isAnNCCNode){
+            storeTarget = "nccNodes";
+        }else if(node.isAnNCCPartnerNode){
+            storeTarget = "nccPartnerNodes";
+        }
+
+        if(this.allReteNodesByType[storeTarget] !== undefined){
+            this.allReteNodesByType[storeTarget][node.id] = node;
+        }else{
+            console.log(node);
+            throw new Error("unrecognised type attempted to be stored");
+        }
+    };
+    
     /**
        @data WME
        @purpose to store facts in the rete net
@@ -95,26 +136,6 @@ define(['underscore'],function(_){
         nextId++;        
     };
 
-    /**
-       @data ConstantTest
-       @purpose Defines an alpha node test
-       @param testWmeField
-       @param operator
-       @param testValue
-     */
-    //Test: (wme.)a = 5
-    var ConstantTest = function(testWmeField,operator,testValue){
-        this.tags = {};
-        this.tags.type = "constantTest";
-        this.isConstantTest = true;
-        this.field = testWmeField;
-        this.operator = operator;
-        this.value = testValue;
-        this.id = nextId;
-        nextId++;
-    };
-
-     
     //------------------------------
 
     /**
@@ -284,7 +305,7 @@ define(['underscore'],function(_){
     //Negative Node:The node that gates token progression
     var NegativeNode = function(parent,alphaMemory,tests){
         if(tests.length === 0){
-            throw new Error("Negative Node can't handle no bindings");
+            throw new Error("Negative Node requires a binding");
         }
         ReteNode.call(this,parent);
         this.isNegativeNode = true;
@@ -347,12 +368,11 @@ define(['underscore'],function(_){
         "NegativeJoinResult":NegativeJoinResult,
         "NegativeNode"     : NegativeNode,
         "NCCNode"          : NCCNode,
-        "NCCPartnerNode"   : NCCPartnerNode ,
-        "Test"             : ConstantTest,
-        "ConstantTest"     : ConstantTest,
+        "NCCPartnerNode"   : NCCPartnerNode,
         "ActionNode"       : ActionNode,
         "ReteNet"          : ReteNet
     };
     
     return DataStructures;
 });
+

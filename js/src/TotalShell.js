@@ -727,7 +727,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             if(node.tags.wme !== undefined){
                 return node;
             }
-        },this).filter(function(d){ return d !== undefined; });
+        },this).filter(function(d){ return d !== undefined && d.wmeId === undefined; });
 
         //assert them
         this.assertWMEList(wmes);
@@ -744,8 +744,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             throw new Error("Asserting should be in the form of an array");
         }
         //create wme objects out of them
-        var newWMEs = array.map(function(d){
-            return Rete.addWME(d,this.reteNet);
+        var newWMEs = array.map(function(data){
+            var wmeId = Rete.addWME(data,this.reteNet);
+            data.wmeId = wmeId;
+            return wmeId;
         },this);
         console.log("New WMES:",newWMEs);
         return newWMEs;
@@ -848,7 +850,13 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             }
         },this);
 
-        var additional = ["","| All Keys::|"].concat(_.keys(node));
+        var additional = ["","| All Keys::|"].concat(_.keys(node).map(function(d){
+            if(typeof node[d] !== 'object'){
+                return d + ": " + node[d];
+            }else{
+                return d + ": Object size: " + _.keys(node[d]).length;
+            }
+        }));
 
         var finalArrays = _.flatten(allArrays.concat(additional));
         

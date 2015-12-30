@@ -143,7 +143,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         },allNodes);
                 
         //build network with a dummy node for the parent
-        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes);
+        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes,reteNet);
         //Build the actions that are triggered by the rule:
         var actionNodes = _.keys(rule.actions).map(function(actionId){
             console.log("Adding action for:",actionId);

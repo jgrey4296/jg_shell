@@ -326,7 +326,7 @@ define(['d3','utils'],function(d3,util){
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, "red",
                           function(e,i){
-                              return "(" + e.id + "): wme." + e.values.field + " "
+                              return "(" + e.id + "): wme.data." + e.values.field + " "
                                   + util.operatorToString(e.values.operator) + " " + e.values.value;
                           });
 
@@ -337,7 +337,7 @@ define(['d3','utils'],function(d3,util){
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, "green",
                           function(e,i){
-                              return e[0] + " <-- wme." + e[1];
+                              return e[0] + " <-- wme.data" + e[1];
                           });
         });
     };
