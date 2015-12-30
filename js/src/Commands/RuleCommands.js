@@ -122,12 +122,20 @@ define(['d3','utils'],function(d3,util){
             //remove the old expectation
             if(condOrAction.expectationNode !== null){
                 var oldExpectation = globalData.shell.allNodes[condOrAction.expectationNode];
-                delete oldExpectation.expectedBy[condOrAction.id];
+                if(condOrAction.tags.type === "condition"){
+                    delete oldExpectation.expectedBy[condOrAction.id];
+                }else if(condOrAction.tags.type === "action"){
+                    delete oldExpectation.producedBy[condOrAction.id];
+                }
             }
             //assign it to the expectation node
             condOrAction.expectationNode = nodeToLink.id;
             //store the expectation in the node
-            nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
+            if(condOrAction.tags.type === "condition"){
+                nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
+            }else if(condOrActiontags.type === "action"){
+                nodeToLink.producedBy[condOrAction.id] = condOrAction.name;
+            };
             
         },        
         "help" : function(globalData,values){

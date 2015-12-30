@@ -33,7 +33,7 @@ define(['underscore'],function(_){
         this.tags.type = type || 'GraphNode';
         this.annotations = {};
         this.expectedBy = {};
-        
+        this.producedBy = {};
         //a rule node is supplemented in its ctor with:
         //this.conditions
         //this.actions
