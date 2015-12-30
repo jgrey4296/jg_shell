@@ -214,7 +214,7 @@ define(['d3','utils'],function(d3,util){
                 "link"  : [ "$target $id", " Link two existing nodes."],
                 "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
                 "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
-                "inspect" : ["$key", "Display the values of a key"],
+                "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
             };
         }
     };
