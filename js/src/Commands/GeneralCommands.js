@@ -44,7 +44,10 @@ define(['underscore','d3'],function(_,d3){
         },
         //Search:
         "search" : function(globalData,values){
-            globalData.lastSetOfSearchResults = globalData.shell.search(values);
+            globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
+        },
+        "refine" : function(globalData,values){
+            globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
         },
         "draw" : function(globalData,values){
             //Draw the Stash:

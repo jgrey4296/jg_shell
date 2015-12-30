@@ -17,6 +17,7 @@ define(['underscore'],function(_){
                 commandToExecute(globalData,splitLine);
             }catch(e){
                 console.error("Command Error:",e);
+                alert(e);
             }
         }else{
             console.warn("No function specified to execute: " + currentLine);

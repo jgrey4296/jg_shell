@@ -155,9 +155,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @return an output object of value:key pairs
     */
     CompleteShell.prototype.convertObject = function(object){
-        var keys = _.keys(object);
-        var values = _.values(object);
-        var newObject = {};
+        var keys = _.keys(object),
+            values = _.values(object),
+            newObject = {};
         _.zip(values,keys).forEach(function(d){
             newObject[d[0]] = d[1];
         });
@@ -927,120 +927,52 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     //    search children 0
     //    search children blah
 
-
-    
-    /**
-       @class CompleteShell
-       @method search
-       @purpose To search all nodes for a given regex in the target field of the node
-       @param target
-       @param regex
-       @param type id or key, to look for an id number or a text string
-       @return a list of nodes
-     */
-    CompleteShell.prototype.search = function(values){
-        var target = values[0],
-            regex = values[1],
-            type = values[2];
-        //Switch parents and children around:
-        //This makes more sense as you can then "search children 3"
-        //and get back the children of node 3,
-        //while "search parents 3" will get the nodes that parent 3
-        var possibleTargets = {
-            "parents" : "children",
-            "children" : "parents"
-        };
-        
-        var targetToUse = possibleTargets[target] || target;
-
-        if(targetToUse === target){
-            if(type === "key"){
-                this.lastSearchResults = this.searchForKey(target,regex);
-            }else{
-                this.lastSearchResults = this.searchForValue(target,regex);
-            }
-        }else{
-            if(!isNaN(Number(regex))){
-                this.lastSearchResults = this.searchForKey(targetToUse,regex);
-            }else{
-                this.lastSearchResults = this.searchForValue(targetToUse,regex);
-            }
+    CompleteShell.prototype.searchForFieldTagValue = function(values,nodeSelection){
+        var field = values.shift();
+        var tag = values.shift();
+        var tagValue = values.shift();
+        if(nodeSelection === undefined){
+            nodeSelection = _.values(this.allNodes);
         }
-        console.log("Search Results:",this.lastSearchResults);
+
+        
+        if(field === undefined || tag === undefined){
+            this.lastSearchResults = [];
+        }
+
+        
+        var nodes = nodeSelection.filter(function(node){
+            if(node[field] === undefined) return false;
+            //if field is a string
+            if(typeof node[field] !== "object"){
+                var pattern = new RegExp(tag);
+                if(pattern.test(node[field])){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            //if field is an object
+            if(node[field][tag] !== undefined){
+                if(tagValue === undefined){
+                    return true;
+                }else{
+                    var pattern = new RegExp(tagValue);
+                    if(pattern.test(node[field][tag])){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }
+            return false;
+        });
+
+
+        this.lastSearchResults = nodes;
         return this.lastSearchResults;
     };
 
-    /**
-       @class CompleteShell
-       @method searchForValue
-       @utility
-       @purpose Utility method to search for a text value
-       @param target
-       @param regex
-       @return a list of matching nodes
-     */
-    CompleteShell.prototype.searchForValue = function(target,regex){
-        console.log("searching by value:",target,regex);
-        //if searching by name, or the value stored in a location
-        var pattern = new RegExp(regex);
-        var matchingNodes = _.values(this.allNodes).filter(function(node){
-            if(target === 'name'){
-                //ie: search name blah
-                return pattern.test(node.name);
-            }else if(node[target] === undefined){
-                //ie: search somethingUndefined blah
-                console.log("Skipping node without target:",target,node);
-                return false;
-            }else{
-                //ie: search children blah
-                //ie: search values bob, where values = { a: "bob"}
-                var value =  _.some(_.values(node[target]),function(d){
-                    return pattern.test(d);
-                });
-                return value;
-            }
-        });
-        return matchingNodes;
-    };
-
-
-    /**
-       @class CompleteShell
-       @method searchForKey
-       @utility
-       @purpose to search nodes for a given key in the target field
-       @return a list of passing nodes
-     */
-    CompleteShell.prototype.searchForKey = function(target,keyVal){
-        console.log("searching by key");
-        var targetId = Number(keyVal);
-        var pattern = new RegExp(keyVal);
-        if(target === 'id' && isNaN(targetId)){
-            throw new Error("searching for an id requires a number");
-        }
-        var matchingNodes = _.values(this.allNodes).filter(function(node){
-            if(target === 'id'){
-                //ie: search id 5
-                return node.id === Number(keyVal);
-            }else if(node[target] === undefined){
-                //ie: search somethingUndefined 5
-                console.log("skipping node without target:",target,node);
-                return false;
-            }else if(target === 'parents' || target === 'children'){
-                //ie: search children 5
-                return _.some(_.keys(node[target]),function(d){
-                    //console.log("Comparing:",d,targetId,Number(d) === targetId);
-                    return Number(d) === targetId;
-                });
-            }else{
-                //ie: search values bob, where values = {"bob": a}
-                return _.some(_.keys(node[target]),function(d){
-                    return pattern.test(d);
-                });
-            }
-        });
-        return matchingNodes;
-    };
 
     //------------------------------    
     // State Change method prototype
