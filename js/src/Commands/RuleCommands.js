@@ -140,15 +140,19 @@ define(['d3','utils'],function(d3,util){
         },        
         "help" : function(globalData,values){
             return {
-                "helpGeneral" : [ "", "Display General Commands Help"],
-                "cd"    : [ "[.. | $name | $id]", "Move to other nodes."],
+                "help#general" : [ "", "Display General Commands Help"],
+                "cd"    : [ "[.. | $name | $id]", "Move to other nodes. Reverts to node mode"],
                 "new condition" : [ " ", " Create a new condition for the current rule. (IF)"],
+                "new negCondtion" : ["", "Create a negative condition"],
+                "new negConjCondition" : ["","Create a Negated Conjunctive Condition"],
                 "new action" : [ "$name+", " Create a new action for the current rule. (THEN)"],
                 "new test" : [ "$num $field $op $value", " Create a constant test for the condition id'd."],
                 "rm"     : [ "[condition | action] $id", " Remove a condition/action/test"],
+                "rm test" : ["$conditionId $testId", "Remove the test from the condition"],
+                "rm binding" : ["$conditionId $boundVarName", "Remove a binding from a condition"],
                 "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", " Set values of conditions/actions"],
                 "rename" : ["", " Rename the rule"],
-                "add"    : [ "", " ???"],
+                "link"   : ["$conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
             };
         },
     };

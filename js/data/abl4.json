@@ -1,0 +1,926 @@
+[
+	{
+		"id": 0,
+		"name": "ABL",
+		"values": {},
+		"notes": {},
+		"children": {
+			"prog": 1
+		},
+		"parents": {}
+	},
+	{
+		"id": 1,
+		"name": "prog",
+		"values": {},
+		"notes": {},
+		"children": {
+			"packageDec": 2,
+			"importDec": 3,
+			"constantDec": 4,
+			"behavingEntity": 5
+		},
+		"parents": {
+			"ABL": 0
+		},
+		"_originalParent": 0
+	},
+	{
+		"id": 2,
+		"name": "packageDec",
+		"values": {
+			"TYPE": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"prog": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 3,
+		"name": "importDec",
+		"values": {
+			"TYPE": "?",
+			"STAR": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"prog": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 4,
+		"name": "constantDec",
+		"values": {
+			"TYPE": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"prog": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 5,
+		"name": "behavingEntity",
+		"values": {
+			"name": "?",
+			"decisionCycle": "?"
+		},
+		"notes": {},
+		"children": {
+			"conflictDecl": 6,
+			"ablDeclaration": 7,
+			"behaviorDefinition": 8,
+			"initialTree": 9,
+			"RULEDEF": 55
+		},
+		"parents": {
+			"prog": 1
+		},
+		"_originalParent": 1
+	},
+	{
+		"id": 6,
+		"name": "conflictDecl",
+		"values": {
+			"name1": "?",
+			"names": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"behavingEntity": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 7,
+		"name": "ablDeclaration",
+		"values": {},
+		"notes": {},
+		"children": {
+			"wmeRegistration": 10,
+			"actionRegistration": 11,
+			"wmeDeclaration": 12,
+			"propertyDeclaration": 13,
+			"ablVariableDeclaration": 14
+		},
+		"parents": {
+			"behavingEntity": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 8,
+		"name": "behaviorDefinition",
+		"values": {
+			"JOINT": "?",
+			"ATOMIC": "?",
+			"ADAPTIVE": "?",
+			"SEQ": "?",
+			"PAR": "?",
+			"COLL": "?",
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"params": 17,
+			"behaviorModifier": 18,
+			"ablVariableDeclaration": 14,
+			"behaviorStep": 15
+		},
+		"parents": {
+			"behavingEntity": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 9,
+		"name": "initialTree",
+		"values": {},
+		"notes": {},
+		"children": {
+			"behaviorStep": 15
+		},
+		"parents": {
+			"behavingEntity": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 10,
+		"name": "wmeRegistration",
+		"values": {
+			"TYPE": "?",
+			"TYPE2": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ablDeclaration": 7
+		},
+		"_originalParent": 7
+	},
+	{
+		"id": 11,
+		"name": "actionRegistration",
+		"values": {
+			"TYPE": "?",
+			"TYPE2": "?"
+		},
+		"notes": {},
+		"children": {
+			"params": 17
+		},
+		"parents": {
+			"ablDeclaration": 7
+		},
+		"_originalParent": 7
+	},
+	{
+		"id": 12,
+		"name": "wmeDeclaration",
+		"values": {
+			"TYPE": "?",
+			"extends": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablVariableDeclaration": 14
+		},
+		"parents": {
+			"ablDeclaration": 7
+		},
+		"_originalParent": 7
+	},
+	{
+		"id": 13,
+		"name": "propertyDeclaration",
+		"values": {
+			"TYPE": "?",
+			"name": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ablDeclaration": 7
+		},
+		"_originalParent": 7
+	},
+	{
+		"id": 14,
+		"name": "ablVariableDeclaration",
+		"values": {
+			"TYPE": "?",
+			"name": "?",
+			"names": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"ablDeclaration": 7
+		},
+		"_originalParent": 7
+	},
+	{
+		"id": 15,
+		"name": "behaviorStep",
+		"values": {},
+		"notes": {},
+		"children": {
+			"stepModifier": 19,
+			"goalStep": 20,
+			"primitiveAct": 21,
+			"basicStep": 22,
+			"OTHERSTEPS": 50,
+			"ruleRun": 57
+		},
+		"parents": {
+			"initialTree": 9
+		},
+		"_originalParent": 9
+	},
+	{
+		"id": 16,
+		"name": "JOINT",
+		"values": {
+			"?": null
+		},
+		"notes": {},
+		"children": {},
+		"parents": {},
+		"_originalParent": 8
+	},
+	{
+		"id": 17,
+		"name": "params",
+		"values": {},
+		"notes": {},
+		"children": {
+			"param": 46
+		},
+		"parents": {
+			"behaviorDefinition": 8
+		},
+		"_originalParent": 8
+	},
+	{
+		"id": 18,
+		"name": "behaviorModifier",
+		"values": {},
+		"notes": {},
+		"children": {
+			"precondition": 29,
+			"specificity": 30,
+			"contextCondition": 31,
+			"entryCondition": 32,
+			"numberNeededForSuccess": 33,
+			"teamMemberSpecifier": 34,
+			"successCondition": 35,
+			"reinforcementSignal": 47,
+			"reinforcementState": 48
+		},
+		"parents": {
+			"behaviorDefinition": 8
+		},
+		"_originalParent": 8
+	},
+	{
+		"id": 19,
+		"name": "stepModifier",
+		"values": {
+			"IGNORE_FAILURE": "?",
+			"EFFECT_ONLY": "?",
+			"POST": "?",
+			"POST_TO": "?",
+			"TEAMNEEDED": "?",
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"priorityModifier": 23,
+			"persistence": 24,
+			"namedProperty": 25,
+			"successTest": 26
+		},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 20,
+		"name": "goalStep",
+		"values": {
+			"JOINT": "?",
+			"SUBGOAL": "?",
+			"SPAWNGOAL": "?",
+			"name": "?",
+			"atName": "?"
+		},
+		"notes": {},
+		"children": {
+			"params": 17
+		},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 21,
+		"name": "primitiveAct",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"params": 17
+		},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 22,
+		"name": "basicStep",
+		"values": {
+			"FAIL": "?",
+			"SUCCEED": "?",
+			"WAIT": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 23,
+		"name": "priorityModifier",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablLiteral": 28
+		},
+		"parents": {
+			"stepModifier": 19
+		},
+		"_originalParent": 19
+	},
+	{
+		"id": 24,
+		"name": "persistence",
+		"values": {
+			"WHEN_FAILS": "?",
+			"WHEN_SUCCEEDS": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"stepModifier": 19
+		},
+		"_originalParent": 19
+	},
+	{
+		"id": 25,
+		"name": "namedProperty",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablExpression": 27
+		},
+		"parents": {
+			"stepModifier": 19
+		},
+		"_originalParent": 19
+	},
+	{
+		"id": 26,
+		"name": "successTest",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36
+		},
+		"parents": {
+			"stepModifier": 19
+		},
+		"_originalParent": 19
+	},
+	{
+		"id": 27,
+		"name": "ablExpression",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablLiteral": 28
+		},
+		"parents": {
+			"namedProperty": 25
+		},
+		"_originalParent": 25
+	},
+	{
+		"id": 28,
+		"name": "ablLiteral",
+		"values": {
+			"INT": "?",
+			"FLOAT": "?",
+			"string": "?",
+			"BOOL": "?",
+			"NULL": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"priorityModifier": 23
+		},
+		"_originalParent": 23
+	},
+	{
+		"id": 29,
+		"name": "precondition",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 30,
+		"name": "specificity",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablLiteral": 28
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 31,
+		"name": "contextCondition",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 32,
+		"name": "entryCondition",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 33,
+		"name": "numberNeededForSuccess",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablLiteral": 28
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 34,
+		"name": "teamMemberSpecifier",
+		"values": {
+			"names": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 35,
+		"name": "successCondition",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 36,
+		"name": "testExpression",
+		"values": {},
+		"notes": {},
+		"children": {
+			"wmeTestSequence": 37
+		},
+		"parents": {
+			"successCondition": 35
+		},
+		"_originalParent": 35
+	},
+	{
+		"id": 37,
+		"name": "wmeTestSequence",
+		"values": {},
+		"notes": {},
+		"children": {
+			"wmeTest": 38,
+			"conditionalExpression": 39
+		},
+		"parents": {
+			"testExpression": 36
+		},
+		"_originalParent": 36
+	},
+	{
+		"id": 38,
+		"name": "wmeTest",
+		"values": {
+			"bindName": "?",
+			"BANG": "?",
+			"TYPE": "?"
+		},
+		"notes": {},
+		"children": {
+			"wmeFieldTest": 45
+		},
+		"parents": {
+			"wmeTestSequence": 37
+		},
+		"_originalParent": 37
+	},
+	{
+		"id": 39,
+		"name": "conditionalExpression",
+		"values": {},
+		"notes": {},
+		"children": {
+			"mixedCall": 40
+		},
+		"parents": {
+			"wmeTestSequence": 37
+		},
+		"_originalParent": 37
+	},
+	{
+		"id": 40,
+		"name": "mixedCall",
+		"values": {
+			"AND": "?",
+			"OR": "?"
+		},
+		"notes": {},
+		"children": {
+			"clause": 41
+		},
+		"parents": {
+			"conditionalExpression": 39
+		},
+		"_originalParent": 39
+	},
+	{
+		"id": 41,
+		"name": "clause",
+		"values": {
+			"BOOL": "?",
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"javaMethod": 42,
+			"binaryOp": 43
+		},
+		"parents": {
+			"mixedCall": 40
+		},
+		"_originalParent": 40
+	},
+	{
+		"id": 42,
+		"name": "javaMethod",
+		"values": {
+			"BANG": "?",
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"params": 17
+		},
+		"parents": {
+			"clause": 41
+		},
+		"_originalParent": 41
+	},
+	{
+		"id": 43,
+		"name": "binaryOp",
+		"values": {
+			"BANG": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablExpression": 27,
+			"operator": 44
+		},
+		"parents": {
+			"clause": 41
+		},
+		"_originalParent": 41
+	},
+	{
+		"id": 44,
+		"name": "operator",
+		"values": {
+			"BIND": "?",
+			"GT": "?",
+			"GE": "?",
+			"LT": "?",
+			"LE": "?",
+			"EQ": "?",
+			"NE": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"binaryOp": 43
+		},
+		"_originalParent": 43
+	},
+	{
+		"id": 45,
+		"name": "wmeFieldTest",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"operator": 44,
+			"ablExpression": 27
+		},
+		"parents": {
+			"wmeTest": 38
+		},
+		"_originalParent": 38
+	},
+	{
+		"id": 46,
+		"name": "param",
+		"values": {
+			"TYPE": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablExpression": 27
+		},
+		"parents": {
+			"params": 17
+		},
+		"_originalParent": 17
+	},
+	{
+		"id": 47,
+		"name": "reinforcementSignal",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablExpression": 27,
+			"testExpression": 36
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 48,
+		"name": "reinforcementState",
+		"values": {},
+		"notes": {},
+		"children": {
+			"testExpression": 36,
+			"ablVariableDeclaration": 14,
+			"stateReturn": 49
+		},
+		"parents": {
+			"behaviorModifier": 18
+		},
+		"_originalParent": 18
+	},
+	{
+		"id": 49,
+		"name": "stateReturn",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablExpression": 27
+		},
+		"parents": {
+			"reinforcementState": 48
+		},
+		"_originalParent": 48
+	},
+	{
+		"id": 50,
+		"name": "OTHERSTEPS",
+		"values": {},
+		"notes": {},
+		"children": {
+			"mentalActStep": 51,
+			"modifyStep": 52,
+			"anonymousStep": 53
+		},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 51,
+		"name": "mentalActStep",
+		"values": {},
+		"notes": {},
+		"children": {
+			"ablVariableDeclaration": 14,
+			"statement": 54
+		},
+		"parents": {
+			"OTHERSTEPS": 50
+		},
+		"_originalParent": 50
+	},
+	{
+		"id": 52,
+		"name": "modifyStep",
+		"values": {
+			"name": "?",
+			"move": "?",
+			"delete": "?",
+			"add": "?",
+			"name2": "?",
+			"name3": "?"
+		},
+		"notes": {},
+		"children": {
+			"behaviorStep": 15
+		},
+		"parents": {
+			"OTHERSTEPS": 50
+		},
+		"_originalParent": 50
+	},
+	{
+		"id": 53,
+		"name": "anonymousStep",
+		"values": {
+			"behaviorType": "?"
+		},
+		"notes": {},
+		"children": {
+			"ablVariableDeclaration": 14,
+			"behaviorStep": 15
+		},
+		"parents": {
+			"OTHERSTEPS": 50
+		},
+		"_originalParent": 50
+	},
+	{
+		"id": 54,
+		"name": "statement",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"mentalActStep": 51
+		},
+		"_originalParent": 51
+	},
+	{
+		"id": 55,
+		"name": "RULEDEF",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {
+			"testExpression": 36,
+			"assertion": 56
+		},
+		"parents": {
+			"behavingEntity": 5
+		},
+		"_originalParent": 5
+	},
+	{
+		"id": 56,
+		"name": "assertion",
+		"values": {},
+		"notes": {
+			"TODO": "!"
+		},
+		"children": {
+			"wmeCreation": 58,
+			"wmeRetraction": 59,
+			"wmeDeletion": 60,
+			"javaAssertion": 61,
+			"ablVariableDeclaration": 14
+		},
+		"parents": {
+			"RULEDEF": 55
+		},
+		"_originalParent": 55
+	},
+	{
+		"id": 57,
+		"name": "ruleRun",
+		"values": {
+			"name": "?"
+		},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"behaviorStep": 15
+		},
+		"_originalParent": 15
+	},
+	{
+		"id": 58,
+		"name": "wmeCreation",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"assertion": 56
+		},
+		"_originalParent": 56
+	},
+	{
+		"id": 59,
+		"name": "wmeRetraction",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"assertion": 56
+		},
+		"_originalParent": 56
+	},
+	{
+		"id": 60,
+		"name": "wmeDeletion",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"assertion": 56
+		},
+		"_originalParent": 56
+	},
+	{
+		"id": 61,
+		"name": "javaAssertion",
+		"values": {},
+		"notes": {},
+		"children": {},
+		"parents": {
+			"assertion": 56
+		},
+		"_originalParent": 56
+	}
+]

@@ -106,6 +106,9 @@ define(['underscore','d3'],function(_,d3){
                 "unstash": ["", " Pop off and move to the head of the temp stack."],
                 "top"   : [ "", " Move to the top of the temp stack."],
                 "prev"  : [ "", " Move to the node previously you were at before the current node. "],
+                "search" : ["$field $tag $value", "Search for nodes with a field, tag, value. Last param is a regex"],
+                "refine" : ["$field $tag $value", "Searches through the currently displayed search results"],
+                "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"],
             };
         },
         "printConditions" : function(globalData,values){
@@ -208,7 +211,7 @@ define(['underscore','d3'],function(_,d3){
             //update selection
             searchResults.selectAll(".searchResult").transition()
                 .attr("transform",function(d,i){
-                    return "translate(" + (colWidth * 0.1) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / searchData.length))) + ")";
+                    return "translate(" + (colWidth * 0.1) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / searchData.length)) + 5) + ")";
                 });
 
             bound.selectAll(".resultRect").transition()

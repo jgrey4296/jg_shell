@@ -201,7 +201,7 @@ define(['d3','utils'],function(d3,util){
         },
         "help" : function(globalData,values){
             return {
-            "helpGeneral" : ["", "Display General Commands Help"],
+            "help#general" : ["", "Display General Commands Help"],
             "new"   : ["$target $type $name", "Add a node to the graph."],
             "nc"    : [ "[n | i | r | a ] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities."],
             "np"    : [ "[n | i | r | a ] $name", " Shortcuts for adding parents."],

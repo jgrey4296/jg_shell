@@ -36,7 +36,7 @@ define(['underscore','d3'],function(_,d3){
     var drawHelp = function(helpObject,globalData){
         //Create the text to be displayed
         var startText = "Current Mode: " + globalData.currentCommandMode;
-        var helpText = [startText,"Available Commands: ",""].concat(_.keys(helpObject).map(function(d){
+        var helpText = [startText,"","Available Commands: ",""].concat(_.keys(helpObject).map(function(d){
             return d + " " + helpObject[d].join(" ---> ");
         }));
 

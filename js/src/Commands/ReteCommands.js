@@ -71,10 +71,11 @@ define(['underscore','d3'],function(_,d3){
         },
         "help" : function(globalData,values){
             return {
-                "assert": [ "", " Assert all children of the cwd as wmes"],
-                "compile" : [ "", " Compile all rules in the shell into the rete net"],
-                "ruleStep" : [ "", " Perform the actions of the fired rules from the last assertion"],
+                "assert": [ "", " Assert all nodes of tag.type.wme"],
+                "compile" : [ "", " Compile all rules of tag.type.rule into the rete net"],
+                "ruleStep" : [ "", "Increment the rete net time by one, performing scheduled assertions/retractions"],
                 "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
+                "printRete" : ["", "Print to console the retenet object for debugging"],
             };
         },
     };

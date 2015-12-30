@@ -928,9 +928,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     //    search children blah
 
     CompleteShell.prototype.searchForFieldTagValue = function(values,nodeSelection){
-        var field = values.shift();
-        var tag = values.shift();
-        var tagValue = values.shift();
+        var field = values.shift(),
+            tag = values.shift(),
+            tagValue = values.shift();
         if(nodeSelection === undefined){
             nodeSelection = _.values(this.allNodes);
         }
@@ -973,7 +973,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         return this.lastSearchResults;
     };
 
+    CompleteShell.prototype.searchComparatively = function(values,nodeSelection){
+        //TODO
+    };
 
+    
     //------------------------------    
     // State Change method prototype
     //------------------------------
