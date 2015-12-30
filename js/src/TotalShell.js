@@ -314,9 +314,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.cwd.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-
+        var name = valueArray.shift() || "anonAction";
+        
         //add an action node to cwd.actions
-        var newAction = this.addNode(valueArray.shift(),'actions','action',valueArray);
+        var newAction = this.addNode(name,'actions','action',valueArray);
         return newAction;
     };
 

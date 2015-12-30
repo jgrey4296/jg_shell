@@ -151,6 +151,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         baseNode.tags.isPositive = true;
         baseNode.constantTests = {};
         baseNode.bindings = {};
+        baseNode.expectationNode = null;
         return [];
     };
 
@@ -160,6 +161,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         baseNode.tags.type = 'condition';
         baseNode.constantTests = {};
         baseNode.bindings = {};
+        baseNode.expectationNode = null;
         return [];
     };
 
@@ -183,6 +185,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         //of the form: a : [+ 5]
         //meaning: resultingWME.a = resultingWME.a + 5
         baseNode.arithmeticActions = {};
+        baseNode.expectationNode = null;
     };
 
     //------------------------------

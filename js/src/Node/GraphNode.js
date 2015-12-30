@@ -32,7 +32,8 @@ define(['underscore'],function(_){
         this.tags = {};
         this.tags.type = type || 'GraphNode';
         this.annotations = {};
-
+        this.expectedBy = {};
+        
         //a rule node is supplemented in its ctor with:
         //this.conditions
         //this.actions
@@ -46,6 +47,11 @@ define(['underscore'],function(_){
         //a condition is supplemented by:
         //tests
         //bindings (or is this just the values?)
+
+        //conditions and actions have:
+        //expectationNode
+
+        
         
     };
 

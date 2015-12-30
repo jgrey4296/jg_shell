@@ -104,7 +104,31 @@ define(['underscore','d3'],function(_,d3){
                 "top"   : [ "", " Move to the top of the temp stack."],
                 "prev"  : [ "", " Move to the node previously you were at before the current node. "],
             };
-        },        
+        },
+        "printConditions" : function(globalData,values){
+            var allConditions = _.values(globalData.shell.allNodes).filter(function(node){
+                if(node.tags.type === "condition"){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+            console.log("Conditions:",allConditions);
+
+            //for each condition, aggregate the fields of its tests
+            var aggregateObjects = allConditions.map(function(condition){
+                var tests = _.keys(condition.constantTests).map(function(testId){
+                    return globalData.shell.allNodes[testId];
+                });
+                var aggregateFields = tests.reduce(function(m,test){
+                    m[test.values.field] = 1;
+                    return m;
+                },{});
+                return aggregateFields;
+            });
+
+            console.log("Prototypes:",aggregateObjects);
+        }        
     };
     //--------------------
     //utility functions:

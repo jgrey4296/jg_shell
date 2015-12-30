@@ -17,6 +17,8 @@ define(['d3','utils'],function(d3,util){
             d3.select("#mainContainer").selectAll(".condition").remove();
             d3.select("#mainContainer").selectAll(".action").remove();
             d3.select("#mainContainer").select(".rule").remove();
+            d3.select("#mainContainer").selectAll(".condExpectation").remove();
+            d3.select("#mainContainer").selectAll(".actionExpectation").remove();
         },
         //** @command cd
         "cd" : function(globalData,values){
@@ -103,7 +105,31 @@ define(['d3','utils'],function(d3,util){
         "infer" : function(globalData,values){
             globalData.shell.extractFactPrototypes();
         },
+        //link a condition or action with an expected node
+        "link" : function(globalData,values){
+            //get the condition/action being targeted
+            var condOrAction = globalData.shell.allNodes[values.shift()];
+            //get the node being linked
+            var nodeToLink = globalData.shell.allNodes[values.shift()];
 
+            if(condOrAction === undefined || condOrAction.expectationNode === undefined){
+                throw new Error("Linking needs a valid node to hold expectation");
+            }
+            if(nodeToLink === undefined){
+                throw new Error("Linking needs a valid node to expect");
+            }
+            //if you are overwriting an expectation:
+            //remove the old expectation
+            if(condOrAction.expectationNode !== null){
+                var oldExpectation = globalData.shell.allNodes[condOrAction.expectationNode];
+                delete oldExpectation.expectedBy[condOrAction.id];
+            }
+            //assign it to the expectation node
+            condOrAction.expectationNode = nodeToLink.id;
+            //store the expectation in the node
+            nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
+            
+        },        
         "help" : function(globalData,values){
             return {
                 "helpGeneral" : [ "", "Display General Commands Help"],
@@ -198,34 +224,42 @@ define(['d3','utils'],function(d3,util){
      */
     var drawRule = function(globalData){
         //console.log("Drawing rule");
-        var colWidth = globalData.calcWidth(globalData.usableWidth,3);
+        var colWidth = globalData.calcWidth(globalData.usableWidth,5);
         var halfWidth = globalData.halfWidth();
         //get the data:
         var cwdData = globalData.shell.cwd;
         var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
         var ruleTextHeight = 20;
         var ruleTextSeparator = 2;
-        var conditionData, actionData;
-        if(cwdData.conditions){
-            conditionData = _.keys(cwdData.conditions).map(function(d){
-                return this.allNodes[d];
-            },globalData.shell);
-        }else{
-            conditionData = [];
-        }
+        var conditionData, actionData, conditionExpectData, actionExpectData;
+        //Get the condtion nodes
+        conditionData = _.keys(cwdData.conditions).map(toNodes.bind(globalData.shell)) || [];
+
+        //get the action nodes
+        actionData = _.keys(cwdData.actions).map(toNodes.bind(globalData.shell)) || [];
         
-        if(cwdData.actions){
-            actionData = _.keys(cwdData.actions).map(function(d){
-                return this.allNodes[d];
-            },globalData.shell);
-        }else{
-            actionData = [];
-        }
+        //get the conditionExpect Nodes
+        conditionExpectData = conditionData.map(function(cond){
+            if(cond.expectationNode !== null){
+                return this.allNodes[cond.expectationNode];
+            }else{
+                return {id: cond.id, name: "Non-Node" };
+            }
+        },globalData.shell);
+
+        //get the actionExpect Nodes
+        actionExpectData = actionData.map(function(action){
+            if(action.expectationNode !== null){
+                return this.allNodes[action.expectationNode];
+            }else{
+                return {id: action.id, name: "Non-Node"};
+            }
+        },globalData.shell);
         
         //container
         var mainContainer = util.selectOrShare("mainContainer",undefined,d3);
         
-        //draw rule
+        //draw rule actual
         var rule = mainContainer.selectAll(".rule").data([cwdData],function(d){
             return d.id;
         });
@@ -292,8 +326,11 @@ define(['d3','utils'],function(d3,util){
         //annotate actions:
         annotateActions(globalData,actions,colWidth,actionNodeHeight);
         
-        //draw nodes the conditions test
-        //draw nodes the actions create
+        //draw expectations:
+        var conditionExpectations = drawGroup(globalData,mainContainer,"condExpectation",conditionExpectData,(halfWidth - (colWidth * 3) - 10),colWidth,conditionNodeHeight);
+
+        var actionExpectations = drawGroup(globalData,mainContainer,"actionExpectation",actionExpectData,(halfWidth + (colWidth * 2) + 10),colWidth,actionNodeHeight);
+        
     };
 
     /**
@@ -337,7 +374,7 @@ define(['d3','utils'],function(d3,util){
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, "green",
                           function(e,i){
-                              return e[0] + " <-- wme.data" + e[1];
+                              return e[0] + " <-- wme.data." + e[1];
                           });
         });
     };
@@ -402,7 +439,12 @@ define(['d3','utils'],function(d3,util){
             
         });
     };
-    
+
+    //UtilityMethod. Bind to globalData.shell first
+    var toNodes = function(id){
+        return this.allNodes[id];
+    };
+
     
     return ruleCommands;
 
