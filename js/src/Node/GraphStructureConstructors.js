@@ -9,7 +9,8 @@ if(typeof define !== 'function'){
 define(['underscore','./GraphNode'],function(_,GraphNode){
 
     //Define a variety of graph structures to use in the shell:
-    //each ctor returns a flat array of all sub-nodes created
+    //each ctor returns a flat array of all sub-nodes created, which will be added to the shell in
+    //the calling function
     var ctors = {};
 
     //THE INSTITUTION OBJECT
@@ -216,11 +217,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //an FSM
     ctors['fsm'] = function(baseNode){
         baseNode.tags.type = 'fsm';
+        //Objects that store: [ sourceId, eventId, targetId]
         baseNode.incomingEvents = {};
         baseNode.outgoingEvents = {};
         return [];
     };
-
 
     
     return ctors;

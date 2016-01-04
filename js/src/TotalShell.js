@@ -200,15 +200,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
        @return the newly created node
     */
-    CompleteShell.prototype.addNode = function(name,target,type,values){
+    CompleteShell.prototype.addNode = function(name,target,type,values,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        
         if(name === null) {
             name = type || "anon";
             console.warn("making an anonymous node");
         }
         //validate input:
-        if(this.cwd[target] === undefined){ //throw new Error("Unknown target");
-            console.warn("Creating target: ",target,this.cwd);
-            this.cwd[target] = {};
+        if(source[target] === undefined){ //throw new Error("Unknown target");
+            console.warn("Creating target: ",target,source);
+            source[target] = {};
         }
         type = type || "GraphNode";
         
@@ -217,15 +219,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             //if adding to parents,don't store the cwd as newnode's parent
             newNode = new GraphNode(name,undefined,undefined,type);
             //add the cwd to the newNodes children:
-            this.addLink(newNode,'children',this.cwd.id,this.cwd.name);
+            this.addLink(newNode,'children',source.id,source.name);
             //newNode.children[this.cwd.id] = true;
         }else{
-            newNode = new GraphNode(name,this.cwd.id,this.cwd.name,type);
+            newNode = new GraphNode(name,source.id,source.name,type);
         }
 
         //add to cwd:
         //console.log("Linking new node:",newNode);
-        this.addLink(this.cwd,target,newNode.id,newNode.name);
+        this.addLink(source,target,newNode.id,newNode.name);
 
         //Store in allNodes:
         if(this.allNodes[newNode.id] !== undefined){
@@ -241,7 +243,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                 var flatChildren = _.flatten(newChildren);
                 flatChildren.forEach(function(d){
                     if(this.allNodes[d.id] !== undefined){
-                        console.warn("Assigning to existing node:",d,this.allNodes[d.id]);
+                        console.warn("Overwriting existing node:",d,this.allNodes[d.id]);
                     }
                     this.allNodes[d.id] = d;
                 },this);
@@ -252,11 +254,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
         //If the cwd WAS disconnected in some way,
         //remove it from that designation
-        if(this.cwd[target][this.disconnected.noParents.id]){
-            this.rm(this.disconnected.noParents.id);
+        if(source[target][this.disconnected.noParents.id]){
+            this.rm(this.disconnected.noParents.id,source.id);
         }
-        if(this.cwd[target][this.disconnected.noChildren.id]){
-            this.rm(this.disconnected.noChildren.id);                
+        if(source[target][this.disconnected.noChildren.id]){
+            this.rm(this.disconnected.noChildren.id,source.id);                
         }
         
         return newNode;        
@@ -271,16 +273,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param op The operator to use in the test
        @param value The constant value to test against
      */
-    CompleteShell.prototype.addTest = function(conditionId,testParams){
-        console.log("Adding test:",conditionId,testParams,this.cwd.conditions);
+    CompleteShell.prototype.addTest = function(conditionId,testParams,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Adding test:",conditionId,testParams,source.conditions);
         //check you're in a rule
-        if(this.cwd.tags.type !== 'rule'){
+        if(source.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         //check the specified condition exists
-        if(this.cwd.conditions[conditionId] === undefined
+        if(source.conditions[conditionId] === undefined
           || this.allNodes[conditionId] === undefined){
-            console.log(conditionId,this.cwd.conditions);
+            console.log(conditionId,source.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
         //Check the operator is a defined one
@@ -310,14 +313,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param valueArray The names of actions to create
        @return newActions an array of all actions created
     */
-    CompleteShell.prototype.addAction = function(valueArray){
-        if(this.cwd.tags.type !== 'rule'){
+    CompleteShell.prototype.addAction = function(valueArray,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         var name = valueArray.shift() || "anonAction";
         
         //add an action node to cwd.actions
-        var newAction = this.addNode(name,'actions','action',valueArray);
+        var newAction = this.addNode(name,'actions','action',valueArray,sourceId);
         return newAction;
     };
 
@@ -331,8 +335,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose rename the current nodes name
        @param name The name to rename to
      */
-    CompleteShell.prototype.rename = function(name){
-        this.cwd.name = name;
+    CompleteShell.prototype.rename = function(name,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        source.name = name;
     };
 
     /**
@@ -343,16 +348,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param parameter
        @param value
      */
-    CompleteShell.prototype.setParameter = function(field,parameter,value){
-        if(!this.cwd[field]) throw new Error("Unrecognised field");
+    CompleteShell.prototype.setParameter = function(field,parameter,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(!source[field]) throw new Error("Unrecognised field");
         if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
             throw new Error("Bad field");
         }
         if(value !== undefined){
-            this.cwd[field][parameter] = value;
+            source[field][parameter] = value;
         }else{
             //if no value is specified, remove the entry
-            delete this.cwd[field][parameter];
+            delete source[field][parameter];
         }
     };
 
@@ -365,22 +371,24 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param id The id of the node being linked towards
        @param reciprocal Whether the node of id will have a link back
      */
-    CompleteShell.prototype.link = function(target,id,reciprocal){
+    CompleteShell.prototype.link = function(target,id,reciprocal,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+
         //validate:
         if(isNaN(Number(id))) throw new Error("id should be a global id number");
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
-        if(!this.cwd[target]) throw new Error("Unrecognised target");
+        if(!source[target]) throw new Error("Unrecognised target");
 
         //perform the link:
         var nodeToLink = this.allNodes[id];
-        this.addLink(this.cwd,target,nodeToLink.id,nodeToLink.name);
+        this.addLink(source,target,nodeToLink.id,nodeToLink.name);
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
             var rTarget = 'parents';
             if(target === 'parents') rTarget = 'children';
-            this.addLink(nodeToLink,rTarget,this.cwd.id,this.cwd.name);
+            this.addLink(nodeToLink,rTarget,source.id,source.name);
             //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
         }
     };
@@ -396,18 +404,19 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @ie: toVar = wme.fromVar
      */
-    CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar){
+    CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
-        if(this.cwd.tags.type !== 'rule'){
+        if(source.tags.type !== 'rule'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
-        if(this.cwd.conditions[conditionId] === undefined){
+        if(source.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
         var condition = this.allNodes[conditionId];
         //condition.bindings.push([toVar,fromVar]);
         condition.bindings[toVar] = fromVar;
-        console.log(this.cwd.conditions[conditionId].bindings);
+        console.log(source.conditions[conditionId].bindings);
     };
 
     /**
@@ -421,13 +430,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @TODO allow bindings in the rhs/value field
      */
-    CompleteShell.prototype.setArithmetic = function(actionId,varName,op,value){
+    CompleteShell.prototype.setArithmetic = function(actionId,varName,op,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Setting arithmetic of:",actionId,varName,op,value);
-        console.log(_.keys(this.cwd.actions));
-        if(this.cwd.tags.type !== 'rule'){
+        console.log(_.keys(source.actions));
+        if(source.tags.type !== 'rule'){
             throw new Error("Arithmetic can only be applied to actions of rules");
         }
-        if(this.cwd.actions[actionId] === undefined){
+        if(source.actions[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
         var action = this.allNodes[actionId];
@@ -453,11 +463,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @note If only a is supplied, sets the action's actionType tag
      */
-    CompleteShell.prototype.setActionValue = function(actionId,a,b){
-        if(this.cwd.tags.type !== 'rule'){
+    CompleteShell.prototype.setActionValue = function(actionId,a,b,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
             throw new Error("Can't set action values on non-actions");
         }
-        if(this.cwd.actions[actionId] !== undefined){
+        if(source.actions[actionId] !== undefined){
             var action = this.allNodes[actionId];
             if(b){
                 action.values[a] = b;
@@ -475,11 +486,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param actionNum
        @param a the type
      */
-    CompleteShell.prototype.setActionType = function(actionId,a){
-        if(this.cwd.tags.type !== 'rule'){
+    CompleteShell.prototype.setActionType = function(actionId,a,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
             throw new Error("Can't set action type for non-rules");
         }
-        if(this.cwd.actions[actionId] !== undefined){
+        if(source.actions[actionId] !== undefined){
             var action = this.allNodes[actionId];
             if(a){
                 action.tags.actionType = a;
@@ -501,11 +513,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param op The operator to test using
        @param val the value to test against
      */
-    CompleteShell.prototype.setTest = function(conditionId,testId,field,op,val){
-        if(this.cwd.tags.type !== 'rule'){
+    CompleteShell.prototype.setTest = function(conditionId,testId,field,op,val,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
             throw new Error("Trying to set test on a non-rule node");
         }
-        if(this.cwd.conditions[conditionId] === undefined || this.cwd.conditions[conditionId].constantTests[testId] === undefined){
+        if(source.conditions[conditionId] === undefined || source.conditions[conditionId].constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
         var test = this.allNodes[testId];
@@ -537,21 +550,23 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose remove a node link from the cwd
        @param nodeToDelete The node object to remove from the cwd
      */
-    CompleteShell.prototype.rm = function(nodeToDelete,target){
+    CompleteShell.prototype.rm = function(nodeToDelete,target,sourceId){
         if(target === undefined) target = 'parents';
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+
         var removedNode = null;
         if(!isNaN(Number(nodeToDelete))){
             //delete numeric id node
             removedNode = this.removeNumericId(Number(nodeToDelete),target);
             if(!removedNode){
-                removedNode = this.removeNumericId(Number(nodeToDelete),'children');
+                removedNode = this.removeNumericId(Number(nodeToDelete),'children',source);
             }
         }else{
             throw new Error("Removing a node requires an id");
         }
 
         if(removedNode){
-            this.cleanupNode(removedNode,this.cwd);
+            this.cleanupNode(removedNode,source);
         }
     };
 
@@ -562,11 +577,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param target
        @TODO check this
      */
-    CompleteShell.prototype.removeNumericId = function(id,target){
+    CompleteShell.prototype.removeNumericId = function(id,target,source){
         var removedNode = null;
-        if(this.cwd[target][id] !== undefined){
+        if(source[target][id] !== undefined){
             removedNode = this.allNodes[id];
-            delete this.cwd[target][id];
+            delete source[target][id];
         }
         return removedNode;
     };
@@ -607,12 +622,13 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose remove an action from the current rule
        @note: an action is still a node, so is still in allnodes
      */
-    CompleteShell.prototype.removeAction = function(actionId){
-        if(this.cwd.actions[actionId] === undefined){
+    CompleteShell.prototype.removeAction = function(actionId,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.actions[actionId] === undefined){
             throw new Error("Can't delete a non-existent action");
         }
         //remove from the rule
-        delete this.cwd.actions[actionId];
+        delete source.actions[actionId];
         //remove from allnodes
     };
 
@@ -621,11 +637,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @method removeCondition
        @purpose remove a condition, and its tests, from a rule
      */
-    CompleteShell.prototype.removeCondition = function(condId){
-        if(this.cwd.conditions[condId] === undefined){
+    CompleteShell.prototype.removeCondition = function(condId,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;        
+        if(source.conditions[condId] === undefined){
             throw new Error("Can't delete an non-existent condition");
         }
-        delete this.cwd.conditions[condId];
+        delete source.conditions[condId];
     };
 
     /**
@@ -635,9 +652,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param condNum
        @param testNum
      */
-    CompleteShell.prototype.removeTest = function(condId,testId){
-        console.log("removing:",condId,testId,this.cwd);
-        if(this.cwd.conditions[condId] === undefined ||
+    CompleteShell.prototype.removeTest = function(condId,testId,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("removing:",condId,testId,source);
+        if(source.conditions[condId] === undefined ||
            this.allNodes[condId] === undefined ||
            this.allNodes[condId].constantTests[testId] === undefined){
             throw new Error("can't delete a non-existent test");
@@ -654,9 +672,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param conditionNumber
        @param boundVar
      */
-    CompleteShell.prototype.removeBinding = function(condId,boundVar){
+    CompleteShell.prototype.removeBinding = function(condId,boundVar,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("removing binding:",condId,boundVar);
-        if(this.cwd.conditions[condId] === undefined
+        if(source.conditions[condId] === undefined
           || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
@@ -761,6 +780,18 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         return this.reteNet.lastActivatedRules;
     };
     
+    /**
+       @class CompleteShell
+       @method getNode
+       @purpose get a node by its id, utility method
+     */
+    CompleteShell.prototype.getNode = function(nodeId){
+        if(this.allNodes[nodeId]){
+            return this.allNodes[nodeId];
+        }else{
+            throw new Error("Unknown node specified: " + nodeId);
+        }        
+    };
     
     //------------------------------
     // Utility string method prototype
@@ -776,9 +807,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.getNodeListByIds = function(idList){
         var retList = idList.map(function(d){
-            if(this.allNodes[d]){
-                return this.allNodes[d];
-            }            
+                return this.getNode(d);
         },this).filter(function(d){ return d;});
         return retList;
     };
@@ -893,35 +922,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     //------------------------------
     // SEARCH method prototype
     //------------------------------
-    
-    /**
-       SEARCH {whereToLook} {WhatToLookFor} {KeyOrValue}
-
-       //eg: find all nodes matching a pattern:
-       // search name blah
-
-       //eg: find the node with a specified id:
-       // search id 5
-
-       //eg2: find all nodes with children's names matching a pattern:
-       // search children blah
-
-       //eg3: find all nodes with a specific node as a child
-       // search children 5 id
-
-       //eg4: find all nodes where a value of an object  matches a pattern:
-       // search values bob value
-
-       //eg5: find all nodes where keys(values) contains a pattern
-       // search values bob key
-
-       
-       search ALL NODES for ones that have the specified property
-       namely, that they have a particular connection
-    */
-
-
-    //eg: search name root
+     //eg: search name root
     //    search tags type
     //    search tags type GraphNode
     //    search children 0
@@ -967,8 +968,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             }
             return false;
         });
-
-
         this.lastSearchResults = nodes;
         return this.lastSearchResults;
     };
@@ -1000,16 +999,18 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param target
      */
     CompleteShell.prototype.cdNode = function(target){
+        //update where you were previously
         this.previousLocation = this.cwd.id;
-        //If a number:
+        //go up to parent
         if(target === ".."){
             console.log("cd : ..");
             if(this.cwd._originalParent){
-                this.cd(this.cwd._originalParent);
+                this.cdNode(this.cwd._originalParent);
             }else{
+                //if no original parent defined
                 var randomParentKey = util.randomChoice(Object.keys(this.cwd.parents));
                 if(randomParentKey !== undefined){
-                    this.cd(randomParentKey);
+                    this.cdNode(randomParentKey);
                 }
             }
             return;

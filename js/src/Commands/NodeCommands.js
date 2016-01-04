@@ -97,8 +97,6 @@ define(['d3','utils'],function(d3,util){
             }
             pathText.text(path);
 
-            //draw inspect data
-            drawInspectBar(globalData,globalData.lastInspectData);
             
         },
         "cleanup" : function(globalData, values){
@@ -106,21 +104,8 @@ define(['d3','utils'],function(d3,util){
             d3.selectAll(".parent").remove();
             d3.selectAll(".child").remove();
         },
-        "inspect" : function(globalData,values){
-            var key = values.shift(),
-                nodeId = values.shift(),
-                node = globalData.shell.allNodes[nodeId],                
-                pairs;
-
-            if(node === undefined) node = globalData.shell.cwd;
-            if(key === "#all"){
-                pairs = _.keys(node);
-            }else{
-                pairs = _.pairs(node[key]) || [];
-            }
-            globalData.lastInspection = "(" + node.id + ")." + key;
-            globalData.lastInspectData = pairs;
-            
+        "printNode" : function(globalData,values){
+            console.log(globalData.shell.cwd);
         },
         //new -> addNode,
         "new" : function(globalData,values){
@@ -214,7 +199,6 @@ define(['d3','utils'],function(d3,util){
                 "link"  : [ "$target $id", " Link two existing nodes."],
                 "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
                 "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
-                "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
             };
         }
     };
@@ -305,85 +289,6 @@ define(['d3','utils'],function(d3,util){
         return path.reverse();
     };
 
-    var drawInspectBar = function(globalData,pairs){
-        if(pairs === undefined){
-            pairs = [];
-        }
-        var colWidth = globalData.calcWidth(globalData.usableWidth, 7);
-        console.log("Inspecting:",colWidth,pairs);
-
-        
-        var inspectResults = d3.select("#inspectResults");
-        if(inspectResults.empty()){
-            inspectResults = d3.select("svg").append("g")
-                .attr("id","inspectResults")
-                .attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
-            inspectResults.append("rect")
-                .attr("width",100)
-                .attr("height",(globalData.usableHeight * 0.8))
-                .style("fill","red")
-                .attr("rx",5).attr("ry",5)
-                .attr("transform","translate(-100,0)");
-        };
-
-        if(pairs.length > 0){
-            //draw
-            if(inspectResults.selectAll(".inspectText").empty()){
-                inspectResults.append("text").classed("inspectText",true)
-                    .attr("transform","translate(" + -(colWidth * 0.2) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
-                    .text("Inspect:")
-                    .style("fill","white")
-                    .style("text-anchor","end");
-            }
-            inspectResults.select("rect").transition()
-                .attr("width",colWidth)
-                .attr("transform","translate(" + -(colWidth) + ",0)");
-
-            inspectResults.select(".inspectText")
-                .text("Inspect: " + globalData.lastInspection);
-
-            
-            var bound = inspectResults.selectAll(".inspectResult").data(pairs,function(d){ return d[0]+d[1];});
-
-            bound.exit().remove();
-
-            var enter = bound.enter().append("g").classed("inspectResult",true);
-            enter.append("rect").classed("inspectRect",true)
-                .attr("width",(colWidth * 0.8))
-                .style("fill","black");
-
-            enter.append("text").classed("inspectResultText",true)
-                .style("fill","white")
-                .style("text-anchor","end");
-
-            //update:
-            inspectResults.selectAll(".inspectResult").transition()
-                .attr("transform",function(d,i){
-                    return "translate(" + -(colWidth * 0.9) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / pairs.length)) + 5) + ")";
-                });
-
-            inspectResults.selectAll(".inspectRect").transition()
-                .attr("height",((globalData.usableHeight * 0.6)/pairs.length) -5)
-                .attr("rx",10).attr("ry",10);
-
-            inspectResults.selectAll(".inspectResultText").transition()
-                .text(function(d){
-                    if(d instanceof Array){
-                        return d[0] +": " + d[1];
-                    }else{
-                        return d;
-                    }
-                })
-                .attr("transform","translate(" + (colWidth * 0.75) + "," + (((globalData.usableHeight * 0.6) / pairs.length) * 0.5) + ")");            
-        }else{
-            //cleanup if no data to draw
-            inspectResults.selectAll(".inspectResult").remove();
-            inspectResults.selectAll(".inspectText").remove();
-            inspectResults.select("rect").transition()
-                .attr("width",10)
-                .attr("transform","translate(-10,0)");
-        }        
-    };    
     
     return nodeCommands;
 });

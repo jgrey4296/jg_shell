@@ -50,11 +50,30 @@ define(['underscore','d3'],function(_,d3){
         "refine" : function(globalData,values){
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
         },
+        "inspect" : function(globalData,values){
+            var key = values.shift(),
+                nodeId = values.shift(),
+                node = globalData.shell.allNodes[nodeId],                
+                pairs;
+
+            if(node === undefined) node = globalData.shell.cwd;
+            if(key === "#all"){
+                pairs = _.keys(node);
+            }else{
+                pairs = _.pairs(node[key]) || [];
+            }
+            globalData.lastInspection = "(" + node.id + ")." + key;
+            globalData.lastInspectData = pairs;
+            
+        },
         "draw" : function(globalData,values){
             //Draw the Stash:
             drawStash(globalData,globalData.shell._nodeStash);
             //Draw search results:
             drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            //draw inspect data
+            drawInspectBar(globalData,globalData.lastInspectData);
+
         },
         //Load a file from the server
         "load" : function(globalData,values){
@@ -109,6 +128,7 @@ define(['underscore','d3'],function(_,d3){
                 "prev"  : [ "", " Move to the node previously you were at before the current node. "],
                 "search" : ["$field $tag $value", "Search for nodes with a field, tag, value. Last param is a regex"],
                 "refine" : ["$field $tag $value", "Searches through the currently displayed search results"],
+                "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
                 "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"],
             };
         },
@@ -234,7 +254,84 @@ define(['underscore','d3'],function(_,d3){
                 .attr("width",10);
         }
     };
-    
+
+        var drawInspectBar = function(globalData,pairs){
+        if(pairs === undefined){
+            pairs = [];
+        }
+        var colWidth = globalData.calcWidth(globalData.usableWidth, 7);
+        var inspectResults = d3.select("#inspectResults");
+        if(inspectResults.empty()){
+            inspectResults = d3.select("svg").append("g")
+                .attr("id","inspectResults")
+                .attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
+            inspectResults.append("rect")
+                .attr("width",100)
+                .attr("height",(globalData.usableHeight * 0.8))
+                .style("fill","red")
+                .attr("rx",5).attr("ry",5)
+                .attr("transform","translate(-100,0)");
+        };
+
+        if(pairs.length > 0){
+            //draw
+            if(inspectResults.selectAll(".inspectText").empty()){
+                inspectResults.append("text").classed("inspectText",true)
+                    .attr("transform","translate(" + -(colWidth * 0.2) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                    .text("Inspect:")
+                    .style("fill","white")
+                    .style("text-anchor","end");
+            }
+            inspectResults.select("rect").transition()
+                .attr("width",colWidth)
+                .attr("transform","translate(" + -(colWidth) + ",0)");
+
+            inspectResults.select(".inspectText")
+                .text("Inspect: " + globalData.lastInspection);
+
+            
+            var bound = inspectResults.selectAll(".inspectResult").data(pairs,function(d){ return d[0]+d[1];});
+
+            bound.exit().remove();
+
+            var enter = bound.enter().append("g").classed("inspectResult",true);
+            enter.append("rect").classed("inspectRect",true)
+                .attr("width",(colWidth * 0.8))
+                .style("fill","black");
+
+            enter.append("text").classed("inspectResultText",true)
+                .style("fill","white")
+                .style("text-anchor","end");
+
+            //update:
+            inspectResults.selectAll(".inspectResult").transition()
+                .attr("transform",function(d,i){
+                    return "translate(" + -(colWidth * 0.9) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / pairs.length)) + 5) + ")";
+                });
+
+            inspectResults.selectAll(".inspectRect").transition()
+                .attr("height",((globalData.usableHeight * 0.6)/pairs.length) -5)
+                .attr("rx",10).attr("ry",10);
+
+            inspectResults.selectAll(".inspectResultText").transition()
+                .text(function(d){
+                    if(d instanceof Array){
+                        return d[0] +": " + d[1];
+                    }else{
+                        return d;
+                    }
+                })
+                .attr("transform","translate(" + (colWidth * 0.75) + "," + (((globalData.usableHeight * 0.6) / pairs.length) * 0.5) + ")");            
+        }else{
+            //cleanup if no data to draw
+            inspectResults.selectAll(".inspectResult").remove();
+            inspectResults.selectAll(".inspectText").remove();
+            inspectResults.select("rect").transition()
+                .attr("width",10)
+                .attr("transform","translate(-10,0)");
+        }        
+    };    
+
     
     return GeneralCommands;
 });
