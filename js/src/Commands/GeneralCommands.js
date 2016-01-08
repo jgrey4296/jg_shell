@@ -94,6 +94,17 @@ define(['underscore','d3'],function(_,d3){
             request.open("GET","/data/"+values[0]+".json",true);
             request.send();
         },
+        //Import a text form of json data:
+        "import" : function(globalData,values){
+            try{
+            var reconstructedJsonString = values.join(" ");
+                var reconJson = JSON.parse(reconstructedJsonString);
+                globalData.shell.importJson(reconJson);
+            }catch(err){
+                alert("Error Importing Json String:\n" + err.message);
+                console.log("Error Importing Json Data: ",err);
+            }            
+        },
         //Save the current graph to the server
         "save" : function(globalData,values){
             console.log("Saving:",values);
