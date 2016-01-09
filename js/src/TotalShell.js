@@ -350,16 +350,25 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.setParameter = function(field,parameter,value,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(!source[field]) throw new Error("Unrecognised field");
-        if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
-            throw new Error("Bad field");
+        //if(!source[field]) throw new Error("Unrecognised field");
+        //if(field !== 'values' && field !== 'tags' && field !== 'annotations'){
+        //    throw new Error("Bad field");
+        //}
+        if(source[field] === undefined && field !== undefined){
+            source[field] = {};
         }
-        if(value !== undefined){
+        if(parameter === undefined && field !== 'values' && field !== 'tags'
+          && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'`){
+            delete source[field];
+        }else if(value !== undefined){
             source[field][parameter] = value;
         }else{
             //if no value is specified, remove the entry
             delete source[field][parameter];
         }
+
+
+        
     };
 
 
@@ -553,11 +562,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.rm = function(nodeToDelete,target,sourceId){
         if(target === undefined) target = 'parents';
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-
         var removedNode = null;
         if(!isNaN(Number(nodeToDelete))){
             //delete numeric id node
-            removedNode = this.removeNumericId(Number(nodeToDelete),target);
+            removedNode = this.removeNumericId(Number(nodeToDelete),target,source);
             if(!removedNode){
                 removedNode = this.removeNumericId(Number(nodeToDelete),'children',source);
             }

@@ -15,6 +15,7 @@ require.config({
         RuleCommands : "Commands/RuleCommands",
         ReteCommands : "Commands/ReteCommands",
         GeneralCommands: "Commands/GeneralCommands",
+        SimulationCommands : "Commands/SimulationCommands",
         FSMCommands : "Commands/FSMCommands",
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
@@ -34,7 +35,7 @@ require.config({
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands){
+require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands){
 
     //----------------------------------------
     //GLOBALS
@@ -49,7 +50,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             "rule" : RuleCommands,
             "rete" : ReteCommands,
             "general" : GeneralCommands,
-            "fsm"  : FSMCommands
+            "fsm"  : FSMCommands,
+            "sim"  : SimulationCommands
         },
         //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [

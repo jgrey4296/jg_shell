@@ -156,7 +156,7 @@ define(['d3','utils'],function(d3,util){
         //------------------------------
         //rm -> removeNode,
         "rm" : function(globalData,values){
-            globalData.shell.rm(values[0]);
+            globalData.shell.rm(values[0],values[1],values[2]);
         },
         //cd -> cd
         "cd" : function(globalData,values){

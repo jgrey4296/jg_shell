@@ -7,7 +7,24 @@
 define(['underscore'],function(_){
 
     var MainCommandCLI = function(currentLine,globalData){
-        var splitLine = currentLine.trim().split(" ");
+        var splitLine = currentLine.split(/ /);
+
+        var inString = false;
+        //Reconstruct strings from inputs
+        var combined = splitLine.reduce(function(m,v){
+            if(!inString){
+                m.push(v.replace(/"/,""));
+            }else{
+                m[m.length-1] += " " + v.replace(/"/,"");
+            }
+            if(v[0] === '"') inString = true;
+            if(v[v.length-1] === '"') inString = false;
+            return m;
+        },[]);
+        console.log("Split apart:",combined);
+        
+        splitLine = combined;
+        
         var commandName = splitLine.shift();
         //lookup command
         var commandToExecute = globalData.lookupOrFallBack(commandName,globalData);

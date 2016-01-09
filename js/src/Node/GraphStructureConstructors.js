@@ -180,7 +180,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['action'] = function(baseNode,values){
         baseNode.tags.actionType = "assert";
         baseNode.tags.actionFocus = "wme";
-        while(values.length >= 2){
+        while(values && values.length >= 2){
             baseNode.values[values.shift()] = values.shift();
         }
         //of the form: a : [+ 5]
