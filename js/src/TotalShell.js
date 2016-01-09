@@ -358,7 +358,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             source[field] = {};
         }
         if(parameter === undefined && field !== 'values' && field !== 'tags'
-          && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'`){
+          && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'){
             delete source[field];
         }else if(value !== undefined){
             source[field][parameter] = value;
@@ -366,8 +366,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             //if no value is specified, remove the entry
             delete source[field][parameter];
         }
-
-
         
     };
 
