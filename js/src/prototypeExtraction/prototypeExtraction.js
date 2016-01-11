@@ -15,7 +15,7 @@ define(['underscore'],function(_){
             theSet.add(_.keys(d).join("|"));
         });
                         
-        return Array.from(theSet);;
+        return Array.from(theSet);
     };
 
     /**

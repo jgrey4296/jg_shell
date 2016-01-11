@@ -278,8 +278,14 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
     //any that the wme blocks, gets an additional negative Join result
     //any that don't get blocked should already have been activated
     var negativeNodeRightActivation = function(node,wme){
+        //utility activation function:
+        var activateFunc = function(d){
+            d.owningNode.nccNode.chilodren.forEach(function(e){
+                leftActivate(e,d.parentToken);
+            });
+        };
+
         //todo: this could be a map
-        
         for(var i in node.items){
             var currToken = node.items[i];
             var joinTestResult = ReteTestExecution.performJoinTests(node,currToken,wme);
@@ -290,11 +296,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
                     //slightly ugly, but removes circular dependencies with retedeletion:
                     _.uniq(unblockedTokens,false,function(d){
                         return d.id;
-                    }).forEach(function(d){
-                        d.owningNode.nccNode.children.forEach(function(e){
-                            leftActivate(e,d.parentToken);
-                        });
-                    });            
+                    }).forEach(activateFunc);
                 }
                 //Adds itself to the currToken and wme as
                 //necessary

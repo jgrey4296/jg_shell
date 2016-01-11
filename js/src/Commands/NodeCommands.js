@@ -47,7 +47,7 @@ define(['d3','utils'],function(d3,util){
                 .attr("ry",10);
 
             node.selectAll("rect")
-                .attr("width",colWidth).attr("height",(nodeText.length * (nodeTextHeight + nodeTextSeparator) + 30))
+                .attr("width",colWidth).attr("height",(nodeText.length * (nodeTextHeight + nodeTextSeparator) + 30));
             
             node.selectAll(".nodeText").remove();
             //Draw the node's text:

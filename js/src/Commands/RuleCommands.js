@@ -55,7 +55,7 @@ define(['d3','utils'],function(d3,util){
         "if" : function(globalData, values,sourceId){
             values = values.map(function(d){
                 return d.replace(/,/,"");
-            })
+            });
             var newCondition = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
             while(values.length >= 3){
                 var currentTest = values.splice(0,3);
@@ -146,7 +146,7 @@ define(['d3','utils'],function(d3,util){
                 nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
             }else if(condOrActiontags.type === "action"){
                 nodeToLink.producedBy[condOrAction.id] = condOrAction.name;
-            };
+            }
             
         },        
         "help" : function(globalData,values){
@@ -386,8 +386,7 @@ define(['d3','utils'],function(d3,util){
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, "red",
                           function(e,i){
-                              return "(" + e.id + "): wme.data." + e.values.field + " "
-                                  + util.operatorToString(e.values.operator) + " " + e.values.value;
+                              return "(" + e.id + "): wme.data." + e.values.field + " "  + util.operatorToString(e.values.operator) + " " + e.values.value;
                           });
 
             //annotate bindings
@@ -413,8 +412,7 @@ define(['d3','utils'],function(d3,util){
             var arithActions = _.pairs(d.arithmeticActions);
 
             //calculate sizes:
-            var totalDataPoints = actionType.length + actionFocus.length
-                + actionValues.length + arithActions.length;
+            var totalDataPoints = actionType.length + actionFocus.length + actionValues.length + arithActions.length;
             var heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
 
             var offset = nodeHeight * 0.1 + separator;

@@ -239,14 +239,14 @@ define(['underscore','d3'],function(_,d3){
         if(searchResults.empty()){
             searchResults = d3.select("svg").append("g")
                 .attr("id","searchResults")
-                .attr("transform","translate(0," + (globalData.usableHeight * 0.1) + ")")
+                .attr("transform","translate(0," + (globalData.usableHeight * 0.1) + ")");
 
             searchResults.append("rect")
                 .attr("width",100)
                 .attr("height", (globalData.usableHeight * 0.8))
                 .style("fill","red")
                 .attr("rx",5).attr("ry",5);
-        };
+        }
 
         //Draw
         if(searchData.length > 0){
@@ -315,7 +315,7 @@ define(['underscore','d3'],function(_,d3){
                 .style("fill","red")
                 .attr("rx",5).attr("ry",5)
                 .attr("transform","translate(-100,0)");
-        };
+        }
 
         if(pairs.length > 0){
             //draw

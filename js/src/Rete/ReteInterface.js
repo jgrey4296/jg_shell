@@ -70,7 +70,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
             reteNet.wmeLifeTimes.assertions[time] = [];
         }
         reteNet.wmeLifeTimes.assertions[time].push(wme);
-    }
+    };
 
     /**
        @function addToRetractionList
@@ -82,7 +82,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
             reteNet.wmeLifeTimes.retractions[time] = [];
         }
         reteNet.wmeLifeTimes.retractions[time].push(wme);
-    }
+    };
     
     /**
        @function incrementTime

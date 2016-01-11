@@ -281,8 +281,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         //check the specified condition exists
-        if(source.conditions[conditionId] === undefined
-          || this.allNodes[conditionId] === undefined){
+        if(source.conditions[conditionId] === undefined || this.allNodes[conditionId] === undefined){
             console.log(conditionId,source.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
@@ -302,8 +301,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         this.allNodes[test.id] = test;
 
         //extend the node to be a test
-        if(DSCtors['test'] === undefined) throw new Error("No ctor for test");
-        DSCtors['test'](test,testParams);
+        if(DSCtors.test === undefined) throw new Error("No ctor for test");
+        DSCtors.test(test,testParams);
     };
 
     /**
@@ -357,8 +356,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(source[field] === undefined && field !== undefined){
             source[field] = {};
         }
-        if(parameter === undefined && field !== 'values' && field !== 'tags'
-          && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'){
+        if(parameter === undefined && field !== 'values' && field !== 'tags' && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'){
             delete source[field];
         }else if(value !== undefined){
             source[field][parameter] = value;
@@ -548,7 +546,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(this.allNodes[id] === undefined){
             throw new Error("unrecognised node to delete");
         }
-        delete this.allNodes(id);
+        delete this.allNodes[id];
     };
 
     /**
@@ -681,8 +679,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.removeBinding = function(condId,boundVar,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("removing binding:",condId,boundVar);
-        if(source.conditions[condId] === undefined
-          || this.allNodes[condId] === undefined){
+        if(source.conditions[condId] === undefined || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
         var condition = this.allNodes[condId];
@@ -691,7 +688,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }else{
             console.warn("Could not find binding:",boundVar,condition);
         }
-    }
+    };
     
     //------------------------------
     // Rete Integration Methods
@@ -946,7 +943,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.searchForFieldTagValue = function(values,nodeSelection){
         var field = values.shift(),
             tag = values.shift(),
-            tagValue = values.shift();
+            tagValue = values.shift(),
+            pattern = new RegExp(tag);
         if(nodeSelection === undefined){
             nodeSelection = _.values(this.allNodes);
         }
@@ -961,7 +959,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             if(node[field] === undefined) return false;
             //if field is a string
             if(typeof node[field] !== "object"){
-                var pattern = new RegExp(tag);
+                //using default pattern of tag
                 if(pattern.test(node[field])){
                     return true;
                 }else{
@@ -973,7 +971,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                 if(tagValue === undefined){
                     return true;
                 }else{
-                    var pattern = new RegExp(tagValue);
+                    pattern = new RegExp(tagValue);
                     if(pattern.test(node[field][tag])){
                         return true;
                     }else{
@@ -1127,16 +1125,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         var combinedPrototypes = constTestPRototypes.reduce(function(obj){
 
         },{});
-
-        
        
         console.log("Inferred Test Prototypes:",constTestPrototypes);
-
-        
         //Combine together:
         return {
             "testPrototypes":constTestPrototypes,
-        }
+        };
     };
 
     //--------------------
@@ -1154,7 +1148,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         var shellRef = this,
             currentStack = [this.getNode(nodeId)],
             visitedListOfIds = [];
-
+        
         //discover all applicable nodes
         while(currentStack.length > 0){
             var curr = currentStack.pop();
@@ -1168,7 +1162,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                     return shellRef.getNode(d);
                 }).reverse());
             });
-        };
+        }
 
         //apply the criteria function to the discovered nodes
         if(criteriaFunction !== undefined && typeof criteriaFunction === 'function'){

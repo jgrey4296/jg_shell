@@ -211,7 +211,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             baseNode.children[d.id] = true;
         });
         return createdChildren;        
-    }
+    };
 
     //--------------------
     //an FSM

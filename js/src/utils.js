@@ -31,9 +31,10 @@ define(['underscore'],function(_){
         
         //Align each side
         var alignedPairs = arrayOfPairs.map(function(d){
-            var lhsDifference = d[1].length - d[0].length
+            var lhsDifference = d[1].length - d[0].length,
                 rhsDifference = d[0].length - d[1].length,
-                lhs = "",rhs = "";
+                lhs = "",
+                rhs = "";
             
             if(lhsDifference > 0){
                 lhs = Array(lhsDifference).join("_") + d[0];
@@ -67,7 +68,7 @@ define(['underscore'],function(_){
                 .attr("id",containerName);
         }
         return container;
-    }
+    };
 
     //Generic draw group function, modes will typically create their own version
     util.drawGroup = function(globalData,container,className,data,xLocation,groupWidth){

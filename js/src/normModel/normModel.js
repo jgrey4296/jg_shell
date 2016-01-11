@@ -38,7 +38,7 @@ define(['underscore'],function(_){
             return this.popConformity(norm) * this.popExpectation(norm) * this.sanctionExpectation(norm);
         }else{
             return 0.0;
-        };
+        }
     };
 
     NormModel.prototype.popConformity = function(norm){

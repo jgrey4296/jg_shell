@@ -65,8 +65,7 @@ define(['underscore','d3'],function(_,d3){
             .style("fill",globalData.colours.textBlue);
         
         boundSelection.attr("transform",function(d,i){
-            return "translate("+ (globalData.usableWidth * 0.02)
-                + "," + (30 + i * 20) +")";
+            return "translate("+ (globalData.usableWidth * 0.02) + "," + (30 + i * 20) +")";
         })
             .text(function(d){
                 return d;
