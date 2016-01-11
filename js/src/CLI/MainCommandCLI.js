@@ -6,7 +6,7 @@
 
 define(['underscore'],function(_){
 
-    var MainCommandCLI = function(currentLine,globalData){
+    var parseCurrentLine = function(currentLine){
         var splitLine = currentLine.split(/ /);
 
         var inString = false;
@@ -21,13 +21,19 @@ define(['underscore'],function(_){
             if(v[v.length-1] === '"') inString = false;
             return m;
         },[]);
-        console.log("Split apart:",combined);
+        return combined;
+    };
+
         
-        splitLine = combined;
+    //The CLI Function, takes a line and finds the command to apply
+    var MainCommandCLI = function(currentLine,globalData,skipDraw){
+        if(skipDraw === undefined) skipDraw = false;
+        var splitLine = parseCurrentLine(currentLine);
         
         var commandName = splitLine.shift();
         //lookup command
         var commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
+        
         //perform command
         if(commandToExecute && typeof commandToExecute === 'function'){
             try{
@@ -39,7 +45,10 @@ define(['underscore'],function(_){
         }else{
             console.warn("No function specified to execute: " + currentLine);
         }
-        
+
+        //Finish if not drawing
+        if(skipDraw) return;
+        //Else draw:
         //call the mode specific draw command
         var drawCommand = globalData.lookupOrFallBack("draw",globalData);
         if(drawCommand && typeof drawCommand === 'function'){

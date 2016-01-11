@@ -55,7 +55,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         },
         //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [
-            "node","rete","general"
+            "node","rule","rete","sim","general"
         ],
         
         currentCommandMode : "node",
@@ -64,7 +64,11 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         shell : new Shell.CompleteShell(),
 
         lastSetOfSearchResults : [],
+        MainCommandCLIRef : MainCommandCLI,
 
+        //selection for applying actions to multiple nodes
+        currentSelection : [],
+        
         //COLOURS:
         scaleToColour : d3.scale.linear()
             .range([0,20])

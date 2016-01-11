@@ -86,7 +86,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     
     /**
        @function incrementTime
-       @purpose steps the retenet forwards by one step. asserts new wmes, and then retracts old wmes
+       @purpose steps the retenet forwards by one step. retracts then asserts new wmes,
        @TODO figure out if this is in the correct order. should it be the otherway around
      */
     var incrementTime = function(reteNet){
@@ -99,7 +99,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         if(reteNet.wmeLifeTimes.assertions.length > reteNet.currentTime){
         reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){  ReteActivations.alphaNodeActivation(reteNet.rootAlpha,wme); });
         }
-        
+        console.log("Assertions finished");
         
         //At this point: newly activated action instructions are in
         //reteNet.lastActivatedRules

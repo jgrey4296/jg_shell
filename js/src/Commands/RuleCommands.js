@@ -33,69 +33,80 @@ define(['d3','utils'],function(d3,util){
             }
         },
         //** @command new -> addCondition/test/action
-        "new" : function(globalData,values){
+        "new" : function(globalData,values,sourceId){
             var type = values.shift();
             if(type === "condition"){
-               globalData.shell.addNode(null,'conditions','condition');
+                globalData.shell.addNode(null,'conditions','condition',values,sourceId);
             }else if(type === "action"){
-                globalData.shell.addAction(values);
+                globalData.shell.addAction(values,sourceId);
             }else if(type === "test"){
                 var target = values.shift();
                 while(values.length >= 3){
                     var testParams = values.splice(0,3);
-                    globalData.shell.addTest(target,testParams);
+                    globalData.shell.addTest(target,testParams,sourceId);
                 }
             }else if(type === "negCondition"){
-                globalData.shell.addNode(null,'conditions','negCondition');
+                globalData.shell.addNode(null,'conditions','negCondition',values,sourceId);
             }else if(type === "negConjCondition"){
-                globalData.shell.addNode(null,'conditions','negConjCondition');
+                globalData.shell.addNode(null,'conditions','negConjCondition',values,sourceId);
             }
         },
+        //if - a short way to define conditions
+        "if" : function(globalData, values,sourceId){
+            values = values.map(function(d){
+                return d.replace(/,/,"");
+            })
+            var newCondition = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+            while(values.length >= 3){
+                var currentTest = values.splice(0,3);
+                globalData.shell.addTest(newCondition.id,currentTest);
+            }            
+        },
         //** @command rm
-        "rm" : function(globalData,values){
+        "rm" : function(globalData,values,sourceId){
             //remove action
             if(values[0] === 'action'){
-                globalData.shell.removeAction(values.slice(1));
+                globalData.shell.removeAction(values.slice(1),sourceId);
             }
             //condition
             if(values[0] === 'condition'){
-                globalData.shell.removeCondition(values.slice(1));
+                globalData.shell.removeCondition(values.slice(1),sourceId);
             }                
             //test
             if(values[0] === 'test'){
                 //condition number, test number
-                globalData.shell.removeTest(values[1],values[2]);
+                globalData.shell.removeTest(values[1],values[2],sourceId);
             }
             if(values[0] === 'binding'){
-                globalData.shell.removeBinding(values[1],values[2]);
+                globalData.shell.removeBinding(values[1],values[2],sourceId);
             }
         },
         //** @command set
         //set action 0 actionType
         //set action 0 a #b
         //set action 0 a 5
-        "set" : function(globalData,values){
+        "set" : function(globalData,values,sourceId){
             //set actiontype
             if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
                 //set actionType 0 assert 
-                globalData.shell.setActionType(Number(values[1]),values[2]);
+                globalData.shell.setActionType(Number(values[1]),values[2],sourceId);
             }
             //action value
             if(values[0] === "actionValue"){
-                globalData.shell.setActionValue(Number(values[1]),values[2],values[3]);
+                globalData.shell.setActionValue(Number(values[1]),values[2],values[3],sourceId);
             }
             //action arithmetic
             //set arith 0 a + 6
             if(values[0] === 'arith'){
-                globalData.shell.setArithmetic(values[1],values[2],values[3],values[4]);
+                globalData.shell.setArithmetic(values[1],values[2],values[3],values[4],sourceId);
             }                
             //set test value
             if(values[0] === 'test'){
-                globalData.shell.setTest(values[1],values[2],values[3],values[4],values[5]);
+                globalData.shell.setTest(values[1],values[2],values[3],values[4],values[5],sourceId);
             }                
             //binding
             if(values[0] === 'binding'){
-                globalData.shell.setBinding(values[1],values[2],values[3]);
+                globalData.shell.setBinding(values[1],values[2],values[3],sourceId);
             }                
         },
         //** @command rename

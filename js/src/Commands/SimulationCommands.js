@@ -10,31 +10,47 @@ define(['underscore'],function(_){
 
         },
 
-        "runsim" : function(globalData,values){
-            //get the number of turns:
-            var turns = values.unshift();
+        "setupSim" : function(globalData,values){
+            console.log("Setting up simulation");
+            //get all the nodes in the institution specified
+            var sourceId = values.shift() || globalData.shell.cwd.id;
+            if(globalData.shell.getNode(sourceId).tags.type !== 'institution') return;
+            
+            var institutionIds = globalData.shell.dfs(sourceId,['children']);
 
-            //compile the reteNet
-
+            var characters = _.values(globalData.shell.allNode).filter(function(d){
+                return d.tags.type === 'character';
+            });
+            
+            //compile the reteNet using the rules
+            globalData.shell.compileRete(institutionIds);
             //assert starting facts
-
-            //----
-            //loop for the specified number of turns
-
-            //update status for each character
-
-            //get characters who can act
-
-            //select actions from those available for each character
-
-            //perform actions
-
-            //assert new facts, retract old facts
-
-            //-----
-            //finish and summarise
+            //todo: possible initialise the institution from options here
+            globalData.shell.assertWMEs(institutionIds);
 
         },
+        "stepSim" : function(globalData,values){
+            console.log("Running sim turn: ",globalData.shell.reteNet.currentTime);
+            //todo: maybe not?
+            globalData.shell.clearActivatedRules();
+            //select a character to act, remove from pool of characters
+            
+            //get available actions for the character
+            
+            //filter available actions to just those for the character
+            
+            //select and perform an action
+            
+            //reset pool of characters when empty
+            
+            globalData.shell.stepTime();
+            //-----
+            //finish and summarise
+        },
+        "dfs" : function(globalData,values){
+            if(values.length === 0) values = [globalData.shell.cwd.id];
+            console.log(globalData.shell.dfs(values[0]));
+        }
     };
 
     return SimulationCommands;

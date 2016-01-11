@@ -721,12 +721,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @method compileRete
        @purpose Retrieve all defined rules, add them to the rete net
      */    
-    CompleteShell.prototype.compileRete = function(){
+    CompleteShell.prototype.compileRete = function(nodeIds){
         //take all defined rules
-        //TODO: make this all rules that are descendents of the current node?
-        var rules = _.values(this.allNodes).filter(function(d){
-            return d.tags.type === 'rule';
-        });
+        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        var shellRef = this,
+            nodes  = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            rules = nodes.filter(function(d){
+                return d.tags.type === 'rule';
+            });
+        
         console.log("Compiling rules:",rules);
         //and add them to the rete net
         //returning the action nodes of the net
@@ -747,13 +752,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        using each nodes' values field
        @TODO: be able to detect bindings and resolve them prior to assertion?
      */
-    CompleteShell.prototype.assertWMEs = function(){
+    CompleteShell.prototype.assertWMEs = function(nodeIds){
         //get all the wmes
-        var wmes = _.values(this.allNodes).map(function(node){
-            if(node.tags.wme !== undefined){
-                return node;
-            }
-        },this).filter(function(d){ return d !== undefined && d.wmeId === undefined; });
+        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        var shellRef = this,
+            nodes = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            wmes = nodes.filter(function(node){
+                return node.tags.wme !== undefined;
+            });
+        
 
         //assert them
         this.assertWMEList(wmes);
@@ -780,7 +789,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     };
 
     CompleteShell.prototype.stepTime = function(){
-        console.log(this.reteNet);
+        //console.log(this.reteNet);
         Rete.incrementTime(this.reteNet);
         console.log("Events:",this.reteNet.lastActivatedRules);
         return this.reteNet.lastActivatedRules;
@@ -1130,8 +1139,82 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
     };
 
+    //--------------------
+    //DFS and BFS searches:
+    //--------------------
 
+    /**
+       @class CompleteShell
+       @method dfs
+       @purpose Depth First Search from a source nodeId,
+       using children in the specified fields, filtered afterwards by a criteria function
+     */
+    CompleteShell.prototype.dfs = function(nodeId,focusFields,criteriaFunction){
+        if(focusFields === undefined) focusFields = ['children'];
+        var shellRef = this,
+            currentStack = [this.getNode(nodeId)],
+            visitedListOfIds = [];
 
+        //discover all applicable nodes
+        while(currentStack.length > 0){
+            var curr = currentStack.pop();
+            //avoid duplicates and loops
+            if(visitedListOfIds.indexOf(curr.id) !== -1) continue;
+            //store
+            visitedListOfIds.push(curr.id);
+            //add children to search
+            focusFields.forEach(function(focusField){
+                currentStack = currentStack.concat(_.keys(curr[focusField]).map(function(d){
+                    return shellRef.getNode(d);
+                }).reverse());
+            });
+        };
+
+        //apply the criteria function to the discovered nodes
+        if(criteriaFunction !== undefined && typeof criteriaFunction === 'function'){
+            return visitedListOfIds.filter(function(d){
+                return criteriaFunction(this.getNode(d));
+            },shellRef);
+        }else{
+            return visitedListOfIds;
+        }        
+    };
+
+    /**
+       @class TotalShell
+       @method bfs
+       @purpose Breadth First Search on a source nodeId, for the specified fields
+       filtering by the criteria, and to a specified depth
+     */
+    CompleteShell.prototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
+        if(focusFields === undefined) focusFields = ['children'];
+        if(depth === undefined) depth = 2;
+        var shellRef = this,
+            currentQueue = [this.getNode(nodeId)],
+            visitedListOfIds = [];
+
+        while(currentQueue.length > 0){
+            var curr = currentQueue.shift();
+            //skip duplicates
+            if(visitedListOfIds.indexOf(curr.id) !== -1) continue;
+            visitedListOfIds.push(curr.id);
+            
+            focusFields.forEach(function(focusField){
+                _.keys(curr[focusField]).forEach(function(d){
+                    currentQueue.push(shellRef.getNode(d));
+                });
+            });
+        }
+        
+        if(criteriaFunction !== undefined && typeof criteriaFunction === 'function'){
+            return visitedListOfIds.filter(function(d){
+                return criteriaFunction(this.getNode(d));
+            },shellRef);
+        }else{
+            return visitedListOfIds;
+        }
+    };
+    
     
     /**
        @interface The interface of the TotalShell file
@@ -1139,7 +1222,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @alias Shell for CompleteShell
      */
     var interface =  {
-        "CompleteShell":CompleteShell,
+        "CompleteShell": CompleteShell,
         "shell"        : CompleteShell,
     };
     return interface;

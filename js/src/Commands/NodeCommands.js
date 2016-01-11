@@ -108,13 +108,13 @@ define(['d3','utils'],function(d3,util){
             console.log(globalData.shell.cwd);
         },
         //new -> addNode,
-        "new" : function(globalData,values){
+        "new" : function(globalData,values,sourceId){
             //Expand out simplifications
             var target = values[0];
             if(target === "child") target = "children";
             if(target === "parent") target  = "parents";
             console.log("Target:",target);
-            globalData.shell.addNode(values[2],target,values[1],values.slice(3));
+            globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
         //node creation Shortcuts:
         "nc" : function(globalData,values){
@@ -126,9 +126,9 @@ define(['d3','utils'],function(d3,util){
                 "rc": "rulecontainer",
             };
             if(chars[values[0]]){
-                globalData.shell.addNode(values[1],'children',chars[values[0]]);
+                globalData.shell.addNode(values[1],'children',chars[values[0]],values.slice(2));
             }else{
-                globalData.shell.addNode(values[1],'children',values[0]);
+                globalData.shell.addNode(values[1],'children',values[0],values.slice(2));
             }
         },
         "np" : function(globalData,values){
@@ -140,9 +140,9 @@ define(['d3','utils'],function(d3,util){
                 "rc": "rulecontainer",
             };
             if(chars[values[0]]){
-                globalData.shell.addNode(values[1],'parents',chars[values[0]]);
+                globalData.shell.addNode(values[1],'parents',chars[values[0]],values.slice(2));
             }else{
-                globalData.shell.addNode(values[1],'parents',values[0]);
+                globalData.shell.addNode(values[1],'parents',values[0],values.slice(2));
             }
         },
         //New Child Node, ncn:
@@ -155,30 +155,30 @@ define(['d3','utils'],function(d3,util){
         },
         //------------------------------
         //rm -> removeNode,
-        "rm" : function(globalData,values){
-            globalData.shell.rm(values[0],values[1],values[2]);
+        "rm" : function(globalData,values,sourceId){
+            globalData.shell.rm(values[0],values[1],values[2],sourceId);
         },
         //cd -> cd
         "cd" : function(globalData,values){
             globalData.shell.cd(values[0]);
         },
         //set -> setParameter
-        "set" : function(globalData,values){
-            globalData.shell.setParameter(values[0],values[1],values[2]);
+        "set" : function(globalData,values,sourceId){
+            globalData.shell.setParameter(values[0],values[1],values[2],sourceId);
         },
         //link -> link
         //TODO: detect if recursive connection or not
-        "link" : function(globalData,values){
+        "link" : function(globalData,values,sourceId){
             var target = values[0];
             if(target === 'child') target = 'children';
             if(target === 'parent') target = 'parents';
-            globalData.shell.link(target,values[1],false);
+            globalData.shell.link(target,values[1],false,sourceId);
         },
-        "linkr" : function(globalData,values){
+        "linkr" : function(globalData,values,sourceId){
             var target = values[0];
             if(target === 'child') target = 'children';
             if(target === 'parent') target = 'parents';
-            globalData.shell.link(target,values[1],true);
+            globalData.shell.link(target,values[1],true,sourceId);
 
         },
         //rename -> rename

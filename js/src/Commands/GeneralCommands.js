@@ -42,6 +42,35 @@ define(['underscore','d3'],function(_,d3){
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
+        //selection ops:
+        "select" : function(globalData,values){
+            if(values.length === 0) values = [globalData.shell.cwd.id];
+            values.forEach(function(d){
+                var id = Number(d);
+                if(Number.isNaN(id)) return;
+                
+                if(globalData.currentSelection.indexOf(id) === -1){
+                    globalData.currentSelection.push(id);
+                }
+            });
+        },
+        "clearSelection" : function(globalData,values){
+            globalData.currentSelection = [];
+        },
+        //eg: applyToSelection set tags wme 1
+        //made for node::[new,rm,set,link,linkr],rule::[new,if,rm,set]
+        //rete::assert
+        "applyToSelection" : function(globalData,values){
+            var command = globalData.lookupOrFallBack(values.shift(),globalData);
+            globalData.currentSelection.forEach(function(d){
+                command(globalData,values,d);                
+            });
+        },
+        //inspect a selection
+        "printSelection" : function(globalData,values){
+            console.log("Current Selection:",globalData.currentSelection);
+
+        },        
         //Search:
         "search" : function(globalData,values){
             globalData.lastSearch = "(?)."+values.join(".");
@@ -166,7 +195,11 @@ define(['underscore','d3'],function(_,d3){
             });
 
             console.log("Prototypes:",aggregateObjects);
-        }        
+        },
+        "modes" : function(globalData,values){
+            console.log("Available Modes:",_.keys(globalData.commands));
+
+        }
     };
     //--------------------
     //utility functions:
