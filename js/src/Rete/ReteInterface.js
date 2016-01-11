@@ -32,6 +32,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     /**
        @function addWME
        @purpose Creates a wme from the passed in data, schedules it for assertion
+       @note There is a difference between ADDING to the net and the initial ACTIVATION of the root
      */
     //Assert a wme into the network
     var addWME = function(wmeData,reteNet,retractionTime,assertionTime){
@@ -52,18 +53,22 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     /**
        @function removeWME
        @purpose to clean up all places a wme is stored, and remove its consequences
+       @TODO change this to work the same as addWME
+       @note So this should schedule for removal?
      */
     var removeWME = function(wme,reteNet){
         ReteDeletion.removeAlphaMemoryItemsForWME(wme);
+        //todo: remove queued actions for all tokens that become invalid
         ReteDeletion.deleteAllTokensForWME(wme);
         ReteDeletion.deleteAllNegJoinResultsForWME(wme);
+        
     };
 
     
     /**
        @function addToAssertionList
        @purpose to record when a wme needs to be asserted
-       @note: increment time will use this information
+       @note increment time will use this information
      */
     var addToAssertionList = function(reteNet,wme,time){
         if(reteNet.wmeLifeTimes.assertions[time] === undefined){
@@ -75,7 +80,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     /**
        @function addToRetractionList
        @purpose to record when a wme needs to be retracted
-       @note: increment time will use this information
+       @note increment time will use this information
     */
     var addToRetractionList = function(reteNet,wme,time){
         if(reteNet.wmeLifeTimes.retractions[time] === undefined){
@@ -106,17 +111,18 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         var newWMEs = [];
         //import all the events in lastActivatedRules into the relevant lists
         reteNet.lastActivatedRules.forEach(function(activeRule){
-            if(activeRule.action === "assert"){
+            if(activeRule.actionType === "assert"){
                 activeRule.resultingWME = addWME(activeRule.payload,reteNet,
                                     activeRule.assertTime,
                                     activeRule.retractTime);
-            }else if(activeRule.action === "retract"){
+            }else if(activeRule.actionType === "retract"){
                 activeRule.payload.forEach(function(wme){
                     removeWME(wme,reteNet);
                 });
-            }else if(activeRule.action === "modify"){
+            }else if(activeRule.actionType === "modify"){
                 throw new Error("modify not implemented yet");
             }else{
+                //TODO
                 //possibly unknown actions should not error,
                 //as they will be used in whatever interfaces with the net
                 console.error(activeRule);

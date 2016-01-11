@@ -75,6 +75,28 @@ define(['underscore'],function(_){
             throw new Error("unrecognised type attempted to be stored");
         }
     };
+
+    /**
+       @data QueuedAction
+       @purpose describes a queued, but not yet performed, action
+    */
+    var QueuedAction = function(type,payload,token,queueTime,invalidateTime,assertTime,retractTime){
+        this.id = nextId++;
+        this.actionType = type;//ie: "assert","retract","perform"...
+        this.payload = payload; //ie" : {a:3,b:4}...
+        this.token = token; //Source Token that spawned this action
+        this.queueTime = queueTime;//Time the action was queued
+        this.invalidateTime = invalidateTime;//Time the action becomes unactionable
+        this.assertTime = assertTime; //Time to perform the action
+        this.retractTime = retractTime; //Time to remove the
+
+        //todo: check for circular reference cleanup
+
+        //update Token:
+        token.queuedActions.push(this.id);
+        
+    };
+    
     
     /**
        @data WME
@@ -110,6 +132,8 @@ define(['underscore'],function(_){
         this.children = []; //list of nodes
         this.negJoinResults = [];//list of NegativeJoinResults
         this.nccResults = []; //list of Token
+        this.queuedActions = [];
+        
         if(this.parentToken){
             this.parentToken.children.unshift(this);
         }
@@ -370,7 +394,8 @@ define(['underscore'],function(_){
         "NCCNode"          : NCCNode,
         "NCCPartnerNode"   : NCCPartnerNode,
         "ActionNode"       : ActionNode,
-        "ReteNet"          : ReteNet
+        "ReteNet"          : ReteNet,
+        "QueuedAction"     : QueuedAction
     };
     
     return DataStructures;

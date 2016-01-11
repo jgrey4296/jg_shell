@@ -32,7 +32,9 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
     var deleteAllTokensForWME = function(wme){
         //For all tokens
         while(wme.tokens.length > 0){
-            deleteTokenAndDescendents(wme.tokens[0]);
+            //TODO: collect all queuedActions that need to be cleaned up
+            var unblockedAndInvalidated = deleteTokenAndDescendents(wme.tokens[0]);
+            //todo: activate unblocked tokens, cleanup invalidated actions
         }
     };
 
@@ -210,10 +212,12 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
      */
     //utility function to delete all descendents without deleting the token
     var deleteDescendentsOfToken = function(token){
-        var unblockedTokens = [];
+        var unblockedTokens = [],
+            invalidatedActions = [];
         while(token.children.length > 0){
-            var newUnblockedTokens = deleteTokenAndDescendents(token.children[0]);
+            var unblockedAndInvalidated = deleteTokenAndDescendents(token.children[0]);
             unblockedTokens = unblockedTokens.concat(newUnblockedTokens);
+            invalidatedActions = invalidatedActions.concat(unblockedAndInvalidated[1]);
         }
         return unblockedTokens;
     };
@@ -229,11 +233,16 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        activates NCC's that are no longer blocked
      */
     var deleteTokenAndDescendents = function(token){
-        var unblockedTokens = [];
+        var unblockedTokens = [],
+            invalidatedActions = [];
+        
         //Recursive call:
         while(token.children.length > 0){
-            var newUnblockedTokens = deleteTokenAndDescendents(token.children[0]);
-            unblockedTokens = unblockedTokens.concat(newUnblockedTokens);
+            //todo: don't forget to update the recursive call when updating the function to
+            //return unblockedTokens AND queued actions to clean up
+            var unblockedAndInvalidated = deleteTokenAndDescendents(token.children[0]);
+            unblockedTokens = unblockedTokens.concat(unblockedAndInvalidated[0]);
+            invalidatedActions = invalidatedActions.concat(unblockedAndInvalidated[1]);
         }
 
         //Base Cases:
@@ -241,7 +250,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
         removeTokenFromNode(token);
         removeTokenFromWME(token);
         removeTokenFromParentToken(token);
-        
+                
         ReteUtil.ifEmptyBetaMemoryUnlink(token.owningNode);
         ReteUtil.ifEmptyNegNodeUnlink(token.owningNode,token.id);
 
@@ -249,15 +258,19 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
 
         cleanupNCCResultsInToken(token);
         cleanupNCCPartnerOwnedToken(token);
+        //todo: check if this needs to be uncommented or worked around
         //ReteActivations.ifNCCPartnerNodeActivateIfAppropriate(token);
-
+        
         if(token && token.owningNode
            && token.owningNode.isAnNCCPartnerNode
            && token.parentToken.nccResults.length === 0){
             unblockedTokens.push(token);
         }
-                
-        return unblockedTokens;
+
+        //TODO: get the queued actions linked with the token, and return them for cleanup to
+        invalidatedActions = invalidatedActions.concat(token.queuedActions);
+        
+        return [unblockedTokens,invalidatedActions];
     };
 
     /**

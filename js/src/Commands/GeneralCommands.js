@@ -169,7 +169,11 @@ define(['underscore','d3'],function(_,d3){
                 "search" : ["$field $tag $value", "Search for nodes with a field, tag, value. Last param is a regex"],
                 "refine" : ["$field $tag $value", "Searches through the currently displayed search results"],
                 "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
-                "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"],
+                "select" : ["$nodeId?", "add the cwd or a specific node to a temp selection"],
+                "clearSelection" : ["","Clear the temp selection"],
+                "applyToSelection" : [ "$command","Apply new,rm,set,link,linkr,if commands to every node in the selection"],
+                "printSelection" : ["","Print the node ids in the selection to console"],
+                "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"]               
             };
         },
         "printConditions" : function(globalData,values){

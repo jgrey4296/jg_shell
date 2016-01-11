@@ -91,7 +91,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         columnWidth : 200,
         usableWidth : window.innerWidth - 30,
         usableHeight : window.innerHeight - 30,
-        helpSize : 400,
+        helpSize : 600,
 
         halfWidth : function(){ return this.usableWidth * 0.5},
         halfHeight : function(){ return this.usableHeight * 0.5},

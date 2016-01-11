@@ -18,11 +18,16 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
     //each function returns an object of the form:
     //{ action: "", payload: {}, (assertionTime,retractionTime)? }
     //Rete Interface.incrementTime uses the action to modify the
-    //state of the retenet, and so muc have an implemented condition for each
+    //state of the retenet, and so must have an implemented condition for each
     //function defined here
     
-    //NOTE: these will be called after being bound to an action,
-    //so 'this' refers to the information stored in an action/the action object itself.
+    //NOTE: these will be called after being bound to an action description,
+    //so 'this' refers to the information stored in an action/the action object itself,
+    //while the token information will be passed in
+
+    //eg: the action asserts a new wme, with an arithmetic action of +2,
+    //the action has the information (+ 2), the incoming token as the base value to add to.
+    
 
     //not in place, returns a wme to be dealt with elsewhere
     //** @action assert
@@ -32,7 +37,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         var newWMEData = _.reduce(_.keys(this.values),function(memo,key){
             memo[key] = null;
             var v = this.values[key];
-            //if the value starts with #, look it up in the token list
+            //if the value starts with # or $, look it up in the token list
             if(v[0] === "#" || v[0] === "$"){
                 //cut off the #
                 memo[key] = token.bindings[v.slice(1)];
@@ -56,13 +61,15 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         //Actually, DONT create the wme, just store the data for it
         //var newWME = new RDS.WME(newWMEData);
         //To be returned to activateActionNode
-        return {
-            action: "assert",
-            payload: newWMEData,
-            token : token,
-            assertTime: reteNet.currentTime+1, //assume next timestep
-            retractTime: 0, //assume never
-        };
+        var queuedAction = new RDS.QueuedAction("assert", newWMEData, token,
+                                                reteNet.currentTime,
+                                                reteNet.currentTime+2,
+                                                reteNet.currentTime+1,
+                                                0);
+        
+        
+        token.queuedActions.push(actionToQueue);
+        return actiontoQueue;        
     };
 
 
@@ -85,13 +92,17 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
             return _.contains(wmeIDs,wme.id);
         });
 
-        //retract the wmes
-        // toRetract.forEach(function(wme){
-        //     removeWME(wme,reteNet);
-        // });
+        //Get all the queuedActions that become invalid if this token isnt true
+        //and queue them for removal?
+
         
         //return the list of all retracted wmes:
-        return {action:"retract",payload:toRetract, token: token};
+        var queuedAction = new RDS.QueuedAction("retract", toRetract, token,
+                                                reteNet.currentTime,
+                                                reteNet.currentTime+2,
+                                                reteNet.currentTime+1,
+                                                0);
+        return queuedAction;
     };
 
     //What other actions might i want?

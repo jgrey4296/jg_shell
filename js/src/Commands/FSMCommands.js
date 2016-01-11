@@ -40,8 +40,11 @@ define(['underscore'],function(_){
 
             }
         },
-        
-
+        "help" : function(globalData,values){
+            return {
+                "todo" : ["",""]
+            }
+        },
     };
 
     return FSMCommands;

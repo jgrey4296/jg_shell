@@ -175,13 +175,12 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         var func = _.bind(PossibleActions[action.tags.actionType],action);
         
         //call the action with the token
-        var retValue = func(token,actionNode.reteNet);
+        var newQueuedAction = func(token,actionNode.reteNet);
 
-        //deal with the result:
         
-        //store the retValue in the reteNet.activatedRules
+        //store the newQueuedAction in the reteNet.activatedRules
         //ie: {action:"assert",payload:wme}
-        actionNode.reteNet.lastActivatedRules.push(retValue);
+        actionNode.reteNet.lastActivatedRules.push(newQueuedAction);
     };
 
     

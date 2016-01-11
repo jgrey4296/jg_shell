@@ -50,7 +50,13 @@ define(['underscore'],function(_){
         "dfs" : function(globalData,values){
             if(values.length === 0) values = [globalData.shell.cwd.id];
             console.log(globalData.shell.dfs(values[0]));
-        }
+        },
+        "help" : function(globalData,values){
+            return {
+                "setupSim" : ["$sourceId?","Initialise the retenet for simulation"],
+                "stepSim" : ["", "Run a step of the simulation"],
+            }
+        },
     };
 
     return SimulationCommands;

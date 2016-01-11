@@ -35,8 +35,9 @@ define(['underscore','d3'],function(_,d3){
     
     var drawHelp = function(helpObject,globalData){
         //Create the text to be displayed
-        var startText = "Current Mode: " + globalData.currentCommandMode;
-        var helpText = [startText,"","Available Commands: ",""].concat(_.keys(helpObject).map(function(d){
+        var startText = "Current Mode: " + globalData.currentCommandMode,
+            availableModes = "Available Modes: " + _.keys(globalData.commands).join(" "),
+            helpText = [startText,availableModes,"","Available Commands: ",""].concat(_.keys(helpObject).map(function(d){
             return d + " " + helpObject[d].join(" ---> ");
         }));
 
@@ -46,12 +47,12 @@ define(['underscore','d3'],function(_,d3){
             //Initialise the help container
             helpWindow = d3.select("svg").append("g")
                 .attr("transform",
-                      "translate(" + (globalData.usableWidth * 0.25) + "," + (globalData.usableHeight * 0.25) + ")")
+                      "translate(" + (globalData.usableWidth * 0.10) + "," + (globalData.usableHeight * 0.1) + ")")
                 .attr("id","helpWindow");
             
             helpWindow.append("rect")
                 .style("fill",globalData.colours.darkBlue)
-                .attr("width",globalData.usableWidth * 0.5)
+                .attr("width",globalData.usableWidth * 0.8)
                 .attr("height",globalData.helpSize)
                 .attr("rx",10)
                 .attr("ry",10);
