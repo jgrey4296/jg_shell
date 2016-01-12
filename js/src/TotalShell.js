@@ -12,6 +12,7 @@ if(typeof define !== 'function'){
 }
 
 define(imports,function(Rete,_,GraphNode,DSCtors,util){
+    "use strict";
     if(Rete === undefined) throw new Error("Rete not loaded");
     if(GraphNode === undefined) throw new Error("DS not loaded");
     if(DSCtors === undefined) throw new Error("DSCtors not loaded");
@@ -518,7 +519,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param op The operator to test using
        @param val the value to test against
      */
-    CompleteShell.prototype.setTest = function(conditionId,testId,field,op,val,sourceId){
+    CompleteShell.prototype.setTest = function(conditionId,testId,field,op,value,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(source.tags.type !== 'rule'){
             throw new Error("Trying to set test on a non-rule node");
@@ -833,7 +834,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param node
        @param i
      */
-    CompleteShell.prototype.nodeToShortString = function(node,i){
+    CompleteShell.prototype.nodeToShortString = function(node){
         console.log("NTSS:",node);
         if(node.tags.type === "action"){
             return "(" + node.id + "): " + node.name;
@@ -1111,18 +1112,18 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         
         //all constantTestPrototypes:
         var constTestPrototypes = _.flatten(this.allRules.map(function(rule){ //for all rules
-            return (rule.conditions.filter(function(cond){ //get all positive conditions
+            return rule.conditions.filter(function(cond){ //get all positive conditions
                 return cond.isNCCCondition === undefined;
             }).map(function(cond){ //create an object from the tests of each condition
                 return cond.constantTests.reduce(function(memo,currTest){
                     memo[currTest.field] = currTest.value;
                     return memo;
                 },{});
-            }));
+            });
         }));
 
         //TODO: fold individual prototypes into same objects with lists of possible values
-        var combinedPrototypes = constTestPRototypes.reduce(function(obj){
+        var combinedPrototypes = constTestPrototypes.reduce(function(obj){
 
         },{});
        
@@ -1215,9 +1216,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @exports CompleteShell 
        @alias Shell for CompleteShell
      */
-    var interface =  {
+    var moduleInterface = {
         "CompleteShell": CompleteShell,
         "shell"        : CompleteShell,
     };
-    return interface;
+    return moduleInterface;
 });

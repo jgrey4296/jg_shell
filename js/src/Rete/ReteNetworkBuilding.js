@@ -2,8 +2,9 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteUtilities','./ReteActivations'],function(RDS,ReteUtil,ReteActivations){
-
+define(['./ReteDataStructures','./ReteUtilities','./ReteActivations','underscore'],function(RDS,ReteUtil,ReteActivations,_){
+    "use strict";
+    
     /**
        @function buildOrShareNetworkForConditions
        @purpose to add all given conditions to the network
@@ -274,8 +275,8 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteActivations'],function(R
 
 
     
-    var interface = {
+    var moduleInterface = {
         "buildOrShareNetworkForConditions" : buildOrShareNetworkForConditions,
     };
-    return interface;
+    return moduleInterface;
 });

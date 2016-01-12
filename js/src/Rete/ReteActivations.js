@@ -2,8 +2,8 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./ReteTestExecution','./ReteActions','./ReteDeletion'],function(RDS,ConstantTestOperators,ReteUtil,ReteTestExecution,PossibleActions,ReteDeletion){
-
+define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./ReteTestExecution','./ReteActions','./ReteDeletion','underscore'],function(RDS,ConstantTestOperators,ReteUtil,ReteTestExecution,PossibleActions,ReteDeletion,_){
+    "use strict";
     /**
        @function alphaMemoryActivation
        @purpose stores a wme in an alpha memory
@@ -176,10 +176,10 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         
         //call the action with the token
         var newQueuedAction = func(token,actionNode.reteNet);
-
         
         //store the newQueuedAction in the reteNet.activatedRules
         //ie: {action:"assert",payload:wme}
+        actionNode.reteNet.actionQueue.push[newQueuedAction];
         actionNode.reteNet.lastActivatedRules.push(newQueuedAction);
     };
 
@@ -422,10 +422,11 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
     
     
 
-    var interface = {
+    var moduleInterface = {
         "leftActivate" : leftActivate,
         "rightActivate" : rightActivate,
         "alphaNodeActivation" : alphaNodeActivation,
+        "activateIfNegatedJRIsUnblocked" : activateIfNegatedJRIsUnblocked,
     };
-    return interface;
+    return moduleInterface;
 });

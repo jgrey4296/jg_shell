@@ -4,7 +4,8 @@
  */
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var FSMCommands = {
         "draw" : function(globalData,values){
             //draw central node

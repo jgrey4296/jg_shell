@@ -3,7 +3,8 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     /**
        @function prototypeExtraction
        @purpose To extract, from a list of objects, the unique objects that are described

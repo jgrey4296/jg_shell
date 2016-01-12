@@ -7,6 +7,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
+    "use strict";
     var ArithmeticActions = {
         "+" : function(a,b){
             console.log("Adding:",a,b,"Result:",a+b);

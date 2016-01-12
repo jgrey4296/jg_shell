@@ -2,8 +2,8 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures'],function(RDS){
-
+define(['./ReteDataStructures','underscore'],function(RDS,_){
+    "use strict";
     /**
        @function performJoinTests
        @purpose compare a token and wme, using defined bindings from a joinNode
@@ -44,8 +44,8 @@ define(['./ReteDataStructures'],function(RDS){
     };
 
     
-    var interface = {
+    var moduleInterface = {
         "performJoinTests" : performJoinTests,
     };
-    return interface;
+    return moduleInterface;
 });

@@ -2,7 +2,8 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures'],function(RDS){
+define(['./ReteDataStructures','underscore'],function(RDS,_){
+    "use strict";
     
     /**
        @function relinkToAlphaMemory
@@ -211,7 +212,7 @@ define(['./ReteDataStructures'],function(RDS){
     
     
     //------------------------------
-    var interface = {
+    var moduleInterface = {
         "unlinkAlphaMemory" : unlinkAlphaMemory,
         "relinkToAlphaMemory" : relinkToAlphaMemory,
         "ifEmptyBetaMemoryUnlink" : ifEmptyBetaMemoryUnlink,
@@ -221,5 +222,5 @@ define(['./ReteDataStructures'],function(RDS){
         "compareConstantNodeToTest" : compareConstantNodeToTest,
         "findNearestAncestorWithAlphaMemory" : findNearestAncestorWithAlphaMemory,
     };
-    return interface;    
+    return moduleInterface;    
 });

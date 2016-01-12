@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','d3'],function(_,d3){
-
+    "use strict";
     /**
        @data reteCommands
        @purpose describes the user actions that can be performed in the shell regarding the rete net

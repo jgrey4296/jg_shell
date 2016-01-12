@@ -7,7 +7,8 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
-
+    "use strict";
+    
     //Define a variety of graph structures to use in the shell:
     //each ctor returns a flat array of all sub-nodes created, which will be added to the shell in
     //the calling function
@@ -33,7 +34,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         var parents = {
             "ExternalEffectors" : ["node",[]],
         };
-        //TODO: externalEffectors added to parent
 
         
         var createdChildren = _.keys(children).map(function(d){

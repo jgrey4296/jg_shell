@@ -4,7 +4,8 @@
  */
 
 define(['underscore','d3'],function(_,d3){
-
+    "use strict";
+    
     //Main function called
     var HelpCLI = function(currentLine,globalData){
         var textArray = currentLine.split(" ");

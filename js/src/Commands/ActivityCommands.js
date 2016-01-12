@@ -4,7 +4,8 @@
 */
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var ActivityCommands = {
 
         "draw" : function(globalData,values){

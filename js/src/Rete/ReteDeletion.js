@@ -2,7 +2,13 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
+define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],function(require,RDS,ReteUtil,ReteActivations){
+    "use strict";
+    //workaround for circular dependency
+    if(ReteActivations === null){
+        ReteActivations = require('./ReteActivations');
+    }
+    
     
     /**
        @function removeAlphaMemoryItemsForWME
@@ -30,12 +36,14 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose to cleanup all tokens a wme is part of
      */
     var deleteAllTokensForWME = function(wme){
+        var invalidatedActions = [];
         //For all tokens
         while(wme.tokens.length > 0){
-            //TODO: collect all queuedActions that need to be cleaned up
-            var unblockedAndInvalidated = deleteTokenAndDescendents(wme.tokens[0]);
-            //todo: activate unblocked tokens, cleanup invalidated actions
+            invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(wme.tokens[0]));
         }
+
+        return invalidatedActions;
+        
     };
 
     /**
@@ -51,7 +59,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
             if(index !== -1){
                 jr.owner.negJoinResults.splice(index,1);
             }
-            ReteNegActions.activateIfNegatedJRIsUnblocked(jr);
+            ReteActivations.activateIfNegatedJRIsUnblocked(jr);
             //remove internal references:
             jr.owner = undefined;
             jr.wme = undefined;
@@ -65,7 +73,6 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @function removeNegJoinResultsForToken
        @purpose to delete any blocked tokens in negative conditions
      */
-    //TOKEN DELETION HELPER FUNCTIONS
     var removeNegJoinResultsForToken = function(token){
         //remove Negative join results
         token.negJoinResults.forEach(function(jr){
@@ -147,21 +154,22 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        @purpose cleanup an unused node and any parent nodes that are also unused once this node is gone.
      */
     var deleteNodeAndAnyUnusedAncestors = function(node){
-        var index;
+        var index,
+            invalidatedActions = [];
         //if NCC, delete partner to
         if(node.isAnNCCNode){
-            deleteNodeAndAnyUnusedAncestors(node.partner);
+            invalidatedActions = invalidatedActions.concat(deleteNodeAndAnyUnusedAncestors(node.partner));
         }
         
         //clean up tokens
         if(node.isBetaMemory){
             while(node.items.length > 0){
-                deleteTokenAndDescendents(node.items[0]);
+                invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(node.items[0]));
             }
         }
         if(node.isAnNCCPartnerNode){
             while(node.newResultBuffer.length > 0){
-                deleteTokenAndDescendents(node.items[0]);
+                invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(node.items[0]));
             }
         }
 
@@ -173,7 +181,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
                 node.alphaMemory.referenceCount--;
             }
             if(node.alphaMemory.referenceCount === 0){
-                //TODO: WRITE THIS:
+                //TODO: write delete alpha memory
                 //deleteAlphaMemory(node.alphaMemory);
             }
         }
@@ -199,9 +207,12 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
         if(node.parent && node.parent.children.length === 0
            && node.parent.unlinkedChildren
            && node.parent.unlinkedChildren.length === 0){
-            deleteNodeAndAnyUnusedAncestors(node.parent);
+            invalidatedActions = invalidatedActions.concat(deleteNodeAndAnyUnusedAncestors(node.parent));
         }
         //deallocate memory for none
+
+        return invalidatedActions;
+        
     };
 
 
@@ -212,14 +223,11 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
      */
     //utility function to delete all descendents without deleting the token
     var deleteDescendentsOfToken = function(token){
-        var unblockedTokens = [],
-            invalidatedActions = [];
+        var invalidatedActions = [];
         while(token.children.length > 0){
-            var unblockedAndInvalidated = deleteTokenAndDescendents(token.children[0]);
-            unblockedTokens = unblockedTokens.concat(newUnblockedTokens);
-            invalidatedActions = invalidatedActions.concat(unblockedAndInvalidated[1]);
+            invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(token.children[0]));
         }
-        return unblockedTokens;
+        return invalidatedActions;
     };
 
     
@@ -233,16 +241,11 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
        activates NCC's that are no longer blocked
      */
     var deleteTokenAndDescendents = function(token){
-        var unblockedTokens = [],
-            invalidatedActions = [];
+        var invalidatedActions = [];
         
         //Recursive call:
         while(token.children.length > 0){
-            //todo: don't forget to update the recursive call when updating the function to
-            //return unblockedTokens AND queued actions to clean up
-            var unblockedAndInvalidated = deleteTokenAndDescendents(token.children[0]);
-            unblockedTokens = unblockedTokens.concat(unblockedAndInvalidated[0]);
-            invalidatedActions = invalidatedActions.concat(unblockedAndInvalidated[1]);
+            invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(token.children[0]));
         }
 
         //Base Cases:
@@ -258,19 +261,20 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
 
         cleanupNCCResultsInToken(token);
         cleanupNCCPartnerOwnedToken(token);
-        //todo: check if this needs to be uncommented or worked around
-        //ReteActivations.ifNCCPartnerNodeActivateIfAppropriate(token);
         
         if(token && token.owningNode
            && token.owningNode.isAnNCCPartnerNode
            && token.parentToken.nccResults.length === 0){
-            unblockedTokens.push(token);
+            //Activate newly unblocked Token
+            token.owningNode.nccNode.children.forEach(function(d){
+                ReteActivations.leftActivate(d,token.parentToken);
+            });
         }
 
-        //TODO: get the queued actions linked with the token, and return them for cleanup to
+        //get the queued actions linked with the token, and return them for cleanup to
         invalidatedActions = invalidatedActions.concat(token.queuedActions);
         
-        return [unblockedTokens,invalidatedActions];
+        return invalidatedActions;
     };
 
     /**
@@ -291,7 +295,7 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
                 if(nccR.parent){
                     //remove the token from it's parent
                     var nccRindex = nccR.parent.children.map(function(t){return t.id;}).indexOf(nccR.id);
-                    if(nccRindex !== -1);{
+                    if(nccRindex !== -1){
                         nccR.parent.children.splice(nccRindex,1);
                     }
                 }
@@ -325,12 +329,12 @@ define(['./ReteDataStructures','./ReteUtilities'],function(RDS,ReteUtil){
 
 
     
-    var interface = {
+    var moduleInterface = {
         "deleteDescendentsOfToken" : deleteDescendentsOfToken,
         "removeAlphaMemoryItemsForWME" : removeAlphaMemoryItemsForWME,
         "deleteAllTokensForWME" : deleteAllTokensForWME,
         "deleteAllNegJoinResultsForWME" : deleteAllNegJoinResultsForWME,
         "deleteNodeAndAnyUnusedAncestors" : deleteNodeAndAnyUnusedAncestors,
     };
-    return interface;
+    return moduleInterface;
 });

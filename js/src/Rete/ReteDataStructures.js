@@ -8,6 +8,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
+    "use strict";
     var nextId = 0;
 
     /**
@@ -19,7 +20,8 @@ define(['underscore'],function(_){
         this.rootAlpha = new AlphaNode();
         this.actions = [];
         this.allWMEs = [];
-        
+
+        this.actionQueue = [];
         this.lastActivatedRules = [];
         this.previousActivations = [];
 

@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
     var util = {};
     
     util.randomChoice = function(array){
@@ -37,12 +37,12 @@ define(['underscore'],function(_){
                 rhs = "";
             
             if(lhsDifference > 0){
-                lhs = Array(lhsDifference).join("_") + d[0];
+                lhs = new Array(lhsDifference).join("_") + d[0];
             }else{
                 lhs = d[0];
             }
             if(rhsDifference > 0){
-                rhs = Array(rhsDifference).join("_") + d[1];
+                rhs = new Array(rhsDifference).join("_") + d[1];
             }else{
                 rhs = d[1];
             }

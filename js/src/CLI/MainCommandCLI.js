@@ -5,7 +5,8 @@
 
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var parseCurrentLine = function(currentLine){
         var splitLine = currentLine.split(/ /);
 

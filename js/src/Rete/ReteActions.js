@@ -7,7 +7,8 @@ if(typeof define !== 'function'){
 }
 
 define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(ArithmeticActions,RDS,_){
-
+    "use strict";
+    
     if(ArithmeticActions === undefined){
         throw new Error("Arithmetic Actions missing");
     }
@@ -68,8 +69,8 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
                                                 0);
         
         
-        token.queuedActions.push(actionToQueue);
-        return actiontoQueue;        
+        token.queuedActions.push(queuedAction);
+        return queuedAction;        
     };
 
 

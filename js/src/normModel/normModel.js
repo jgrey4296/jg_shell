@@ -3,7 +3,8 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var NormModel = function(){
         this.listOfNorms = [];
     };

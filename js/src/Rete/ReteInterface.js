@@ -8,16 +8,16 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
     imports = imports.map(function(d){
         return "./"+d;
-    });
+    }).push('underscore');
 }else{
     imports = imports.map(function(d){
         return "Rete/"+d;
-    });
+    }).push('underscore');
 }
 
 //** @requires ReteDataStructures
-define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO){
-    
+define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO,_){
+    "use strict";
     /**
        @function clearActivations
        @purpose To clear the record of the last activated rules, for new activations
@@ -59,7 +59,10 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     var removeWME = function(wme,reteNet){
         ReteDeletion.removeAlphaMemoryItemsForWME(wme);
         //todo: remove queued actions for all tokens that become invalid
-        ReteDeletion.deleteAllTokensForWME(wme);
+        var invalidatedActions = ReteDeletion.deleteAllTokensForWME(wme);
+        
+        
+        
         ReteDeletion.deleteAllNegJoinResultsForWME(wme);
         
     };
@@ -174,11 +177,11 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     */
     var removeRule = function(actionNode){
         //delete from bottom up
-        ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
+        var invalidatedActions = ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
     };
 
     
-    var interface = {
+    var moduleInterface = {
         "ReteNet" : RDS.ReteNet,
         "ConstantTest" : RDS.ConstantTest,
         "CompOperators" : RCO,
@@ -190,5 +193,5 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         "removeRule" : removeRule,
 
     };
-    return interface;    
+    return moduleInterface;    
 });

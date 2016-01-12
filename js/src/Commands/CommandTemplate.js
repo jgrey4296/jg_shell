@@ -1,6 +1,7 @@
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var CommandTemplate = {
         "someCommand" : function(globalData,values){
 

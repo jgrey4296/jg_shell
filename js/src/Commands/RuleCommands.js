@@ -3,7 +3,8 @@
    @purpose To implement all user commands dealing with rules
 */
 
-define(['d3','utils'],function(d3,util){
+define(['d3','utils','underscore'],function(d3,util,_){
+    "use strict";
     
     var ruleCommands = {
         "draw" : function(globalData,values){
@@ -144,7 +145,7 @@ define(['d3','utils'],function(d3,util){
             //store the expectation in the node
             if(condOrAction.tags.type === "condition"){
                 nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
-            }else if(condOrActiontags.type === "action"){
+            }else if(condOrAction.tags.type === "action"){
                 nodeToLink.producedBy[condOrAction.id] = condOrAction.name;
             }
             

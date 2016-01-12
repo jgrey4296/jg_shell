@@ -1,6 +1,7 @@
 
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var SimulationCommands = {
         "draw" : function(globalData,values){
 
@@ -55,7 +56,7 @@ define(['underscore'],function(_){
             return {
                 "setupSim" : ["$sourceId?","Initialise the retenet for simulation"],
                 "stepSim" : ["", "Run a step of the simulation"],
-            }
+            };
         },
     };
 

@@ -8,7 +8,8 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','d3'],function(_,d3){
-
+    "use strict";
+    
     var GeneralCommands = {
         //Stashing:
         "stash" : function(globalData,values){

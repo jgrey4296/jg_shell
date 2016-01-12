@@ -3,7 +3,8 @@
    @purpose to define the user actions that can be performed on a typical node in the shell
 */
 
-define(['d3','utils'],function(d3,util){
+define(['d3','utils','underscore'],function(d3,util,_){
+    "use strict";
     var columnNames = ["Parents","Node","Children"];
     
     //All of the commands for the normal node mode of the shell
@@ -167,7 +168,6 @@ define(['d3','utils'],function(d3,util){
             globalData.shell.setParameter(values[0],values[1],values[2],sourceId);
         },
         //link -> link
-        //TODO: detect if recursive connection or not
         "link" : function(globalData,values,sourceId){
             var target = values[0];
             if(target === 'child') target = 'children';
