@@ -8,7 +8,7 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
-    
+
     var nextId = 0;
     //The main node type of the graph:
     var GraphNode = function(name,parentId,parentName,type,overRideId){

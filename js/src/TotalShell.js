@@ -8,7 +8,6 @@ if(typeof define !== 'function'){
     var imports = ["./Rete/ReteInterface","../libs/underscore","./Node/GraphNode","./Node/GraphStructureConstructors","./utils"];
 }else{
     var imports = ['ReteInterface','underscore','GraphNode','GraphStructureConstructors','./utils'];
-
 }
 
 define(imports,function(Rete,_,GraphNode,DSCtors,util){

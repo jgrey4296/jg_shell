@@ -8,16 +8,19 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
     imports = imports.map(function(d){
         return "./"+d;
-    }).push('underscore');
+    });
+    imports.push("underscore");
 }else{
     imports = imports.map(function(d){
         return "Rete/"+d;
-    }).push('underscore');
+    });
+    imports.push("underscore");
 }
 
 //** @requires ReteDataStructures
 define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO,_){
     "use strict";
+    console.log("rete interface");
     /**
        @function clearActivations
        @purpose To clear the record of the last activated rules, for new activations
@@ -191,7 +194,6 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         "incrementTime" : incrementTime,
         "addRule" : addRule,
         "removeRule" : removeRule,
-
     };
     return moduleInterface;    
 });

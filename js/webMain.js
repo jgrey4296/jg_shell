@@ -37,6 +37,7 @@ require.config({
 */
 require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands){
 
+
     //----------------------------------------
     //GLOBALS
     //----------------------------------------
