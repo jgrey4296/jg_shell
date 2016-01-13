@@ -76,7 +76,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @note There is a difference between ADDING to the net and the initial ACTIVATION of the root
      */
     //Assert a wme into the network
-    var assertWME_Later = function(wmeData,reteNet,assertTime,retractTime){
+    var assertWME_Later = function(wmeData,reteNet,assertionTime,retractionTime){
         //Create the wme:
         if(assertionTime === undefined) assertionTime = reteNet.currentTime;
         if(retractionTime === undefined) retractionTime = 0;
