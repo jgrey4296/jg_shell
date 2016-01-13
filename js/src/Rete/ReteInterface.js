@@ -25,51 +25,71 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @function clearActivations
        @purpose To clear the record of the last activated rules, for new activations
        @note pushes the cleared activations in a record array in the rete object
+       @DEPRECATED
      */
-    var clearActivations = function(reteNet){
-        var previousActivations = reteNet.lastActivatedRules;
-        reteNet.lastActivatedRules = [];
-        reteNet.previousActivations.push(previousActivations);
+    // var clearActivations = function(reteNet){
+    //     var previousActivations = reteNet.lastActivatedRules;
+    //     reteNet.lastActivatedRules = [];
+    //     reteNet.previousActivations.push(previousActivations);
+    // };
+
+    var clearHistory = function(reteNet){
+        reteNet.enactedActions = [];
     };
 
+    var clearPotentialActions = function(reteNet){
+        reteNet.potentialActions = [];
+    };
+    
+    //Assert a wme RIGHT NOW
+    var assertWME_Immediately = function(data,reteNet,retractionTime){
+        if(retractionTime === undefined) retractionTime = 0;
+        if(data.isWME === undefined || data.id === undefined){
+            data = new RDS.WME(data,reteNet.currentTime,retractionTime);
+            addToRetractionList(reteNet,data,data.lifeTime[1]);
+            reteNet.allWMEs[data.id] = data;
+        }
+        //Actually push the wme into the net
+        ReteActivations.alphaNodeActivation(reteNet.rootAlpha,data);
+        return data.id;
+    };
+
+    //Retract a wme RIGHT NOW, clean up its tokens, and any potential actions
+    var retractWME_Immediately = function(wme,reteNet){
+        if(wme.isWME === undefined){
+            if(!Number.isInteger(wme) || reteNet.allWMEs[wme] === undefined){
+                throw new Error("Not Retracting a wme, or a valid id"); 
+            }
+            wme = reteNet.allWMEs[wme];
+        }
+        ReteDeletion.removeAlphaMemoryItemsForWME(wme);
+        var invalidatedActionIds = ReteDeletion.deleteAllTokensForWME(wme);
+        //todo: cleanup invalidated actions
+        cleanupProposedActions(reteNet,invalidatedActionIds);
+        
+        ReteDeletion.deleteAllNegJoinResultsForWME(wme);
+    };
+    
     /**
        @function addWME
        @purpose Creates a wme from the passed in data, schedules it for assertion
        @note There is a difference between ADDING to the net and the initial ACTIVATION of the root
      */
     //Assert a wme into the network
-    var addWME = function(wmeData,reteNet,retractionTime,assertionTime){
+    var assertWME_Later = function(wmeData,reteNet,assertTime,retractTime){
         //Create the wme:
         if(assertionTime === undefined) assertionTime = reteNet.currentTime;
         if(retractionTime === undefined) retractionTime = 0;
-        var wme = new RDS.WME(wmeData,assertionTime,retractionTime);
-        console.log("Asserting:",wme);
+        if(wmeData.isWME === undefined || wmeData.id === undefined){
+            wmeData = new RDS.WME(wmeData,assertionTime,retractionTime);
+            reteNet.allWMEs[wme.id] = wme;
+        }
         //Add it to the input WME Buffer:
-        addToAssertionList(reteNet,wme,assertionTime);
-        addToRetractionList(reteNet,wme,retractionTime);
+        addToAssertionList(reteNet,wme);
+        addToRetractionList(reteNet,wme);
         //Store it as part of allWMEs:
-        reteNet.allWMEs[wme.id] = wme;
         return wme.id;
     };
-
-
-    /**
-       @function removeWME
-       @purpose to clean up all places a wme is stored, and remove its consequences
-       @TODO change this to work the same as addWME
-       @note So this should schedule for removal?
-     */
-    var removeWME = function(wme,reteNet){
-        ReteDeletion.removeAlphaMemoryItemsForWME(wme);
-        //todo: remove queued actions for all tokens that become invalid
-        var invalidatedActions = ReteDeletion.deleteAllTokensForWME(wme);
-        
-        
-        
-        ReteDeletion.deleteAllNegJoinResultsForWME(wme);
-        
-    };
-
     
     /**
        @function addToAssertionList
@@ -77,6 +97,17 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @note increment time will use this information
      */
     var addToAssertionList = function(reteNet,wme,time){
+        if(wme.isWME === undefined){
+            if(!Number.isInteger(wme) || reteNet.allWMEs[wme] === undefined){
+                throw new Error("Trying to register an invalid wme");
+            }
+            wme = reteNet.allWMEs[wme];
+        }
+        if(time === undefined) {
+            time = wme.lifeTime[0];
+        }else{
+            wme.lifeTime[0] = time;
+        }
         if(reteNet.wmeLifeTimes.assertions[time] === undefined){
             reteNet.wmeLifeTimes.assertions[time] = [];
         }
@@ -89,6 +120,12 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @note increment time will use this information
     */
     var addToRetractionList = function(reteNet,wme,time){
+        if(wme.isWME === undefined){
+            if(!Number.isInteger(wme) || reteNet.allWMEs[wme] === undefined){
+                throw new Error("Trying to register an invalid wme");
+            }
+            wme = reteNet.allWMEs[wme];
+        }
         if(reteNet.wmeLifeTimes.retractions[time] === undefined){
             reteNet.wmeLifeTimes.retractions[time] = [];
         }
@@ -103,73 +140,56 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     var incrementTime = function(reteNet){
         //retract everything scheduled
         if(reteNet.wmeLifeTimes.retractions.length > reteNet.currentTime){
-        reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){ removeWME(wme,reteNet); });
+        reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){ retractWME_Immediately(wme,reteNet); });
         }
-        console.log("retractions finished");
+        console.log("Retractions finished");
         //assert everything schdeuled
         if(reteNet.wmeLifeTimes.assertions.length > reteNet.currentTime){
-        reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){  ReteActivations.alphaNodeActivation(reteNet.rootAlpha,wme); });
+            reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){  assertWME_Immediately(reteNet.rootAlpha,wme,wme.lifeTime[1]); });
         }
         console.log("Assertions finished");
         
         //At this point: newly activated action instructions are in
-        //reteNet.lastActivatedRules
-        var newWMEs = [];
-        //import all the events in lastActivatedRules into the relevant lists
-        reteNet.lastActivatedRules.forEach(function(activeRule){
-            if(activeRule.actionType === "assert"){
-                activeRule.resultingWME = addWME(activeRule.payload,reteNet,
-                                    activeRule.assertTime,
-                                    activeRule.retractTime);
-            }else if(activeRule.actionType === "retract"){
-                activeRule.payload.forEach(function(wme){
-                    removeWME(wme,reteNet);
-                });
-            }else if(activeRule.actionType === "modify"){
-                throw new Error("modify not implemented yet");
-            }else{
-                //TODO
-                //possibly unknown actions should not error,
-                //as they will be used in whatever interfaces with the net
-                console.error(activeRule);
-                throw new Error("unknown action to perform:");
-            }
-        });
+        //reteNet.potentialActions,
+        //and non-decidable actions are scheduled
+        //nothing is asserted immediately to stop infinite inference loops
         
         //increment the time
         reteNet.currentTime++;
 
-        return newWMEs;
     };
-
 
     /**
        @function addRule
        @purpose to build a network for a given rule
-       @note Assumes the rule's actions and conditions are objects, not id's.
+       @note Assumes the rule's actions and conditions are objects, not id's,
+       @note and allNodes store all relevant objects
        @note see TotalShell::compileRete
      */
-    var addRule = function(rule,reteNet,allNodes){
-        var conditions = _.keys(rule.conditions).map(function(d){
-            return this[d];
-        },allNodes);
-                
-        //build network with a dummy node for the parent
-        var currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes,reteNet);
-        //Build the actions that are triggered by the rule:
-        var actionNodes = _.keys(rule.actions).map(function(actionId){
-            console.log("Adding action for:",actionId);
-            var actionDescription = allNodes[actionId];
-            return new RDS.ActionNode(currentNode,actionDescription,rule.name,reteNet);
-        });
+    var addRule = function(ruleId,reteNet,allNodes){
+        if(!Number.isInteger(ruleId) || allNodes[ruleId] === undefined){
+            throw new Error("Unrecognised rule id specified");
+        }
+        var rule = allNodes[ruleId],        
+            conditions = _.keys(rule.conditions).map(function(d){
+                return this[d];
+            },allNodes),                
+            //build network with a dummy node for the parent
+            currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes,reteNet),
+            //Build the actions that are triggered by the rule:
+            actionNodes = _.keys(rule.actions).map(function(actionId){
+                console.log("Adding action for:",actionId);
+                var actionDescription = allNodes[actionId];
+                return new RDS.ActionNode(currentNode,actionDescription,rule.name,reteNet);
+            });
 
         //initialise the action storage for this rule
-        if(reteNet.actions[rule.name] === undefined){
-            reteNet.actions[rule.name] = [];
+        if(reteNet.actions[rule.id] === undefined){
+            reteNet.actions[rule.id] = [];
         }
         //update node with matches
         actionNodes.forEach(function(d){
-            reteNet.actions[rule.name].push(d);
+            reteNet.actions[rule.id].push(d);
         });
         return actionNodes;
     };
@@ -178,19 +198,30 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
        @function removeRule
        @purpose to remove a rule from the network
     */
-    var removeRule = function(actionNode){
+    var removeRule = function(actionNode,reteNet){
         //delete from bottom up
-        var invalidatedActions = ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
+        var invalidatedActionIds = ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
+        cleanupProposedActions(reteNet,invalidatedActionIds);
     };
 
+
+    //remove proposed actions from the retenet, and from their owning tokens
+    var cleanupProposedActions = function(reteNet,idList){
+        var potentialActions = reteNet.potentialActions;
+        //filter out the ids from the potentialActions list
+        //also removing them from the owning tokens
+
+    };
     
     var moduleInterface = {
         "ReteNet" : RDS.ReteNet,
         "ConstantTest" : RDS.ConstantTest,
         "CompOperators" : RCO,
-        "clearActivations" : clearActivations,
-        "addWME" : addWME,
-        "removeWME" : removeWME,
+        "clearHistory" : clearHistory,
+        "clearPotentialActions" : clearPotentialActions,
+        "assertWME_Immediately" : assertWME_Immediately,
+        "retractWME_Immediately" : retractWME_Immediately,
+        "assertWME_Later" : assertWME_Later,
         "incrementTime" : incrementTime,
         "addRule" : addRule,
         "removeRule" : removeRule,

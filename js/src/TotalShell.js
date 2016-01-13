@@ -708,11 +708,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @method clearActivatedRules
        @purpose Clear the record of recently activated rules
      */
-    CompleteShell.prototype.clearActivatedRules = function(){
-        Rete.clearActivations(this.reteNet);
+    CompleteShell.prototype.clearPotentialActions = function(){
+        Rete.clearPotentialActions(this.reteNet);
     };
     
-
+    CompleteShell.prototype.clearHistory = function(){
+        Rete.clearHistory(this.reteNet);
+    };
+    
     /**
        @class CompleteShell
        @method compileRete
@@ -734,8 +737,11 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            var actions = Rete.addRule(d,this.reteNet,this.allNodes);
+            var actionsNodes = Rete.addRule(d.id,this.reteNet,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
+            d.actionNodeIds = actionNodes.map(function(e){
+                return e.id;
+            });
             return {"rule": d, "actions" :actions};
         },this);
 
@@ -759,7 +765,6 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             wmes = nodes.filter(function(node){
                 return node.tags.wme !== undefined;
             });
-        
 
         //assert them
         this.assertWMEList(wmes);
@@ -771,13 +776,13 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose Taking a list of objects, add each as a wme to the retenet of the shell
        @param array An Array of objects
      */
-    CompleteShell.prototype.assertWMEList = function(array){
+    CompleteShell.prototype.assertWMEList = function(nodes){
         if(!(array instanceof Array)){
             throw new Error("Asserting should be in the form of an array");
         }
         //create wme objects out of them
         var newWMEs = array.map(function(data){
-            var wmeId = Rete.addWME(data,this.reteNet);
+            var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -786,10 +791,9 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     };
 
     CompleteShell.prototype.stepTime = function(){
-        //console.log(this.reteNet);
         Rete.incrementTime(this.reteNet);
-        console.log("Events:",this.reteNet.lastActivatedRules);
-        return this.reteNet.lastActivatedRules;
+        console.log("Potential Actions:",this.reteNet.potentialActions);
+        return this.reteNet.potentialActions;
     };
     
     /**

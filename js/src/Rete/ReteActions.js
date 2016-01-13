@@ -62,15 +62,13 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         //Actually, DONT create the wme, just store the data for it
         //var newWME = new RDS.WME(newWMEData);
         //To be returned to activateActionNode
-        var queuedAction = new RDS.QueuedAction("assert", newWMEData, token,
+        var proposedAction = new RDS.ProposedAction("assert", newWMEData, token,
                                                 reteNet.currentTime,
                                                 reteNet.currentTime+2,
                                                 reteNet.currentTime+1,
                                                 0);
         
-        
-        token.queuedActions.push(queuedAction);
-        return queuedAction;        
+        return proposedAction;        
     };
 
 
@@ -93,17 +91,13 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
             return _.contains(wmeIDs,wme.id);
         });
 
-        //Get all the queuedActions that become invalid if this token isnt true
-        //and queue them for removal?
-
-        
         //return the list of all retracted wmes:
-        var queuedAction = new RDS.QueuedAction("retract", toRetract, token,
+        var proposedAction = new RDS.ProposedAction("retract", toRetract, token,
                                                 reteNet.currentTime,
                                                 reteNet.currentTime+2,
                                                 reteNet.currentTime+1,
                                                 0);
-        return queuedAction;
+        return proposedAction;
     };
 
     //What other actions might i want?

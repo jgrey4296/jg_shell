@@ -12,7 +12,7 @@ define(['underscore','d3'],function(_,d3){
         //Get the last thing typed, and split it
         var commandNameArray = textArray.pop().split("#");
         if(commandNameArray[0] === "help"){
-            console.log("Help!");
+            //console.log("Help!");
             //Get the help text object:
             var helpObject = null;
             //if the user specifies a mode

@@ -18,15 +18,19 @@ define(['underscore'],function(_){
     var ReteNet = function(){
         this.dummyBetaMemory = new BetaMemory();
         this.rootAlpha = new AlphaNode();
+        
+        //Actions indexed by rule node id:
         this.actions = [];
+        //WMEs indexed by id:
         this.allWMEs = [];
 
-        this.actionQueue = [];
-        this.lastActivatedRules = [];
-        this.previousActivations = [];
+        //Actions whose conditions are satisfied, indexed by id
+        this.potentialActions = [];
+        //Actions that were chosen to be performed
+        this.enactedActions = [];
 
+        //Storage of internal nodes:
         this.allReteNodes = {};
-        //Storage of individual node types:
         this.allReteNodesByType = {
             "constantTests" : {},
             "alphaMemories" : {},
@@ -40,8 +44,7 @@ define(['underscore'],function(_){
         
         //Automatic retraction capabilities:
         this.currentTime = 0;
-        //Wmes asserted at currentTime,
-        //retracted at currentTime + n;
+        //wmes to assert and retract by absolute time:
         this.wmeLifeTimes = {
             assertions: [],
             retractions: [],
@@ -79,10 +82,12 @@ define(['underscore'],function(_){
     };
 
     /**
-       @data QueuedAction
+       @data ProposedAction
        @purpose describes a queued, but not yet performed, action
+       @note queue/invalidate time absolute,
+       @note assertTime/retractTime relative to when action is enacted
     */
-    var QueuedAction = function(type,payload,token,queueTime,invalidateTime,assertTime,retractTime){
+    var ProposedAction = function(type,payload,token,queueTime,invalidateTime,assertTime,retractTime){
         this.id = nextId++;
         this.actionType = type;//ie: "assert","retract","perform"...
         this.payload = payload; //ie" : {a:3,b:4}...
@@ -92,10 +97,15 @@ define(['underscore'],function(_){
         this.assertTime = assertTime; //Time to perform the action
         this.retractTime = retractTime; //Time to remove the
 
+        //todo: possibly include metrics for selection of actions?
+        
         //todo: check for circular reference cleanup
 
         //update Token:
-        token.queuedActions.push(this.id);
+        //todo: update the name of this
+
+        //Store the proposed action in the token
+        this.token.proposedActions.push(this);
         
     };
     
@@ -105,6 +115,7 @@ define(['underscore'],function(_){
        @purpose to store facts in the rete net
      */
     var WME = function(data,assertTime,retractTime){
+        this.isWME = true;
         this.data = data;
         //The lifetime of the wme. Asserted at time lifeTime[0],
         //retracted at time lifeTime[1]:
@@ -134,7 +145,7 @@ define(['underscore'],function(_){
         this.children = []; //list of nodes
         this.negJoinResults = [];//list of NegativeJoinResults
         this.nccResults = []; //list of Token
-        this.queuedActions = [];
+        this.proposedActions = [];
         
         if(this.parentToken){
             this.parentToken.children.unshift(this);
@@ -294,11 +305,11 @@ define(['underscore'],function(_){
        @purpose A Node which, when activated, will cause the effects a rule describes
      */
     //Container object for a general graphnode action description    
-    var ActionNode = function(parent,action,ruleName,reteNet){
+    var ActionNode = function(parent,actionDescription,ruleName,reteNet){
         ReteNode.call(this,parent);
         this.isActionNode = true;
         this.name = name;
-        this.action = action;
+        this.action = actionDescription;
         //reference to retenet, to allow storage of results of firing:
         this.reteNet = reteNet;
     };
@@ -397,7 +408,7 @@ define(['underscore'],function(_){
         "NCCPartnerNode"   : NCCPartnerNode,
         "ActionNode"       : ActionNode,
         "ReteNet"          : ReteNet,
-        "QueuedAction"     : QueuedAction
+        "ProposedAction"     : ProposedAction
     };
     
     return DataStructures;

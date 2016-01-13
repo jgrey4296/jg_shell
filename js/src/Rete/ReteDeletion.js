@@ -271,8 +271,8 @@ define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],
             });
         }
 
-        //get the queued actions linked with the token, and return them for cleanup to
-        invalidatedActions = invalidatedActions.concat(token.queuedActions);
+        //get the queued actions linked with the token, and return them for cleanup
+        invalidatedActions = invalidatedActions.concat(token.proposedActions);
         
         return invalidatedActions;
     };

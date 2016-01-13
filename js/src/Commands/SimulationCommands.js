@@ -27,13 +27,15 @@ define(['underscore'],function(_){
             globalData.shell.compileRete(institutionIds);
             //assert starting facts
             //todo: possible initialise the institution from options here
+            
+            //todo: assert characters
+            
             globalData.shell.assertWMEs(institutionIds);
+
 
         },
         "stepSim" : function(globalData,values){
             console.log("Running sim turn: ",globalData.shell.reteNet.currentTime);
-            //todo: maybe not?
-            globalData.shell.clearActivatedRules();
             //select a character to act, remove from pool of characters
             
             //get available actions for the character

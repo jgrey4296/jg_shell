@@ -18,8 +18,10 @@ define(['underscore','d3'],function(_,d3){
             console.log("Clearing RETE");
             if(values[0] === 'complete'){
                 globalData.shell.clearRete();
+            }if(values[0] === 'history'){
+                globalData.shell.clearHistory();
             }else{
-                globalData.shell.clearActivatedRules();
+                globalData.shell.clearPotentialActions();
             }
         },
         "draw" : function(globalData,values){
@@ -141,9 +143,5 @@ define(['underscore','d3'],function(_,d3){
             });
     };
     
-
-    
     return reteCommands;
-
-
 });
