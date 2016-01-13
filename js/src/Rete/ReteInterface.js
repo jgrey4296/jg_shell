@@ -210,6 +210,11 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         var potentialActions = reteNet.potentialActions;
         //filter out the ids from the potentialActions list
         //also removing them from the owning tokens
+        potentialActions = _.reject(potentialActions,function(d){
+            return idList.indexOf(d.id) != -1;
+        });
+        reteNet.potentialActions = potentialActions;
+        
 
     };
     
