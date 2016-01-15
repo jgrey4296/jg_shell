@@ -73,42 +73,59 @@ define(['d3','utils','underscore'],function(d3,util,_){
             if(values[0] === 'condition'){
                 globalData.shell.removeCondition(values.slice(1),sourceId);
             }                
-            //test
-            if(values[0] === 'test'){
-                //condition number, test number
-                globalData.shell.removeTest(values[1],values[2],sourceId);
-            }
-            if(values[0] === 'binding'){
-                globalData.shell.removeBinding(values[1],values[2],sourceId);
-            }
         },
         //** @command set
-        //set action 0 actionType
-        //set action 0 a #b
-        //set action 0 a 5
+        //set action 0 type assert
+        //set condiiton 4 test a EQ 5
+        //set condition 4 test 5 a GT 10
+        //set condition 5 binding a b
+        //set action 0 value a #b
+        //set action 0 arith a + 2
+        //set rule 3 values a 5
         "set" : function(globalData,values,sourceId){
-            //set actiontype
-            if(values[0] === 'actionType' && !isNaN(Number(values[1]))){
-                //set actionType 0 assert 
-                globalData.shell.setActionType(Number(values[1]),values[2],sourceId);
+            var targetType = values.shift(),
+                targetId = values.shift(),
+                targetField = values.shift();
+            console.log("SET:",targetType,targetId,targetField);
+
+            if(Number.isNaN(Number(targetId)) || globalData.shell.allNodes[Number(targetId)] === undefined){
+                throw new Error("Unrecognised targetId");
             }
-            //action value
-            if(values[0] === "actionValue"){
-                globalData.shell.setActionValue(Number(values[1]),values[2],values[3],sourceId);
+            
+            //Set elements of an action:
+            if(targetType === 'action' && targetField === 'type'){
+                globalData.shell.setActionType(Number(targetId),values[0],sourceId);
             }
-            //action arithmetic
-            //set arith 0 a + 6
-            if(values[0] === 'arith'){
-                globalData.shell.setArithmetic(values[1],values[2],values[3],values[4],sourceId);
-            }                
-            //set test value
-            if(values[0] === 'test'){
-                globalData.shell.setTest(values[1],values[2],values[3],values[4],values[5],sourceId);
-            }                
-            //binding
-            if(values[0] === 'binding'){
-                globalData.shell.setBinding(values[1],values[2],values[3],sourceId);
-            }                
+
+            if(targetType === 'action' && targetField === 'value'){
+                globalData.shell.setActionValue(Number(targetId),values[0],values[1],sourceId);
+            }
+            
+            if(targetType === 'action' && targetField === 'arith'){
+                globalData.shell.setArithmetic(Number(targetId),values[0],values[1],values[2],sourceId);
+            }
+
+            //Set binding of a condition:
+            if(targetType === 'condition' && targetField === 'binding'){
+                if(values.length === 2){
+                    globalData.shell.setBinding(Number(targetId),values[0],values[1],sourceId);
+                }else if(values.length === 1){
+                    globalData.shell.removeBinding(Number(targetId),values[0],sourceId);
+                }
+            }
+
+            //create or set a test
+            if(targetType === 'condition' && targetField === 'test'){
+                //if test is specified and exists:
+                if(values.length === 4){
+                    globalData.shell.setTest(Number(targetId),Number(values[0]),values[1],values[2],values[3],sourceId);
+                    //otherwise if creating a new test:
+                }else if(values.length === 3){
+                    globalData.shell.addTest(Number(targetId),values,sourceId);
+                }else if(values.length === 1){
+                    globalData.shell.removeTest(Number(targetId),Number(values[0]),sourceId);
+                }
+            }
         },
         //** @command rename
         "rename" : function(globalData,values){
@@ -119,10 +136,11 @@ define(['d3','utils','underscore'],function(d3,util,_){
         },
         //link a condition or action with an expected node
         "link" : function(globalData,values){
+            var targetTye = values.shift(),
             //get the condition/action being targeted
-            var condOrAction = globalData.shell.allNodes[values.shift()];
+                condOrAction = globalData.shell.getNode(values.shift()),
             //get the node being linked
-            var nodeToLink = globalData.shell.allNodes[values.shift()];
+                nodeToLink = globalData.shell.getNode(values.shift());
 
             if(condOrAction === undefined || condOrAction.expectationNode === undefined){
                 throw new Error("Linking needs a valid node to hold expectation");
@@ -158,13 +176,10 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 "new negCondtion" : ["", "Create a negative condition"],
                 "new negConjCondition" : ["","Create a Negated Conjunctive Condition"],
                 "new action" : [ "$name+", " Create a new action for the current rule. (THEN)"],
-                "new test" : [ "$num $field $op $value", " Create a constant test for the condition id'd."],
                 "rm"     : [ "[condition | action] $id", " Remove a condition/action/test"],
-                "rm test" : ["$conditionId $testId", "Remove the test from the condition"],
-                "rm binding" : ["$conditionId $boundVarName", "Remove a binding from a condition"],
-                "set"    : [ "[binding | arith | actionValue | actionType | test] [values]", " Set values of conditions/actions"],
+                "set" : ["$targetType $targetId $targetFocus $values", "ie: set condition 5 binding a b"],
                 "rename" : ["", " Rename the rule"],
-                "link"   : ["$conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
+                "link"   : ["$target $conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
             };
         },
     };
@@ -407,13 +422,12 @@ define(['d3','utils','underscore'],function(d3,util,_){
         var separator = 5;
         existingSelection.each(function(d,i){
             //get the data
-            var actionType = [d.tags.actionType];
-            var actionFocus = [d.tags.actionFocus];
-            var actionValues = _.pairs(d.values);
-            var arithActions = _.pairs(d.arithmeticActions);
+            var actionType = [d.tags.actionType],
+                actionValues = _.pairs(d.values),
+                arithActions = _.pairs(d.arithmeticActions);
 
             //calculate sizes:
-            var totalDataPoints = actionType.length + actionFocus.length + actionValues.length + arithActions.length;
+            var totalDataPoints = actionType.length + actionValues.length + arithActions.length;
             var heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
 
             var offset = nodeHeight * 0.1 + separator;
@@ -427,18 +441,18 @@ define(['d3','utils','underscore'],function(d3,util,_){
                           10, nodeWidth, "red",
                           function(e,i){ return "ActType: " + e; });
 
-            //actionFocus:
-            offset += actionType.length * (heightOfInteriorNodes + separator);
+            //deprecated: actionFocus:
+            // offset += actionType.length * (heightOfInteriorNodes + separator);
             
-            var boundActionFocus = d3.select(this).selectAll(".actionFocus").data(actionFocus,function(e){return e;});
-            util.annotate(boundActionFocus,"actionFocus",
-                          offset,
-                          heightOfInteriorNodes,separator,
-                          10, nodeWidth,"orange",
-                          function(e,i){ return "ActFocus: " + e; });
+            // var boundActionFocus = d3.select(this).selectAll(".actionFocus").data(actionFocus,function(e){return e;});
+            // util.annotate(boundActionFocus,"actionFocus",
+            //               offset,
+            //               heightOfInteriorNodes,separator,
+            //               10, nodeWidth,"orange",
+            //               function(e,i){ return "ActFocus: " + e; });
 
             //actionValues:
-            offset += actionFocus.length * (heightOfInteriorNodes + separator);
+            offset += actionType.length * (heightOfInteriorNodes + separator);
             
             var boundActionValues = d3.select(this).selectAll(".actionValue").data(actionValues,function(e,i) { return e[0] + e[1]; });
             util.annotate(boundActionValues,"actionValue",

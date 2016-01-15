@@ -519,14 +519,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param val the value to test against
      */
     CompleteShell.prototype.setTest = function(conditionId,testId,field,op,value,sourceId){
+        console.log(conditionId,testId,field,op,value,sourceId);
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(source.tags.type !== 'rule'){
             throw new Error("Trying to set test on a non-rule node");
         }
-        if(source.conditions[conditionId] === undefined || source.conditions[conditionId].constantTests[testId] === undefined){
+        if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
-        var test = this.allNodes[testId];
+        var test = this.getNode(testId);
         test.values.field = field;
         test.values.operator = op;
         test.values.value = value;
@@ -658,7 +659,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.removeTest = function(condId,testId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        console.log("removing:",condId,testId,source);
+        
         if(source.conditions[condId] === undefined ||
            this.allNodes[condId] === undefined ||
            this.allNodes[condId].constantTests[testId] === undefined){

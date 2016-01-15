@@ -20,19 +20,8 @@ if(typeof define !== 'function'){
 //** @requires ReteDataStructures
 define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO,_){
     "use strict";
-    console.log("rete interface");
-    /**
-       @function clearActivations
-       @purpose To clear the record of the last activated rules, for new activations
-       @note pushes the cleared activations in a record array in the rete object
-       @DEPRECATED
-     */
-    // var clearActivations = function(reteNet){
-    //     var previousActivations = reteNet.lastActivatedRules;
-    //     reteNet.lastActivatedRules = [];
-    //     reteNet.previousActivations.push(previousActivations);
-    // };
 
+    
     var clearHistory = function(reteNet){
         reteNet.enactedActions = [];
     };
