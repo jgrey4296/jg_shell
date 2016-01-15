@@ -33,6 +33,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
     //not in place, returns a wme to be dealt with elsewhere
     //** @action assert
     actions.assert = function(token,reteNet){
+        console.log("Asserting with action:",[this,token,reteNet]);
         //create the data object:
         //initialise from the action's 'values' object
         var newWMEData = _.reduce(_.keys(this.values),function(memo,key){
@@ -49,6 +50,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         },{},this);
 
         //perform arithmetic:
+        console.log("new wme data:",newWMEData);
         _.keys(this.arithmeticActions).forEach(function(key){
             var newVal = Number(newWMEData[key]);
             if(isNaN(newVal)) throw new Error("Arithmetic value should be convertable to a number");

@@ -208,9 +208,24 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         return findNearestAncestorWithAlphaMemory(node.parent,alphaMemory);        
     };
 
+    //--------------------
+    var retrieveWMEValueFromDotString = function(wme,dotString){
+        //get from the node stored in wme.data the value
+        //that the dotString address specifies
+        var address = dotString.split("."),
+            currLocation = wme.data;
+        while(address.length > 0){
+            var curr = address.shift();
+            if(currLocation[curr] !== undefined){
+                currLocation = currLocation[curr];
+            }
+        };
 
-    
-    
+        //return the final location arrived at
+        return currLocation;
+    };
+
+        
     //------------------------------
     var moduleInterface = {
         "unlinkAlphaMemory" : unlinkAlphaMemory,
@@ -221,6 +236,7 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         "compareJoinTests" : compareJoinTests,
         "compareConstantNodeToTest" : compareConstantNodeToTest,
         "findNearestAncestorWithAlphaMemory" : findNearestAncestorWithAlphaMemory,
+        "retrieveWMEValueFromDotString" : retrieveWMEValueFromDotString
     };
     return moduleInterface;    
 });

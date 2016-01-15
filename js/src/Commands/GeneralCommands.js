@@ -127,8 +127,9 @@ define(['underscore','d3'],function(_,d3){
         //Import a text form of json data:
         "import" : function(globalData,values){
             try{
-            var reconstructedJsonString = values.join(" ");
-                var reconJson = JSON.parse(reconstructedJsonString);
+                //var reconstructedJsonString = values.join(" ");
+                var stringMinusCommand = globalData.rawCurrentLine.replace(/^import /,"");
+                var reconJson = JSON.parse(stringMinusCommand);
                 globalData.shell.importJson(reconJson);
             }catch(err){
                 alert("Error Importing Json String:\n" + err.message);

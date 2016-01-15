@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','underscore'],function(RDS,_){
+define(['./ReteDataStructures','underscore','./ReteUtilities'],function(RDS,_,ReteUtil){
     "use strict";
     /**
        @function performJoinTests
@@ -25,7 +25,7 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
             if(test[1] === "#id"){
                 newValue = wme.id;
             }else{
-                newValue = wme.data[test[1]];
+                newValue = ReteUtil.retrieveWMEValueFromDotString(wme,test[1]);
             }
 
             if(newBindings[test[0]] === undefined){

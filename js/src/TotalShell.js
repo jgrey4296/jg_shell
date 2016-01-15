@@ -723,7 +723,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose Retrieve all defined rules, add them to the rete net
      */    
     CompleteShell.prototype.compileRete = function(nodeIds){
-        //take all defined rules
+        //take all defined rules from the provided list, or find all in the graph
         if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
         var shellRef = this,
             nodes  = nodeIds.map(function(d){
@@ -738,12 +738,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            var actionsNodes = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            var actionNodes = Rete.addRule(d.id,this.reteNet,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
             d.actionNodeIds = actionNodes.map(function(e){
                 return e.id;
             });
-            return {"rule": d, "actions" :actions};
+            return {"rule": d, "actions" :actionNodes};
         },this);
 
         console.log("All action nodes:",this.allActionNodes);
@@ -764,7 +764,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
                 return shellRef.getNode(d);
             }),
             wmes = nodes.filter(function(node){
-                return node.tags.wme !== undefined;
+                return node.tags.fact !== undefined;
             });
 
         //assert them
@@ -778,12 +778,12 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @param array An Array of objects
      */
     CompleteShell.prototype.assertWMEList = function(nodes){
-        if(!(array instanceof Array)){
+        if(!(nodes instanceof Array)){
             throw new Error("Asserting should be in the form of an array");
         }
         //create wme objects out of them
-        var newWMEs = array.map(function(data){
-            var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+        var newWMEs = nodes.map(function(data){
+            var wmeId = Rete.assertWME_Immediately(data.values,this.reteNet);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -963,7 +963,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         var nodes = nodeSelection.filter(function(node){
             if(node[field] === undefined) return false;
             //if field is a string
-            if(typeof node[field] !== "object"){
+            if(typeof node[field] === "string"){
                 //using default pattern of tag
                 if(pattern.test(node[field])){
                     return true;

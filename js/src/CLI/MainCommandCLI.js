@@ -29,16 +29,16 @@ define(['underscore'],function(_){
     //The CLI Function, takes a line and finds the command to apply
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
         if(skipDraw === undefined) skipDraw = false;
-        var splitLine = parseCurrentLine(currentLine);
-        
-        var commandName = splitLine.shift();
+        globalData.rawCurrentLine = currentLine;
+        var splitLine = parseCurrentLine(currentLine),
+            commandName = splitLine.shift();
         //lookup command
         var commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
         
         //perform command
         if(commandToExecute && typeof commandToExecute === 'function'){
             try{
-                commandToExecute(globalData,splitLine);
+                    commandToExecute(globalData,splitLine);
             }catch(e){
                 console.error("Command Error:",e);
                 alert(e);

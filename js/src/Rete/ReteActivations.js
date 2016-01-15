@@ -31,7 +31,7 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         if(alphaNode.passThrough){
             testResult = true;
         }else{
-            var wmeFieldValue = wme.data.values[alphaNode.testField];
+            var wmeFieldValue = ReteUtil.retrieveWMEValueFromDotString(wme,alphaNode.testField);
             var value = alphaNode.testValue;
             var operator = alphaNode.operator;
             if(ConstantTestOperators[operator]){

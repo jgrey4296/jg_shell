@@ -33,7 +33,7 @@ define(['underscore','d3'],function(_,d3){
             var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
                 return d !== undefined;
             });
-            var actions = globalData.shell.reteNet.lastActivatedRules;
+            var actions = globalData.shell.reteNet.potentialActions;
 
             var wmeColumn = d3.select("#mainContainer").append("g")
                 .attr("id","wmeColumn");
