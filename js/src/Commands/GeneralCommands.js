@@ -81,8 +81,8 @@ define(['underscore','d3'],function(_,d3){
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
         },
         "inspect" : function(globalData,values){
-            var key = values.shift(),
-                nodeId = values.shift(),
+            var nodeId = values.shift(),
+                key = values.shift(),
                 node = globalData.shell.allNodes[nodeId],                
                 pairs;
 

@@ -225,7 +225,28 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         return currLocation;
     };
 
-        
+    //remove proposed actions from the retenet, and from their owning tokens
+    var cleanupInvalidatedActions = function(invalidatedActions){
+        if(invalidatedActions.length === 0 || invalidatedActions[0].reteNet === undefined){
+            return;
+        }
+        var reteNet = invalidatedActions[0].reteNet,
+            potentialActions = reteNet.potentialActions,
+            idList = invalidatedActions.map(function(d){
+                return d.id;
+            });
+        console.log("Cleaning up:",[idList,invalidatedActions,potentialActions]);
+        //filter out the ids from the potentialActions list
+        //also removing them from the owning tokens
+        potentialActions = _.reject(potentialActions,function(d){
+            if(d === undefined) return false;
+            return idList.indexOf(d.id) != -1;
+        }).filter(function(d){ return d === undefined; });
+        reteNet.potentialActions = potentialActions;
+    };
+
+
+    
     //------------------------------
     var moduleInterface = {
         "unlinkAlphaMemory" : unlinkAlphaMemory,
@@ -236,7 +257,8 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         "compareJoinTests" : compareJoinTests,
         "compareConstantNodeToTest" : compareConstantNodeToTest,
         "findNearestAncestorWithAlphaMemory" : findNearestAncestorWithAlphaMemory,
-        "retrieveWMEValueFromDotString" : retrieveWMEValueFromDotString
+        "retrieveWMEValueFromDotString" : retrieveWMEValueFromDotString,
+        "cleanupInvalidatedActions" : cleanupInvalidatedActions
     };
     return moduleInterface;    
 });

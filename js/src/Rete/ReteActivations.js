@@ -2,8 +2,13 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./ReteTestExecution','./ReteActions','./ReteDeletion','underscore'],function(RDS,ConstantTestOperators,ReteUtil,ReteTestExecution,PossibleActions,ReteDeletion,_){
+define(['require','./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./ReteTestExecution','./ReteActions','./ReteDeletion','underscore'],function(require,RDS,ConstantTestOperators,ReteUtil,ReteTestExecution,PossibleActions,ReteDeletion,_){
     "use strict";
+
+    // if(ReteDeletion === undefined){
+    //      ReteDeletion = require('./ReteDeletion');
+    // }
+    
     /**
        @function alphaMemoryActivation
        @purpose stores a wme in an alpha memory
@@ -14,10 +19,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         alphaMem.items.unshift(newItem);
         wme.alphaMemoryItems.unshift(newItem);
         //console.log("AlphaMemory activated:",alphaMem,wme);
-        for(var i in alphaMem.children){
-            var child = alphaMem.children[i];
+        alphaMem.children.forEach(function(child){
             rightActivate(child,wme);
-        }
+        });
     };
 
     /**
@@ -46,10 +50,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         }
         if(testResult){
             //console.log("successful constant test result",testResult,wme,alphaNode);
-            for(var i in alphaNode.children){
-                var child = alphaNode.children[i];
+            alphaNode.children.forEach(function(child){
                 alphaNodeActivation(child,wme);
-            }
+            });
             if(alphaNode.outputMemory){
                 alphaNodeActivation(alphaNode.outputMemory,wme);
             }
@@ -85,10 +88,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
     var betaMemoryActivation = function(betaMemory,token){
         var newToken = token;
         betaMemory.items.unshift(newToken);
-        for(var i in betaMemory.children){
-            var child = betaMemory.children[i];
+        betaMemory.children.forEach(function(child){
             leftActivate(child,newToken);
-        }
+        });
     };
 
     
@@ -115,16 +117,15 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         //and pass on successful combinations
         //to beta memory /negative node children
         //to be combined into tokens
-        for(var i in node.alphaMemory.items){
-            var currWME = node.alphaMemory.items[i].wme;
+        node.alphaMemory.items.forEach(function(item){
+            var currWME = item.wme;
             var joinTestResult = ReteTestExecution.performJoinTests(node,token,currWME);
-            if(joinTestResult !== false){
-                for(var j in node.children){
-                    var currChild = node.children[i];
-                    leftActivate(currChild,token,currWME,joinTestResult);
-                }//end of loop activating all children
+            if(joinTestResult !== undefined && joinTestResult !== false){
+                node.children.forEach(function(child){
+                    leftActivate(child,token,currWME,joinTestResult);
+                });//end of loop activating all children
             }
-        }//end of looping all wmes in alphamemory
+        });//end of looping all wmes in alphamemory
     };
 
     /**
@@ -146,17 +147,15 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
 
         //For all tokens, compare to the new wme,
         //pass on successful combinations to betamemory/negative node
-        for(var i in node.parent.items){
-            var currToken = node.parent.items[i];
+        node.parent.items.forEach(function(currToken){
             //console.log("--------\nComparing: ",currToken.bindings,"\n To: ",wme.data,"\n using: ",node.tests);
             var joinTestResult = ReteTestExecution.performJoinTests(node,currToken,wme);
-            if(joinTestResult !== false){
-                for(var j in node.children){
-                    var currNode = node.children[j];
+            if(joinTestResult !== undefined && joinTestResult !== false){
+                node.children.forEach(function(currNode){
                     leftActivate(currNode,currToken,wme,joinTestResult);
-                }
+                });
             }
-        }
+        });
     };
 
     
@@ -242,29 +241,28 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
     //Trigger a negative node from a new token
     //brings in bindings, creates a new token as necessary,
     //combining bindings to.
-    var negativeNodeLeftActivation = function(node,token){
-        if(node.items.length === 1){
+    var negativeNodeLeftActivation = function(node,newToken){
+        //Relink
+        if(node.items.length === 0){
             ReteUtil.relinkToAlphaMemory(node);
         }
-        var newToken = token;
         node.items.unshift(newToken);
 
-        for(var i in node.alphaMemory.items){
-            var currWme = node.alphaMemory.items[i].wme;
+        node.alphaMemory.items.forEach(function(item){
+            var currWme = item.wme;
             var joinTestResult = ReteTestExecution.performJoinTests(node,newToken,currWme);
             if(joinTestResult){
                 //adds itself to the token and
                 //wme as necessary to block the token
                 var joinResult = new RDS.NegativeJoinResult(newToken,currWme);
             }
-        }
+        });
 
         //if no wmes block the token, pass it on down the network
         if(newToken.negJoinResults.length === 0){
-            for(var j in node.children){
-                var currChild = node.children[j];
-                leftActivate(currChild,newToken);
-            }
+            node.children.forEach(function(child){
+                leftActivate(child,newToken);
+            });
         }
         
     };
@@ -277,31 +275,22 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
     //any that the wme blocks, gets an additional negative Join result
     //any that don't get blocked should already have been activated
     var negativeNodeRightActivation = function(node,wme){
-        //utility activation function:
-        var activateFunc = function(d){
-            d.owningNode.nccNode.chilodren.forEach(function(e){
-                leftActivate(e,d.parentToken);
-            });
-        };
-
-        //todo: this could be a map
-        for(var i in node.items){
-            var currToken = node.items[i];
+        node.items.forEach(function(currToken){
             var joinTestResult = ReteTestExecution.performJoinTests(node,currToken,wme);
-            if(joinTestResult){
+            if(joinTestResult !== undefined && joinTestResult !== false){
                 if(currToken.negJoinResults.length === 0){
-                    var unblockedTokens = ReteDeletion.deleteDescendentsOfToken(currToken);
-
-                    //slightly ugly, but removes circular dependencies with retedeletion:
-                    _.uniq(unblockedTokens,false,function(d){
-                        return d.id;
-                    }).forEach(activateFunc);
+                    //todo: fix this
+                    if(ReteDeletion === undefined){
+                         ReteDeletion = require('./ReteDeletion');
+                    }
+                    var invalidatedActions = ReteDeletion.deleteDescendentsOfToken(currToken);
+                    ReteUtil.cleanupInvalidatedActions(invalidatedActions);
                 }
                 //Adds itself to the currToken and wme as
                 //necessary
                 var negJoinResult = new RDS.NegativeJoinResult(currToken,wme);
             }
-        }
+        });
     };
 
     /**
@@ -334,10 +323,9 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
         //if the new token has no blocking tokens,
         //continue on
         if(newToken.nccResults.length === 0){
-            for(var i in nccNode.children){
-                var currChild = nccNode.children[i];
-                leftActivate(currChild,newToken);
-            }
+            nccNode.children.forEach(function(child){
+                leftActivate(child,newToken);
+            });
         }
     };
 
@@ -372,16 +360,12 @@ define(['./ReteDataStructures','./ReteComparisonOperators','./ReteUtilities','./
             //so update it:
             possible_tokens[0].nccResults.unshift(newToken);
             newToken.parent = possible_tokens[0];
-            var unblockedTokens = ReteDeletion.deleteDescendentsOfToken(possible_tokens[0]);
-
-            //slightly ugly, but removes circular dependencies with retedeletion:
-            _.uniq(unblockedTokens,false,function(d){
-                return d.id;
-            }).forEach(function(d){
-                d.owningNode.nccNode.children.forEach(function(e){
-                    leftActivate(e,d.parentToken);
-                });
-            });            
+            if(ReteDeletion === undefined){
+                ReteDeletion = require('./ReteDeletion');
+            }
+            var invalidatedActions = ReteDeletion.deleteDescendentsOfToken(possible_tokens[0]);
+            ReteUtil.cleanupInvalidatedActions(invalidatedActions);
+ 
         }else{        
             //else no owner:
             partner.newResultBuffer.unshift(newToken);

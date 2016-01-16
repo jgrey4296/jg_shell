@@ -5,9 +5,6 @@ if(typeof define !== 'function'){
 define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],function(require,RDS,ReteUtil,ReteActivations){
     "use strict";
     //workaround for circular dependency
-    if(ReteActivations === null){
-        ReteActivations = require('./ReteActivations');
-    }
     
     
     /**
@@ -58,6 +55,9 @@ define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],
             }).indexOf(jr.id);
             if(index !== -1){
                 jr.owner.negJoinResults.splice(index,1);
+            }
+            if(ReteActivations === undefined){
+                ReteActivations = require('./ReteActivations');
             }
             ReteActivations.activateIfNegatedJRIsUnblocked(jr);
             //remove internal references:
@@ -227,6 +227,7 @@ define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],
         while(token.children.length > 0){
             invalidatedActions = invalidatedActions.concat(deleteTokenAndDescendents(token.children[0]));
         }
+        invalidatedActions = invalidatedActions.concat(token.proposedActions);
         return invalidatedActions;
     };
 
@@ -266,6 +267,10 @@ define(['require','./ReteDataStructures','./ReteUtilities','./ReteActivations'],
            && token.owningNode.isAnNCCPartnerNode
            && token.parentToken.nccResults.length === 0){
             //Activate newly unblocked Token
+            //todo: should this be nccnode AND/OR negNode?
+            if(ReteActivations === undefined){
+                ReteActivations = require('./ReteActivations');
+            }
             token.owningNode.nccNode.children.forEach(function(d){
                 ReteActivations.leftActivate(d,token.parentToken);
             });

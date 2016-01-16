@@ -43,7 +43,7 @@ define(['underscore'],function(_){
         };
         
         //Automatic retraction capabilities:
-        this.currentTime = 0;
+        this.currentTime = 1;
         //wmes to assert and retract by absolute time:
         this.wmeLifeTimes = {
             assertions: [],
@@ -87,8 +87,9 @@ define(['underscore'],function(_){
        @note queue/invalidate time absolute,
        @note assertTime/retractTime relative to when action is enacted
     */
-    var ProposedAction = function(type,payload,token,queueTime,invalidateTime,assertTime,retractTime){
+    var ProposedAction = function(reteNet,type,payload,token,queueTime,invalidateTime,assertTime,retractTime){
         this.id = nextId++;
+        this.reteNet = reteNet;
         this.actionType = type;//ie: "assert","retract","perform"...
         this.payload = payload; //ie" : {a:3,b:4}...
         this.token = token; //Source Token that spawned this action
@@ -248,6 +249,7 @@ define(['underscore'],function(_){
     //Base node for the beta network
     var ReteNode = function(parent){
         this.children = [];
+        this.unlinkedChildren = [];
         this.parent = parent;
         if(this.parent && this.parent.children){
             this.parent.children.unshift(this);
@@ -272,8 +274,6 @@ define(['underscore'],function(_){
             this.items.push(new Token());
             this.items[0].owningNode = this;
         }
-        this.children = [];
-        this.unlinkedChildren = [];
 
     };
 

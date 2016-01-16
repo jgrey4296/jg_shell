@@ -765,12 +765,29 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             }),
             wmes = nodes.filter(function(node){
                 return node.tags.fact !== undefined;
+            }).filter(function(node){
+                return node.wmeId === undefined;
             });
 
         //assert them
         this.assertWMEList(wmes);
     };
 
+    CompleteShell.prototype.retractWMEs = function(nodeIds){
+        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        var shellRef = this,
+            nodes = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            wmes = nodes.filter(function(node){
+                return node.tags.fact !== undefined;
+            }).filter(function(node){
+                return node.wmeId !== undefined;
+            });
+
+        this.retractWMEList(wmes);
+    };
+    
     /**
        @class CompleteShell
        @method assertWMEList
@@ -783,7 +800,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
         //create wme objects out of them
         var newWMEs = nodes.map(function(data){
-            var wmeId = Rete.assertWME_Immediately(data.values,this.reteNet);
+            var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -791,6 +808,15 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         return newWMEs;
     };
 
+    CompleteShell.prototype.retractWMEList = function(nodes){
+        if(!(nodes instanceof Array)){
+            throw new Error("Retractions should be in an array");
+        }
+        nodes.forEach(function(node){
+            Rete.retractWME_Immediately(node,this.reteNet);
+        },this);
+    };
+    
     CompleteShell.prototype.stepTime = function(){
         Rete.incrementTime(this.reteNet);
         console.log("Potential Actions:",this.reteNet.potentialActions);

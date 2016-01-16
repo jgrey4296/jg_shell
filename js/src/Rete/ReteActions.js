@@ -64,7 +64,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         //Actually, DONT create the wme, just store the data for it
         //var newWME = new RDS.WME(newWMEData);
         //To be returned to activateActionNode
-        var proposedAction = new RDS.ProposedAction("assert", newWMEData, token,
+        var proposedAction = new RDS.ProposedAction(reteNet,"assert", newWMEData, token,
                                                 reteNet.currentTime,
                                                 reteNet.currentTime+2,
                                                 reteNet.currentTime+1,
@@ -94,7 +94,7 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         });
 
         //return the list of all retracted wmes:
-        var proposedAction = new RDS.ProposedAction("retract", toRetract, token,
+        var proposedAction = new RDS.ProposedAction(reteNet,"retract", toRetract, token,
                                                 reteNet.currentTime,
                                                 reteNet.currentTime+2,
                                                 reteNet.currentTime+1,

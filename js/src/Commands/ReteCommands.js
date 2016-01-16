@@ -40,10 +40,10 @@ define(['underscore','d3'],function(_,d3){
             var actionColumn = d3.select("#mainContainer").append("g")
                 .attr("id","actionColumn");
 
-            var wmeNodeHeight = drawGroup(globalData,wmeColumn,wmes,"wme",(halfWidth - (colWidth * 2)), colWidth);
-            annotateWmes(wmeColumn,wmeNodeHeight);
-            var actionNodeHeight = drawGroup(globalData,actionColumn,actions,"action",(halfWidth + (colWidth)),colWidth);
-            annotateActions(actionColumn,actionNodeHeight);
+            // var wmeNodeHeight = drawGroup(globalData,wmeColumn,wmes,"wme",(halfWidth - (colWidth * 2)), colWidth);
+            // annotateWmes(wmeColumn,wmeNodeHeight);
+            // var actionNodeHeight = drawGroup(globalData,actionColumn,actions,"action",(halfWidth + (colWidth)),colWidth);
+            // annotateActions(actionColumn,actionNodeHeight);
             
         },
         "cleanup" : function(globalData,values){
@@ -58,9 +58,13 @@ define(['underscore','d3'],function(_,d3){
         //** @command assert
         //full name: assert as wme:
         "assert" : function(globalData,values){
-            console.log("Asserting rete");
+            console.log("Asserting rete:",values);
             //assert the current node as a wme?
-            globalData.shell.assertWMEs();
+            globalData.shell.assertWMEs(values);
+        },
+        "retract" : function(globalData,values){
+            console.log("Retracting rete:",values);
+            globalData.shell.retractWMEs(values);
         },
         "ruleStep" : function(globalData,values){
             console.log("Rete Time Step");

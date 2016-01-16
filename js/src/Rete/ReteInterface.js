@@ -2,7 +2,7 @@
    @file ReteInterface
    @purpose Provides functions for operating on a retenet object
  */
-var imports = ["ReteDataStructures","ReteDeletion","ReteActivations","ReteNetworkBuilding","ReteComparisonOperators"];
+var imports = ["ReteDataStructures","ReteDeletion","ReteActivations","ReteNetworkBuilding","ReteComparisonOperators","ReteUtilities"];
 
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -18,7 +18,7 @@ if(typeof define !== 'function'){
 }
 
 //** @requires ReteDataStructures
-define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO,_){
+define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO,ReteUtil,_){
     "use strict";
 
     
@@ -32,6 +32,7 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     
     //Assert a wme RIGHT NOW
     var assertWME_Immediately = function(data,reteNet,retractionTime){
+        console.log("ASSERTING:",data);
         if(retractionTime === undefined) retractionTime = 0;
         if(data.isWME === undefined || data.id === undefined){
             data = new RDS.WME(data,reteNet.currentTime,retractionTime);
@@ -45,16 +46,27 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
 
     //Retract a wme RIGHT NOW, clean up its tokens, and any potential actions
     var retractWME_Immediately = function(wme,reteNet){
+        console.log("retracting immediately:",wme);
+        //if not given the wme directly
         if(wme.isWME === undefined){
-            if(!Number.isInteger(wme) || reteNet.allWMEs[wme] === undefined){
-                throw new Error("Not Retracting a wme, or a valid id"); 
+            //if given a wme id
+            if(Number.isInteger(wme) && reteNet.allWMEs[wme] !== undefined){
+                //throw new Error("Not Retracting a wme, or a valid id");
+                wme = reteNet.allWMEs[wme];
+                //if given a graph node with a related wme
+            }else if(wme.wmeId !== undefined && reteNet.allWMEs[wme.wmeId] !== undefined){
+                console.log("Retrieving wme using wmeId:",wme.wmeId);
+                wme = reteNet.allWMEs[wme.wmeId];
+            }else{
+                console.log("Unknown:",wme);
+                throw new Error("Unknown wme to retract");
             }
-            wme = reteNet.allWMEs[wme];
         }
+        console.log("Retracting:",wme);
         ReteDeletion.removeAlphaMemoryItemsForWME(wme);
-        var invalidatedActionIds = ReteDeletion.deleteAllTokensForWME(wme);
+        var invalidatedActions = ReteDeletion.deleteAllTokensForWME(wme);
         //todo: cleanup invalidated actions
-        cleanupProposedActions(reteNet,invalidatedActionIds);
+        ReteUtil.cleanupInvalidatedActions(invalidatedActions);
         
         ReteDeletion.deleteAllNegJoinResultsForWME(wme);
     };
@@ -128,15 +140,16 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
      */
     var incrementTime = function(reteNet){
         //retract everything scheduled
-        if(reteNet.wmeLifeTimes.retractions.length > reteNet.currentTime){
+        console.log("Incrementing time for step:",reteNet.currentTime);
+        if(reteNet.wmeLifeTimes.retractions.length > reteNet.currentTime && reteNet.wmeLifeTimes.retractions[reteNet.currentTime] !== undefined){
         reteNet.wmeLifeTimes.retractions[reteNet.currentTime].forEach(function(wme){ retractWME_Immediately(wme,reteNet); });
         }
-        console.log("Retractions finished");
+        console.log("Retractions finished for timeStep:",reteNet.currentTime);
         //assert everything schdeuled
-        if(reteNet.wmeLifeTimes.assertions.length > reteNet.currentTime){
+        if(reteNet.wmeLifeTimes.assertions.length > reteNet.currentTime && reteNet.wmeLifeTimes.assertions[reteNet.currentTime] !== undefined){
             reteNet.wmeLifeTimes.assertions[reteNet.currentTime].forEach(function(wme){  assertWME_Immediately(reteNet.rootAlpha,wme,wme.lifeTime[1]); });
         }
-        console.log("Assertions finished");
+        console.log("Assertions finished for timeStep:",reteNet.currentTime);
         
         //At this point: newly activated action instructions are in
         //reteNet.potentialActions,
@@ -189,23 +202,11 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
     */
     var removeRule = function(actionNode,reteNet){
         //delete from bottom up
-        var invalidatedActionIds = ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
-        cleanupProposedActions(reteNet,invalidatedActionIds);
+        var invalidatedActions = ReteDeletion.deleteNodeAndAnyUnusedAncestors(actionNode);
+        ReteUtil.cleanupInvalidatedActions(invalidatedActions);
     };
 
 
-    //remove proposed actions from the retenet, and from their owning tokens
-    var cleanupProposedActions = function(reteNet,idList){
-        var potentialActions = reteNet.potentialActions;
-        //filter out the ids from the potentialActions list
-        //also removing them from the owning tokens
-        potentialActions = _.reject(potentialActions,function(d){
-            return idList.indexOf(d.id) != -1;
-        });
-        reteNet.potentialActions = potentialActions;
-        
-
-    };
     
     var moduleInterface = {
         "ReteNet" : RDS.ReteNet,

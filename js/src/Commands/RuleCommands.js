@@ -282,7 +282,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             if(cond.expectationNode !== null){
                 return this.allNodes[cond.expectationNode];
             }else{
-                return {id: cond.id, name: "Non-Node" };
+                return {id: undefined, name: "No Linked Node" };
             }
         },globalData.shell);
 
@@ -291,7 +291,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             if(action.expectationNode !== null){
                 return this.allNodes[action.expectationNode];
             }else{
-                return {id: action.id, name: "Non-Node"};
+                return {id: undefined, name: "No Linked Node"};
             }
         },globalData.shell);
         
@@ -350,20 +350,20 @@ define(['d3','utils','underscore'],function(d3,util,_){
             .attr("width",colWidth).attr("height",(nodeText.length * (ruleTextHeight + ruleTextSeparator) + 30));
         
         //Calculate sizes:
-        var amtOfSpace = (globalData.usableHeight - 100);
-        var separatorSpace = 20;
-        var conditionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,conditionData.length);
-        var actionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,actionData.length);
+        var amtOfSpace = (globalData.usableHeight - 100),
+            separatorSpace = 20,
+            conditionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,conditionData.length),
+            actionNodeHeight = util.calculateNodeHeight(amtOfSpace,separatorSpace,actionData.length);
         
         //draw conditions
-        var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth,conditionNodeHeight);
+        var conditions = drawGroup(globalData,mainContainer,"condition",conditionData,(halfWidth - (colWidth * 2)), colWidth + 40,conditionNodeHeight);
         //Annotate conditions:
-        annotateConditions(globalData,conditions,colWidth, conditionNodeHeight);
+        annotateConditions(globalData,conditions,colWidth + 40, conditionNodeHeight);
         
         //draw actions
-        var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth), colWidth,actionNodeHeight);
+        var actions = drawGroup(globalData,mainContainer,"action",actionData,(halfWidth + colWidth - 40), colWidth + 40,actionNodeHeight);
         //annotate actions:
-        annotateActions(globalData,actions,colWidth,actionNodeHeight);
+        annotateActions(globalData,actions,colWidth + 40,actionNodeHeight);
         
         //draw expectations:
         var conditionExpectations = drawGroup(globalData,mainContainer,"condExpectation",conditionExpectData,(halfWidth - (colWidth * 3) - 10),colWidth,conditionNodeHeight);
