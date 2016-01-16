@@ -376,9 +376,11 @@ define(['d3','utils','underscore'],function(d3,util,_){
         var separator = 5;
         existingSelection.each(function(d,i){
             //get the data
+            console.log(d);
             var tests = _.clone(d.constantTests),
                 bindings = _.pairs(d.bindings);
 
+            console.log(tests);
             tests.forEach(function(e,i){
                 e.i = i;
             });

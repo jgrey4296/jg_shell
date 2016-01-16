@@ -757,7 +757,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
      */
     CompleteShell.prototype.assertWMEs = function(nodeIds){
         //get all the wmes
-        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        if(nodeIds === undefined || nodeIds.length === 0) nodeIds = _.keys(this.allNodes);
         var shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);
@@ -773,7 +773,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     };
 
     CompleteShell.prototype.retractWMEs = function(nodeIds){
-        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        if(nodeIds === undefined || nodeIds.length === 0) nodeIds = _.keys(this.allNodes);
         var shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);

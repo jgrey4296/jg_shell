@@ -150,7 +150,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['negCondition'] = function(baseNode){
         baseNode.tags.isNegative = true;
         baseNode.tags.type = 'condition';
-        baseNode.constantTests = {};
+        baseNode.constantTests = [];
         baseNode.bindings = {};
         baseNode.expectationNode = null;
         return [];

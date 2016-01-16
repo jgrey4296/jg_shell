@@ -133,12 +133,6 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
      */
     //taking an alpha node and a ConstantTest
     var compareConstantNodeToTest = function(node,constantTestSpec){
-        if(!constantTestSpec.tags.isConstantTest){
-            throw new Error("constantTest should be a ConstantTest Object");
-        }
-        if(!node.isConstantTestNode){
-            throw new Error("Node should be an alpha/constant test node");
-        }
         if(node.testField !== constantTestSpec.field
            || node.testValue !== constantTestSpec.value){
             return false;
