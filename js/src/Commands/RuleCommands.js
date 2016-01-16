@@ -40,12 +40,6 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 globalData.shell.addNode(null,'conditions','condition',values,sourceId);
             }else if(type === "action"){
                 globalData.shell.addAction(values,sourceId);
-            }else if(type === "test"){
-                var target = values.shift();
-                while(values.length >= 3){
-                    var testParams = values.splice(0,3);
-                    globalData.shell.addTest(target,testParams,sourceId);
-                }
             }else if(type === "negCondition"){
                 globalData.shell.addNode(null,'conditions','negCondition',values,sourceId);
             }else if(type === "negConjCondition"){
@@ -382,10 +376,12 @@ define(['d3','utils','underscore'],function(d3,util,_){
         var separator = 5;
         existingSelection.each(function(d,i){
             //get the data
-            var tests = _.keys(d.constantTests).map(function(g){
-                return globalData.shell.allNodes[g];
+            var tests = _.clone(d.constantTests),
+                bindings = _.pairs(d.bindings);
+
+            tests.forEach(function(e,i){
+                e.i = i;
             });
-            var bindings = _.pairs(d.bindings);
             //todo: get negative || negConj
             //if negConj: draw sub conditions, and annotate them
             //if negative, draw a negative notation
@@ -394,15 +390,18 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //calculate sizes
             var heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
 
+            console.log("Binding tests:",tests);
             //annotate tests
-            var boundTests = d3.select(this).selectAll(".test").data(tests,function(e){ return e.id; });
+            var boundTests = d3.select(this).selectAll(".test").data(tests,function(e,i){
+                return e.i;
+            });
             
             util.annotate(boundTests,"test",
                           (heightOfNode * 0.1 + separator),
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, "red",
                           function(e,i){
-                              return "(" + e.id + "): wme.data." + e.values.field + " "  + util.operatorToString(e.values.operator) + " " + e.values.value;
+                              return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
                           });
 
             //annotate bindings

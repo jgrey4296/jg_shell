@@ -18,6 +18,7 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteActivations','underscore
                && condition.tags.type !== 'negCondition'){
                 throw new Error("Inappropriate condition format");
             }
+            //get the binding tests for join nodes
             var tests = _.pairs(condition.bindings);            
             if(condition.tags.isPositive){
                 currentNode = buildOrShareBetaMemoryNode(currentNode,reteNet);
@@ -65,10 +66,8 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteActivations','underscore
        @reminder Rule{Conditions[]}, Condition{constantTests:[],bindings:[[]]}
     */
     var buildOrShareAlphaMemory = function(condition,root,allNodes,reteNet){
-        var currentNode = root;
-        var constantTests = _.keys(condition.constantTests).map(function(d){
-            return this[d];
-        },allNodes);
+        var currentNode = root,
+            constantTests = condition.constantTests;//[{field:,op:,value:}]
         
         currentNode = constantTests.reduce(function(m,v){
             return buildOrShareConstantTestNode(m,v,reteNet);

@@ -132,16 +132,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
 
     //------------------------------
-    //todo: update rete procedures to tast for tags
-    ctors['test'] = function(baseNode,params){
-        console.log("Creating a test",params);
-        baseNode.tags.type = 'constantTest';
-        baseNode.tags.isConstantTest = true;
-        baseNode.values.field = params[0];
-        baseNode.values.operator = params[1];
-        baseNode.values.value = params[2];        
-        return [];
-    };
     
     
     //------------------------------
@@ -150,7 +140,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         console.log("GraphStructure: condition, firing");
         baseNode.tags.type = 'condition';
         baseNode.tags.isPositive = true;
-        baseNode.constantTests = {};
+        baseNode.constantTests = [];
         baseNode.bindings = {};
         baseNode.expectationNode = null;
         return [];

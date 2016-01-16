@@ -206,9 +206,9 @@ define(['underscore'],function(_){
         this.children = [];
         this.outputMemory = undefined;
         if(constantTestSpec){
-            this.testField = constantTestSpec.values.field;
-            this.testValue = constantTestSpec.values.value;
-            this.operator = constantTestSpec.values.operator;
+            this.testField = constantTestSpec.field;
+            this.testValue = constantTestSpec.value;
+            this.operator = constantTestSpec.operator;
         }else{
             this.passThrough = true;
         }

@@ -285,24 +285,20 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             console.log(conditionId,source.conditions);
             throw new Error("Can't add a test to a non-existent condition");
         }
+        if(testParams.length !== 3){
+            throw new Error("Insufficient test specification");
+        }
         //Check the operator is a defined one
         if(Rete.CompOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
         var condition = this.allNodes[conditionId];
         //Create the test
-        var test = new GraphNode(null,conditionId,condition.name,'constantTest');
-        //link it to the condition
-        this.addLink(this.allNodes[conditionId],"constantTests",test.id,"anonTest");
-        //store the test as a node
-        if(this.allNodes[test.id] !== undefined){
-            console.warn("Assigning test to existing node: ", test,this.allNodes[test.id]);
-        }
-        this.allNodes[test.id] = test;
-
-        //extend the node to be a test
-        if(DSCtors.test === undefined) throw new Error("No ctor for test");
-        DSCtors.test(test,testParams);
+        condition.constantTests.push({
+            field: testParams[0],
+            operator: testParams[1],
+            value: testParams[2]
+        });
     };
 
     /**
@@ -527,10 +523,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
-        var test = this.getNode(testId);
-        test.values.field = field;
-        test.values.operator = op;
-        test.values.value = value;
+
+        var condition = this.getNode(conditionId),
+            test = condition.constantTests[testId];
+        
+        test.field = field;
+        test.operator = op;
+        test.value = value;
+        
     };
 
     //------------------------------
@@ -667,9 +667,8 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
         var condition = this.allNodes[condId];
         if(condition.constantTests[testId] !== undefined){
-            delete condition.constantTests[testId];
+            condition.constantTests.splice(testId,1);
         }
-        //this.cwd.conditions[condNum].constantTests.splice(testNum,1);        
     };
 
     /**
