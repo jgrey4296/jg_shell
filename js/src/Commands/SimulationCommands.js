@@ -43,14 +43,13 @@ define(['underscore'],function(_){
         //returns true when finished, false otherwise
         "stepSim" : function(globalData,values){
             if(globalData.simulation.turn >= gobalData.simulation.maxTurns) return true;
-            
             console.log("Running sim turn: ",globalData.shell.reteNet.currentTime);
-            //select a character to act, remove from pool of characters
+            //reset the character pool if empty
             if(globalData.simulation.characterPool.length === 0){
                 globalData.simulation.characterPool = globalData.simulation.usedCharacterPool;
                 globalData.simulation.usedCharacterPool = [];
             }            
-
+            //select a character to act, remove from pool of characters
             var charToUse = _.sample(globalData.simulation.characterPool),
                 actionsForChar = _.filter(globalData.simulation.reteNet.potentialActions,
                                           function(d){
@@ -67,6 +66,8 @@ define(['underscore'],function(_){
             if(actionToPerform === undefined) return false;
             //todo: perform the action
 
+            //todo:assert facts, retract facts based on the action, which may remove the action from potentials.
+            
             //increment time
             globalData.shell.stepTime();
             //-----

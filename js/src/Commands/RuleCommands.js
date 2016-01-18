@@ -293,7 +293,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
         //get the actionExpect Nodes
         actionExpectData = actionData.map(function(action){
-            if(action.expectationNode !== null && cond.expectationNode !== undefined){
+            if(action.expectationNode !== null && action.expectationNode !== undefined){
                 return this.allNodes[action.expectationNode];
             }else{
                 return {id: undefined, name: "No Linked Node"};
