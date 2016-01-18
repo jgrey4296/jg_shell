@@ -10,6 +10,9 @@ define(['d3','utils','underscore'],function(d3,util,_){
         "draw" : function(globalData,values){
             if(globalData.shell.cwd.tags.type === "rule"){
                 drawRule(globalData);
+            }else if(globalData.shell.cwd.tags.type === "negConjCondition"){
+                //TODO: draw neg conj condition
+                drawRule(globalData);
             }else{
                 console.warn("Not a rule");
             }
@@ -37,6 +40,9 @@ define(['d3','utils','underscore'],function(d3,util,_){
         "new" : function(globalData,values,sourceId){
             var type = values.shift();
             if(type === "condition"){
+                if(values.length > 0 && !isNaN(Number(values[0]))){
+                    sourceId = Number(values.shift());
+                }
                 globalData.shell.addNode(null,'conditions','condition',values,sourceId);
             }else if(type === "action"){
                 globalData.shell.addAction(values,sourceId);
@@ -99,6 +105,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 globalData.shell.setArithmetic(Number(targetId),values[0],values[1],values[2],sourceId);
             }
 
+            //todo: set action tags
+            
             //Set binding of a condition:
             if(targetType === 'condition' && targetField === 'binding'){
                 if(values.length === 2){
@@ -185,7 +193,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
     //conditions need to draw tests and bindings, negative status, or conditions
     //actions need to draw
     var drawGroup = function(globalData,container,className,data,xLocation,groupWidth,heightOfNode){
-        //console.log("drawing:",data);
+        console.log("drawing:",data);
         var animationLength = 100;
         var boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
@@ -257,14 +265,17 @@ define(['d3','utils','underscore'],function(d3,util,_){
      */
     var drawRule = function(globalData){
         //console.log("Drawing rule");
-        var colWidth = globalData.calcWidth(globalData.usableWidth,5);
-        var halfWidth = globalData.halfWidth();
+        var colWidth = globalData.calcWidth(globalData.usableWidth,5),
+            halfWidth = globalData.halfWidth(),
         //get the data:
-        var cwdData = globalData.shell.cwd;
-        var nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']);
-        var ruleTextHeight = 20;
-        var ruleTextSeparator = 2;
-        var conditionData, actionData, conditionExpectData, actionExpectData;
+            cwdData = globalData.shell.cwd,
+            nodeText = globalData.shell.getListsFromNode(cwdData,['id','name','values','tags','annotations']),
+            ruleTextHeight = 20,
+            ruleTextSeparator = 2,
+            conditionData, actionData, conditionExpectData, actionExpectData;
+        //end of vars
+
+        
         //Get the condtion nodes
         conditionData = _.keys(cwdData.conditions).map(toNodes.bind(globalData.shell)) || [];
 
@@ -273,7 +284,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
         
         //get the conditionExpect Nodes
         conditionExpectData = conditionData.map(function(cond){
-            if(cond.expectationNode !== null){
+            if(cond.expectationNode !== null && cond.expectationNode !== undefined){
                 return this.allNodes[cond.expectationNode];
             }else{
                 return {id: undefined, name: "No Linked Node" };
@@ -282,7 +293,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
         //get the actionExpect Nodes
         actionExpectData = actionData.map(function(action){
-            if(action.expectationNode !== null){
+            if(action.expectationNode !== null && cond.expectationNode !== undefined){
                 return this.allNodes[action.expectationNode];
             }else{
                 return {id: undefined, name: "No Linked Node"};
@@ -360,9 +371,12 @@ define(['d3','utils','underscore'],function(d3,util,_){
         annotateActions(globalData,actions,colWidth + 40,actionNodeHeight);
         
         //draw expectations:
-        var conditionExpectations = drawGroup(globalData,mainContainer,"condExpectation",conditionExpectData,(halfWidth - (colWidth * 3) - 10),colWidth,conditionNodeHeight);
-
-        var actionExpectations = drawGroup(globalData,mainContainer,"actionExpectation",actionExpectData,(halfWidth + (colWidth * 2) + 10),colWidth,actionNodeHeight);
+        if(conditionExpectData.length > 0){
+            var conditionExpectations = drawGroup(globalData,mainContainer,"condExpectation",conditionExpectData,(halfWidth - (colWidth * 3) - 10),colWidth,conditionNodeHeight);
+        }
+        if(actionExpectData.length > 0){
+            var actionExpectations = drawGroup(globalData,mainContainer,"actionExpectation",actionExpectData,(halfWidth + (colWidth * 2) + 10),colWidth,actionNodeHeight);
+        }
         
     };
 
@@ -380,7 +394,9 @@ define(['d3','utils','underscore'],function(d3,util,_){
             var tests = _.clone(d.constantTests),
                 bindings = _.pairs(d.bindings);
 
-            console.log(tests);
+            if(tests === undefined){
+                tests = [];
+            }
             tests.forEach(function(e,i){
                 e.i = i;
             });

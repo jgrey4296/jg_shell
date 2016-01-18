@@ -277,7 +277,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Adding test:",conditionId,testParams,source.conditions);
         //check you're in a rule
-        if(source.tags.type !== 'rule'){
+        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         //check the specified condition exists
@@ -408,7 +408,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
-        if(source.tags.type !== 'rule'){
+        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         if(source.conditions[conditionId] === undefined){
@@ -517,7 +517,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
     CompleteShell.prototype.setTest = function(conditionId,testId,field,op,value,sourceId){
         console.log(conditionId,testId,field,op,value,sourceId);
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(source.tags.type !== 'rule'){
+        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
             throw new Error("Trying to set test on a non-rule node");
         }
         if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
@@ -1172,6 +1172,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @method dfs
        @purpose Depth First Search from a source nodeId,
        using children in the specified fields, filtered afterwards by a criteria function
+       @return ids of nodes found
      */
     CompleteShell.prototype.dfs = function(nodeId,focusFields,criteriaFunction){
         if(focusFields === undefined) focusFields = ['children'];

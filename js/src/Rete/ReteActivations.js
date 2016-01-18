@@ -336,38 +336,42 @@ define(['require','./ReteDataStructures','./ReteComparisonOperators','./ReteUtil
     //figure out who owns this new token from the main (positive) network
     var nccPartnerNodeLeftActivation = function(partner,token){
         //the partner's ncc
-        var nccNode = partner.nccNode;
+        var nccNode = partner.nccNode,
         //the token created in left activate, with partner as owner
-        var newToken = token;
+            newToken = token,
+            ownersToken = token.parentToken,//the prior token
+            ownersWme = token.wme,//the prior wme
+            owner;
 
-        //the prior token and wme
-        var ownersToken = token.parentToken;
-        var ownersWme = token.wme;
+        
         for(var i = 1; i < partner.numberOfConjuncts; i++){
             //go up the owner chain
             ownersToken = ownersToken.parentToken;
             ownersWme = ownersWme.wme;
         }
-        var possible_tokens = [];
-        if(nccNode){
-        possible_tokens = nccNode.items.map(function(d){
-            if(d.parentToken.id === ownersToken.id && d.wme.id === ownersWme.id){
-                return d;
-            }}).filter(function(d){if(d) return true;});
+
+        //find an owner in the ncc node's memory to link to
+        if(nccNode !== undefined){
+            var possible_tokens = nccNode.items.map(function(d){
+                if(d.parentToken.id === ownersToken.id && d.wme.id === ownersWme.id){
+                    return d;
+                }}).filter(function(d){return d !== undefined;});
+            owner = possible_tokens[0];
         }
-        if(possible_tokens.length > 0){
+
+        //link the owner and the new token
+        if(owner !== undefined){
             //the necessary owner exists in the nccNode,
             //so update it:
-            possible_tokens[0].nccResults.unshift(newToken);
-            newToken.parent = possible_tokens[0];
+            owner.nccResults.unshift(newToken);
+            newToken.parent = owner;
             if(ReteDeletion === undefined){
                 ReteDeletion = require('./ReteDeletion');
             }
-            var invalidatedActions = ReteDeletion.deleteDescendentsOfToken(possible_tokens[0]);
-            ReteUtil.cleanupInvalidatedActions(invalidatedActions);
- 
+            var invalidatedActions = ReteDeletion.deleteDescendentsOfToken(owner);
+            ReteUtil.cleanupInvalidatedActions(invalidatedActions); 
         }else{        
-            //else no owner:
+            //else no owner: add to temp buffer to wait for the ncc node to be activated
             partner.newResultBuffer.unshift(newToken);
         }
     };

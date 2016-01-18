@@ -240,6 +240,45 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
     };
 
 
+    /**
+       @function objDescToObject
+       @purpose Take a single object that describes a more complex object,
+       and convert it to that more complex object
+
+       @note can work on arbitrary depths, will overwrite primitives if later an object is needed
+
+       ie: {"values.a" : 5, "values.b" : 10,
+       "tags.type" : "rule", "tags.character" : "bob"}
+       --->
+       {"values": {"a": 5, "b": 10},
+       "tags" : {"type" : "rule", "character": "bob"}}
+
+     */
+    var objDescToObject = function(objDesc,baseObject){
+        var newObj = baseObject || {},
+            //take the starting object and for all keys
+            finalObj = _.keys(objDesc).reduce(function(m,v){
+                //split the keys apart
+                var keys = v.split(/\./),
+                    currObj = m,
+                    currKey;
+                //add an object for each key
+                while(keys.length > 1){
+                    currKey = keys.shift();
+                    if(currObj[currKey] === undefined
+                      || typeof currObj[currKey] !== 'object'){
+                        currObj[currKey] = {};
+                    }
+                    currObj = currObj[currKey];
+                }
+                currKey = keys.shift();
+                currObj[currKey] = objDesc[v];
+                return m;
+            },newObj);
+        return finalObj;
+    };
+
+    
     
     //------------------------------
     var moduleInterface = {
@@ -252,7 +291,8 @@ define(['./ReteDataStructures','underscore'],function(RDS,_){
         "compareConstantNodeToTest" : compareConstantNodeToTest,
         "findNearestAncestorWithAlphaMemory" : findNearestAncestorWithAlphaMemory,
         "retrieveWMEValueFromDotString" : retrieveWMEValueFromDotString,
-        "cleanupInvalidatedActions" : cleanupInvalidatedActions
+        "cleanupInvalidatedActions" : cleanupInvalidatedActions,
+        "objDescToObject" : objDescToObject
     };
     return moduleInterface;    
 });

@@ -364,7 +364,12 @@ define(['underscore'],function(_){
     //SEE ALSO: NCCCondition
     //old: NegatedConjunctiveConditionNode
     var NCCNode = function(parent){
-        ReteNode.call(this,parent);
+        //don't pass parent in
+        ReteNode.call(this);
+        this.parent = parent;
+        if(this.parent && this.parent.children){
+            this.parent.children.push(this);
+        }
         this.isAnNCCNode = true;
         this.items = [];
         this.partner = null;

@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(ArithmeticActions,RDS,_){
+define(['./ReteArithmeticActions','./ReteDataStructures','underscore','./ReteUtilities'],function(ArithmeticActions,RDS,_,ReteUtil){
     "use strict";
     
     if(ArithmeticActions === undefined){
@@ -50,7 +50,6 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
         },{},this);
 
         //perform arithmetic:
-        console.log("new wme data:",newWMEData);
         _.keys(this.arithmeticActions).forEach(function(key){
             var newVal = Number(newWMEData[key]);
             if(isNaN(newVal)) throw new Error("Arithmetic value should be convertable to a number");
@@ -60,11 +59,14 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
             newWMEData[key] = action(newVal,Number(this.arithmeticActions[key][1]));
         },this);
 
-        console.log("Creating new WME from:",newWMEData);
+        
+        //ie: {values.a:5, tags.type: rule} -> {values:{a:5},tags:{type:rule}}
+        var complexFormData = ReteUtil.objDescToObject(newWMEData);
+        console.log("new wme data:",complexFormData);        
+
         //Actually, DONT create the wme, just store the data for it
-        //var newWME = new RDS.WME(newWMEData);
         //To be returned to activateActionNode
-        var proposedAction = new RDS.ProposedAction(reteNet,"assert", newWMEData, token,
+        var proposedAction = new RDS.ProposedAction(reteNet,"assert", complexFormData, token,
                                                 reteNet.currentTime,
                                                 reteNet.currentTime+2,
                                                 reteNet.currentTime+1,
@@ -105,7 +107,10 @@ define(['./ReteArithmeticActions','./ReteDataStructures','underscore'],function(
     //What other actions might i want?
     //aggregate
     //modify
-    
+
+    //propose action...
+    //note: an actual proposed action will set action.tag.character to the char.id of
+    //who is to do it
     
     return actions;
 });

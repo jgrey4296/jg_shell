@@ -15,20 +15,26 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteActivations','underscore
         //for each condition
         conditions.forEach(function(condition){
             if(condition.tags.type !== 'condition' && condition.tags.type !== 'negConjCondition'
-               && condition.tags.type !== 'negCondition'){
+               && condition.tags.type !== 'negCondition' && condition.tags.type !== 'rule'){
                 throw new Error("Inappropriate condition format");
             }
             //get the binding tests for join nodes
             var tests = _.pairs(condition.bindings);            
-            if(condition.tags.isPositive){
+            if(condition.tags.isPositive !== undefined){
                 currentNode = buildOrShareBetaMemoryNode(currentNode,reteNet);
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha,allNodes,reteNet);
                 currentNode = buildOrShareJoinNode(currentNode,alphaMemory,tests,reteNet);
-            }else if(condition.tags.isNegative){
+            }else if(condition.tags.isNegative !== undefined){
                 alphaMemory = buildOrShareAlphaMemory(condition,rootAlpha,allNodes,reteNet);
                 currentNode = buildOrShareNegativeNode(currentNode,alphaMemory,tests,reteNet);
-            }else if(condition.tags.isNCCCondition){
+            }else if(condition.tags.isNCCCondition !== undefined){
                 currentNode = buildOrShareNCCNodes(currentNode,condition,rootAlpha,allNodes,reteNet);
+            }else if(condition.tags.type === 'rule'){
+                //for using other rules as composable conditions
+                var ruleConditions = _.keys(condition.conditions).map(function(d){
+                    return this[d];
+                },allNodes);                
+                currentNode = buildOrShareNetworkForConditions(currentNode,ruleConditions,rootAlpha,allNodes,reteNet);
             }else{
                 console.error("Problematic Condition:",condition);
                 throw new Error("Unrecognised condition type");
@@ -208,18 +214,21 @@ define(['./ReteDataStructures','./ReteUtilities','./ReteActivations','underscore
         //build a network for the conditions
         var conditions = _.keys(condition.conditions).map(function(d){
             return this[d];
-        },allNodes);
-        var bottomOfSubNetwork = buildOrShareNetworkForConditions(parent,conditions,rootAlpha,allNodes,reteNet);
+        },allNodes),
+            //build the subnetwork
+            bottomOfSubNetwork = buildOrShareNetworkForConditions(parent,conditions,rootAlpha,allNodes,reteNet);
         //find an existing NCCNode with partner to use
-        for(var i in parent.children){
+        for(var i = 0; i < parent.children.length; i++){
             var child = parent.children[i];
             if(child.isAnNCCNode && child.partner.parent.id === bottomOfSubNetwork.id){
                 return child;
             }
         }
+        
         //else: build NCC and Partner nodes
-        var newNCC = new RDS.NCCNode(parent);
-        var newNCCPartner = new RDS.NCCPartnerNode(bottomOfSubNetwork,condition.conditions.length);
+        var newNCC = new RDS.NCCNode(parent),
+            newNCCPartner = new RDS.NCCPartnerNode(bottomOfSubNetwork,condition.conditions.length);
+
         newNCC.partner = newNCCPartner;
         newNCCPartner.nccNode = newNCC;
         //update NCC

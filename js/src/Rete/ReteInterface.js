@@ -65,11 +65,18 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
         console.log("Retracting:",wme);
         ReteDeletion.removeAlphaMemoryItemsForWME(wme);
         var invalidatedActions = ReteDeletion.deleteAllTokensForWME(wme);
-        //todo: cleanup invalidated actions
         ReteUtil.cleanupInvalidatedActions(invalidatedActions);
-        
         ReteDeletion.deleteAllNegJoinResultsForWME(wme);
     };
+
+    var modifyWME_Immediately = function(wme,reteNet,modifyFunction){
+        retractWME_Immediately(wme,reteNet);
+        var data = wme.data;
+        //apply the modify function to the data:
+        modifyFunction(data);
+        assertWME_Immediately(data,reteNet);
+    };
+
     
     /**
        @function addWME
@@ -177,12 +184,13 @@ define(imports,function(RDS,ReteDeletion,ReteActivations,ReteNetworkBuilding,RCO
                 return this[d];
             },allNodes),                
             //build network with a dummy node for the parent
-            currentNode = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes,reteNet),
+            finalBetaMemory = ReteNetworkBuilding.buildOrShareNetworkForConditions(reteNet.dummyBetaMemory,conditions,reteNet.rootAlpha,allNodes,reteNet),
             //Build the actions that are triggered by the rule:
             actionNodes = _.keys(rule.actions).map(function(actionId){
                 console.log("Adding action for:",actionId);
+                //todo: protect against duplicates here?
                 var actionDescription = allNodes[actionId];
-                return new RDS.ActionNode(currentNode,actionDescription,rule.name,reteNet);
+                return new RDS.ActionNode(finalBetaMemory,actionDescription,rule.name,reteNet);
             });
 
         //initialise the action storage for this rule
