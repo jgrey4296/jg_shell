@@ -62,7 +62,10 @@ define(['underscore'],function(_){
                                                   return false;
                                               }
                                           }),
-                actionToPerform = _.sample(actionsForChar);
+                actionToPerform = _.sample(actionsForChar),
+                linkedActions = actionToPerform.parallelActions.map(function(d){
+                    return globalData.reteNet.potentialActions[d.id];
+                });
             
             
             //return early if theres no available actions

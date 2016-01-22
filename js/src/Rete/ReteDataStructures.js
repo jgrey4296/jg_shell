@@ -1,4 +1,4 @@
-/**
+**
    @file ReteDataStructures
    @purpose to define the data structures required for rete
 */
@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define(['underscore','./ReteActions'],function(_,PossibleActions){
     "use strict";
     var nextId = 0;
 
@@ -305,11 +305,17 @@ define(['underscore'],function(_){
        @purpose A Node which, when activated, will cause the effects a rule describes
      */
     //Container object for a general graphnode action description    
-    var ActionNode = function(parent,actionDescription,ruleName,reteNet){
+    var ActionNode = function(parent,actionDescriptions,ruleName,reteNet){
         ReteNode.call(this,parent);
         this.isActionNode = true;
         this.name = name;
-        this.action = actionDescription;
+        this.actionDescriptions = actionDescriptions;
+        this.boundActions = actionDescriptions.map(function(d){
+            if(PossibleActions[d.tags.actionType === undefined){
+                throw new Error("Unrecognised action type");
+            }
+            return _.bind(PossibleActions[d.tags.actionType],d);
+        });
         //reference to retenet, to allow storage of results of firing:
         this.reteNet = reteNet;
     };
