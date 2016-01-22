@@ -14,23 +14,26 @@ define(['underscore'],function(_){
         "setupSim" : function(globalData,values){
             console.log("Setting up simulation");
             //get all the nodes in the institution specified
-            var sourceId = values.shift() || globalData.shell.cwd.id;
+            var maxTurns = values.shift() || 10,
+                sourceId = values.shift() || globalData.shell.cwd.id;
             if(globalData.shell.getNode(sourceId).tags.type !== 'institution') return;
-            
+
+            //Get all the children of the specified institution
             var institutionIds = globalData.shell.dfs(sourceId,['children']),
-                characters = _.values(globalData.shell.allNode).filter(function(d){
+                characters = _.values(globalData.shell.allNodes).filter(function(d){
                     return d.tags.character !== undefined;
                 });
-
+            console.log("InstitutionIds:",institutionIds);
+            console.log("Characters:",characters);
+            
             globalData.simulation = {};
             globalData.simulation.reteNet = globalData.shell.reteNet;
             globalData.simulation.characterPool = characters;
             globalData.simulation.usedCharacterPool = [];
             globalData.simulation.turn = 0;
-            globalData.simulation.maxTurns = values.shift() || 10;
-
+            globalData.simulation.maxTurns = maxTurns;
             
-            //compile the reteNet using the rules
+            //compile the reteNet using the rules in the institution
             globalData.shell.compileRete(institutionIds);
             //assert starting facts
             //todo: possible initialise the institution from options here

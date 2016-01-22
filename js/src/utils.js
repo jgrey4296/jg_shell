@@ -168,7 +168,7 @@ define(['underscore'],function(_){
 
     util.annotate = function(boundDom,className,
                               verticalOffset,nodeHeight,verticalSeparator,
-                              horizontalOffset,nodeWidth,colour,textFunction){
+                             horizontalOffset,nodeWidth,colour,textFunction,textColour){
 
         //Exit Selection:
         boundDom.exit().remove();
@@ -196,7 +196,9 @@ define(['underscore'],function(_){
 
         boundDom.selectAll("."+className+"text")
             .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.5) + ")")
-            .text(textFunction);
+            .text(textFunction)
+        //todo: parameterise this:
+            .style("fill",textColour || "white");
 
     };
 

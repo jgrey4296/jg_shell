@@ -94,17 +94,17 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
        @purpose To create a graph based on an incoming array of objects
        @param allNodes an array or object of key:object pairs describing all nodes to load
      */
-    CompleteShell.prototype.importJson = function(allNodes){
+    CompleteShell.prototype.importJson = function(importNodes){
         //console.log("importing type:", typeof allNodes,allNodes.length);
         //clear the shell:
         this.allNodes = [];
         
-        if(allNodes instanceof Array){
-            allNodes.forEach(function(d){
+        if(importNodes instanceof Array){
+            importNodes.forEach(function(d){
                 this.addNodeFromJson(d);
             },this);
         }else{
-            _.values(allNodes).forEach(function(d){
+            _.values(importNodes).forEach(function(d){
                 this.addNodeFromJson(d);
             },this);
         }
@@ -405,7 +405,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
 
        @ie: toVar = wme.fromVar
      */
-    CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar,sourceId){
+    CompleteShell.prototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
         if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
@@ -416,7 +416,7 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         }
         var condition = this.allNodes[conditionId];
         //condition.bindings.push([toVar,fromVar]);
-        condition.bindings[toVar] = fromVar;
+        condition.bindings[toVar] = [fromVar,testPairs];
         console.log(source.conditions[conditionId].bindings);
     };
 

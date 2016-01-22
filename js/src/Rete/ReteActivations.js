@@ -103,7 +103,7 @@ define(['require','./ReteDataStructures','./ReteComparisonOperators','./ReteUtil
     var joinNodeLeftActivation = function(node,token){
         //If necessary, relink or unlink the
         //parent betamemory or alphamemory
-        if(node.parent.items && node.parent.items.length > 0){
+        if(node.parent.items && node.parent.items.length === 1){
             ReteUtil.relinkToAlphaMemory(node);
             if(node.alphaMemory.items.length === 0){
                 //unlink beta memory if alphamemory is empty

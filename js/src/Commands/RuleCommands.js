@@ -108,9 +108,20 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //todo: set action tags
             
             //Set binding of a condition:
+            //ie: set condition n binding a b
+            //desired: set condition n binding a b (NE otherBinding, GT otherBinding2...)
             if(targetType === 'condition' && targetField === 'binding'){
-                if(values.length === 2){
-                    globalData.shell.setBinding(Number(targetId),values[0],values[1],sourceId);
+                if(values.length >= 2){
+                    var boundName = values.shift(),
+                        dataName = values.shift(),
+                        bindingTests = [];
+                    while(values.length > 0){
+                        var a = values.shift(),
+                            b = values.shift();
+                        bindingTests.push([a,b]);                        
+                    }
+                    
+                    globalData.shell.setBinding(Number(targetId),boundName,dataName,bindingTests,sourceId);
                 }else if(values.length === 1){
                     globalData.shell.removeBinding(Number(targetId),values[0],sourceId);
                 }
@@ -417,19 +428,25 @@ define(['d3','utils','underscore'],function(d3,util,_){
             util.annotate(boundTests,"test",
                           (heightOfNode * 0.1 + separator),
                           heightOfInteriorNodes,separator,
-                          10, nodeWidth, "red",
+                          10, nodeWidth, globalData.colours.darkerBlue,
                           function(e,i){
                               return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
-                          });
+                          }),globalData.textBlue;
 
             //annotate bindings
             var boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; });
+            var idRegex = new RegExp(/^[#\$]id/);
             util.annotate(boundBindings,"binding",
                           (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
                           heightOfInteriorNodes,separator,
-                          10, nodeWidth, "green",
+                          10, nodeWidth, globalData.colours.grey,
                           function(e,i){
-                              return e[0] + " <-- wme.data." + e[1];
+                              var retString = e[0] + " <-- wme";
+                              retString += idRegex.test(e[1][0]) ? ".id" : ".data." + e[1][0];
+                              retString += e[1][1].length > 0 ? " :: " + e[1][1].map(function(e){
+                                  return util.operatorToString(e[0]) + " " + e[1];
+                              }).join(",") : "";
+                              return retString;
                           });
         });
     };
@@ -449,24 +466,14 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
             var offset = nodeHeight * 0.1 + separator;
             //annotate each section:
-            //actionType:
 
+            //actionType:
             var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;});
             util.annotate(boundActionType,"actionType",
                           offset,
                           heightOfInteriorNodes, separator,
-                          10, nodeWidth, "red",
+                          10, nodeWidth, globalData.colours.textGrey,
                           function(e,i){ return "ActType: " + e; });
-
-            //deprecated: actionFocus:
-            // offset += actionType.length * (heightOfInteriorNodes + separator);
-            
-            // var boundActionFocus = d3.select(this).selectAll(".actionFocus").data(actionFocus,function(e){return e;});
-            // util.annotate(boundActionFocus,"actionFocus",
-            //               offset,
-            //               heightOfInteriorNodes,separator,
-            //               10, nodeWidth,"orange",
-            //               function(e,i){ return "ActFocus: " + e; });
 
             //actionValues:
             offset += actionType.length * (heightOfInteriorNodes + separator);
@@ -475,8 +482,10 @@ define(['d3','utils','underscore'],function(d3,util,_){
             util.annotate(boundActionValues,"actionValue",
                           offset,
                           heightOfInteriorNodes, separator,
-                          10, nodeWidth, "yellow",
-                          function(e,i){ return e[0] + ": " + e[1]; });
+                          10, nodeWidth, globalData.colours.darkerBlue,
+                          function(e,i){
+                              return e[0] + ": " + e[1];
+                          });
             
             //arithActions:
             offset += actionValues.length * (heightOfInteriorNodes + separator);
@@ -485,7 +494,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             util.annotate(boundArithActions,"arithAction",
                           offset,
                           heightOfInteriorNodes,separator,
-                          10,nodeWidth,"green",
+                          10,nodeWidth,globalData.colours.grey,
                           function(e,i){
                               return e[0] + " " + e[1][0] + " " + e[1][1];
                           });
