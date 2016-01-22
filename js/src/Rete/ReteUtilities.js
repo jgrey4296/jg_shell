@@ -2,8 +2,10 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['./ReteDataStructures','underscore'],function(RDS,_){
+define(['require','underscore'],function(require,_){
     "use strict";
+
+
     
     /**
        @function relinkToAlphaMemory

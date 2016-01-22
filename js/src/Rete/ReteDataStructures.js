@@ -310,12 +310,17 @@ define(['underscore','./ReteActions'],function(_,PossibleActions){
         this.isActionNode = true;
         this.name = name;
         this.actionDescriptions = actionDescriptions;
-        this.boundActions = actionDescriptions.map(function(d){
-            if(PossibleActions[d.tags.actionType] === undefined){
-                throw new Error("Unrecognised action type");
-            }
-            return _.bind(PossibleActions[d.tags.actionType],d);
-        });
+        try{
+            this.boundActions = actionDescriptions.map(function(d){
+                if(PossibleActions[d.tags.actionType] === undefined){
+                    throw new Error("Unrecognised action type");
+                }
+                return _.bind(PossibleActions[d.tags.actionType],d);
+            });
+        }catch(e){
+            this.boundActions = [];
+            throw e;
+        }
         //reference to retenet, to allow storage of results of firing:
         this.reteNet = reteNet;
     };

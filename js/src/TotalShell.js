@@ -737,12 +737,10 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            var actionNodes = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
-            d.actionNodeIds = actionNodes.map(function(e){
-                return e.id;
-            });
-            return {"rule": d, "actions" :actionNodes};
+            d.actionNodeId = actionNode.id;
+            return {"rule": d, "actions" :actionNode};
         },this);
 
         console.log("All action nodes:",this.allActionNodes);

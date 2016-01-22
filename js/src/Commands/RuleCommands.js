@@ -509,7 +509,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                               return e[0] + " " + e[1][0] + " " + e[1][1];
                           });
 
-            util.wrapText(boundArithText,(nodeWidth * 0.8),d3);
+            util.wrapText(boundArithTexts,(nodeWidth * 0.8),d3);
             
         });
     };
