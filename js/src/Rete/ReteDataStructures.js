@@ -1,4 +1,4 @@
-**
+/**
    @file ReteDataStructures
    @purpose to define the data structures required for rete
 */
@@ -311,7 +311,7 @@ define(['underscore','./ReteActions'],function(_,PossibleActions){
         this.name = name;
         this.actionDescriptions = actionDescriptions;
         this.boundActions = actionDescriptions.map(function(d){
-            if(PossibleActions[d.tags.actionType === undefined){
+            if(PossibleActions[d.tags.actionType] === undefined){
                 throw new Error("Unrecognised action type");
             }
             return _.bind(PossibleActions[d.tags.actionType],d);

@@ -77,11 +77,14 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 return "translate(" + (colWidth * -0.4) + "," + (15 + (i * (nodeTextHeight + nodeTextSeparator))) + ")";
             });
 
-            node.selectAll(".nodeTextActual")
+            var texts = node.selectAll(".nodeTextActual")
                 .text(function(d){
                     return d;
-                });
+                })
+                .attr("dy","1.4em");
 
+            util.wrapText(texts,(colWidth * 0.6),d3);
+            
             //draw its parents
             var parents = drawGroup(globalData,mainContainer, "parent", parentsData, (globalData.halfWidth() - (colWidth * 2)), colWidth);
             //draw children

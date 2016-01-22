@@ -1,7 +1,7 @@
 /**
    @file utils
    @purpose defines general utilities to use across projects
- */
+*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -105,7 +105,7 @@ define(['underscore'],function(_){
             .style("opacity",0)
             .attr("rx",0)
             .attr("ry",0);
-       
+        
 
         entryGroup.append("text")
             .style("text-anchor","middle")
@@ -116,7 +116,7 @@ define(['underscore'],function(_){
         //update selection
         //transition to updated sizes etc
         boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
-                return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+            return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
         })
             .selectAll("text")
             .attr("transform","translate(" + (groupWidth * 0.5) + "," +
@@ -167,7 +167,7 @@ define(['underscore'],function(_){
     };
 
     util.annotate = function(boundDom,className,
-                              verticalOffset,nodeHeight,verticalSeparator,
+                             verticalOffset,nodeHeight,verticalSeparator,
                              horizontalOffset,nodeWidth,colour,textFunction,textColour){
 
         //Exit Selection:
@@ -180,7 +180,8 @@ define(['underscore'],function(_){
         enter.append("rect")
             .classed(className + "rect", true);
         enter.append("text")
-            .classed(className + "text", true);
+            .classed(className + "text", true)
+            .attr("dy","1.4em");
         
 
         //update:
@@ -194,12 +195,13 @@ define(['underscore'],function(_){
             .style("fill",colour)
             .attr("rx",10).attr("ry",10);
 
-        boundDom.selectAll("."+className+"text")
-            .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.5) + ")")
+        var texts = boundDom.selectAll("."+className+"text")
+            .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.2) + ")")
             .text(textFunction)
         //todo: parameterise this:
             .style("fill",textColour || "white");
 
+        return texts;
     };
 
     //repeatedly truncate text until it fits in a certain amount of space;
@@ -215,7 +217,33 @@ define(['underscore'],function(_){
         }
     };
 
-    
-    
-    return util;
-});
+    util.wrapText = function(textSelection,width,d3){
+        textSelection.each(function(){
+                var text = d3.select(this),
+                    words = text.text().split(/\s+/),
+                    word,//current word
+                    line = [],//current line
+                    y = text.attr("y"),
+                    dy = parseFloat(text.attr("dy")) || parseFloat("1.4em"),
+                    tspan = text.text(null).append("tspan")
+                    .attr("x",20)
+                    .attr("y",y)
+                    .attr("dy",dy);
+                while(word = words.shift()){
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if(tspan.node().getComputedTextLength() > width){
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan").attr("x",20)
+                            .attr("dy",dy +"em").text(word);
+                    }
+                }
+            });
+        };
+
+
+        
+        return util;
+    });

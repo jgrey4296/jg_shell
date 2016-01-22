@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','d3'],function(_,d3){
+define(['underscore','d3','utils'],function(_,d3,util){
     "use strict";
     
     var GeneralCommands = {
@@ -211,7 +211,7 @@ define(['underscore','d3'],function(_,d3){
     //utility functions:
     var drawStash = function(globalData,values){
         var stashedList = values.map(function(d){
-            return "(" + d.id + "): " + d.name.slice(0,5);
+            return "(" + d.id + "): " + d.name.slice(0,10) + "...";
         }).reverse(); //reverse so last thing added is first thing drawn
 
         var stashContainer = d3.select("#stashContainer");
@@ -219,7 +219,7 @@ define(['underscore','d3'],function(_,d3){
             stashContainer = d3.select("svg").append("g")
                 .attr("id","stashContainer")
                 .attr("transform",function(){
-                    return "translate(" + (globalData.usableWidth * 0.31) + "," + (globalData.usableHeight * 0.935 ) + ")";
+                    return "translate(" + (globalData.usableWidth * 0.5) + "," + (globalData.usableHeight * 0.8 ) + ")";
                 });
         }
         stashContainer.selectAll("text").remove();
@@ -238,7 +238,11 @@ define(['underscore','d3'],function(_,d3){
     var drawSearchResults = function(globalData,searchData){
         //console.log("drawing search results:",searchData);
         //calculate sizes:
-        var colWidth = globalData.calcWidth(globalData.usableWidth,7);
+        var colWidth = globalData.calcWidth(globalData.usableWidth,7),
+            availableHeight = globalData.usableHeight * 0.8,
+            offset = availableHeight *  0.2,
+            increment = (availableHeight - offset) / searchData.length;
+
         
         //take the search results,
         var searchResults = d3.select("#searchResults");
@@ -249,7 +253,7 @@ define(['underscore','d3'],function(_,d3){
 
             searchResults.append("rect")
                 .attr("width",100)
-                .attr("height", (globalData.usableHeight * 0.8))
+                .attr("height", availableHeight)
                 .style("fill","red")
                 .attr("rx",5).attr("ry",5);
         }
@@ -258,21 +262,24 @@ define(['underscore','d3'],function(_,d3){
         if(searchData.length > 0){
             if(searchResults.selectAll(".searchText").empty()){
                 searchResults.append("text").classed("searchText",true)
-                    .attr("transform","translate(" + (colWidth * 0.1) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                    .attr("transform","translate(" + (colWidth * 0.1) + "," + (availableHeight * 0.1) + ")")
                     .text("Search Results:")
                     .style("fill","white")
                     .style("text-anchor","start");
+                    //.attr("dy","1.4em");
+                    
             }
             searchResults.select("rect").transition()
                 .attr("width",colWidth);
 
-            searchResults.select(".searchText")
+            var headerSearchText = searchResults.select(".searchText")
                 .text("Search results: " + globalData.lastSearch);
+
+            util.wrapText(headerSearchText,(colWidth * 0.7),d3);
             
             var bound = searchResults.selectAll(".searchResult").data(searchData,function(d){ return d.id; });
-
             bound.exit().remove();
-            
+
             var enter = bound.enter().append("g").classed("searchResult",true);
 
             enter.append("rect").classed("resultRect",true)
@@ -282,19 +289,23 @@ define(['underscore','d3'],function(_,d3){
             enter.append("text").classed("resultText",true)
                 .style("fill","white");
 
+                
+            
             //update selection
             searchResults.selectAll(".searchResult").transition()
                 .attr("transform",function(d,i){
-                    return "translate(" + (colWidth * 0.1) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / searchData.length)) + 5) + ")";
+                    return "translate(" + (colWidth * 0.1) + "," + (offset + (i * increment)) + ")";
                 });
 
-            bound.selectAll(".resultRect").transition()
-                .attr("height",((globalData.usableHeight * 0.6)/searchData.length) -5)
+            searchResults.selectAll(".resultRect").transition()
+                .attr("height",increment - 5)
                 .attr("rx",10).attr("ry",10);
 
-            bound.selectAll(".resultText").transition()
+            var resultTexts = searchResults.selectAll(".resultText").transition()
                 .text(function(d) { return d.id + ": " + d.name; })
-                .attr("transform","translate(" + (colWidth * 0.05) + "," + (((globalData.usableHeight * 0.6) / searchData.length) * 0.5) + ")");
+                .attr("transform","translate(" + (colWidth * 0.05) + "," + (increment * 0.5) + ")");
+
+            util.wrapText(resultTexts,(colWidth * 0.8),d3);
             
         }else{
             //shrink the window back
@@ -305,19 +316,26 @@ define(['underscore','d3'],function(_,d3){
         }
     };
 
-        var drawInspectBar = function(globalData,pairs){
+
+    //Draw inspect window
+    var drawInspectBar = function(globalData,pairs){
         if(pairs === undefined){
             pairs = [];
         }
-        var colWidth = globalData.calcWidth(globalData.usableWidth, 7);
-        var inspectResults = d3.select("#inspectResults");
+        var colWidth = globalData.calcWidth(globalData.usableWidth, 7),
+            inspectResults = d3.select("#inspectResults"),
+            availableHeight = globalData.usableHeight * 0.8,
+            offset = availableHeight *  0.2,
+            increment = (availableHeight - offset) / pairs.length;
+
+        
         if(inspectResults.empty()){
             inspectResults = d3.select("svg").append("g")
                 .attr("id","inspectResults")
                 .attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
             inspectResults.append("rect")
                 .attr("width",100)
-                .attr("height",(globalData.usableHeight * 0.8))
+                .attr("height",availableHeight)
                 .style("fill","red")
                 .attr("rx",5).attr("ry",5)
                 .attr("transform","translate(-100,0)");
@@ -327,18 +345,21 @@ define(['underscore','d3'],function(_,d3){
             //draw
             if(inspectResults.selectAll(".inspectText").empty()){
                 inspectResults.append("text").classed("inspectText",true)
-                    .attr("transform","translate(" + -(colWidth * 0.2) + "," + ((globalData.usableHeight * 0.8) * 0.1) + ")")
+                    .attr("transform","translate(" + -(colWidth * 0.2) + "," + (availableHeight * 0.1) + ")")
                     .text("Inspect:")
                     .style("fill","white")
                     .style("text-anchor","end");
+                    //.attr("dy","1.4em");
             }
             inspectResults.select("rect").transition()
                 .attr("width",colWidth)
                 .attr("transform","translate(" + -(colWidth) + ",0)");
 
-            inspectResults.select(".inspectText")
+
+            var inspectHeaderText = inspectResults.select(".inspectText")
                 .text("Inspect: " + globalData.lastInspection);
 
+            util.wrapText(inspectHeaderText,(colWidth * 0.8),d3);
             
             var bound = inspectResults.selectAll(".inspectResult").data(pairs,function(d){ return d[0]+d[1];});
 
@@ -352,18 +373,21 @@ define(['underscore','d3'],function(_,d3){
             enter.append("text").classed("inspectResultText",true)
                 .style("fill","white")
                 .style("text-anchor","end");
+                //.attr("dy","1.4em");
 
+
+            
             //update:
             inspectResults.selectAll(".inspectResult").transition()
                 .attr("transform",function(d,i){
-                    return "translate(" + -(colWidth * 0.9) + "," + (((globalData.usableHeight * 0.8) * 0.2) + (i * ((globalData.usableHeight * 0.6) / pairs.length)) + 5) + ")";
+                    return "translate(" + -(colWidth * 0.9) + "," + (offset + (i * increment)) + ")";
                 });
 
             inspectResults.selectAll(".inspectRect").transition()
-                .attr("height",((globalData.usableHeight * 0.6)/pairs.length) -5)
+                .attr("height",increment - 5)
                 .attr("rx",10).attr("ry",10);
 
-            inspectResults.selectAll(".inspectResultText").transition()
+            var inspectTexts = inspectResults.selectAll(".inspectResultText").transition()
                 .text(function(d){
                     if(d instanceof Array){
                         return d[0] +": " + d[1];
@@ -371,7 +395,10 @@ define(['underscore','d3'],function(_,d3){
                         return d;
                     }
                 })
-                .attr("transform","translate(" + (colWidth * 0.75) + "," + (((globalData.usableHeight * 0.6) / pairs.length) * 0.5) + ")");            
+                .attr("transform","translate(" + (colWidth * 0.75) + "," + (increment * 0.5) + ")");
+
+            util.wrapText(inspectTexts,(colWidth * 0.8),d3);
+            
         }else{
             //cleanup if no data to draw
             inspectResults.selectAll(".inspectResult").remove();

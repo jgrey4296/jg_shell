@@ -241,7 +241,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
             .classed("groupText",true)
             .style("text-anchor","middle")
             .style("fill","white")
-            .style("opacity",0);
+            .style("opacity",0)
+            .attr("dy","1.4em");
 
 
         //update selection
@@ -266,6 +267,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
         boundGroup.selectAll(".groupText").transition().delay(animationLength*3).duration(animationLength)
             .text(function(d){ return d.id + " : " + d.name; })
             .style("opacity",1);
+
         
         return boundGroup;
     };
@@ -425,18 +427,20 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 return e.i;
             });
             
-            util.annotate(boundTests,"test",
+            var boundTexts = util.annotate(boundTests,"test",
                           (heightOfNode * 0.1 + separator),
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, globalData.colours.darkerBlue,
                           function(e,i){
                               return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
-                          }),globalData.textBlue;
+                          },globalData.textBlue);
 
+            util.wrapText(boundTexts,(nodeWidth * 0.8),d3);
+            
             //annotate bindings
             var boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; });
             var idRegex = new RegExp(/^[#\$]id/);
-            util.annotate(boundBindings,"binding",
+            var bindingTexts = util.annotate(boundBindings,"binding",
                           (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
                           heightOfInteriorNodes,separator,
                           10, nodeWidth, globalData.colours.grey,
@@ -448,6 +452,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
                               }).join(",") : "";
                               return retString;
                           });
+            util.wrapText(bindingTexts,(nodeWidth * 0.8),d3);
+            
         });
     };
                                
@@ -469,35 +475,41 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
             //actionType:
             var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;});
-            util.annotate(boundActionType,"actionType",
+            var actionTypeText = util.annotate(boundActionType,"actionType",
                           offset,
                           heightOfInteriorNodes, separator,
                           10, nodeWidth, globalData.colours.textGrey,
                           function(e,i){ return "ActType: " + e; });
 
+            util.wrapText(actionTypeText,(nodeWidth * 0.8),d3);
+            
             //actionValues:
             offset += actionType.length * (heightOfInteriorNodes + separator);
             
             var boundActionValues = d3.select(this).selectAll(".actionValue").data(actionValues,function(e,i) { return e[0] + e[1]; });
-            util.annotate(boundActionValues,"actionValue",
+            var actionValueTexts = util.annotate(boundActionValues,"actionValue",
                           offset,
                           heightOfInteriorNodes, separator,
                           10, nodeWidth, globalData.colours.darkerBlue,
                           function(e,i){
                               return e[0] + ": " + e[1];
                           });
+
+            util.wrapText(actionValueTexts,(nodeWidth * 0.8),d3);
             
             //arithActions:
             offset += actionValues.length * (heightOfInteriorNodes + separator);
 
             var boundArithActions = d3.select(this).selectAll(".arithAction").data(arithActions,function(e,i){return e[0] + e[1][0] + e[1][1]; });
-            util.annotate(boundArithActions,"arithAction",
+            var boundArithTexts = util.annotate(boundArithActions,"arithAction",
                           offset,
                           heightOfInteriorNodes,separator,
                           10,nodeWidth,globalData.colours.grey,
                           function(e,i){
                               return e[0] + " " + e[1][0] + " " + e[1][1];
                           });
+
+            util.wrapText(boundArithText,(nodeWidth * 0.8),d3);
             
         });
     };
