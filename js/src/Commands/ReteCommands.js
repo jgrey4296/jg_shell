@@ -29,6 +29,9 @@ define(['underscore','d3'],function(_,d3){
             var colWidth = globalData.calcWidth(globalData.usableWidth,5);
             var halfWidth = globalData.halfWidth();
             
+            //todo: draw... facts? tokens? possible actions?
+
+
             //draw asserted wmes -> actions
             var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
                 return d !== undefined;

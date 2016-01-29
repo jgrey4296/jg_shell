@@ -1,0 +1,633 @@
+[
+    {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": "characters",
+            "7": "testInst"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 3,
+        "name": "characters",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "4": true,
+            "5": true,
+            "6": true
+        },
+        "values": {},
+        "tags": {
+            "type": "container"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 4,
+        "name": "bob",
+        "parents": {},
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode",
+            "character": "1",
+            "fact": "1"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 5,
+        "name": "bill",
+        "parents": {},
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode",
+            "character": "1",
+            "fact": "1"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 6,
+        "name": "jill",
+        "parents": {},
+        "_originalParent": 3,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode",
+            "character": "1",
+            "fact": "1"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 7,
+        "name": "testInst",
+        "parents": {
+            "0": "__root",
+            "30": true
+        },
+        "_originalParent": 0,
+        "children": {
+            "8": true,
+            "13": true,
+            "18": true,
+            "19": true,
+            "20": true,
+            "25": true,
+            "26": true,
+            "31": "blah"
+        },
+        "values": {},
+        "tags": {
+            "type": "institution"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 8,
+        "name": "Roles",
+        "parents": {
+            "7": "container"
+        },
+        "_originalParent": 7,
+        "children": {
+            "9": true,
+            "10": true,
+            "11": true,
+            "12": true
+        },
+        "values": {},
+        "tags": {
+            "type": "container"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 9,
+        "name": "incumbent",
+        "parents": {},
+        "_originalParent": 8,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 10,
+        "name": "challenger",
+        "parents": {},
+        "_originalParent": 8,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 11,
+        "name": "controlled",
+        "parents": {},
+        "_originalParent": 8,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 12,
+        "name": "exempt",
+        "parents": {},
+        "_originalParent": 8,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 13,
+        "name": "Activities",
+        "parents": {
+            "7": "container"
+        },
+        "_originalParent": 7,
+        "children": {
+            "14": true,
+            "15": true,
+            "16": true,
+            "17": true
+        },
+        "values": {},
+        "tags": {
+            "type": "container"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 14,
+        "name": "physical",
+        "parents": {},
+        "_originalParent": 13,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 15,
+        "name": "symbolic",
+        "parents": {},
+        "_originalParent": 13,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 16,
+        "name": "communicative",
+        "parents": {},
+        "_originalParent": 13,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 17,
+        "name": "unbound",
+        "parents": {},
+        "_originalParent": 13,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 18,
+        "name": "IGU",
+        "parents": {
+            "7": "node"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 19,
+        "name": "ExternalEffects",
+        "parents": {
+            "7": "node"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 20,
+        "name": "FactGrammar",
+        "parents": {
+            "7": "container"
+        },
+        "_originalParent": 7,
+        "children": {
+            "21": true,
+            "22": true,
+            "23": true,
+            "24": true
+        },
+        "values": {},
+        "tags": {
+            "type": "container"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 21,
+        "name": "physical",
+        "parents": {},
+        "_originalParent": 20,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 22,
+        "name": "symbolic",
+        "parents": {},
+        "_originalParent": 20,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 23,
+        "name": "communicative",
+        "parents": {},
+        "_originalParent": 20,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 24,
+        "name": "unbound",
+        "parents": {},
+        "_originalParent": 20,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 25,
+        "name": "ValueHierarchy",
+        "parents": {
+            "7": "node"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 26,
+        "name": "Norms",
+        "parents": {
+            "7": "container"
+        },
+        "_originalParent": 7,
+        "children": {
+            "27": true,
+            "28": true,
+            "29": true
+        },
+        "values": {},
+        "tags": {
+            "type": "container"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 27,
+        "name": "EmpiricallyExpected",
+        "parents": {},
+        "_originalParent": 26,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 28,
+        "name": "NormativelyExpected",
+        "parents": {},
+        "_originalParent": 26,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 29,
+        "name": "Sanctionable",
+        "parents": {},
+        "_originalParent": 26,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 30,
+        "name": "ExternalEffectors",
+        "parents": {},
+        "children": {
+            "7": true
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 31,
+        "name": "blah",
+        "parents": {
+            "7": "testInst"
+        },
+        "_originalParent": 7,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "rule"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "conditions": {
+            "32": "condition",
+            "34": "condition"
+        },
+        "actions": {
+            "33": "anonAction",
+            "35": "anonAction"
+        }
+    },
+    {
+        "id": 32,
+        "name": "condition",
+        "parents": {
+            "31": "blah"
+        },
+        "_originalParent": 31,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "condition",
+            "isPositive": true
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "constantTests": [
+            {
+                "field": "tags.character",
+                "operator": "EQ",
+                "value": "1",
+                "i": 0
+            }
+        ],
+        "bindings": {
+            "name": [
+                "name",
+                []
+            ]
+        },
+        "expectationNode": null
+    },
+    {
+        "id": 33,
+        "name": "anonAction",
+        "parents": {
+            "31": "blah"
+        },
+        "_originalParent": 31,
+        "children": {},
+        "values": {
+            "name": "$name",
+            "otherName": "$otherName",
+            "message": "$name greets $otherName"
+        },
+        "tags": {
+            "type": "action",
+            "actionType": "assert"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "arithmeticActions": {},
+        "expectationNode": null
+    },
+    {
+        "id": 34,
+        "name": "condition",
+        "parents": {
+            "31": "blah"
+        },
+        "_originalParent": 31,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "condition",
+            "isPositive": true
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "constantTests": [
+            {
+                "field": "tags.character",
+                "operator": "EQ",
+                "value": "1",
+                "i": 0
+            }
+        ],
+        "bindings": {
+            "otherName": [
+                "name",
+                [
+                    [
+                        "NE",
+                        "name"
+                    ]
+                ]
+            ]
+        },
+        "expectationNode": null
+    },
+    {
+        "id": 35,
+        "name": "anonAction",
+        "parents": {
+            "31": "blah"
+        },
+        "_originalParent": 31,
+        "children": {},
+        "values": {
+            "name": "$otherName",
+            "otherName": "$name",
+            "message": "and $name greets $otherName"
+        },
+        "tags": {
+            "type": "action",
+            "actionType": "assert"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "arithmeticActions": {},
+        "expectationNode": null
+    }
+]

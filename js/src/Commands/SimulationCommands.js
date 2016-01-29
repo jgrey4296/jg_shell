@@ -4,7 +4,11 @@ define(['underscore'],function(_){
     
     var SimulationCommands = {
         "draw" : function(globalData,values){
+            //draw list of characters
 
+            //draw list of performed actions
+
+            
         },
 
         "cleanup" : function(globalData,values){
@@ -53,6 +57,7 @@ define(['underscore'],function(_){
                 globalData.simulation.usedCharacterPool = [];
             }            
             //select a character to act, remove from pool of characters
+            //todo: let user specify an id of a character to act
             var charToUse = _.sample(globalData.simulation.characterPool),
                 actionsForChar = _.filter(globalData.simulation.reteNet.potentialActions,
                                           function(d){
@@ -71,7 +76,11 @@ define(['underscore'],function(_){
             //return early if theres no available actions
             if(actionToPerform === undefined) return false;
             //todo: perform the action
+            //convert performance description to actual
 
+            //add actual performance to list of performances, which will be drawn in draw
+            
+            
             //todo:assert facts, retract facts based on the action, which may remove the action from potentials.
             
             //increment time
