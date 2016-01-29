@@ -48,7 +48,8 @@ define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStru
         this.reteNet = new Rete.ReteNet();
     };
     //Use the aggrgated shell prototype:
-    CompleteShell.prototype = shell_prototype;
+    CompleteShell.prototype = Object.create(shell_prototype);
+    CompleteShell.prototype.constructor = CompleteShell;
 
     /**
        @interface The interface of the TotalShell file
