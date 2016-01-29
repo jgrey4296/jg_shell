@@ -290,10 +290,10 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
         
         //Get the condtion nodes
-        conditionData = _.keys(cwdData.conditions).map(toNodes.bind(globalData.shell)) || [];
+        conditionData = _.keys(cwdData.conditions).map(toNode.bind(globalData.shell)) || [];
 
         //get the action nodes
-        actionData = _.keys(cwdData.actions).map(toNodes.bind(globalData.shell)) || [];
+        actionData = _.keys(cwdData.actions).map(toNode.bind(globalData.shell)) || [];
         
         //get the conditionExpect Nodes
         conditionExpectData = conditionData.map(function(cond){
@@ -394,128 +394,130 @@ define(['d3','utils','underscore'],function(d3,util,_){
     };
 
     /**
-       @function drawConditions
+       @function annotateConditions
        @purpose Add condition specific nodes to a selection
      */
     var annotateConditions = function(globalData,existingSelection,nodeWidth,heightOfNode){
         //console.log("Annotating Conditions");
         //add details to each element of the selection, to describe it as a condition
-        var separator = 5;
+        var separator = 5,
+            idRegex = new RegExp(/^[#\$]id/);
+
+        
         existingSelection.each(function(d,i){
             //get the data
             console.log(d);
-            var tests = _.clone(d.constantTests),
-                bindings = _.pairs(d.bindings);
+            //Get the tests and bindings:
+            var tests = d.constantTests !== undefined ? _.clone(d.constantTests) : [],
+                bindings = _.pairs(d.bindings),
+                //calculate sizes
+                heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
 
-            if(tests === undefined){
-                tests = [];
-            }
+            //copy over a numeric identifier:
             tests.forEach(function(e,i){
                 e.i = i;
             });
+            
             //todo: get negative || negConj
             //if negConj: draw sub conditions, and annotate them
             //if negative, draw a negative notation
-
             
-            //calculate sizes
-            var heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
-
             console.log("Binding tests:",tests);
             //annotate tests
             var boundTests = d3.select(this).selectAll(".test").data(tests,function(e,i){
                 return e.i;
-            });
-            
-            var boundTexts = util.annotate(boundTests,"test",
-                          (heightOfNode * 0.1 + separator),
-                          heightOfInteriorNodes,separator,
-                          10, nodeWidth, globalData.colours.darkerBlue,
-                          function(e,i){
-                              return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
-                          },globalData.textBlue);
+            }),
+                textsOfTests = util.annotate(boundTests,"test",
+                                           (heightOfNode * 0.1 + separator),
+                                           heightOfInteriorNodes,separator,
+                                           10, nodeWidth, globalData.colours.darkerBlue,
+                                           function(e,i){
+                                               return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
+                                           },globalData.textBlue),
+                //annotate texts
+                boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; }),
+                textsOfBindings = util.annotate(boundBindings,"binding",
+                                             (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
+                                             heightOfInteriorNodes,separator,
+                                             10, nodeWidth, globalData.colours.grey,
+                                             function(e,i){
+                                                 var retString = e[0] + " <-- wme";
+                                                 retString += idRegex.test(e[1][0]) ? ".id" : ".data." + e[1][0];
+                                                 retString += e[1][1].length > 0 ? " :: " + e[1][1].map(function(e){
+                                                     return util.operatorToString(e[0]) + " " + e[1];
+                                                 }).join(",") : "";
+                                                 return retString;
+                                             });
 
-            util.wrapText(boundTexts,(nodeWidth * 0.8),d3);
-            
-            //annotate bindings
-            var boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; });
-            var idRegex = new RegExp(/^[#\$]id/);
-            var bindingTexts = util.annotate(boundBindings,"binding",
-                          (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
-                          heightOfInteriorNodes,separator,
-                          10, nodeWidth, globalData.colours.grey,
-                          function(e,i){
-                              var retString = e[0] + " <-- wme";
-                              retString += idRegex.test(e[1][0]) ? ".id" : ".data." + e[1][0];
-                              retString += e[1][1].length > 0 ? " :: " + e[1][1].map(function(e){
-                                  return util.operatorToString(e[0]) + " " + e[1];
-                              }).join(",") : "";
-                              return retString;
-                          });
-            util.wrapText(bindingTexts,(nodeWidth * 0.8),d3);
+            //Wrap the texts if necessary
+            util.wrapText(textsOfTests,(nodeWidth * 0.8),d3);
+            util.wrapText(textsOfBindings,(nodeWidth * 0.8),d3);
             
         });
     };
-                               
+
+    /**
+       @function annotateActions
+       @purpose Annotate actions similar to annotating conditions
+     */
     var annotateActions = function(globalData,existingSelection,nodeWidth,nodeHeight){
         //console.log("Annotating Actions");
         var separator = 5;
+        
         existingSelection.each(function(d,i){
             //get the data
             var actionType = [d.tags.actionType],
                 actionValues = _.pairs(d.values),
-                arithActions = _.pairs(d.arithmeticActions);
-
+                arithActions = _.pairs(d.arithmeticActions),
+                offset = nodeHeight * 0.1 + separator,
             //calculate sizes:
-            var totalDataPoints = actionType.length + actionValues.length + arithActions.length;
-            var heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
+                totalDataPoints = actionType.length + actionValues.length + arithActions.length,
+                heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
 
-            var offset = nodeHeight * 0.1 + separator;
             //annotate each section:
 
             //actionType:
-            var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;});
-            var actionTypeText = util.annotate(boundActionType,"actionType",
-                          offset,
-                          heightOfInteriorNodes, separator,
-                          10, nodeWidth, globalData.colours.textGrey,
-                          function(e,i){ return "ActType: " + e; });
-
-            util.wrapText(actionTypeText,(nodeWidth * 0.8),d3);
+            var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;}),
+                actionTypeText = util.annotate(boundActionType,"actionType",
+                                               offset,
+                                               heightOfInteriorNodes, separator,
+                                               10, nodeWidth, globalData.colours.textGrey,
+                                               function(e,i){ return "ActType: " + e; });
             
             //actionValues:
             offset += actionType.length * (heightOfInteriorNodes + separator);
             
-            var boundActionValues = d3.select(this).selectAll(".actionValue").data(actionValues,function(e,i) { return e[0] + e[1]; });
-            var actionValueTexts = util.annotate(boundActionValues,"actionValue",
-                          offset,
-                          heightOfInteriorNodes, separator,
-                          10, nodeWidth, globalData.colours.darkerBlue,
-                          function(e,i){
-                              return e[0] + ": " + e[1];
-                          });
-
-            util.wrapText(actionValueTexts,(nodeWidth * 0.8),d3);
+            var boundActionValues = d3.select(this).selectAll(".actionValue").data(actionValues,function(e,i) { return e[0] + e[1]; }),
+                actionValueTexts = util.annotate(boundActionValues,"actionValue",
+                                                 offset,
+                                                 heightOfInteriorNodes, separator,
+                                                 10, nodeWidth, globalData.colours.darkerBlue,
+                                                 function(e,i){
+                                                     return e[0] + ": " + e[1];
+                                                 });
             
             //arithActions:
             offset += actionValues.length * (heightOfInteriorNodes + separator);
 
-            var boundArithActions = d3.select(this).selectAll(".arithAction").data(arithActions,function(e,i){return e[0] + e[1][0] + e[1][1]; });
-            var boundArithTexts = util.annotate(boundArithActions,"arithAction",
-                          offset,
-                          heightOfInteriorNodes,separator,
-                          10,nodeWidth,globalData.colours.grey,
-                          function(e,i){
-                              return e[0] + " " + e[1][0] + " " + e[1][1];
-                          });
+            var boundArithActions = d3.select(this).selectAll(".arithAction").data(arithActions,function(e,i){return e[0] + e[1][0] + e[1][1]; }),
+                boundArithTexts = util.annotate(boundArithActions,"arithAction",
+                                                offset,
+                                                heightOfInteriorNodes,separator,
+                                                10,nodeWidth,globalData.colours.grey,
+                                                function(e,i){
+                                                    return e[0] + " " + e[1][0] + " " + e[1][1];
+                                                });
 
+            //Wrap Texts if necessary:
+            util.wrapText(actionTypeText,(nodeWidth * 0.8),d3);
+            util.wrapText(actionValueTexts,(nodeWidth * 0.8),d3);            
             util.wrapText(boundArithTexts,(nodeWidth * 0.8),d3);
             
         });
     };
 
     //UtilityMethod. Bind to globalData.shell first
-    var toNodes = function(id){
+    var toNode = function(id){
         return this.allNodes[id];
     };
 

@@ -973,15 +973,14 @@ define(imports,function(Rete,_,GraphNode,DSCtors,util){
             tag = values.shift(),
             tagValue = values.shift(),
             pattern = new RegExp(tag);
+        
         if(nodeSelection === undefined){
             nodeSelection = _.values(this.allNodes);
         }
-
         
         if(field === undefined || tag === undefined){
             this.lastSearchResults = [];
         }
-
         
         var nodes = nodeSelection.filter(function(node){
             if(node[field] === undefined) return false;

@@ -166,6 +166,9 @@ define(['underscore'],function(_){
         }
     };
 
+    //Take a selection, append a wrapping classname,
+    //offset by a global, and invidual amount, set a colour,
+    //and use a passed in function to fill the texts
     util.annotate = function(boundDom,className,
                              verticalOffset,nodeHeight,verticalSeparator,
                              horizontalOffset,nodeWidth,colour,textFunction,textColour){
@@ -217,6 +220,7 @@ define(['underscore'],function(_){
         }
     };
 
+    //Take a text, and wrap it onto multiple 'lines'
     util.wrapText = function(textSelection,width,d3){
         textSelection.each(function(){
                 var text = d3.select(this),
@@ -226,9 +230,10 @@ define(['underscore'],function(_){
                     y = text.attr("y"),
                     dy = parseFloat(text.attr("dy")) || parseFloat("1.4em"),
                     tspan = text.text(null).append("tspan")
-                    .attr("x",20)
+                    .attr("x",0)
                     .attr("y",y)
                     .attr("dy",dy);
+            
                 while(word = words.shift()){
                     line.push(word);
                     tspan.text(line.join(" "));
