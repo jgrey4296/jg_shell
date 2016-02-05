@@ -20,7 +20,9 @@ define(['underscore'],function(_){
             //get all the nodes in the institution specified
             var maxTurns = values.shift() || 10,
                 sourceId = values.shift() || globalData.shell.cwd.id;
-            if(globalData.shell.getNode(sourceId).tags.type !== 'institution') return;
+            if(globalData.shell.getNode(sourceId).tags.type !== 'institution'){
+                throw new Error("Simulation requires an institution");
+            }
 
             //Get all the children of the specified institution
             var institutionIds = globalData.shell.dfs(sourceId,['children']),
@@ -45,11 +47,13 @@ define(['underscore'],function(_){
             globalData.shell.assertWMEList(characters);
             globalData.shell.assertWMEs(institutionIds);
 
-
         },
         //returns true when finished, false otherwise
         "stepSim" : function(globalData,values){
-            if(globalData.simulation.turn >= gobalData.simulation.maxTurns) return true;
+            if(globalData.simulation === undefined){
+                throw new Error("Simulation must be setup first, run 'setupSim' on an institution");
+            }
+            if(globalData.simulation.turn >= globalData.simulation.maxTurns) return true;
             console.log("Running sim turn: ",globalData.shell.reteNet.currentTime);
             //reset the character pool if empty
             if(globalData.simulation.characterPool.length === 0){
@@ -59,25 +63,32 @@ define(['underscore'],function(_){
             //select a character to act, remove from pool of characters
             //todo: let user specify an id of a character to act
             var charToUse = _.sample(globalData.simulation.characterPool),
+                //Get actions for that character
                 actionsForChar = _.filter(globalData.simulation.reteNet.potentialActions,
                                           function(d){
                                               try{
+                                                  //TODO: FIX THIS
                                                   return d.payload.tags.character === charToUse.id;
                                               }catch(e){
                                                   return false;
                                               }
                                           }),
+                //select a performance... based on something?
+                //based on lookup of values of aggregates?
                 actionToPerform = _.sample(actionsForChar),
-                linkedActions = actionToPerform.parallelActions.map(function(d){
-                    return globalData.reteNet.potentialActions[d.id];
-                });
-            
+                //Get the linked actions (assertions/retractions) for that performance
+                linkedActions = actionToPerform !== undefined ? actionToPerform.parallelActions.map(function(d){
+                    return globalData.simulation.reteNet.potentialActions[d.id];
+                }) : [];
+            console.log("CharToUse:",[charToUse,actionsForChar,actionToPerform]);
             
             //return early if theres no available actions
             if(actionToPerform === undefined) return false;
             //todo: perform the action
             //convert performance description to actual
 
+
+            
             //add actual performance to list of performances, which will be drawn in draw
             
             
@@ -85,6 +96,7 @@ define(['underscore'],function(_){
             
             //increment time
             globalData.shell.stepTime();
+            globalData.simulation.turn++;
             //-----
             //finish and summarise
 

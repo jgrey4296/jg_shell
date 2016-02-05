@@ -94,7 +94,7 @@ define(['underscore'],function(_){
             if(typeof node[d] !== 'object'){
                 return d + ": " + node[d];
             }else{
-                return d + ": Object size: " + _.keys(node[d]).length;
+                return d + " size: " + _.keys(node[d]).length;
             }
         }));
 
