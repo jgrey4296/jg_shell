@@ -91,6 +91,20 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //draw children
             var children = drawGroup(globalData,mainContainer, "child", childrenData, (globalData.halfWidth() + colWidth), colWidth);
 
+
+            //Terrible hack to allow for click interaction:
+            children.on('click',function(d){
+                //console.log("Clicked on:",d);
+                globalData.shell.cd(d.id);
+                nodeCommands.draw(globalData,[]);
+            });
+
+            parents.on('click',function(d){
+                globalData.shell.cd(d.id);
+                nodeCommands.draw(globalData,[]);
+            });
+
+            
             //figure out parent path:
             var path = pathExtraction(globalData,10).join(" --> ");
             var pathText = d3.select("#pathText");

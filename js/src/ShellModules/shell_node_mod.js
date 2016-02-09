@@ -135,6 +135,21 @@ define(['underscore'],function(_){
         }
     };
 
+    //Store a regex transform for an action, in a similar way to arithmetic actions
+    ShellPrototype.setRegex = function(actionId,varName,regex, options, replaceValue,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Setting regex transform of:",actionId,varName,regex,replaceValue);
+        //if it includes the opening and closing /'s, remove them?
+
+        //get the action
+        var action = this.allNodes[actionId];
+
+        if(regex && replaceValue){
+            action.regexActions[varName] = [regex,options, replaceValue];
+        }
+
+    }
+    
     /**
        @class CompleteShell
        @method setActionValue

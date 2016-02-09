@@ -97,7 +97,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 globalData.shell.setActionType(Number(targetId),values[0],sourceId);
             }
 
-            if(targetType === 'action' && targetField === 'value'){
+            if(targetType === 'action' && targetField === 'data'){
                 globalData.shell.setActionValue(Number(targetId),values[0],values[1],sourceId);
             }
             
@@ -105,6 +105,10 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 globalData.shell.setArithmetic(Number(targetId),values[0],values[1],values[2],sourceId);
             }
 
+            if(targetType === 'action' && targetField === 'regex'){
+                globalData.shell.setRegex(Number(targetId),values[0],values[1],values[2],values[3],sourceId);
+            }
+            
             //todo: set action tags
             
             //Set binding of a condition:
@@ -241,8 +245,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
             .classed("groupText",true)
             .style("text-anchor","middle")
             .style("fill","white")
-            .style("opacity",0)
-            .attr("dy","1.4em");
+            .style("opacity",0);
+            //.attr("dy","1.4em");
 
 
         //update selection
@@ -482,7 +486,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                                offset,
                                                heightOfInteriorNodes, separator,
                                                10, nodeWidth, globalData.colours.textGrey,
-                                               function(e,i){ return "ActType: " + e; });
+                                               function(e,i){ return "Type: " + e; });
             
             //actionValues:
             offset += actionType.length * (heightOfInteriorNodes + separator);

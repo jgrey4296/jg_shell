@@ -71,7 +71,15 @@ define(['require','./ReteArithmeticActions','underscore','./ReteUtilities'],func
             newDataPlusBindings[key] = action(newVal,Number(this.arithmeticActions[key][1]));
         },this);
 
-        //todo: perform regex manipulations
+        //todo: allow for importing of other vars as the replacement values?
+        _.keys(this.regexActions).forEach(function(key){
+            var pair = this.regexActions[key],
+                regex = new RegExp(pair[0],pair[1]),
+                replacevalue = pair[2].match(/\$/) ? newDataPlusBindings[pair[2].slice(1)] : pair[2];
+            newDataPlusBindings[key] = newDataPlusBindings[key].replace(regex,replaceValue);
+        },this);
+
+
         
         //Expand out to object structure
         //ie: {values.a:5, tags.type: rule} -> {values:{a:5},tags:{type:rule}}

@@ -75,6 +75,7 @@ define(['underscore'],function(_){
                                           }),
                 //select a performance... based on something?
                 //based on lookup of values of aggregates?
+                //!!!! - base on normative level???
                 actionToPerform = _.sample(actionsForChar),
                 //Get the linked actions (assertions/retractions) for that performance
                 linkedActions = actionToPerform !== undefined ? actionToPerform.parallelActions.map(function(d){

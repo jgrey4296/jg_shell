@@ -176,6 +176,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         //of the form: a : [+ 5]
         //meaning: resultingWME.a = resultingWME.a + 5
         baseNode.arithmeticActions = {};
+        baseNode.regexActions = {};
         baseNode.expectationNode = null;
     };
 
