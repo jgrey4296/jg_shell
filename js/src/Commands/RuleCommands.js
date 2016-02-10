@@ -197,6 +197,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 "set" : ["$targetType $targetId $targetFocus $values", "ie: set condition 5 binding a b"],
                 "rename" : ["", " Rename the rule"],
                 "link"   : ["$target $conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
+                //todo: explain setting action data/arith/regex
             };
         },
     };
@@ -208,7 +209,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
     //conditions need to draw tests and bindings, negative status, or conditions
     //actions need to draw
     var drawGroup = function(globalData,container,className,data,xLocation,groupWidth,heightOfNode){
-        console.log("drawing:",data);
+        //console.log("drawing:",data);
         var animationLength = 100;
         var boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
@@ -269,8 +270,15 @@ define(['d3','utils','underscore'],function(d3,util,_){
             .style("opacity",1);
 
         boundGroup.selectAll(".groupText").transition().delay(animationLength*3).duration(animationLength)
-            .text(function(d){ return d.id + " : " + d.name; })
+            .text(function(d){
+                if(d.id === undefined){
+                    return "Undefined";
+                }else{
+                    return d.id + " : " + d.name;
+                }})
             .style("opacity",1);
+
+        //util.wrapText([d3.select(this),(groupWidth * 0.8),d3);
 
         
         return boundGroup;
@@ -336,8 +344,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             .attr("rx",0).attr("ry",0)
             .transition()
             .attr("rx",10).attr("ry",10);
-        
-        
+                
         
         rule.selectAll(".ruleText").remove();
         var boundText = rule.selectAll(".ruleText").data(nodeText);
@@ -392,6 +399,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             var conditionExpectations = drawGroup(globalData,mainContainer,"condExpectation",conditionExpectData,(halfWidth - (colWidth * 3) - 10),colWidth,conditionNodeHeight);
         }
         if(actionExpectData.length > 0){
+            //console.log("Drawing action expectations");
             var actionExpectations = drawGroup(globalData,mainContainer,"actionExpectation",actionExpectData,(halfWidth + (colWidth * 2) + 10),colWidth,actionNodeHeight);
         }
         
@@ -412,11 +420,11 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //get the data
             console.log(d);
             //Get the tests and bindings:
-            var tests = d.constantTests !== undefined ? _.clone(d.constantTests) : [],
-                bindings = _.pairs(d.bindings),
+            var tests = _.keys(d.constantTests).length !== 0  ? _.clone(d.constantTests) : ["No Tests"],
+                bindings = _.keys(d.bindings).length !== 0 ? _.pairs(d.bindings) : ["No Bindings"],
                 //calculate sizes
                 heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
-
+            
             //copy over a numeric identifier:
             tests.forEach(function(e,i){
                 e.i = i;
@@ -435,8 +443,9 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                            (heightOfNode * 0.1 + separator),
                                            heightOfInteriorNodes,separator,
                                            10, nodeWidth, globalData.colours.darkerBlue,
-                                           function(e,i){
-                                               return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
+                                             function(e,i){
+                                                 if(e === "No Tests") return e;
+                                                 return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
                                            },globalData.textBlue),
                 //annotate texts
                 boundBindings = d3.select(this).selectAll(".binding").data(bindings,function(e){ return e[0]+e[1]; }),
@@ -444,7 +453,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                              (heightOfNode * 0.1 + separator + (tests.length * (heightOfInteriorNodes + separator))),
                                              heightOfInteriorNodes,separator,
                                              10, nodeWidth, globalData.colours.grey,
-                                             function(e,i){
+                                                function(e,i){
+                                                    if(e === "No Bindings") return e;
                                                  var retString = e[0] + " <-- wme";
                                                  retString += idRegex.test(e[1][0]) ? ".id" : ".data." + e[1][0];
                                                  retString += e[1][1].length > 0 ? " :: " + e[1][1].map(function(e){
@@ -473,12 +483,28 @@ define(['d3','utils','underscore'],function(d3,util,_){
             var actionType = [d.tags.actionType],
                 actionValues = _.pairs(d.values),
                 arithActions = _.pairs(d.arithmeticActions),
-                offset = nodeHeight * 0.1 + separator,
+                regexActions = _.pairs(d.regexActions),
+                offset = nodeHeight * 0.1 + separator;
+
+            //TODO: flatten values, arith, and regex's into single nodes?
+            //OR: At least group them by the variable being operated on
+            
+            //Add empty notations for values, arith, and regex:
+            if(actionValues.length === 0){
+                actionValues.push(["ActionValues","Empty"]);
+            }
+            if(arithActions.length === 0){
+                arithActions.push(["Arithmetic Actions",["Empty",""]]);
+            }
+            if(regexActions.length === 0){
+                regexActions.push(["Regex Actions Empty",["","",""]]);
+            }
+            
             //calculate sizes:
-                totalDataPoints = actionType.length + actionValues.length + arithActions.length,
+            var totalDataPoints = actionType.length + actionValues.length + arithActions.length + regexActions.length,
                 heightOfInteriorNodes = util.calculateNodeHeight((nodeHeight - (nodeHeight * 0.1 + separator)),separator, totalDataPoints);
 
-            //annotate each section:
+            
 
             //actionType:
             var boundActionType = d3.select(this).selectAll(".actionType").data(actionType,function(e){return e;}),
@@ -503,6 +529,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //arithActions:
             offset += actionValues.length * (heightOfInteriorNodes + separator);
 
+            //arith is stored as [var, [op,value]]
             var boundArithActions = d3.select(this).selectAll(".arithAction").data(arithActions,function(e,i){return e[0] + e[1][0] + e[1][1]; }),
                 boundArithTexts = util.annotate(boundArithActions,"arithAction",
                                                 offset,
@@ -512,10 +539,24 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                                     return e[0] + " " + e[1][0] + " " + e[1][1];
                                                 });
 
+            //Regex Actions:
+            offset += arithActions.length * (heightOfInteriorNodes + separator);
+
+            //regex is stored as [var,[regex,options,replaceValue]]
+            var boundRegexActions = d3.select(this).selectAll(".regexAction").data(regexActions,function(e,i){ return e[0] + e[1][0]+ e[1][2] + e[1][1]; }),
+                boundRegexTexts = util.annotate(boundRegexActions,"regexAction",
+                                                offset,
+                                                heightOfInteriorNodes,separator,
+                                                10,nodeWidth,globalData.colours.regexAction,
+                                                function(e,i){
+                                                        return `${e[0]} ~= /${e[1][0]}/${e[1][2]}/${e[1][1]}`;
+                                                });
+            
             //Wrap Texts if necessary:
             util.wrapText(actionTypeText,(nodeWidth * 0.8),d3);
             util.wrapText(actionValueTexts,(nodeWidth * 0.8),d3);            
             util.wrapText(boundArithTexts,(nodeWidth * 0.8),d3);
+            util.wrapText(boundRegexTexts,(nodeWidth * 0.8),d3);
             
         });
     };

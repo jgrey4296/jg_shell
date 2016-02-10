@@ -84,6 +84,17 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             darkerBlue : d3.rgb(20,38,60),
             lightBlue: d3.rgb(53,99,142),
             green : d3.rgb(108,141,7),
+
+            //Specifics?
+            //node
+            //rule
+            //action
+            //condition
+            //interiorRect1
+            //interiorRect2
+            //interiorRect3
+            regexAction : "rgb(123,23,5)"
+            
         },
 
         //Sizes:

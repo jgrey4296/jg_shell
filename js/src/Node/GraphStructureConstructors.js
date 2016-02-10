@@ -128,6 +128,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         baseNode.tags.type = 'rule';
         baseNode.conditions = {};
         baseNode.actions = {};
+
+        //TODO: create an automatic performance action?
+        
         return [];
     };
 
