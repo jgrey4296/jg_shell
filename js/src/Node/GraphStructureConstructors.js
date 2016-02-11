@@ -17,7 +17,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     //THE INSTITUTION OBJECT
     ctors['institution'] = function(baseNode){
         baseNode.tags.type = 'institution';
-        //Object of: {childName : [type, subchildren] }
+        //Object of: {childName : [type, [subchildren]] }
         var children = {
             "Roles" : ['container',
                        ['incumbent','challenger','controlled','exempt']],
@@ -38,8 +38,8 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         
         var createdChildren = _.keys(children).map(function(d){
             //create a new object of: name,parentId,type
-            var newObj = new GraphNode(d,baseNode.id,children[d][0]);
-            //if the type is one specified in this module, construct that to
+            var newObj = new GraphNode(d,baseNode.id,baseNode.name,children[d][0]);
+            //if the type is one specified in this module, construct that too
             var subChildren = [];
             if(ctors[children[d][0]]){
                 subChildren = ctors[children[d][0]](newObj,children[d][1]);
@@ -73,7 +73,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     ctors['container'] = function(baseNode,list){
         baseNode.tags.type = 'container';
         var createdChildren = list.map(function(d){
-            return new GraphNode(d,baseNode.id);
+            return new GraphNode(d,baseNode.id,baseNode.name);
         });
 
         _.forEach(createdChildren,function(d){

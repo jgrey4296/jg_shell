@@ -137,6 +137,8 @@ define(['underscore','../Rete/ReteInterface'],function(_,Rete){
        @purpose get a node by its id, utility method
      */
     ShellPrototype.getNode = function(nodeId){
+        nodeId = Number(nodeId);
+        
         if(this.allNodes[nodeId]){
             return this.allNodes[nodeId];
         }else{

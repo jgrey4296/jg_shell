@@ -150,7 +150,9 @@ define(['underscore','d3','utils'],function(_,d3,util){
             request.send(globalData.shell.exportJson());
         },
         "json" : function(globalData,values){
-            var text = globalData.shell.exportJson();
+            var text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
+            window.exportedJson = text;
+
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
             var myWindow = window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },

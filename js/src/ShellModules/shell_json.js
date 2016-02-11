@@ -65,6 +65,7 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
 
         //If necessary (from older versions)
         //swap the keys/values pairings in children/parents
+        //ie: KEY should be a NUMBER, swap otherwise
         var keys = _.keys(newNode.children);
         if(keys.length > 0 && isNaN(Number(keys[0]))){
             //console.log("Converting from old format");

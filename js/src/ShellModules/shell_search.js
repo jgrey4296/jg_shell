@@ -14,7 +14,7 @@ define(['underscore'],function(_){
         var field = values.shift(),
             tag = values.shift(),
             tagValue = values.shift(),
-            pattern = new RegExp(tag);
+            pattern = new RegExp(tag,"i");
         
         if(nodeSelection === undefined){
             nodeSelection = _.values(this.allNodes);
@@ -35,6 +35,15 @@ define(['underscore'],function(_){
                     return false;
                 }
             }
+
+            if(node[field] instanceof Array && node[field].length === 1){
+                if(pattern.test(node[field][0])){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            
             //if field is an object
             if(node[field][tag] !== undefined){
                 if(tagValue === undefined){

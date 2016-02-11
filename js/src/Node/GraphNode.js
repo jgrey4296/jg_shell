@@ -53,7 +53,7 @@ define(['underscore'],function(_){
         //conditions and actions have:
         //expectationNode
 
-        
+        //bookmarks will have url's
         
     };
 

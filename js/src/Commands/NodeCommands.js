@@ -126,6 +126,9 @@ define(['d3','utils','underscore'],function(d3,util,_){
         "printNode" : function(globalData,values){
             console.log(globalData.shell.cwd);
         },
+        "printShell" : function(globalData,values){
+            console.log(globalData.shell);
+        },
         //new -> addNode,
         "new" : function(globalData,values,sourceId){
             //Expand out simplifications
@@ -223,7 +226,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
     //--------------------
     //Utils
-    
+
+    //todo: group together and annotate if there are too many nodes to display
     var drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
         //console.log("drawing:",data);
         var amtOfSpace, heightOfNode,
@@ -295,6 +299,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
     };
 
 
+    //from the cwd, work up the roots to create a path
     var pathExtraction = function(globalData,depth){
         var path = [];
         var shell = globalData.shell;

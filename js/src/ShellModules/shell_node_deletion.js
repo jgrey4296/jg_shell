@@ -39,7 +39,9 @@ define(['underscore'],function(_){
         }
 
         if(removedNode){
-            this.cleanupNode(removedNode,source);
+            //TODO
+            //this.cleanupNode(removedNode,source);
+            //delete this.allNodes[Number(nodeToDelete)];
         }
     };
 
