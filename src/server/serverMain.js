@@ -2,10 +2,10 @@
 //http://blog.kevinchisholm.com/javascript/node-js/making-a-simple-http-server-with-node-js-part-iv/
 
 //Imports
-var http = require('http');
-var fs = require('fs');
-var shell = fs.readFileSync('index.html');
-var path = require('path');
+var http = require('http'),
+    fs = require('fs'),
+    shell = fs.readFileSync('index.html'),
+    path = require('path');
 
 //Supported File extensions -> mimetype
 var extensions = {
@@ -25,11 +25,11 @@ var extensions = {
  */
 var dealWithGet = function(request,response){
     //Default to shell.html if nothing else is requested
-    var fileName = path.basename(request.url) || 'index.html';
-    var dirName = path.dirname(request.url);
-    var ext = path.extname(fileName);
-    var filePath = path.join(".",dirName,fileName);
-
+    var fileName = path.basename(request.url) || 'index.html',
+        dirName = path.dirname(request.url),
+        ext = path.extname(fileName),
+        filePath = path.join(".",dirName,fileName);
+    
     console.log("Getting:",filePath);
     
     //Unsupported file
