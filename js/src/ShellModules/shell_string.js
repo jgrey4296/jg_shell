@@ -1,6 +1,10 @@
 /**
    @purpose Defines Shell prototype methods relating to string modification. mainly utilities
  */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
 
 define(['underscore'],function(_){
 

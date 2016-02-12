@@ -14,7 +14,9 @@ define(['underscore'],function(_){
     var GraphNode = function(name,parentId,parentName,type,overRideId){
         //Id and name for identification
         this.id = overRideId || nextId++;
-        if(overRideId) nextId = overRideId + 1;
+        if(overRideId && overRideId > nextId){
+            nextId = overRideId + 1;
+        }
             
         this.name = name;
         //parents and children for links

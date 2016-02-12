@@ -1,6 +1,9 @@
 /**
    @purpose Define prototype methods relating to shell <-> rete interaction
  */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
 
 define(['underscore','../Rete/ReteInterface'],function(_,Rete){
     var ShellPrototype = {};

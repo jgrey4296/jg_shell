@@ -1,6 +1,10 @@
 /**
    @purpose Defines prototype methods for shell node creation
  */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
 
 define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','../Rete/ReteInterface'],function(_,GraphNode,DSCtors,Rete){
 

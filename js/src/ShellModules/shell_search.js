@@ -6,6 +6,10 @@
 //    search tags type GraphNode
 //    search children 0
 //    search children blah
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
 
 define(['underscore'],function(_){
     var ShellPrototype = {};

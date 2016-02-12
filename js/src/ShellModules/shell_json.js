@@ -1,6 +1,11 @@
 /**
    @purpose Defines methods related to importing or exporting json from the shell
- */
+*/
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+
 define(['underscore','../Node/GraphNode'],function(_,GraphNode){
 
     //Object that will be copied into the shell's prototype:
