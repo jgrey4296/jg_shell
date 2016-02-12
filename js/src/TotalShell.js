@@ -16,6 +16,7 @@ define(['./Rete/ReteInterface','underscore','./Node/GraphNode','./Node/GraphStru
        @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
     */
     var CompleteShell = function(){
+        this.nextId = 0;
         this.tags = {};
         this.tags.type = 'Shell';
         //the root node

@@ -22,7 +22,11 @@ define(['underscore'],function(_){
             }
             
             if(bookmark.type === "Bookmark" && bookmark.url !== undefined){
-                window.open(bookmark.url[0],bookmark.name);
+                if(bookmark.url instanceof Array){
+                    window.open(bookmark.url[0],bookmark.name);
+                }else{
+                    window.open(bookmark.url,bookmark.name);
+                }
             }
         },        
         //Modelled off general.import
@@ -148,7 +152,9 @@ define(['underscore'],function(_){
             children : groupChildrenObject,
             parents : {},
         });
-        endList = endList.concat(groupNodes,data);
+        endList = endList.concat(groupNodes,data).sort(function(a,b){
+            return a.id - b.id;
+        });
 
         return endList;
 
