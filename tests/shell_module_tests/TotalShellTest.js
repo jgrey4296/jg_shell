@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
 }
 
 var _ = require('underscore'),
-    TotalShell = require('../src/TotalShell'),
+    TotalShell = require('../../src/TotalShell'),
     makeShell = function(){return new TotalShell.CompleteShell();};
 
 
@@ -220,47 +220,47 @@ exports.TotalShellTests = {
     },
 
 
-    //SEARCH TESTS:
-    searchTest_forChildren : function(test){
-        var shell = makeShell();
-        shell.addNode("test",'children');
-        shell.addNode('test2','children');
-        shell.addNode('aewaf','children');
-        var foundNodes = shell.search('parents','test');
-        test.ok(foundNodes.length === 1,foundNodes.length);
-        test.ok(foundNodes[0].id === shell.cwd.id);
-        test.done();
-    },
+    // //SEARCH TESTS:
+    // searchTest_forChildren : function(test){
+    //     var shell = makeShell();
+    //     shell.addNode("test",'children');
+    //     shell.addNode('test2','children');
+    //     shell.addNode('aewaf','children');
+    //     var foundNodes = shell.search('parents','test');
+    //     test.ok(foundNodes.length === 1,foundNodes.length);
+    //     test.ok(foundNodes[0].id === shell.cwd.id);
+    //     test.done();
+    // },
 
-    searchTest_forParents : function(test){
-        var shell = makeShell();
-        var t1 = shell.addNode('test','children');
-        var t2 = shell.addNode('test2','children');
-        var t3 = shell.addNode('test3','parents');
-        var foundNodes = shell.search('children',shell.cwd.id,'id');
-        test.ok(foundNodes.length === 2,foundNodes.length);
-        test.ok(foundNodes[0].id === t1.id);
-        test.ok(foundNodes[1].id === t2.id);
-        test.done();
-    },
+    // searchTest_forParents : function(test){
+    //     var shell = makeShell();
+    //     var t1 = shell.addNode('test','children');
+    //     var t2 = shell.addNode('test2','children');
+    //     var t3 = shell.addNode('test3','parents');
+    //     var foundNodes = shell.search('children',shell.cwd.id,'id');
+    //     test.ok(foundNodes.length === 2,foundNodes.length);
+    //     test.ok(foundNodes[0].id === t1.id);
+    //     test.ok(foundNodes[1].id === t2.id);
+    //     test.done();
+    // },
 
-    //make sure the search is across all nodes, not just the current nodes:
-    searchTest_checkAllNodes : function(test){
-        var shell = makeShell();
-        var t1 = shell.addNode('test','children');
-        shell.cd(t1.id);
-        test.ok(shell.cwd.id === t1.id);
-        shell.addNode('test2','children');
-        shell.cd(shell.root.id);
-        test.ok(shell.cwd.id !== t1.id);
-        var foundNodes = shell.search('name','test');
-        test.ok(foundNodes.length === 2);
-        test.done();
-    },
+    // //make sure the search is across all nodes, not just the current nodes:
+    // searchTest_checkAllNodes : function(test){
+    //     var shell = makeShell();
+    //     var t1 = shell.addNode('test','children');
+    //     shell.cd(t1.id);
+    //     test.ok(shell.cwd.id === t1.id);
+    //     shell.addNode('test2','children');
+    //     shell.cd(shell.root.id);
+    //     test.ok(shell.cwd.id !== t1.id);
+    //     var foundNodes = shell.search('name','test');
+    //     test.ok(foundNodes.length === 2);
+    //     test.done();
+    // },
 
 
     importJsonTest : function(test){
-        var test1Data = require('./testData/test1.json');
+        var test1Data = require('../testData/test1.json');
         var shell = makeShell();
 
         test.ok(_.keys(shell.allNodes).length === 3);
