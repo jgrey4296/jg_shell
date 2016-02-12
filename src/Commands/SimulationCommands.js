@@ -53,7 +53,7 @@ define(['underscore'],function(_){
             if(globalData.simulation === undefined){
                 throw new Error("Simulation must be setup first, run 'setupSim' on an institution");
             }
-            if(globalData.simulation.turn >= globalData.simulation.maxTurns) return true;
+            if(globalData.simulation.turn >= globalData.simulation.maxTurns) { return true; }
             console.log("Running sim turn: ",globalData.shell.reteNet.currentTime);
             //reset the character pool if empty
             if(globalData.simulation.characterPool.length === 0){
@@ -84,7 +84,7 @@ define(['underscore'],function(_){
             console.log("CharToUse:",[charToUse,actionsForChar,actionToPerform]);
             
             //return early if theres no available actions
-            if(actionToPerform === undefined) return false;
+            if(actionToPerform === undefined) { return false; }
             //todo: perform the action
             //convert performance description to actual
 
@@ -104,7 +104,7 @@ define(['underscore'],function(_){
             return false;
         },
         "dfs" : function(globalData,values){
-            if(values.length === 0) values = [globalData.shell.cwd.id];
+            if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             console.log(globalData.shell.dfs(values[0]));
         },
         "help" : function(globalData,values){

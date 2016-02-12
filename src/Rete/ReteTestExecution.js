@@ -40,7 +40,7 @@ define(['./ReteDataStructures','underscore','./ReteUtilities','./ReteComparisonO
                         varName = d[1];
                     //if it fails, fail the test
                     //use the value in the test, minus the $ at the beginning:
-                    if(!varRegex.test(varName)) throw new Error("Non-bound var name");
+                    if(!varRegex.test(varName)) { throw new Error("Non-bound var name"); }
                                    
                     if(!comparator(newValue,newBindings[varName.slice(1)])){
                         throw new Error("Test failed");

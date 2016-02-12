@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
 
 
 define(['underscore'],function(_){
-
+    "use strict";
     var ShellPrototype = {};
 
 
@@ -116,7 +116,7 @@ define(['underscore'],function(_){
        @param fieldName
      */
     ShellPrototype.getListFromNode = function(node,fieldName){
-        if(node[fieldName] === undefined) throw new Error("Unrecognised field: "+fieldName);
+        if(node[fieldName] === undefined) { throw new Error("Unrecognised field: "+fieldName); }
         var retArray = _.keys(node[fieldName]).map(function(d){
             return d + ": " + this[fieldName][d];
         },node);

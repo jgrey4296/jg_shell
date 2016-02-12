@@ -7,6 +7,7 @@ if(typeof define !== 'function'){
 
 
 define(['underscore'],function(_){
+    "use strict";
     var ShellPrototype = {};
 
         /**
@@ -29,7 +30,7 @@ define(['underscore'],function(_){
        @param nodeToDelete The node object to remove from the cwd
      */
     ShellPrototype.rm = function(nodeToDelete,target,sourceId){
-        if(target === undefined) target = 'parents';
+        if(target === undefined) { target = 'parents'; }
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         var removedNode = null;
         if(!isNaN(Number(nodeToDelete))){

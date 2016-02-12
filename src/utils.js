@@ -21,34 +21,31 @@ define(['underscore'],function(_){
         //Get the largest strings on each side
         var maxStringLengthLHS = Math.max.apply(null,arrayOfPairs.map(function(d){
             return d[0].length;
-        }));
-        
-        var maxStringLengthRHS = Math.max.apply(null,arrayOfPairs.map(function(d){
-            return d[1].length;
-        }));
-
-        var totalStringLength = Math.max(maxStringLengthLHS,maxStringLengthRHS);
-        
+        })),
+            maxStringLengthRHS = Math.max.apply(null,arrayOfPairs.map(function(d){
+                return d[1].length;
+            })),
+            totalStringLength = Math.max(maxStringLengthLHS,maxStringLengthRHS),
         //Align each side
-        var alignedPairs = arrayOfPairs.map(function(d){
-            var lhsDifference = d[1].length - d[0].length,
-                rhsDifference = d[0].length - d[1].length,
-                lhs = "",
-                rhs = "";
-            
-            if(lhsDifference > 0){
-                lhs = new Array(lhsDifference).join("_") + d[0];
-            }else{
-                lhs = d[0];
-            }
-            if(rhsDifference > 0){
-                rhs = new Array(rhsDifference).join("_") + d[1];
-            }else{
-                rhs = d[1];
-            }
-            return [lhs,rhs];
-        });
-
+            alignedPairs = arrayOfPairs.map(function(d){
+                var lhsDifference = d[1].length - d[0].length,
+                    rhsDifference = d[0].length - d[1].length,
+                    lhs = "",
+                    rhs = "";
+                
+                if(lhsDifference > 0){
+                    lhs = new Array(lhsDifference).join("_") + d[0];
+                }else{
+                    lhs = d[0];
+                }
+                if(rhsDifference > 0){
+                    rhs = new Array(rhsDifference).join("_") + d[1];
+                }else{
+                    rhs = d[1];
+                }
+                return [lhs,rhs];
+            });
+        
         return alignedPairs;
     };
 
@@ -59,9 +56,9 @@ define(['underscore'],function(_){
        @note the containerName does not include the #
     */
     util.selectOrShare = function(containerName,parent,d3){
-        if(!d3) throw new Error("No d3");
+        if(!d3) { throw new Error("No d3"); }
         var container;
-        if(parent === undefined) parent = d3.select("svg");        
+        if(parent === undefined) { parent = d3.select("svg"); }
         container = parent.select("#"+containerName);
         if(container.empty()){
             container = parent.append("g")
@@ -76,8 +73,8 @@ define(['underscore'],function(_){
         var heightOfNode = util.calculateNodeHeight((globalData.usableHeight - 100),
                                                     20,
                                                     data.length),
-            animationLength = 100;
-        var boundGroup = container.selectAll("."+className)
+            animationLength = 100,
+            boundGroup = container.selectAll("."+className)
             .data(data,function(d,i){ return d.id; });
 
         //exit selection
@@ -238,22 +235,20 @@ define(['underscore'],function(_){
                     .attr("dy",dy);
 
             //console.log("Wrapping:",text,text.text());
-            
-                while(word = words.shift()){
-                    line.push(word);
+            while(!_.isEmpty(words)){
+                word = words.shift();
+                line.push(word);
+                tspan.text(line.join(" "));
+                if(tspan.node().getComputedTextLength() > width){
+                    line.pop();
                     tspan.text(line.join(" "));
-                    if(tspan.node().getComputedTextLength() > width){
-                        line.pop();
-                        tspan.text(line.join(" "));
-                        line = [word];
-                        tspan = text.append("tspan").attr("x",20)
-                            .attr("dy",dy +"em").text(word);
-                    }
+                    line = [word];
+                    tspan = text.append("tspan").attr("x",20)
+                        .attr("dy",dy +"em").text(word);
                 }
-            });
-        };
-
-
-        
-        return util;
-    });
+            }
+        });
+    };
+    
+    return util;
+});

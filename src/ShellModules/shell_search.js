@@ -12,6 +12,7 @@ if(typeof define !== 'function'){
 
 
 define(['underscore'],function(_){
+    "use strict";
     var ShellPrototype = {};
     
     ShellPrototype.searchForFieldTagValue = function(values,nodeSelection){
@@ -29,7 +30,7 @@ define(['underscore'],function(_){
         }
         
         var nodes = nodeSelection.filter(function(node){
-            if(node[field] === undefined) return false;
+            if(node[field] === undefined) { return false; }
             //if field is a string
             if(typeof node[field] === "string"){
                 //using default pattern of tag

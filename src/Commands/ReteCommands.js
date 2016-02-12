@@ -103,7 +103,7 @@ define(['underscore','d3'],function(_,d3){
 
         var bound = domRoot.selectAll("."+className)
             .data(data,function(d,i){
-                if(d.id) return d.id;
+                if(d.id) { return d.id; }
                 return i;
             });
 

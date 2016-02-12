@@ -28,7 +28,7 @@ define(['underscore'],function(_){
 
         listOfObjects.forEach(function(d){
             _.keys(d).forEach(function(key){
-                if(valueSets[key] === undefined) valuesObj[key] = new Set();
+                if(valueSets[key] === undefined) { valuesObj[key] = new Set(); }
                 valueSets[key].add(d[key]);
             });
         });

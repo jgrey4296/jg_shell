@@ -37,7 +37,7 @@ require.config({
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
 require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands","BookMarkCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands,BookMarkCommands){
-
+    "use strict";
 
     //----------------------------------------
     //GLOBALS
@@ -107,8 +107,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         usableHeight : window.innerHeight - 30,
         helpSize : 600,
 
-        halfWidth : function(){ return this.usableWidth * 0.5},
-        halfHeight : function(){ return this.usableHeight * 0.5},
+        halfWidth : function(){ return this.usableWidth * 0.5;},
+        halfHeight : function(){ return this.usableHeight * 0.5;},
         
         //The main svg:
         svg : null,
@@ -160,10 +160,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
     //End of utilities
     //--------------------
     //Set up CLI:
-    d3.select("#shellInput").on("keydown",function(e){
+    d3.select("#shellInput").on("keydown",function(err){
         try{
             var currentLine = d3.select(this).node().value;
-            if(currentLine.length === 0) return;
+            if(currentLine.length === 0) { return; }
             
             if(d3.event.keyCode === 13){ //ENTER
                 //clear the input:
@@ -171,10 +171,10 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 MainCommandCLI(currentLine,globalData);
             }else{//Not enter, still typing:
                 HelpCLI(currentLine + d3.event.key,globalData);
-            };
-        }catch(e){
-            console.log("Input Error: ",e);
-        };
+            }
+        }catch(err){
+            console.log("Input Error: ",err);
+        }
     });
 
     //----------------------------------------

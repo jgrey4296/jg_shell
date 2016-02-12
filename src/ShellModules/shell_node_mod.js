@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
     var ShellPrototype = {};
 
     /**
@@ -61,11 +61,11 @@ define(['underscore'],function(_){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
 
         //validate:
-        if(isNaN(Number(id))) throw new Error("id should be a global id number");
+        if(isNaN(Number(id))) { throw new Error("id should be a global id number"); }
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
-        if(!source[target]) throw new Error("Unrecognised target");
+        if(!source[target]) { throw new Error("Unrecognised target"); }
 
         //perform the link:
         var nodeToLink = this.allNodes[id];
@@ -73,7 +73,7 @@ define(['underscore'],function(_){
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
             var rTarget = 'parents';
-            if(target === 'parents') rTarget = 'children';
+            if(target === 'parents') { rTarget = 'children'; }
             this.addLink(nodeToLink,rTarget,source.id,source.name);
             //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
         }
@@ -152,7 +152,7 @@ define(['underscore'],function(_){
             action.regexActions[varName] = [regex,options, replaceValue];
         }
 
-    }
+    };
     
     /**
        @class CompleteShell

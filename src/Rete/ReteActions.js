@@ -64,7 +64,7 @@ define(['require','./ReteArithmeticActions','underscore','./ReteUtilities'],func
         //perform arithmetic:
         _.keys(this.arithmeticActions).forEach(function(key){
             var newVal = Number(newDataPlusBindings[key]);
-            if(isNaN(newVal)) throw new Error("Arithmetic value should be convertable to a number");
+            if(isNaN(newVal)) { throw new Error("Arithmetic value should be convertable to a number"); }
             //look up the function:
             //because the representation form is: a : ["+", 5]
             var action = ArithmeticActions[this.arithmeticActions[key][0]];
@@ -75,7 +75,7 @@ define(['require','./ReteArithmeticActions','underscore','./ReteUtilities'],func
         _.keys(this.regexActions).forEach(function(key){
             var pair = this.regexActions[key],
                 regex = new RegExp(pair[0],pair[1]),
-                replacevalue = pair[2].match(/\$/) ? newDataPlusBindings[pair[2].slice(1)] : pair[2];
+                replaceValue = pair[2].match(/\$/) ? newDataPlusBindings[pair[2].slice(1)] : pair[2];
             newDataPlusBindings[key] = newDataPlusBindings[key].replace(regex,replaceValue);
         },this);
 

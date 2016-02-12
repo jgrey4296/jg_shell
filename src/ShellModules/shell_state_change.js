@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','../utils'],function(_,util){
-
+    "use strict";
     var ShellPrototype = {};
 
         /**

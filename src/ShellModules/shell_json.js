@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
 
 
 define(['underscore','../Node/GraphNode'],function(_,GraphNode){
-
+    "use strict";
     //Object that will be copied into the shell's prototype:
     var ShellPrototype = {};
 
@@ -62,7 +62,7 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
             newNode[d] = obj[d];
         });
         
-        if(newNode.id !== obj.id) throw new Error("Ids need to match");
+        if(newNode.id !== obj.id) { throw new Error("Ids need to match"); }
         if(this.allNodes[newNode.id] !== undefined){
             console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
         }

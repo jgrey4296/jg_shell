@@ -45,10 +45,10 @@ define(['underscore','d3','utils'],function(_,d3,util){
         },
         //selection ops:
         "select" : function(globalData,values){
-            if(values.length === 0) values = [globalData.shell.cwd.id];
+            if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             values.forEach(function(d){
                 var id = Number(d);
-                if(Number.isNaN(id)) return;
+                if(Number.isNaN(id)) { return; }
                 
                 if(globalData.currentSelection.indexOf(id) === -1){
                     globalData.currentSelection.push(id);
@@ -86,7 +86,7 @@ define(['underscore','d3','utils'],function(_,d3,util){
                 node = globalData.shell.allNodes[nodeId],                
                 pairs;
 
-            if(node === undefined) node = globalData.shell.cwd;
+            if(node === undefined) { node = globalData.shell.cwd; }
             if(key === "#all"){
                 pairs = _.keys(node);
             }else{
@@ -154,7 +154,7 @@ define(['underscore','d3','utils'],function(_,d3,util){
             window.exportedJson = text;
 
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
-            var myWindow = window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
+            window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },
         "files" : function(globalData,values){
             window.open("./data/","_blank");

@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
     var ShellPrototype = {};
     //--------------------
     //DFS and BFS searches:
@@ -17,7 +17,7 @@ define(['underscore'],function(_){
        @return ids of nodes found
      */
     ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
-        if(focusFields === undefined) focusFields = ['children'];
+        if(focusFields === undefined) { focusFields = ['children']; }
         var shellRef = this,
             currentStack = [this.getNode(nodeId)],
             visitedListOfIds = [];
@@ -26,7 +26,7 @@ define(['underscore'],function(_){
         while(currentStack.length > 0){
             var curr = currentStack.pop();
             //avoid duplicates and loops
-            if(visitedListOfIds.indexOf(curr.id) !== -1) continue;
+            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
             //store
             visitedListOfIds.push(curr.id);
             //add children to search
@@ -54,8 +54,8 @@ define(['underscore'],function(_){
        filtering by the criteria, and to a specified depth
      */
     ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
-        if(focusFields === undefined) focusFields = ['children'];
-        if(depth === undefined) depth = 2;
+        if(focusFields === undefined) { focusFields = ['children']; }
+        if(depth === undefined) { depth = 2; }
         var shellRef = this,
             currentQueue = [this.getNode(nodeId)],
             visitedListOfIds = [];
@@ -63,7 +63,7 @@ define(['underscore'],function(_){
         while(currentQueue.length > 0){
             var curr = currentQueue.shift();
             //skip duplicates
-            if(visitedListOfIds.indexOf(curr.id) !== -1) continue;
+            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
             visitedListOfIds.push(curr.id);
             
             focusFields.forEach(function(focusField){

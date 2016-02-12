@@ -24,6 +24,7 @@ var extensions = {
    @param response the response object to write to
  */
 var dealWithGet = function(request,response){
+    "use strict";
     //Default to shell.html if nothing else is requested
     var fileName = path.basename(request.url) || 'index.html',
         dirName = path.dirname(request.url),
@@ -68,6 +69,7 @@ var dealWithGet = function(request,response){
    @param response the outgoing response object to write to
  */
 var dealWithPost = function(request,response){
+    "use strict";
     console.log("RECIEVED POST:",request.url);
     var values = request.url.split("=");
 
@@ -112,7 +114,8 @@ var dealWithPost = function(request,response){
    @param fileName the file itself
    @param cb the callback to call once the file is copied
  */
-function copyFile(sourcePath,fileName,cb){
+var copyFile = function(sourcePath,fileName,cb){
+    "use strict";
     console.log("Copying File");
     var cbCalled = false;
     var rd = fs.createReadStream(sourcePath+fileName);
@@ -143,6 +146,7 @@ function copyFile(sourcePath,fileName,cb){
    @object server
  */
 var server = http.createServer(function(request,response){
+    "use strict";
     if(request.method === "GET"){
         dealWithGet(request,response);
     }else{

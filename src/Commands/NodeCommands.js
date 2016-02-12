@@ -57,7 +57,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
 
             //add a rectangle and text element for each line
             enter.each(function(d,i){
-                if(d.length === 0) return;
+                if(d.length === 0) { return; }
                 
                 d3.select(this).append("rect")
                     .attr("transform","translate(" + (colWidth * -0.4) +",0)")
@@ -133,8 +133,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
         "new" : function(globalData,values,sourceId){
             //Expand out simplifications
             var target = values[0];
-            if(target === "child") target = "children";
-            if(target === "parent") target  = "parents";
+            if(target === "child") { target = "children"; }
+            if(target === "parent") { target  = "parents"; }
             console.log("Target:",target);
             globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
@@ -191,14 +191,14 @@ define(['d3','utils','underscore'],function(d3,util,_){
         //link -> link
         "link" : function(globalData,values,sourceId){
             var target = values[0];
-            if(target === 'child') target = 'children';
-            if(target === 'parent') target = 'parents';
+            if(target === 'child') { target = 'children'; }
+            if(target === 'parent') { target = 'parents'; }
             globalData.shell.link(target,values[1],false,sourceId);
         },
         "linkr" : function(globalData,values,sourceId){
             var target = values[0];
-            if(target === 'child') target = 'children';
-            if(target === 'parent') target = 'parents';
+            if(target === 'child') { target = 'children'; }
+            if(target === 'parent') { target = 'parents'; }
             globalData.shell.link(target,values[1],true,sourceId);
 
         },

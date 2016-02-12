@@ -153,7 +153,8 @@ define(['d3','utils','underscore'],function(d3,util,_){
         },
         //link a condition or action with an expected node
         "link" : function(globalData,values){
-            var targetTye = values.shift(),
+            //currently not used, but the syntax is more pleasing if included
+            var targetType = values.shift(),
             //get the condition/action being targeted
                 condOrAction = globalData.shell.getNode(values.shift()),
             //get the node being linked
@@ -352,16 +353,16 @@ define(['d3','utils','underscore'],function(d3,util,_){
         var enter = boundText.enter().append("g").classed("ruleText",true);
 
         enter.each(function(d,i){
-                if(d.length === 0) return;
+            if(d.length === 0) { return; }
                 
-                d3.select(this).append("rect")
-                    .attr("width",(colWidth * 0.8))
-                    .attr("height",(ruleTextHeight))
-                    .style("fill",globalData.colours.darkerBlue);
-
-                d3.select(this).append("text").classed("ruleTextActual",true)
-                    .style("text-anchor","middle")
-                    .style("fill",globalData.colours.textBlue)
+            d3.select(this).append("rect")
+                .attr("width",(colWidth * 0.8))
+                .attr("height",(ruleTextHeight))
+                .style("fill",globalData.colours.darkerBlue);
+            
+            d3.select(this).append("text").classed("ruleTextActual",true)
+                .style("text-anchor","middle")
+                .style("fill",globalData.colours.textBlue)
                 .attr("transform","translate(" + (colWidth * 0.4) + "," + (ruleTextHeight * 0.75) + ")");
         });
 
@@ -444,7 +445,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                            heightOfInteriorNodes,separator,
                                            10, nodeWidth, globalData.colours.darkerBlue,
                                              function(e,i){
-                                                 if(e === "No Tests") return e;
+                                                 if(e === "No Tests") { return e; }
                                                  return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
                                            },globalData.textBlue),
                 //annotate texts
@@ -454,7 +455,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                                              heightOfInteriorNodes,separator,
                                              10, nodeWidth, globalData.colours.grey,
                                                 function(e,i){
-                                                    if(e === "No Bindings") return e;
+                                                    if(e === "No Bindings") { return e; }
                                                  var retString = e[0] + " <-- wme";
                                                  retString += idRegex.test(e[1][0]) ? ".id" : ".data." + e[1][0];
                                                  retString += e[1][1].length > 0 ? " :: " + e[1][1].map(function(e){

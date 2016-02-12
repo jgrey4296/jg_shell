@@ -117,7 +117,7 @@ define(['underscore'],function(_){
                         m[v] = lookupObject[v].name;
                     }
                     return m;
-                },{})
+                },{});
             }),
             //create the group nodes
             groupNodes = groupObjects.map(function(d){

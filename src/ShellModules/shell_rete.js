@@ -6,6 +6,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','../Rete/ReteInterface'],function(_,Rete){
+    "use strict";
     var ShellPrototype = {};
     
     /**
@@ -37,7 +38,7 @@ define(['underscore','../Rete/ReteInterface'],function(_,Rete){
      */    
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
-        if(nodeIds === undefined) nodeIds = _.keys(this.allNodes);
+        if(nodeIds === undefined) { nodeIds = _.keys(this.allNodes); }
         var shellRef = this,
             nodes  = nodeIds.map(function(d){
                 return shellRef.getNode(d);
@@ -69,7 +70,7 @@ define(['underscore','../Rete/ReteInterface'],function(_,Rete){
      */
     ShellPrototype.assertWMEs = function(nodeIds){
         //get all the wmes
-        if(nodeIds === undefined || nodeIds.length === 0) nodeIds = _.keys(this.allNodes);
+        if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
         var shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);
@@ -85,7 +86,7 @@ define(['underscore','../Rete/ReteInterface'],function(_,Rete){
     };
 
     ShellPrototype.retractWMEs = function(nodeIds){
-        if(nodeIds === undefined || nodeIds.length === 0) nodeIds = _.keys(this.allNodes);
+        if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
         var shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);

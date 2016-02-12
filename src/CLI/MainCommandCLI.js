@@ -18,8 +18,8 @@ define(['underscore'],function(_){
             }else{
                 m[m.length-1] += " " + v.replace(/"/,"");
             }
-            if(v[0] === '"') inString = true;
-            if(v[v.length-1] === '"') inString = false;
+            if(v[0] === '"') { inString = true; }
+            if(v[v.length-1] === '"') { inString = false; }
             return m;
         },[]);
         return combined;
@@ -28,7 +28,7 @@ define(['underscore'],function(_){
         
     //The CLI Function, takes a line and finds the command to apply
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
-        if(skipDraw === undefined) skipDraw = false;
+        if(skipDraw === undefined) { skipDraw = false; }
         globalData.rawCurrentLine = currentLine;
         var splitLine = parseCurrentLine(currentLine),
             commandName = splitLine.shift();
@@ -48,7 +48,7 @@ define(['underscore'],function(_){
         }
 
         //Finish if not drawing
-        if(skipDraw) return;
+        if(skipDraw) { return; }
         //Else draw:
         //call the mode specific draw command
         var drawCommand = globalData.lookupOrFallBack("draw",globalData);
