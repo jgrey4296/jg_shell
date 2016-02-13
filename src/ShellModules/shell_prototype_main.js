@@ -13,7 +13,7 @@ define(['underscore','./shell_json','./shell_node_addition','./shell_node_deleti
                                   shellJson, shellAddition, shellDeletion,
                                   shellMod, shellRete, shellSearch, shellString,
                                   shellGraphSearch, shellStateChange);
-    console.log("Shell Prototype:",shellPrototype);
+    //console.log("Shell Prototype:",shellPrototype);
 
     return shellPrototype;
 });

@@ -68,12 +68,6 @@ exports.TotalShellTests = {
 
     //add node with existing id
 
-    //add test to a node
-
-    //add action
-
-    //link nodes
-
     
     
     

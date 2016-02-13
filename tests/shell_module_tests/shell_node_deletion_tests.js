@@ -23,4 +23,24 @@ exports.TotalShellTests = {
         test.done();
     }
 
+    //rm node - remove the node from a specified node
+
+    //delete node - remove node from all related nodes, allNodes, and remove
+    //all dependent nodes
+
+    //remove numeric id
+
+    //cleanup node
+
+    //remove action
+
+    //remove condition
+
+    //remove test
+
+    //remove binding
+
+    
+
+    
 };

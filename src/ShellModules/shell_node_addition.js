@@ -43,7 +43,7 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','.
     ShellPrototype.addNode = function(name,target,type,values,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         
-        if(name === null) {
+        if(name === null || name === undefined || name === "") {
             name = type || "anon";
             console.warn("making an anonymous node");
         }
