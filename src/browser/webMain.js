@@ -24,6 +24,7 @@ require.config({
         d3 : "/libs/d3.min",
         TotalShell : "TotalShell",
         ReteInterface : "Rete/ReteInterface",
+        ReteMin : "/libs/Rete.min"
     },
     shim:{
         underscore :{
@@ -36,9 +37,11 @@ require.config({
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands","BookMarkCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands,BookMarkCommands){
+require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands","BookMarkCommands","ReteMin"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands,BookMarkCommands,ReteMin){
     "use strict";
 
+    console.log("ReteMin:",ReteMin);
+    
     //----------------------------------------
     //GLOBALS
     //----------------------------------------
