@@ -8,22 +8,26 @@
 require.config({
     baseUrl: "/src",
     paths:{
+        //General Utils
         underscore : "/libs/underscore",
+        utils : "utils",
+        d3 : "/libs/d3.min",
+        //Nodes:
         GraphNode : "Node/GraphNode",
         GraphStructureConstructors:"Node/GraphStructureConstructors",
+        //Commands
         NodeCommands : "Commands/NodeCommands",
         RuleCommands : "Commands/RuleCommands",
         ReteCommands : "Commands/ReteCommands",
         GeneralCommands: "Commands/GeneralCommands",
         SimulationCommands : "Commands/SimulationCommands",
-        FSMCommands : "Commands/FSMCommands",
         BookMarkCommands : "Commands/BookMarkCommands",
+        //CLI
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
-        utils : "utils",
-        d3 : "/libs/d3.min",
+        //Shell
         TotalShell : "TotalShell",
-        ReteInterface : "Rete/ReteInterface",
+        //Rete
         ReteMin : "/libs/Rete.min"
     },
     shim:{
@@ -37,11 +41,9 @@ require.config({
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","FSMCommands","SimulationCommands","BookMarkCommands","ReteMin"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,FSMCommands,SimulationCommands,BookMarkCommands,ReteMin){
+require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","SimulationCommands","BookMarkCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,SimulationCommands,BookMarkCommands){
     "use strict";
 
-    console.log("ReteMin:",ReteMin);
-    
     //----------------------------------------
     //GLOBALS
     //----------------------------------------
@@ -55,7 +57,6 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             "rule" : RuleCommands,
             "rete" : ReteCommands,
             "general" : GeneralCommands,
-            "fsm"  : FSMCommands,
             "sim"  : SimulationCommands,
             "bookmark" : BookMarkCommands
         },

@@ -198,6 +198,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
                 "set" : ["$targetType $targetId $targetFocus $values", "ie: set condition 5 binding a b"],
                 "rename" : ["", " Rename the rule"],
                 "link"   : ["$target $conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
+                "set" : ["action $id regex $varname $regex $options $replaceVal", ""],
                 //todo: explain setting action data/arith/regex
             };
         },
@@ -492,7 +493,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             
             //Add empty notations for values, arith, and regex:
             if(actionValues.length === 0){
-                actionValues.push(["ActionValues","Empty"]);
+                actionValues.push(["Action Data","Empty"]);
             }
             if(arithActions.length === 0){
                 arithActions.push(["Arithmetic Actions",["Empty",""]]);

@@ -7,8 +7,6 @@ define(['underscore'],function(_){
             //draw list of characters
 
             //draw list of performed actions
-
-            
         },
 
         "cleanup" : function(globalData,values){

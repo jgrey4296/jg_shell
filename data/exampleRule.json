@@ -1,0 +1,194 @@
+[
+    {
+        "id": 0,
+        "name": "__root",
+        "parents": {},
+        "children": {
+            "3": "facts",
+            "4": "rules"
+        },
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 1,
+        "name": "disconnectedFromParents",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 2,
+        "name": "disconnectedFromChildren",
+        "parents": {},
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "GraphNode"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 3,
+        "name": "facts",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "5": "f1"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 4,
+        "name": "rules",
+        "parents": {
+            "0": "__root"
+        },
+        "_originalParent": 0,
+        "children": {
+            "6": "testRule"
+        },
+        "values": {},
+        "tags": {
+            "type": "node"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {}
+    },
+    {
+        "id": 5,
+        "name": "f1",
+        "parents": {
+            "3": "facts"
+        },
+        "_originalParent": 3,
+        "children": {},
+        "values": {
+            "a": "5",
+            "message": "fact 1"
+        },
+        "tags": {
+            "type": "node",
+            "fact": "1"
+        },
+        "annotations": {},
+        "expectedBy": {
+            "7": "condition"
+        },
+        "producedBy": {}
+    },
+    {
+        "id": 6,
+        "name": "testRule",
+        "parents": {
+            "4": "rules"
+        },
+        "_originalParent": 4,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "rule"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "conditions": {
+            "7": "condition"
+        },
+        "actions": {
+            "8": "anonAction"
+        }
+    },
+    {
+        "id": 7,
+        "name": "condition",
+        "parents": {
+            "6": "testRule"
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {},
+        "tags": {
+            "type": "condition",
+            "isPositive": true
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "constantTests": [
+            {
+                "field": "values.a",
+                "operator": "EQ",
+                "value": "5",
+                "i": 0
+            }
+        ],
+        "bindings": {
+            "a": [
+                "values.a",
+                []
+            ],
+            "message": [
+                "values.message",
+                []
+            ]
+        },
+        "expectationNode": 5
+    },
+    {
+        "id": 8,
+        "name": "anonAction",
+        "parents": {
+            "6": "testRule"
+        },
+        "_originalParent": 6,
+        "children": {},
+        "values": {
+            "value": "$a",
+            "message": "$message"
+        },
+        "tags": {
+            "type": "action",
+            "actionType": "assert"
+        },
+        "annotations": {},
+        "expectedBy": {},
+        "producedBy": {},
+        "arithmeticActions": {
+            "value": [
+                "+",
+                "5"
+            ]
+        },
+        "regexActions": {
+            "message": [
+                "fa",
+                "g",
+                "FA"
+            ]
+        },
+        "expectationNode": null
+    }
+]
