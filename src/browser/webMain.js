@@ -28,7 +28,7 @@ require.config({
         //Shell
         TotalShell : "TotalShell",
         //Rete
-        ReteMin : "/libs/Rete.min"
+        Rete : "/libs/Rete.min"
     },
     shim:{
         underscore :{

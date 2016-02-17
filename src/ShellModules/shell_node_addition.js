@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','../Rete/ReteInterface'],function(_,GraphNode,DSCtors,Rete){
+define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','Rete'],function(_,GraphNode,DSCtors,Rete){
     "use strict";
     var ShellPrototype = {};
 

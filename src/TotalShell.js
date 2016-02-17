@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['ReteMin','underscore','./Node/GraphNode','./Node/GraphStructureConstructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,DSCtors,util,shell_prototype){
+define(['Rete','underscore','./Node/GraphNode','./Node/GraphStructureConstructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,DSCtors,util,shell_prototype){
     "use strict";
 
     /**

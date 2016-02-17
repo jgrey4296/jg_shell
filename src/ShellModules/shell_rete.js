@@ -5,7 +5,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','../Rete/ReteInterface'],function(_,Rete){
+define(['underscore','Rete'],function(_,Rete){
     "use strict";
     var ShellPrototype = {};
     
