@@ -6,12 +6,12 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore'],function(_){
+define(['underscore','Parse'],function(_,Parse){
     "use strict";
     var ShellPrototype = {};
 
 
-        /**
+    /**
        @class CompleteShell
        @method getNodeListByIds
        @utility
@@ -133,6 +133,48 @@ define(['underscore'],function(_){
         throw new Error("Unimplemented: pwd");
     };
 
+
+    /**
+       @method traceNode
+       @purpose convert node and subnodes to a tracery style string
+     */
+    ShellPrototype.traceNode = function(node){
+        console.log("Tracing node:",node);
+        //no message: node is an array of children
+        //message: node is a rule
+
+        //message exists:
+        //create the grammar object:
+        var descendents = this.dfs(node.id).map(function(d){
+            return this.getNode(d);
+        },this),
+            //link node name to expansion string -> grammar
+            grammar = descendents.reduce(function(m,v){
+                if(m[v.name] === undefined){
+                    m[v.name] = [];
+                }
+                if(v.values.message !== undefined){
+                    m[v.name].push(v.values.message);
+                }else{
+                    //turn each child into a rule
+                    m[v.name] = _.values(v.children).length > 0 ? m[v.name].concat(_.values(v.children).map(function(d){
+                        return "$"+d;
+                    })) : m[v.name].concat([v.name]);
+                }                
+                return m;
+            },{});
+
+        var retString;
+        try{
+            retString = Parse(grammar,node.name);
+        }catch(e){
+            console.log("Trace error:",e);
+        }finally{
+            return retString || node.name;
+        }
+    };
+    
+    
 
     return ShellPrototype;
 });

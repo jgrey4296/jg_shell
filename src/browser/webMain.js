@@ -12,6 +12,7 @@ require.config({
         underscore : "/libs/underscore",
         utils : "utils",
         d3 : "/libs/d3.min",
+        Parse : "Parse/Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
         GraphStructureConstructors:"Node/GraphStructureConstructors",
@@ -22,6 +23,7 @@ require.config({
         GeneralCommands: "Commands/GeneralCommands",
         SimulationCommands : "Commands/SimulationCommands",
         BookMarkCommands : "Commands/BookMarkCommands",
+        TraceCommands : "Commands/TraceCommands",
         //CLI
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
@@ -41,7 +43,7 @@ require.config({
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","SimulationCommands","BookMarkCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,SimulationCommands,BookMarkCommands){
+require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","SimulationCommands","BookMarkCommands","TraceCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,SimulationCommands,BookMarkCommands,TraceCommands){
     "use strict";
 
     //----------------------------------------
@@ -58,11 +60,12 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             "rete" : ReteCommands,
             "general" : GeneralCommands,
             "sim"  : SimulationCommands,
-            "bookmark" : BookMarkCommands
+            "bookmark" : BookMarkCommands,
+            "trace" : TraceCommands,
         },
         //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [
-            "node","rule","rete","sim","general","bookmark"
+            "node","rule","rete","sim","general","bookmark","trace"
         ],
         
         currentCommandMode : "node",
