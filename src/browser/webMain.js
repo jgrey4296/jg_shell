@@ -150,7 +150,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
                 commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
             }else{        
                 //command not found, fallback
-                console.log("Command Search: Fallback");
+                //console.log("Command Search: Fallback");
                 var fallBacks = _.clone(globalData.commandFallBackOrder);
                 while(fallBacks.length > 0){
                     var currentFallback = fallBacks.shift();

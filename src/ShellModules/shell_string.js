@@ -140,33 +140,54 @@ define(['underscore','Parse'],function(_,Parse){
      */
     ShellPrototype.traceNode = function(node){
         console.log("Tracing node:",node);
-        //no message: node is an array of children
-        //message: node is a rule
-
-        //message exists:
         //create the grammar object:
+        //first get relevant descendant rules
         var descendents = this.dfs(node.id).map(function(d){
             return this.getNode(d);
         },this),
-            //link node name to expansion string -> grammar
+            //fold into a single grammar object, using id's as rule keys:
             grammar = descendents.reduce(function(m,v){
-                if(m[v.name] === undefined){
-                    m[v.name] = [];
+                if(m[v.id] === undefined){
+                    m[v.id] = [];
                 }
                 if(v.values.message !== undefined){
-                    m[v.name].push(v.values.message);
+                    //convert the message to use id numbers instead of var names
+                    var invertedChildren = _.invert(v.children),
+                        message = v.values.message,
+                        vars = message.match(/\$\w+/g);
+                    //no substrings to expand:
+                    if(vars === null){
+                        m[v.id] = message;
+                    }else{
+                        //todo: filter vars that are defined in values, use them in preference
+                        //to descendents
+
+
+                        
+                        //substring conversion:
+                        var ids = vars.map(function(d){
+                            return invertedChildren[d.slice(1)];
+                        }),
+                            //pair with strings to replace
+                            zipped = _.zip(vars,ids),
+                            //convert vars to ids
+                            convertedMessage = zipped.reduce(function(m,v){
+                                return m.replace(v[0],"$"+v[1]);
+                            },message);
+                        m[v.id].push(convertedMessage);
+                    }
                 }else{
                     //turn each child into a rule
-                    m[v.name] = _.values(v.children).length > 0 ? m[v.name].concat(_.values(v.children).map(function(d){
+                    m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
                         return "$"+d;
-                    })) : m[v.name].concat([v.name]);
-                }                
+                    })) : m[v.id].concat([v.name]);
+               }                
                 return m;
             },{});
 
         var retString;
         try{
-            retString = Parse(grammar,node.name);
+            retString = Parse(grammar,node.id);
         }catch(e){
             console.log("Trace error:",e);
         }finally{

@@ -108,7 +108,7 @@ define(['underscore','d3','utils'],function(_,d3,util){
         //Load a file from the server
         "load" : function(globalData,values){
             var request = new XMLHttpRequest();
-            request.onreadystatechange=function(){
+            request.onreadystatechange = function(){
                 if(request.readyState===4){
                     try{
                         var receivedJson = JSON.parse(request.responseText);
