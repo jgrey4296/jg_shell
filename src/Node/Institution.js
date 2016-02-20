@@ -9,8 +9,7 @@ if(typeof define !== 'function'){
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
     var nextId = 0;
-    //The main node type of the graph:
-    var Institution = function(name,parent,overRideId){
+    var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
         var relations = {
             children : [
                 {name: "roles", children : "incumbent challenger controlled exempt".split(" ")},
@@ -18,7 +17,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
                 "IGU",
                 {name: "FactGrammar", children : "physical smybolic communicative unbound".split(" ")},
                 "valueHierarchy",
-                {"norms" : children : "empiricallyExpected normativelyExpected santionable".split(" ")}
+                {name: "norms", children : "empiricallyExpected normativelyExpected santionable".split(" ")}
             ],
             parents : ["externalEffectors"]
         };

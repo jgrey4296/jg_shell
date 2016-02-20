@@ -2,13 +2,14 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','./GraphNode','./Rule','./Condition','./Action'],function(_,GraphNode,Rule,Condition,Action){
+define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution'],function(_,GraphNode,Rule,Condition,Action,Institution){
 
     var ctors = {
         "graphnode" : GraphNode,
         "rule"      : Rule,
         "condition" : Condition,
         "action"    : Action,
+        "institution" : Institution
 
     };
 
