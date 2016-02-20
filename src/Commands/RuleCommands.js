@@ -8,7 +8,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
     
     var ruleCommands = {
         "draw" : function(globalData,values){
-            if(globalData.shell.cwd.tags.type === "rule"){
+            if(globalData.shell.cwd.tags.type.toLowerCase() === "rule"){
                 drawRule(globalData);
             }else if(globalData.shell.cwd.tags.type === "negConjCondition"){
                 //TODO: draw neg conj condition
@@ -305,7 +305,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
         
         //Get the condtion nodes
         conditionData = _.keys(cwdData.conditions).map(toNode.bind(globalData.shell)) || [];
-
+        console.log("Condition Data:",conditionData);
         //get the action nodes
         actionData = _.keys(cwdData.actions).map(toNode.bind(globalData.shell)) || [];
         
@@ -422,14 +422,14 @@ define(['d3','utils','underscore'],function(d3,util,_){
             //get the data
             console.log(d);
             //Get the tests and bindings:
-            var tests = _.keys(d.constantTests).length !== 0  ? _.clone(d.constantTests) : ["No Tests"],
+            var tests = d.constantTests.length > 0  ? _.clone(d.constantTests) : ["No Tests"],
                 bindings = _.keys(d.bindings).length !== 0 ? _.pairs(d.bindings) : ["No Bindings"],
                 //calculate sizes
                 heightOfInteriorNodes = util.calculateNodeHeight((heightOfNode - (heightOfNode * 0.1 + separator)),separator,tests.length + bindings.length);
             
             //copy over a numeric identifier:
-            tests.forEach(function(e,i){
-                e.i = i;
+            tests.forEach(function(e,f){
+                e.i = f;
             });
             
             //todo: get negative || negConj
@@ -438,14 +438,16 @@ define(['d3','utils','underscore'],function(d3,util,_){
             
             console.log("Binding tests:",tests);
             //annotate tests
-            var boundTests = d3.select(this).selectAll(".test").data(tests,function(e,i){
-                return e.i;
+            //d3.select(this).selectAll(".test").remove();
+            var boundTests = d3.select(this).selectAll(".test").data(tests,function(e,f){
+                return `${e.field} ${e.operator} ${e.value}`;
             }),
                 textsOfTests = util.annotate(boundTests,"test",
                                            (heightOfNode * 0.1 + separator),
                                            heightOfInteriorNodes,separator,
                                            10, nodeWidth, globalData.colours.darkerBlue,
-                                             function(e,i){
+                                             function(e,f){
+                                                 console.log("Drawing test:",e);
                                                  if(e === "No Tests") { return e; }
                                                  return "(" + e.i + "): wme.data." + e.field + " "  + util.operatorToString(e.operator) + " " + e.value;
                                            },globalData.textBlue),

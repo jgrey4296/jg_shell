@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','Rete'],function(_,GraphNode,DSCtors,Rete){
+define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
     "use strict";
     var ShellPrototype = {};
 
@@ -48,21 +48,23 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
             console.warn("making an anonymous node");
         }
         //validate input:
-        if(source[target] === undefined){ //throw new Error("Unknown target");
+        if(source[target] === undefined){ 
             console.warn("Creating target: ",target,source);
             source[target] = {};
         }
         type = type || "GraphNode";
+
+        var ctor = getCtor(type),
+            newNode;
         
-        var newNode;
         if(target === 'parents' || target === 'parent'){
             //if adding to parents,don't store the cwd as newnode's parent
-            newNode = new GraphNode(name,undefined,undefined,type);
+            newNode = new ctor(name,undefined,type);
             //add the cwd to the newNodes children:
             this.addLink(newNode,'children',source.id,source.name);
             //newNode.children[this.cwd.id] = true;
         }else{
-            newNode = new GraphNode(name,source.id,source.name,type);
+            newNode = new ctor(name,source,type);
         }
 
         //add to cwd:
@@ -74,23 +76,18 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
             console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
         }
         this.allNodes[newNode.id] = newNode;
-        
-        //Extend the structure of the new node as necessary:
-        if(DSCtors[type] !== undefined){
-            console.log("Calling ctor:",type);
-            var newChildren = DSCtors[type](newNode,values);
-            if(newChildren && newChildren.length > 0){
-                var flatChildren = _.flatten(newChildren);
-                flatChildren.forEach(function(d){
-                    if(this.allNodes[d.id] !== undefined){
-                        console.warn("Overwriting existing node:",d,this.allNodes[d.id]);
-                    }
-                    this.allNodes[d.id] = d;
-                },this);
-            }
-        }else if(type !== 'GraphNode' && type !== 'node'){
-            console.warn("No ctor for:",type);
+
+        //get all subrelation objects:
+        var relationObjects = newNode.getRelationObjects();
+        while(relationObjects.length > 0){
+            //get an object off
+            var obj = relationObjects.shift();
+            //get any sub objects and add them to the list
+            relationObjects = relationObjects.concat(obj.getRelationObjects());
+            //add the obj to allNodes
+            this.allNodes[obj.id] = obj;
         }
+        
 
         //If the cwd WAS disconnected in some way,
         //remove it from that designation
@@ -134,11 +131,7 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
         }
         var condition = this.allNodes[conditionId];
         //Create the test
-        condition.constantTests.push({
-            field: testParams[0],
-            operator: testParams[1],
-            value: testParams[2]
-        });
+        condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
     };
 
     /**

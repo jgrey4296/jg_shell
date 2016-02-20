@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../Node/GraphNode'],function(_,GraphNode){
+define(['underscore'],function(_,GraphNode){
     "use strict";
     //Object that will be copied into the shell's prototype:
     var ShellPrototype = {};
@@ -20,6 +20,8 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
        @note As nodes only store ID numbers, the information does not contain cycles
      */
     ShellPrototype.exportJson = function(){
+        //todo: ensure that all nodes have been cleared of relation objects prir to export
+        
         var graphJson = JSON.stringify(_.values(this.allNodes),undefined,4);
         console.log("Converted to JSON:",graphJson);
         return graphJson;
@@ -57,32 +59,19 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
      */
     ShellPrototype.addNodeFromJson = function(obj){
         //console.log("Loading Object:",obj);
-        var newNode = new GraphNode(obj.name,obj._originalParent,obj.parents[obj._originalParent],obj.type,obj.id);
-        _.keys(obj).forEach(function(d){
-            newNode[d] = obj[d];
-        });
         
-        if(newNode.id !== obj.id) { throw new Error("Ids need to match"); }
-        if(this.allNodes[newNode.id] !== undefined){
-            console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
+        //get the constructor appropriate for the object
+        //and apply it to the object
+        console.log("Using get ctor:",this.getCtor);
+        var ctor = this.getCtor(obj.tags.type);
+        obj.prototype = ctor.prototype;
+        
+        if(this.allNodes[obj.id] !== undefined){
+            console.warn("Json loading into existing node:",obj,this.allNodes[obj.id]);
         }
-        this.allNodes[newNode.id] = newNode;
+        this.allNodes[obj.id] = obj;
 
-        //If necessary (from older versions)
-        //swap the keys/values pairings in children/parents
-        //ie: KEY should be a NUMBER, swap otherwise
-        var keys = _.keys(newNode.children);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.children = this.convertObject(newNode.children);
-        }
-
-        keys = _.keys(newNode.parents);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.parents = this.convertObject(newNode.parents);
-        }
-        return newNode;
+        return obj;
     };
 
     /**
@@ -91,6 +80,7 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
        @purpose convert old style links of name->id to new style id->name
        @param object The object to switch around
        @return an output object of value:key pairs
+       @deprecated
     */
     ShellPrototype.convertObject = function(object){
         var keys = _.keys(object),

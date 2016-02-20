@@ -15,57 +15,57 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     var ctors = {};
 
     //THE INSTITUTION OBJECT
-    ctors['institution'] = function(baseNode){
-        baseNode.tags.type = 'institution';
-        //Object of: {childName : [type, [subchildren]] }
-        var children = {
-            "Roles" : ['container',
-                       ['incumbent','challenger','controlled','exempt']],
-            "Activities":['container',
-                          ['physical','symbolic','communicative','unbound']],
-            "IGU"   : ['node',[]],
-            "ExternalEffects": ['node',[]],//+externalEffectors in parent list
-            "FactGrammar"    : ['container',
-                                ['physical','symbolic','communicative','unbound']],
-            "ValueHierarchy" : ['node',[]],
-            "Norms"          : ['container',
-                                ['EmpiricallyExpected','NormativelyExpected','Sanctionable']],
-        };
-        var parents = {
-            "ExternalEffectors" : ["node",[]],
-        };
+    // ctors['institution'] = function(baseNode){
+    //     baseNode.tags.type = 'institution';
+    //     //Object of: {childName : [type, [subchildren]] }
+    //     var children = {
+    //         "Roles" : ['container',
+    //                    ['incumbent','challenger','controlled','exempt']],
+    //         "Activities":['container',
+    //                       ['physical','symbolic','communicative','unbound']],
+    //         "IGU"   : ['node',[]],
+    //         "ExternalEffects": ['node',[]],//+externalEffectors in parent list
+    //         "FactGrammar"    : ['container',
+    //                             ['physical','symbolic','communicative','unbound']],
+    //         "ValueHierarchy" : ['node',[]],
+    //         "Norms"          : ['container',
+    //                             ['EmpiricallyExpected','NormativelyExpected','Sanctionable']],
+    //     };
+    //     var parents = {
+    //         "ExternalEffectors" : ["node",[]],
+    //     };
 
         
-        var createdChildren = _.keys(children).map(function(d){
-            //create a new object of: name,parentId,type
-            var newObj = new GraphNode(d,baseNode.id,baseNode.name,children[d][0]);
-            //if the type is one specified in this module, construct that too
-            var subChildren = [];
-            if(ctors[children[d][0]]){
-                subChildren = ctors[children[d][0]](newObj,children[d][1]);
-            }
-            return [newObj,subChildren];
-        });
-        //add the created children's ids to the baseNode
-        //but only the top level,not the children of the children.
-        //hence d[0].id, ignoring d[1]... for the moment.
-        createdChildren.forEach(function(d){
-            baseNode.children[d[0].id] = true;
-        });
+    //     var createdChildren = _.keys(children).map(function(d){
+    //         //create a new object of: name,parentId,type
+    //         var newObj = new GraphNode(d,baseNode.id,baseNode.name,children[d][0]);
+    //         //if the type is one specified in this module, construct that too
+    //         var subChildren = [];
+    //         if(ctors[children[d][0]]){
+    //             subChildren = ctors[children[d][0]](newObj,children[d][1]);
+    //         }
+    //         return [newObj,subChildren];
+    //     });
+    //     //add the created children's ids to the baseNode
+    //     //but only the top level,not the children of the children.
+    //     //hence d[0].id, ignoring d[1]... for the moment.
+    //     createdChildren.forEach(function(d){
+    //         baseNode.children[d[0].id] = true;
+    //     });
 
-        //do the same stuff for parents
-        var createdParents = _.keys(parents).map(function(d){
-            var newObj = new GraphNode(d,undefined);
-            return newObj;
-        });
-        createdParents.forEach(function(d){
-            baseNode.parents[d.id] = true;
-            d.children[baseNode.id] = true;
-        });
+    //     //do the same stuff for parents
+    //     var createdParents = _.keys(parents).map(function(d){
+    //         var newObj = new GraphNode(d,undefined);
+    //         return newObj;
+    //     });
+    //     createdParents.forEach(function(d){
+    //         baseNode.parents[d.id] = true;
+    //         d.children[baseNode.id] = true;
+    //     });
 
-        var createdNodes = createdChildren.concat(createdParents);
-        return createdNodes;
-    };
+    //     var createdNodes = createdChildren.concat(createdParents);
+    //     return createdNodes;
+    // };
     
     //------------------------------
     //THE GENERIC CONTAINER OBJECT
@@ -122,42 +122,42 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
 
 
-    //------------------------------
-    //The Rule object:
-    ctors['rule'] = function(baseNode){
-        baseNode.tags.type = 'rule';
-        baseNode.conditions = {};
-        baseNode.actions = {};
+    // //------------------------------
+    // //The Rule object:
+    // ctors['rule'] = function(baseNode){
+    //     baseNode.tags.type = 'rule';
+    //     baseNode.conditions = {};
+    //     baseNode.actions = {};
 
-        //TODO: create an automatic performance action?
+    //     //TODO: create an automatic performance action?
         
-        return [];
-    };
+    //     return [];
+    // };
 
     //------------------------------
     
     
-    //------------------------------
-    //Condition Object:?
-    ctors['condition'] = function(baseNode){
-        console.log("GraphStructure: condition, firing");
-        baseNode.tags.type = 'condition';
-        baseNode.tags.isPositive = true;
-        baseNode.constantTests = [];
-        baseNode.bindings = {};
-        baseNode.expectationNode = null;
-        return [];
-    };
+    // //------------------------------
+    // //Condition Object:?
+    // ctors['condition'] = function(baseNode){
+    //     console.log("GraphStructure: condition, firing");
+    //     baseNode.tags.type = 'condition';
+    //     baseNode.tags.isPositive = true;
+    //     baseNode.constantTests = [];
+    //     baseNode.bindings = {};
+    //     baseNode.expectationNode = null;
+    //     return [];
+    // };
 
-    //Negative condition:
-    ctors['negCondition'] = function(baseNode){
-        baseNode.tags.isNegative = true;
-        baseNode.tags.type = 'condition';
-        baseNode.constantTests = [];
-        baseNode.bindings = {};
-        baseNode.expectationNode = null;
-        return [];
-    };
+    // //Negative condition:
+    // ctors['negCondition'] = function(baseNode){
+    //     baseNode.tags.isNegative = true;
+    //     baseNode.tags.type = 'condition';
+    //     baseNode.constantTests = [];
+    //     baseNode.bindings = {};
+    //     baseNode.expectationNode = null;
+    //     return [];
+    // };
 
     //negated conjunctive condition
     ctors['negConjCondition'] = function(baseNode){
@@ -170,24 +170,24 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     
     //------------------------------
     //The action object:
-    ctors['action'] = function(baseNode,values){
-        baseNode.tags.actionType = "assert";
-        //deprecated:baseNode.tags.actionFocus = "wme";
-        while(values && values.length >= 2){
-            baseNode.values[values.shift()] = values.shift();
-        }
-        //of the form: a : [+ 5]
-        //meaning: resultingWME.a = resultingWME.a + 5
-        baseNode.arithmeticActions = {};
-        baseNode.regexActions = {};
-        baseNode.expectationNode = null;
-    };
+    // ctors['action'] = function(baseNode,values){
+    //     baseNode.tags.actionType = "assert";
+    //     //deprecated:baseNode.tags.actionFocus = "wme";
+    //     while(values && values.length >= 2){
+    //         baseNode.values[values.shift()] = values.shift();
+    //     }
+    //     //of the form: a : [+ 5]
+    //     //meaning: resultingWME.a = resultingWME.a + 5
+    //     baseNode.arithmeticActions = {};
+    //     baseNode.regexActions = {};
+    //     baseNode.expectationNode = null;
+    // };
 
     //------------------------------
     //wme object:
-    ctors['wme'] = function(baseNode){
-        baseNode.tags.type = "WME";
-    };
+    // ctors['wme'] = function(baseNode){
+    //     baseNode.tags.type = "WME";
+    // };
 
     //------------------------------
     //Paper Criticism template based on rappoports rules (see dennet)

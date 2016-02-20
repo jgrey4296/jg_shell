@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['Rete','underscore','./Node/GraphNode','./Node/GraphStructureConstructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,DSCtors,util,shell_prototype){
+define(['Rete','underscore','./Node/GraphNode','./Node/Constructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,getCtor,util,shell_prototype){
     "use strict";
 
     /**
@@ -30,8 +30,8 @@ define(['Rete','underscore','./Node/GraphNode','./Node/GraphStructureConstructor
         //All Nodes:
         this.allNodes = {};
         this.allNodes[this.root.id] = this.root;
-        this.allNodes[this.disconnected.noParents.id] = this.disconnected.noParents;
-        this.allNodes[this.disconnected.noChildren.id] = this.disconnected.noChildren;
+        //this.allNodes[this.disconnected.noParents.id] = this.disconnected.noParents;
+        //this.allNodes[this.disconnected.noChildren.id] = this.disconnected.noChildren;
         //AllRules:
         this.allRules = [];
         this.allRulesByName = {};
@@ -52,6 +52,8 @@ define(['Rete','underscore','./Node/GraphNode','./Node/GraphStructureConstructor
     CompleteShell.prototype = Object.create(shell_prototype);
     CompleteShell.prototype.constructor = CompleteShell;
 
+    CompleteShell.prototype.getCtor = getCtor;
+    
     /**
        @interface The interface of the TotalShell file
        @exports CompleteShell 

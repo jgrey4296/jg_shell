@@ -68,7 +68,7 @@ define(['underscore'],function(_){
         if(!source[target]) { throw new Error("Unrecognised target"); }
 
         //perform the link:
-        var nodeToLink = this.allNodes[id];
+        var nodeToLink = this.getNode(id);
         this.addLink(source,target,nodeToLink.id,nodeToLink.name);
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
@@ -99,10 +99,10 @@ define(['underscore'],function(_){
         if(source.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        var condition = this.allNodes[conditionId];
+        var condition = this.getNode(conditionId);
         //condition.bindings.push([toVar,fromVar]);
-        condition.bindings[toVar] = [fromVar,testPairs];
-        console.log(source.conditions[conditionId].bindings);
+        condition.setBinding(toVar,fromVar,testPairs);
+        console.log(condition,condition.bindings);
     };
 
     /**
@@ -126,17 +126,13 @@ define(['underscore'],function(_){
         if(source.actions[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
-        var action = this.allNodes[actionId];
+        var action = this.getNode(actionId);
 
         if(action === undefined){
             throw new Error("Could not find action");
         }
+        action.setArith(varName,op,value);
 
-        if(op && value){
-            action.arithmeticActions[varName] = [op,value];
-        }else{
-            delete action.arithmeticActions[varName];
-        }
     };
 
     //Store a regex transform for an action, in a similar way to arithmetic actions
@@ -146,17 +142,14 @@ define(['underscore'],function(_){
         //if it includes the opening and closing /'s, remove them?
 
         //get the action
-        var action = this.allNodes[actionId];
-
-        if(regex && replaceValue){
-            action.regexActions[varName] = [regex,options, replaceValue];
-        }
+        var action = this.getNode(actionId);
+        action.setRegex(varName,regex,options,replaceValue);
 
     };
     
     /**
        @class CompleteShell
-       @method setActionValue
+       @method setActionnValue
        @purpose Set an internal value of an action, without going into that node itself
        @param actionNum The action to target
        @param a The parameter name
@@ -170,12 +163,8 @@ define(['underscore'],function(_){
             throw new Error("Can't set action values on non-actions");
         }
         if(source.actions[actionId] !== undefined){
-            var action = this.allNodes[actionId];
-            if(b){
-                action.values[a] = b;
-            }else{
-                delete action.values[a];
-            }
+            var action = this.getNode(actionId);
+            action.setValue(b,'values',a);
         }else{
             throw new Error("Unrecognised action");
         }
@@ -194,11 +183,7 @@ define(['underscore'],function(_){
         }
         if(source.actions[actionId] !== undefined){
             var action = this.allNodes[actionId];
-            if(a){
-                action.tags.actionType = a;
-            }else{
-                throw new Error("Setting action type requires a type be specified");
-            }
+            action.setValue(a,'tags','actionType');
         }else{
             throw new Error("Unrecognised action");
         }
@@ -224,12 +209,8 @@ define(['underscore'],function(_){
             throw new Error("trying to set non-existent test");
         }
 
-        var condition = this.getNode(conditionId),
-            test = condition.constantTests[testId];
-        
-        test.field = field;
-        test.operator = op;
-        test.value = value;
+        var condition = this.getNode(conditionId);
+        condition.setTest(testId,field,op,value);
     };
 
 

@@ -196,9 +196,13 @@ define(['underscore'],function(_){
             .style("fill",colour)
             .attr("rx",10).attr("ry",10);
 
+        
         var texts = boundDom.selectAll("."+className+"text")
             .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.2) + ")")
-            .text(textFunction)
+            .text(function(d){
+                console.log("util:",d);
+                return textFunction(d);
+            })
         //todo: parameterise this:
             .style("fill",textColour || "white");
 
