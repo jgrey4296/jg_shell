@@ -5,9 +5,15 @@
 */
 define(['underscore'],function(_){
 
-    var ParseObject = function(grammarObj,start){
+    var ParseObject = function(grammarObj,start,depth=1){
+        if(depth > 50){
+            console.warn("Parse depth > 50");
+            return `[${start}]`;
+        }
         if(grammarObj[start] === undefined){
-            throw new Error("Unrecognised rule: " + start);
+            //throw new Error("Unrecognised rule: " + start);
+            console.warn(`Unrecognised rule: ${start}`);
+            return `[${start}]`;
         }
         //Get the rule's string
         var currentString = grammarObj[start];
@@ -22,7 +28,7 @@ define(['underscore'],function(_){
 
         //For each variable, expand it
         var returnedStrings = variables.map(function(d){
-            return ParseObject(grammarObj,d.slice(1));
+            return ParseObject(grammarObj,d.slice(1),depth+1);
         }),
             zippedExpansions = _.zip(variables,returnedStrings);
 

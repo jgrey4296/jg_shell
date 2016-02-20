@@ -156,7 +156,7 @@ define(['underscore','Parse'],function(_,Parse){
                 if(v.values.message !== undefined){
                     m[v.name].push(v.values.message);
                 }else{
-                    //turn each child into a rule
+                    //turn each child into a rule, or use the name of the node
                     m[v.name] = _.values(v.children).length > 0 ? m[v.name].concat(_.values(v.children).map(function(d){
                         return "$"+d;
                     })) : m[v.name].concat([v.name]);

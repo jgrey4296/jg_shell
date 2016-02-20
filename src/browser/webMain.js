@@ -10,6 +10,7 @@ require.config({
     paths:{
         //General Utils
         underscore : "/libs/underscore",
+        uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
         d3 : "/libs/d3.min",
         Parse : "Parse/Parse",
@@ -35,6 +36,9 @@ require.config({
     shim:{
         underscore :{
             exports:'_'
+        },
+        uContrib :{
+            exports :'_'
         },
     }
 });

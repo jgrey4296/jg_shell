@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['Rete','underscore','./Node/GraphNode','./Node/Constructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,getCtor,util,shell_prototype){
+define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,getCtor,util,shell_prototype){
     "use strict";
 
     /**
@@ -30,11 +30,10 @@ define(['Rete','underscore','./Node/GraphNode','./Node/Constructors','./utils','
         //All Nodes:
         this.allNodes = {};
         this.allNodes[this.root.id] = this.root;
-        //this.allNodes[this.disconnected.noParents.id] = this.disconnected.noParents;
-        //this.allNodes[this.disconnected.noChildren.id] = this.disconnected.noChildren;
         //AllRules:
         this.allRules = [];
         this.allRulesByName = {};
+
         //current node/rule, as an ACTUAL OBJECT, NOT AN ID
         this.cwd = this.root;
 
@@ -48,6 +47,7 @@ define(['Rete','underscore','./Node/GraphNode','./Node/Constructors','./utils','
         //Integrated Rete Net:
         this.reteNet = new Rete.ReteNet();
     };
+    
     //Use the aggrgated shell prototype:
     CompleteShell.prototype = Object.create(shell_prototype);
     CompleteShell.prototype.constructor = CompleteShell;
