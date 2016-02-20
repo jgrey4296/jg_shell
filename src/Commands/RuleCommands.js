@@ -86,7 +86,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             var targetType = values.shift(),
                 targetId = values.shift(),
                 targetField = values.shift();
-            console.log("SET:",targetType,targetId,targetField);
+            //console.log("SET:",targetType,targetId,targetField);
 
             if(Number.isNaN(Number(targetId)) || globalData.shell.allNodes[Number(targetId)] === undefined){
                 throw new Error("Unrecognised targetId");
@@ -106,7 +106,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
             }
 
             if(targetType === 'action' && targetField === 'regex'){
-                globalData.shell.setRegex(Number(targetId),values[0],values[1],values[2],values[3],sourceId);
+                globalData.shell.setRegex(Number(targetId),values[0],values[1],sourceId);
             }
             
             //todo: set action tags
@@ -305,7 +305,7 @@ define(['d3','utils','underscore'],function(d3,util,_){
         
         //Get the condtion nodes
         conditionData = _.keys(cwdData.conditions).map(toNode.bind(globalData.shell)) || [];
-        console.log("Condition Data:",conditionData);
+        //console.log("Condition Data:",conditionData);
         //get the action nodes
         actionData = _.keys(cwdData.actions).map(toNode.bind(globalData.shell)) || [];
         

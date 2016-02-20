@@ -31,12 +31,17 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     }
     //set or remove a regex action
+    var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
     Action.prototype.setRegex = function(val,regex,options,replaceValue){
-        if(arguments < 1){ throw new Error("setRegex needs at least a value"); }
-        if(arguments !== 4){
+        if(regex === undefined){
             delete this.regexActions[val];
+        }else{
+            var splitRegex = regex.match(regexSplitRegex);
+            if(splitRegex === null || splitRegex.length !== 4){
+                throw new error("Invalid regex");
+            }
+            this.regexActions[val] = [splitRegex[1],splitRegex[3],splitRegex[2]];
         }
-        this.regexActions[val] = [regex,options,replaceValue];
     }
 
     

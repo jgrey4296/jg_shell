@@ -44,7 +44,7 @@ define(['underscore'],function(_){
                 alert(e);
             }
         }else{
-            console.warn("No function specified to execute: " + currentLine);
+            //console.warn("No function specified to execute: " + currentLine);
         }
 
         //Finish if not drawing

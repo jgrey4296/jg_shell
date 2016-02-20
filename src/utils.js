@@ -199,10 +199,7 @@ define(['underscore'],function(_){
         
         var texts = boundDom.selectAll("."+className+"text")
             .attr("transform","translate(" + horizontalOffset + "," + (nodeHeight * 0.2) + ")")
-            .text(function(d){
-                console.log("util:",d);
-                return textFunction(d);
-            })
+            .text(textFunction)
         //todo: parameterise this:
             .style("fill",textColour || "white");
 
