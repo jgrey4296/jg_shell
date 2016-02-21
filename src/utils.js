@@ -49,23 +49,6 @@ define(['underscore'],function(_){
         return alignedPairs;
     };
 
-    /**
-       @method initContainer
-       @purpose select or create a container
-       @param containerName The id of the container. ie: node
-       @note the containerName does not include the #
-    */
-    util.selectOrShare = function(containerName,parent,d3){
-        if(!d3) { throw new Error("No d3"); }
-        var container;
-        if(parent === undefined) { parent = d3.select("svg"); }
-        container = parent.select("#"+containerName);
-        if(container.empty()){
-            container = parent.append("g")
-                .attr("id",containerName);
-        }
-        return container;
-    };
 
     //Generic draw group function, modes will typically create their own version
     util.drawGroup = function(globalData,container,className,data,xLocation,groupWidth){

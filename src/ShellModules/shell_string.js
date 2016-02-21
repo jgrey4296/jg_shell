@@ -73,66 +73,6 @@ define(['underscore','Parse'],function(_,Parse){
         return retList;
     };
     
-    /**
-       @class CompleteShell
-       @method getListsFromNode
-       @purpose get a list of strings representating a field of a node
-       @param node
-       @param fieldNameList
-       @return the flattened list of strings
-     */
-    ShellPrototype.getListsFromNode = function(node,fieldNameList){
-        var allArrays = fieldNameList.map(function(d){
-            if(node[d] !== undefined){
-                if(d !== 'id' && d !== 'name'){
-                    return ["","| "+d+" |"].concat(this.getListFromNode(node,d));
-                }else{
-                    return d + ": " + node[d];
-                }
-            }else{
-                console.log("Could not find:",d,node);
-            }
-        },this);
-
-        var additional = ["","| All Keys::|"].concat(_.keys(node).map(function(d){
-            if(typeof node[d] !== 'object'){
-                return d + ": " + node[d];
-            }else{
-                return d + " size: " + _.keys(node[d]).length;
-            }
-        }));
-
-        var finalArrays = _.flatten(allArrays.concat(additional));
-        
-        return finalArrays;
-    };
-
-    /**
-       @class CompleteShell
-       @method getListFromNode
-       @utility
-       @purpose get a list of strings of the key value pairs for a nodes field
-       @param node
-       @param fieldName
-     */
-    ShellPrototype.getListFromNode = function(node,fieldName){
-        if(node[fieldName] === undefined) { throw new Error("Unrecognised field: "+fieldName); }
-        var retArray = _.keys(node[fieldName]).map(function(d){
-            return d + ": " + this[fieldName][d];
-        },node);
-        return retArray;
-    };
-
-    /**
-       @class CompleteShell
-       @method pwd
-       @utility
-       @stub
-     */
-    ShellPrototype.pwd = function(){
-        throw new Error("Unimplemented: pwd");
-    };
-
 
     /**
        @method traceNode

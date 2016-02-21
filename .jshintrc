@@ -20,5 +20,6 @@
         "require" : false,
         "module" : false
     },
-    "browser" : true
+    "browser" : true,
+    "esversion" : 6
 }

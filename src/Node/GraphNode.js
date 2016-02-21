@@ -73,16 +73,46 @@ define(['underscore'],function(_){
             },this);
 
         }
-
-
         
     };
     GraphNode.constructor = GraphNode;
 
+    /**
+       @method toString
+       @class GraphNode
+     */
     GraphNode.prototype.toString = function(){
         return `(${this.id}) : ${this.name}`;
     };
 
+    /**
+       @method toStringList
+       @class GraphNode
+       @purpose returns a list of objects for visualisation
+       @return [{name: "", values : [] }]
+     */
+    GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
+        //Get all fields
+        var lists = fieldNameList.map(function(d){
+            //as a simple { name : "key : value" } object
+            if(typeof this[d] === "string" || typeof this[d] === 'number'){
+                return { name : `${d} : ${this[d]}` };
+            }
+            //as a { name : key, values : ["$key : $value"] } object
+            return {
+                name: d,
+                values : _.keys(this[d]).sort().map(e=>`${e} : ${this[d][e]}`)
+            };
+        },this);
+        return lists;
+    };
+    
+    
+    /**
+       @method setValue
+       @class GraphNode
+       @purpose set a value in the node. as a scalar if no parameter is specified
+     */
     GraphNode.prototype.setValue = function(value,field,parameter){
         //todo: add guards so you don't delete something important like 'id'
         if(parameter !== undefined){ //set this[field][parameter] -> value
@@ -103,7 +133,16 @@ define(['underscore'],function(_){
         }
     };
 
+    /**
+       @method addRelation
+       @class GraphNode
+       @purpose register a NodeStyle object as a relation of this node. stores id+name
+       @purpose and adds to the relatedObjects map;
+     */
     GraphNode.prototype.addRelation = function(target,object){
+        if(!(object instanceof GraphNode)){
+            throw new Error("Trying to add a non-GraphNode relation");
+        }
         this.relatedObjects.push(object);
         if(target === 'child'){
             this.children[object.id] = object.name;
@@ -115,6 +154,11 @@ define(['underscore'],function(_){
         return object;
     };
 
+    /**
+       @method getRelationObjects
+       @class GraphNode
+       @purpose Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+     */
     GraphNode.prototype.getRelationObjects = function(){
         var tempList = this.relatedObjects;
         this.relatedObjects = [];
