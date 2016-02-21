@@ -85,8 +85,21 @@ define(['underscore','d3'],function(_,d3){
     };
 
 
-    //
-    DrawUtils.singleNode = function(container,nodeData,groupData){
+    /**
+       @function single
+     */
+    DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
+        //create the rectangle if it doesnt exist
+        if(container.select("#EnclosingRect").empty()){
+            container.append("rect").attr("id","EnclosingRect")
+                .style("fill",groupData.globalData.colours.darkBlue)
+                .attr("rx",10)
+                .attr("ry",10)
+                .attr("width",groupData.colWidth + (groupData.widthAddition * 2))
+                .attr("height",0)
+                .attr("transform",`translate(${-(groupData.halfCol+groupData.widthAddition)},0)`);
+        }
+        
         //console.log("draw detail: ",container, nodeData);
         var bound = container.selectAll(".nodeData").data(nodeData);
         bound.enter().append("g").classed("nodeData",true);
@@ -103,6 +116,12 @@ define(['underscore','d3'],function(_,d3){
             //console.log(g[0][0].previousElementSibling.getBBox());
             g.attr("transform",`translate(0,${offset})`);
         });
+
+        //expand enclosing rectangle
+        container.select("#EnclosingRect").attr("height",0);
+        var tempHeight = container[0][0].getBBox().height + 3*groupData[offsetName];
+        container.select("#EnclosingRect").attr("height",tempHeight);
+
     };
 
     //
@@ -144,8 +163,32 @@ define(['underscore','d3'],function(_,d3){
             
         });
     };
-    
 
+    //
+    DrawUtils.drawGroup = function(container,data,commonData){
+        //prepare the data
+        var nodeDescriptions = data.map(d=>d.getDescriptionObjects("id name".split(" ")));
+        
+        //create the individual nodes
+        var boundNodes =  container.selectAll(".groupNode").data(nodeDescriptions);
+        boundNodes.enter().append("g").classed("groupNode",true);
+        boundNodes.exit().remove();
+
+        //call drawSingleNode for each node
+        var offset = 0;
+        boundNodes.each(function(d,i){
+            var cur = d3.select(this);
+            DrawUtils.drawSingleNode(cur,d,commonData);
+            if(cur[0][0].previousElementSibling !== null){
+                var bbox = cur[0][0].previousElementSibling.getBBox();
+                offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
+                cur.attr("transform",`translate(0,${offset})`);
+            }
+        });
+
+
+        
+    };
     
     
     return DrawUtils;
