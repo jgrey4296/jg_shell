@@ -138,7 +138,7 @@ define(['underscore','d3'],function(_,d3){
             container.select("#EnclosingRect").attr("height",0);
             var tempHeight = container[0][0].getBBox().height + 2*groupData[offsetName];
             container.select("#EnclosingRect").attr("height",tempHeight);
-            console.log("Draw single node completing:",nodeData);
+            //console.log("Draw single node completing:",nodeData);
             return container;
         });
 
@@ -213,39 +213,39 @@ define(['underscore','d3'],function(_,d3){
 
     
     DrawUtils.drawGroup = function(container,data,commonData,descriptionFunction){
-        console.log("Group draw:",container,data);
+        //console.log("Group draw:",container,data);
         var groupPromise = new Promise(function(resolve,reject){
             //create the individual nodes
             var boundNodes =  container.selectAll(".groupNode").data(data);
             boundNodes.enter().append("g").classed("groupNode",true)
                 .on("click",function(d){
-                    console.log("click:",d);
+                    //console.log("click:",d);
                     commonData.globalData.shell.cd(d.id);
                     commonData.globalData.lookupOrFallBack("draw")(commonData.globalData);
                 });
             boundNodes.exit().remove();
-            console.log("Bound nodes:",boundNodes);
+            //console.log("Bound nodes:",boundNodes);
             resolve(boundNodes);
         });
 
         var promiseArray = [];
         //When nodes have been created
         groupPromise.then(function(boundNodes){
-            console.log("Post initial group promise:",boundNodes);
+            //console.log("Post initial group promise:",boundNodes);
             //draw each individual node
             boundNodes.each(function(d,i){
                 var cur = d3.select(this),
                     describedData = descriptionFunction(d);
                 promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
                                   .then(function(){
-                                      console.log("Adding:",cur,"To promise array");
+                                      //console.log("Adding:",cur,"To promise array");
                                       return cur;
                                   }));
             });
 
             //Wait on all the nodes to be drawn
             Promise.all(promiseArray).then(function(eachElement){
-                console.log("All promises fulfilled:",eachElement);
+                //console.log("All promises fulfilled:",eachElement);
                 //Then offset them
                 var offset = 0;
                 eachElement.forEach(function(d,i){

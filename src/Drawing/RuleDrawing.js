@@ -38,25 +38,16 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             conditionGroup = DrawUtils.createOrShare('conditions',mainContainer)
 	        .attr("transform",`translate(${standardData.conditionOffset},100)`),
             actionGroup = DrawUtils.createOrShare('actions',mainContainer)
-    	    .attr("transform",`translate(${standardData.parentOffset},100)`);
+    	    .attr("transform",`translate(${standardData.actionOffset},100)`);
 
 
+        //These are promises
         DrawUtils.drawSingleNode(rule,standardData.ruleDescriptions,standardData);
         //Draw the children:
-        DrawUtils.drawGroup(conditionGroup,standardData.condtionData,standardData,x=>x.getDescriptionObjects("id name tags".split(" ")));
-        DrawUtils.drawGroup(actionGroup,standardData.actionData,standardData,x=>x.getDescriptionObjects("id name tags".split(" ")));
+        DrawUtils.drawGroup(conditionGroup,standardData.conditionData,standardData,x=>x.getDescriptionObjects());
+        DrawUtils.drawGroup(actionGroup,standardData.actionData,standardData,x=>x.getDescriptionObjects());
 
-        //figure out parent path:
-        var path = DrawUtils.pathExtraction(globalData,10).join(" --> "),
-            pathText = d3.select("#pathText");
-        if(pathText.empty()){
-            pathText = d3.select("svg").append("text").attr("id","pathText")
-                .style("fill","white")
-                .attr("transform","translate(" + (globalData.usableWidth * 0.5) + ",50)")
-                .style("text-anchor","middle");
-        }
-        //use the figured out path
-        pathText.text(path);
+        DrawUtils.drawPath(globalData);
         
     };
 
@@ -65,7 +56,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        @function cleanup
        @purpose Remove anything that drawNode creates
     */
-    RuleDrawInterface.cleanup = DrawUtils.cleanup.bind({},".condition",".action",".rule",".condExpctation",".actionExpectation");//".node",".parent",".child");
+    RuleDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#conditions","#actions","#rule");//".node",".parent",".child");
 
     return RuleDrawInterface;
 });

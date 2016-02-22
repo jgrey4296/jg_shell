@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','./GraphNode'],function(_,GraphNode){
+define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
     var Condition = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"condition",{},overRideId);
@@ -46,6 +46,27 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     };
 
+
+    Condition.prototype.getDescriptionObjects = function(){
+        var lists = [];
+        lists.push({
+            name: this.toString()
+        });
+        
+        //Add the constant tests
+        lists.push({
+            name: "IF:",
+            values : this.constantTests.map((d,i)=>`(${i}): wme.data.${d.field} ${util.operatorToString(d.operator)} ${d.value}`)
+        });
+
+        //Add the bindings:
+        lists.push({
+            name: "BIND:",
+            values : _.keys(this.bindings).map(d=>`${d} <-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`)
+        });
+
+        return lists;
+    };
     
     return Condition;
 });

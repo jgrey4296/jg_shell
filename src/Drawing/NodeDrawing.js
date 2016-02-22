@@ -40,7 +40,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             parentGroup = DrawUtils.createOrShare('parents',mainContainer)
     	    .attr("transform",`translate(${standardData.parentOffset},100)`);
 
-
+        //Promises:
         DrawUtils.drawSingleNode(node,standardData.nodeDescriptions,standardData);
         //Draw the children:
         DrawUtils.drawGroup(childGroup,standardData.childrenData,standardData,x=>[x.getShortDescription()]);
@@ -55,7 +55,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        @function cleanup
        @purpose Remove anything that drawNode creates
     */
-    NodeDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#mainContainer");//".node",".parent",".child");
+    NodeDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#node","#children","#parents");//".node",".parent",".child");
 
     return NodeDrawInterface;
 });

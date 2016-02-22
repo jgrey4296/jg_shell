@@ -11,7 +11,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             baseNode.values[values.shift()] = values.shift();
         }
 
+        //{keyVal : [op,mod]
         this.arithmeticActions = {};
+        //{keyVal : [regex,options,replaceVal]
         this.regexActions = {};
         //Fact link that this action produces
         this.expectationNode = null;
@@ -32,18 +34,47 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     }
     //set or remove a regex action
     var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
-    Action.prototype.setRegex = function(val,regex,options,replaceValue){
+    Action.prototype.setRegex = function(val,regex){
         if(regex === undefined){
             delete this.regexActions[val];
         }else{
             var splitRegex = regex.match(regexSplitRegex);
             if(splitRegex === null || splitRegex.length !== 4){
-                throw new error("Invalid regex");
+                throw new Error("Invalid regex");
             }
             this.regexActions[val] = [splitRegex[1],splitRegex[3],splitRegex[2]];
         }
     }
 
+    Action.prototype.getDescriptionObjects = function(){
+        var lists = [];
+        lists.push({
+            name : this.toString(),
+        });
+
+        lists.push({
+            name : "Tags",
+            values : _.pairs(this.tags).map(d=>d.join(" : "))
+        })
+
+        lists.push({
+            name : "Data",
+            values : _.pairs(this.values).map(d=>d.join(" : "))
+        });
+        
+        lists.push({
+            name : "Arithmetic Actions",
+            values : _.keys(this.arithmeticActions).map(d=>`${d} ${this.arithmeticActions[d][0]} ${this.arithmeticActions[d][1]}`)
+        });
+
+        lists.push({
+            name: "Regex Actions",
+            values : _.keys(this.regexActions).map(d=>`${d} ~= /${this.regexActions[d][0]}/${this.regexActions[d][2]}/${this.regexActions[d][1]}`)
+        });
+        
+        return lists;
+    };
+    
     
     return Action;
 });

@@ -16,7 +16,8 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 RuleDrawing.drawRule(globalData,globalData.shell.cwd);
                 //drawRule(globalData);
             }else{
-                NodeDrawing.drawNode(globalData.globalData.shell.cwd);
+                //ruleCommands.cleanup();
+                //NodeDrawing.drawNode(globalData,globalData.shell.cwd);
             }
         },
         "cleanup" : function(globalData, values){
