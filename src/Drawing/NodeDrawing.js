@@ -10,6 +10,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        @purpose main draw function for a standard GraphNode instance of the shell
     */
     NodeDrawInterface.drawNode = function(globalData,nodeToDraw){
+        //console.log("Drawing:",nodeToDraw);
         var standardData = {
             nodeDataSeparator : 10,
             groupDataSeparator : 10,

@@ -2,15 +2,15 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution'],function(_,GraphNode,Rule,Condition,Action,Institution){
+define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution','./Bookmark'],function(_,GraphNode,Rule,Condition,Action,Institution,Bookmark){
 
     var ctors = {
         "graphnode" : GraphNode,
         "rule"      : Rule,
         "condition" : Condition,
         "action"    : Action,
-        "institution" : Institution
-
+        "institution" : Institution,
+        "bookmark" : Bookmark
     };
 
     var getCtor = function(name){

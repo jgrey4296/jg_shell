@@ -9,8 +9,8 @@ require.config({
     baseUrl: "/src",
     paths:{
         //General Utils
-        underscore : "/libs/underscore",
-        uContrib : "/libs/underscore-contrib.min",
+        underscore : "/libs/underscore-min",
+        //uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
         d3 : "/libs/d3.min",
         Parse : "Parse/Parse",
@@ -34,12 +34,12 @@ require.config({
         Rete : "/libs/Rete.min"
     },
     shim:{
-        underscore :{
+        'underscore' :{
             exports:'_'
         },
-        uContrib :{
-            exports :'_'
-        },
+        // uContrib :{
+        //     exports :'_'
+        // },
     }
 });
 

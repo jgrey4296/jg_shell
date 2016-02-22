@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','d3','utils'],function(_,d3,util){
+define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,GeneralDrawing){
     "use strict";
     
     var GeneralCommands = {
@@ -27,19 +27,11 @@ define(['underscore','d3','utils'],function(_,d3,util){
         //Mode changing:
         "mode" : function(globalData,values){
             //get the available modes
-            var modes = _.keys(globalData.commands);
-            var newMode;
-            //if one of them is specified, use it,
-            if(modes.indexOf(values[0]) > -1){
-                 newMode = values[0];
-            }else{
-                //otherwise default to the first mode
-                newMode = modes[0];
-            }
+            var modes = _.keys(globalData.commands),
+                newMode = modes.indexOf(values[0]) > -1 ? values[0] : modes[0];
 
             //cleanup the current mode
             globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
-            
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
@@ -83,26 +75,27 @@ define(['underscore','d3','utils'],function(_,d3,util){
         "inspect" : function(globalData,values){
             var nodeId = values.shift(),
                 key = values.shift(),
-                node = globalData.shell.allNodes[nodeId],                
-                pairs;
+                node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,                
+                pairs = key === "#all" ? _.keys(node) : _.pairs(node[key]) || [];
 
-            if(node === undefined) { node = globalData.shell.cwd; }
-            if(key === "#all"){
-                pairs = _.keys(node);
-            }else{
-                pairs = _.pairs(node[key]) || [];
-            }
             globalData.lastInspection = "(" + node.id + ")." + key;
             globalData.lastInspectData = pairs;
-            
         },
         "draw" : function(globalData,values){
             //Draw the Stash:
-            drawStash(globalData,globalData.shell._nodeStash);
+            //drawStash(globalData,globalData.shell._nodeStash);
+            GeneralDrawing.drawStash(globalData,globalData.shell._nodeStash);
             //Draw search results:
-            drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            //drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            GeneralDrawing.drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            
             //draw inspect data
-            drawInspectBar(globalData,globalData.lastInspectData);
+            //drawInspectBar(globalData,globalData.lastInspectData);
+            GeneralDrawing.drawInspectResults(globalData,globalData.lastInspectData);
+
+            //TODO:
+            //Draw Selection
+            GeneralDrawing.drawSelection(globalData,globalData.currentSelection);
 
         },
         //Load a file from the server
@@ -209,208 +202,6 @@ define(['underscore','d3','utils'],function(_,d3,util){
 
         }
     };
-    //--------------------
-    //utility functions:
-    var drawStash = function(globalData,values){
-        var stashedList = values.map(function(d){
-            return "(" + d.id + "): " + d.name.slice(0,10) + "...";
-        }).reverse(); //reverse so last thing added is first thing drawn
-
-        var stashContainer = d3.select("#stashContainer");
-        if(stashContainer.empty()){
-            stashContainer = d3.select("svg").append("g")
-                .attr("id","stashContainer")
-                .attr("transform",function(){
-                    return "translate(" + (globalData.usableWidth * 0.5) + "," + (globalData.usableHeight * 0.8 ) + ")";
-                });
-        }
-        stashContainer.selectAll("text").remove();
-        var boundTexts = stashContainer.selectAll("text").data(stashedList);
-        boundTexts.enter().append("text")
-            .attr("text-anchor","right")
-            .style("fill",globalData.colours.textBlue)
-            .attr("transform",function(d,i){
-                return "translate(0," + (i * 15 ) + ")";
-            })
-            .text(function(d,i){
-                return d;
-            });
-    };
-
-    var drawSearchResults = function(globalData,searchData){
-        //console.log("drawing search results:",searchData);
-        //calculate sizes:
-        var colWidth = globalData.calcWidth(globalData.usableWidth,7),
-            availableHeight = globalData.usableHeight * 0.8,
-            offset = availableHeight *  0.2,
-            increment = (availableHeight - offset) / searchData.length;
-
-        
-        //take the search results,
-        var searchResults = d3.select("#searchResults");
-        if(searchResults.empty()){
-            searchResults = d3.select("svg").append("g")
-                .attr("id","searchResults")
-                .attr("transform","translate(0," + (globalData.usableHeight * 0.1) + ")");
-
-            searchResults.append("rect")
-                .attr("width",100)
-                .attr("height", availableHeight)
-                .style("fill","red")
-                .attr("rx",5).attr("ry",5);
-        }
-
-        //Draw
-        if(searchData.length > 0){
-            if(searchResults.selectAll(".searchText").empty()){
-                searchResults.append("text").classed("searchText",true)
-                    .attr("transform","translate(" + (colWidth * 0.1) + "," + (availableHeight * 0.1) + ")")
-                    .text("Search Results:")
-                    .style("fill","white")
-                    .style("text-anchor","start");
-                    //.attr("dy","1.4em");
-                    
-            }
-            searchResults.select("rect").transition()
-                .attr("width",colWidth);
-
-            var headerSearchText = searchResults.select(".searchText")
-                .text("Search results: " + globalData.lastSearch);
-
-            util.wrapText(headerSearchText,(colWidth * 0.7),d3);
-            
-            var bound = searchResults.selectAll(".searchResult").data(searchData,function(d){ return d.id; });
-            bound.exit().remove();
-
-            var enter = bound.enter().append("g").classed("searchResult",true);
-
-            enter.append("rect").classed("resultRect",true)
-                .attr("width",(colWidth * 0.8))
-                .style("fill","black");
-
-            enter.append("text").classed("resultText",true)
-                .style("fill","white");
-
-                
-            
-            //update selection
-            searchResults.selectAll(".searchResult").transition()
-                .attr("transform",function(d,i){
-                    return "translate(" + (colWidth * 0.1) + "," + (offset + (i * increment)) + ")";
-                });
-
-            searchResults.selectAll(".resultRect").transition()
-                .attr("height",increment - 5)
-                .attr("rx",10).attr("ry",10);
-
-            var resultTexts = searchResults.selectAll(".resultText").transition()
-                .text(function(d) { return d.id + ": " + d.name; })
-                .attr("transform","translate(" + (colWidth * 0.05) + "," + (increment * 0.5) + ")");
-
-            util.wrapText(resultTexts,(colWidth * 0.8),d3);
-            
-        }else{
-            //shrink the window back
-            searchResults.selectAll(".searchResult").remove();
-            searchResults.selectAll(".searchText").remove();
-            searchResults.select("rect").transition()
-                .attr("width",10);
-        }
-    };
-
-
-    //Draw inspect window
-    var drawInspectBar = function(globalData,pairs){
-        if(pairs === undefined){
-            pairs = [];
-        }
-        var colWidth = globalData.calcWidth(globalData.usableWidth, 7),
-            inspectResults = d3.select("#inspectResults"),
-            availableHeight = globalData.usableHeight * 0.8,
-            offset = availableHeight *  0.2,
-            increment = (availableHeight - offset) / pairs.length;
-
-        
-        if(inspectResults.empty()){
-            inspectResults = d3.select("svg").append("g")
-                .attr("id","inspectResults")
-                .attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
-            inspectResults.append("rect")
-                .attr("width",100)
-                .attr("height",availableHeight)
-                .style("fill","red")
-                .attr("rx",5).attr("ry",5)
-                .attr("transform","translate(-100,0)");
-        }
-
-        if(pairs.length > 0){
-            //draw
-            if(inspectResults.selectAll(".inspectText").empty()){
-                inspectResults.append("text").classed("inspectText",true)
-                    .attr("transform","translate(" + -(colWidth * 0.2) + "," + (availableHeight * 0.1) + ")")
-                    .text("Inspect:")
-                    .style("fill","white")
-                    .style("text-anchor","end");
-                    //.attr("dy","1.4em");
-            }
-            inspectResults.select("rect").transition()
-                .attr("width",colWidth)
-                .attr("transform","translate(" + -(colWidth) + ",0)");
-
-
-            var inspectHeaderText = inspectResults.select(".inspectText")
-                .text("Inspect: " + globalData.lastInspection);
-
-            util.wrapText(inspectHeaderText,(colWidth * 0.8),d3);
-            
-            var bound = inspectResults.selectAll(".inspectResult").data(pairs,function(d){ return d[0]+d[1];});
-
-            bound.exit().remove();
-
-            var enter = bound.enter().append("g").classed("inspectResult",true);
-            enter.append("rect").classed("inspectRect",true)
-                .attr("width",(colWidth * 0.8))
-                .style("fill","black");
-
-            enter.append("text").classed("inspectResultText",true)
-                .style("fill","white")
-                .style("text-anchor","end");
-                //.attr("dy","1.4em");
-
-
-            
-            //update:
-            inspectResults.selectAll(".inspectResult").transition()
-                .attr("transform",function(d,i){
-                    return "translate(" + -(colWidth * 0.9) + "," + (offset + (i * increment)) + ")";
-                });
-
-            inspectResults.selectAll(".inspectRect").transition()
-                .attr("height",increment - 5)
-                .attr("rx",10).attr("ry",10);
-
-            var inspectTexts = inspectResults.selectAll(".inspectResultText").transition()
-                .text(function(d){
-                    if(d instanceof Array){
-                        return d[0] +": " + d[1];
-                    }else{
-                        return d;
-                    }
-                })
-                .attr("transform","translate(" + (colWidth * 0.75) + "," + (increment * 0.5) + ")");
-
-            util.wrapText(inspectTexts,(colWidth * 0.8),d3);
-            
-        }else{
-            //cleanup if no data to draw
-            inspectResults.selectAll(".inspectResult").remove();
-            inspectResults.selectAll(".inspectText").remove();
-            inspectResults.select("rect").transition()
-                .attr("width",10)
-                .attr("transform","translate(-10,0)");
-        }        
-    };    
-
     
     return GeneralCommands;
 });

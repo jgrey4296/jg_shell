@@ -15,9 +15,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
                 {name: "roles", children : "incumbent challenger controlled exempt".split(" ")},
                 {name: "activities", children : "physical symbolic communicative unbound".split(" ")},
                 "IGU",
-                {name: "FactGrammar", children : "physical smybolic communicative unbound".split(" ")},
+                {name: "FactGrammar", children : "physical symbolic communicative unbound".split(" ")},
                 "valueHierarchy",
-                {name: "norms", children : "empiricallyExpected normativelyExpected santionable".split(" ")}
+                {name: "norms", children : "empiricallyExpected normativelyExpected sanctionable".split(" ")}
             ],
             parents : ["externalEffectors"]
         };

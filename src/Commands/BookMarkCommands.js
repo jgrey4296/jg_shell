@@ -21,7 +21,7 @@ define(['underscore'],function(_){
                 bookmark = globalData.shell.getNode(values[0]);
             }
             
-            if(bookmark.type === "Bookmark" && bookmark.url !== undefined){
+            if(bookmark.tags.type === "bookmark" && bookmark.url !== undefined){
                 if(bookmark.url instanceof Array){
                     window.open(bookmark.url[0],bookmark.name);
                 }else{
@@ -77,10 +77,10 @@ define(['underscore'],function(_){
         if(data.title !== undefined && data.uri !== undefined){
             childData.push({
                 id: nextId++,
-                name : data.title.slice(0,10),
+                name : data.title,//.slice(0,10),
                 longName : [data.title],
                 url : [data.uri],
-                type : "Bookmark",
+                tags : {type : "bookmark"},
                 children : {},
                 parents : {},
             });
@@ -91,6 +91,7 @@ define(['underscore'],function(_){
     //dealing with an array of bookmarks
     //get groups of 15 bookmarks, and then make nodes of each of those groups
     var groupLinks = function(data){
+        var NUM_IN_GROUP = 9;
         //be able to lookup the data by id
         var lookupObject = data.reduce(function(m,v){
                 if(m[v.id] === undefined){
@@ -104,7 +105,7 @@ define(['underscore'],function(_){
             }),
             //group in 15's
             groupedIds = ids.reduce(function(m,v){
-                if(_.last(m).length > 15){
+                if(_.last(m).length > NUM_IN_GROUP){
                     m.push([]);
                 }
                 _.last(m).push(v);
@@ -120,11 +121,11 @@ define(['underscore'],function(_){
                 },{});
             }),
             //create the group nodes
-            groupNodes = groupObjects.map(function(d){
+            groupNodes = groupObjects.map(function(d,i){
                 var newGroup = {
-                    id : nextId,
-                    name : "Group " + nextId++,
-                    type : "BookmarkGroup",
+                    id : nextId++,
+                    name : "Group_" + i,
+                    tags : {type : "BookmarkGroup"},
                     children : d,
                     parents : { 0 : "Bookmark Root"},
                     _originalParent : 0
@@ -148,7 +149,7 @@ define(['underscore'],function(_){
         endList.push({
             id : 0,
             name : "Bookmark Root",
-            type : "Group",
+            tags : {type : "Group" },
             children : groupChildrenObject,
             parents : {},
         });

@@ -11,7 +11,6 @@ define(['underscore','d3'],function(_,d3){
         d3.selectAll(toCleanUp.join(", ")).remove();
     };
 
-
     /**
        @function pathExtraction
        @purpose construct a string describing the path from the cwd to the root of the shell
@@ -86,13 +85,12 @@ define(['underscore','d3'],function(_,d3){
                 }
             });
         });
-
         return wrapPromise;
     };
 
 
     /**
-       @function single
+       @function drawSingleNode
      */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
@@ -141,7 +139,6 @@ define(['underscore','d3'],function(_,d3){
             //console.log("Draw single node completing:",nodeData);
             return container;
         });
-
     };
                 
 
@@ -235,7 +232,8 @@ define(['underscore','d3'],function(_,d3){
             //draw each individual node
             boundNodes.each(function(d,i){
                 var cur = d3.select(this),
-                    describedData = descriptionFunction(d);
+                    describedData = descriptionFunction !== undefined ? descriptionFunction(d) : d;
+                
                 promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
                                   .then(function(){
                                       //console.log("Adding:",cur,"To promise array");

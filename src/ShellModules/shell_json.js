@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore'],function(_,GraphNode){
+define(['underscore'],function(_){
     "use strict";
     //Object that will be copied into the shell's prototype:
     var ShellPrototype = {};
@@ -62,16 +62,18 @@ define(['underscore'],function(_,GraphNode){
         
         //get the constructor appropriate for the object
         //and apply it to the object
-        console.log("Using get ctor:",this.getCtor);
-        var ctor = this.getCtor(obj.tags.type);
-        obj.prototype = ctor.prototype;
+        //console.log("Using get ctor:",this.getCtor);
+        //console.log("Importing:",obj);
+        var ctor = this.getCtor(obj.tags.type),
+            loadedNode = _.create(ctor.prototype,obj);
+        //console.log("Loaded:",loadedNode);
         
-        if(this.allNodes[obj.id] !== undefined){
-            console.warn("Json loading into existing node:",obj,this.allNodes[obj.id]);
+        if(this.allNodes[loadedNode.id] !== undefined){
+            console.warn("Json loading into existing node:",loadedNode,this.allNodes[loadedNode.id]);
         }
-        this.allNodes[obj.id] = obj;
+        this.allNodes[loadedNode.id] = loadedNode;
 
-        return obj;
+        return loadedNode;
     };
 
     /**
