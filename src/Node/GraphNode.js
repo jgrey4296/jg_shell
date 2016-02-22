@@ -106,6 +106,11 @@ define(['underscore'],function(_){
         },this);
         return lists;
     };
+
+
+    GraphNode.prototype.getShortDescription = function(){
+        return {name :`(${this.id}) ${this.name} : ${this.tags.type}` };
+    };
     
     
     /**

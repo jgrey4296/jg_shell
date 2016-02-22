@@ -3,26 +3,24 @@
    @purpose To implement all user commands dealing with rules
 */
 
-define(['d3','utils','underscore'],function(d3,util,_){
+define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],function(d3,util,_,RuleDrawing,NodeDrawing){
     "use strict";
     
     var ruleCommands = {
         "draw" : function(globalData,values){
             if(globalData.shell.cwd.tags.type.toLowerCase() === "rule"){
-                drawRule(globalData);
+                RuleDrawing.drawRule(globalData,globalData.shell.cwd);
+                //drawRule(globalData);
             }else if(globalData.shell.cwd.tags.type === "negConjCondition"){
                 //TODO: draw neg conj condition
-                drawRule(globalData);
+                RuleDrawing.drawRule(globalData,globalData.shell.cwd);
+                //drawRule(globalData);
             }else{
-                console.warn("Not a rule");
+                NodeDrawing.drawNode(globalData.globalData.shell.cwd);
             }
         },
         "cleanup" : function(globalData, values){
-            d3.select("#mainContainer").selectAll(".condition").remove();
-            d3.select("#mainContainer").selectAll(".action").remove();
-            d3.select("#mainContainer").select(".rule").remove();
-            d3.select("#mainContainer").selectAll(".condExpectation").remove();
-            d3.select("#mainContainer").selectAll(".actionExpectation").remove();
+            RuleDrawing.cleanup();
         },
         //** @command cd
         "cd" : function(globalData,values){

@@ -30,7 +30,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         standardData.childrenOffset = (standardData.halfWidth + standardData.colWidth) + standardData.halfCol;
         standardData.parentOffset = (standardData.halfWidth - (standardData.colWidth*2)) + standardData.halfCol;
 
-            //The group everything is in
+        //The group everything is in
         var mainContainer = DrawUtils.createOrShare('mainContainer'),
             //Select (or create) and bind the node
             node = DrawUtils.createOrShare('node',mainContainer)
@@ -43,23 +43,11 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
         DrawUtils.drawSingleNode(node,standardData.nodeDescriptions,standardData);
         //Draw the children:
-        DrawUtils.drawGroup(childGroup,standardData.childrenData,standardData);
-        DrawUtils.drawGroup(parentGroup,standardData.parentsData,standardData);
+        DrawUtils.drawGroup(childGroup,standardData.childrenData,standardData,x=>[x.getShortDescription()]);
+        DrawUtils.drawGroup(parentGroup,standardData.parentsData,standardData,x=>[x.getShortDescription()]);
 
-
-        
-        //figure out parent path:
-        var path = DrawUtils.pathExtraction(globalData,10).join(" --> "),
-            pathText = d3.select("#pathText");
-        if(pathText.empty()){
-            pathText = d3.select("svg").append("text").attr("id","pathText")
-                .style("fill","white")
-                .attr("transform","translate(" + (globalData.usableWidth * 0.5) + ",50)")
-                .style("text-anchor","middle");
-        }
-        //use the figured out path
-        pathText.text(path);
-        
+        //Draw the current path
+        DrawUtils.drawPath(globalData);
     };
 
 

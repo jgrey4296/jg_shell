@@ -147,6 +147,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         },
 
         lookupOrFallBack : function(commandName,globalData){
+            if(globalData === undefined) globalData = this;
             var commandToExecute;
             if(globalData.commands[globalData.currentCommandMode]
                && globalData.commands[globalData.currentCommandMode][commandName]){
