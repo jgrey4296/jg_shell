@@ -260,7 +260,7 @@ define(['underscore','d3'],function(_,d3){
                     if(d[0][0].previousElementSibling !== null){
                         var bbox = d[0][0].previousElementSibling.getBBox(),
                             xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
-                        offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator,
+                        offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
 
                         d.attr("transform",`translate(${xOffset},${offset})`);
                     }

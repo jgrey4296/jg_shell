@@ -8,7 +8,6 @@ if(typeof define !== 'function'){
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
-    var nextId = 0;
     var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
         var relations = {
             children : [

@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
-
+    "use strict";
     var Rule = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"rule",{},overRideId);
         //id -> name of condition objects

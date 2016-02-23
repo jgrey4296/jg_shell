@@ -3,12 +3,12 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
-
+    "use strict";
     var Action = function(name,parent,actionType,values,overRideId){
         GraphNode.call(this,name,parent,"action",{},overRideId);
         this.tags.actionType = actionType || "assert";
         while(values && values.length >= 2){
-            baseNode.values[values.shift()] = values.shift();
+            this.values[values.shift()] = values.shift();
         }
 
         //{keyVal : [op,mod]
@@ -31,7 +31,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }else{
             this.arithmeticActions[val] = [operator,modifier];
         }
-    }
+    };
     //set or remove a regex action
     var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
     Action.prototype.setRegex = function(val,regex){
@@ -44,7 +44,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             }
             this.regexActions[val] = [splitRegex[1],splitRegex[3],splitRegex[2]];
         }
-    }
+    };
 
     Action.prototype.getDescriptionObjects = function(){
         var lists = [];
@@ -55,7 +55,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         lists.push({
             name : "Tags",
             values : _.pairs(this.tags).map(d=>d.join(" : "))
-        })
+        });
 
         lists.push({
             name : "Data",

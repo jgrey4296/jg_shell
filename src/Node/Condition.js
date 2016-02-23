@@ -3,7 +3,8 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
-
+    "use strict";
+    
     var Condition = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"condition",{},overRideId);
         this.tags.isPositive = true;

@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution','./Bookmark'],function(_,GraphNode,Rule,Condition,Action,Institution,Bookmark){
-
+    "use strict";
     var ctors = {
         "graphnode" : GraphNode,
         "rule"      : Rule,
@@ -17,8 +17,8 @@ define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institut
         if(ctors[name.toLowerCase()] !== undefined){
             return ctors[name.toLowerCase()];
         }
-        return ctors['graphnode'];
-    }
+        return ctors.graphnode;
+    };
     
     return getCtor;
 });

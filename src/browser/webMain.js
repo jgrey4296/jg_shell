@@ -149,7 +149,7 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         },
 
         lookupOrFallBack : function(commandName,globalData){
-            if(globalData === undefined) globalData = this;
+            if(globalData === undefined) { globalData = this; }
             var commandToExecute;
             if(globalData.commands[globalData.currentCommandMode]
                && globalData.commands[globalData.currentCommandMode][commandName]){
@@ -186,8 +186,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             }else{//Not enter, still typing:
                 HelpCLI(currentLine + d3.event.key,globalData);
             }
-        }catch(err){
-            console.log("Input Error: ",err);
+        }catch(e){
+            console.log("Input Error: ",e);
         }
     });
 

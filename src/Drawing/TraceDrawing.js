@@ -1,5 +1,5 @@
 define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
-
+    "use strict";
 
     var TraceDrawInterface = {};
 

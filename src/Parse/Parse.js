@@ -4,7 +4,8 @@
    ie: { start: "$greeting", greeting: "hello" };
 */
 define(['underscore'],function(_){
-
+    "use strict";
+    
     var ParseObject = function(grammarObj,start,depth=1){
         if(depth > 50){
             console.warn("Parse depth > 50");
@@ -24,7 +25,7 @@ define(['underscore'],function(_){
 
         //get the variables that need expansion
         var variables = currentString.match(/\$\w+/g);
-        if(variables === null) return currentString;
+        if(variables === null) { return currentString; }
 
         //For each variable, expand it
         var returnedStrings = variables.map(function(d){

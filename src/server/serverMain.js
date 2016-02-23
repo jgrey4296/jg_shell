@@ -138,7 +138,7 @@ var copyFile = function(sourcePath,fileName,cb){
             cbCalled = true;
         }
     }
-}
+};
 
 
 //----------------------------------------
