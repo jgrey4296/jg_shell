@@ -1,5 +1,5 @@
 
-define(['underscore'],function(_){
+define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
     "use strict";
     
     var TraceCommands = {
@@ -11,9 +11,11 @@ define(['underscore'],function(_){
 
         },
         "trace" : function(globalData,values){
-            var curNode = globalData.shell.cwd;
-            var returnVal = globalData.shell.traceNode(curNode);
-            console.log("Trace Result:",returnVal);
+            var curNode = globalData.shell.cwd,
+                amt = !Number.isNaN(parseInt(values[0])) ? Array(parseInt(values[0])).fill(0) : [0],
+                returnVals = amt.map(()=>globalData.shell.traceNode(curNode));
+            console.log("Trace Result:",returnVals);
+            TraceDrawing.drawTraces(globalData,returnVals);
         },
         "varsToChildren" : function(globalData,values){
             var curNode = globalData.shell.cwd,

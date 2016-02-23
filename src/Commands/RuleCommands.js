@@ -168,10 +168,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             //if you are overwriting an expectation:
             //remove the old expectation
             if(condOrAction.expectationNode !== null){
-                var oldExpectation = globalData.shell.allNodes[condOrAction.expectationNode];
-                if(condOrAction.tags.type === "condition"){
+                var oldExpectation = globalData.shell.getNode(condOrAction.expectationNode);
+                if(oldExpectation && condOrAction.tags.type === "condition"){
                     delete oldExpectation.expectedBy[condOrAction.id];
-                }else if(condOrAction.tags.type === "action"){
+                }else if(oldExpectation && condOrAction.tags.type === "action"){
                     delete oldExpectation.producedBy[condOrAction.id];
                 }
             }

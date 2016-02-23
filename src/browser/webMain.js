@@ -78,10 +78,12 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         shell : new Shell.CompleteShell(),
 
         lastSetOfSearchResults : [],
+        lastInspectData : [],
+        currentSelection : [],
+
+        
         MainCommandCLIRef : MainCommandCLI,
 
-        //selection for applying actions to multiple nodes
-        currentSelection : [],
         
         //COLOURS:
         scaleToColour : d3.scale.linear()

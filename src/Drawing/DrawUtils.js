@@ -6,7 +6,7 @@ define(['underscore','d3'],function(_,d3){
        @function cleanup
        @purpose Generic cleanup function, will typically be bound for each specific draw style
        @example DrawUtils.cleanup.bind({},".node",".parent",".child")();
-     */
+    */
     DrawUtils.cleanup = function(...toCleanUp){
         d3.selectAll(toCleanUp.join(", ")).remove();
     };
@@ -14,7 +14,7 @@ define(['underscore','d3'],function(_,d3){
     /**
        @function pathExtraction
        @purpose construct a string describing the path from the cwd to the root of the shell
-     */
+    */
     DrawUtils.pathExtraction = function(globalData,depth){
         var path = [];
         var shell = globalData.shell;
@@ -51,7 +51,7 @@ define(['underscore','d3'],function(_,d3){
     /**
        @function wrapText
        @purpose Take a selection of individual text objects, and wrap them within a defined width
-     */
+    */
     DrawUtils.wrapText = function(textSelection,width){
         //console.log("wrap text on :",textSelection);
         var wrapPromise = Promise.resolve();
@@ -91,7 +91,7 @@ define(['underscore','d3'],function(_,d3){
 
     /**
        @function drawSingleNode
-     */
+    */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
         var drawPromise = new Promise(function(resolve,reject){
@@ -138,9 +138,11 @@ define(['underscore','d3'],function(_,d3){
             container.select("#EnclosingRect").attr("height",tempHeight);
             //console.log("Draw single node completing:",nodeData);
             return container;
+        }).catch(function(e){
+            console.warn("Single Node Error:",e);
         });
     };
-                
+    
 
     //
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
@@ -170,7 +172,7 @@ define(['underscore','d3'],function(_,d3){
                 }else{
                     textArray = [d.name];
                 }
-                
+                //console.log("Text Array:",textArray);
                 var boundTexts = cur.selectAll("text").data(textArray);
                 boundTexts.exit().remove();
                 boundTexts.enter().append("text")
@@ -191,6 +193,8 @@ define(['underscore','d3'],function(_,d3){
                     offset += i===0 ? groupData.nodeDataSeparator : bbox.height + groupData.nodeDataSeparator;                    
                     text.attr('transform',`translate(0,${offset})`);
                 });
+            }).catch(function(e){
+                console.warn("Ind Group Error:",e);
             }));
         });
 
@@ -203,7 +207,10 @@ define(['underscore','d3'],function(_,d3){
                 //expand rectangle of the group
                 g.select("rect").attr("height",tempHeight);                
             });
-        }).then(function(){ return containerSelection; });
+        }).then(function(){ return containerSelection; })
+            .catch(function(e){
+                console.warn("AllPromise Ind Group Error:",e);
+            });
     };
 
     //--------------------
@@ -225,9 +232,10 @@ define(['underscore','d3'],function(_,d3){
             resolve(boundNodes);
         });
 
-        var promiseArray = [];
+
         //When nodes have been created
-        groupPromise.then(function(boundNodes){
+        return groupPromise.then(function(boundNodes){
+            var promiseArray = [];
             //console.log("Post initial group promise:",boundNodes);
             //draw each individual node
             boundNodes.each(function(d,i){
@@ -240,24 +248,30 @@ define(['underscore','d3'],function(_,d3){
                                       return cur;
                                   }));
             });
-
+            return promiseArray;
+        }).then(function(promiseArray){
             //Wait on all the nodes to be drawn
-            Promise.all(promiseArray).then(function(eachElement){
+            return Promise.all(promiseArray).then(function(eachElement){
                 //console.log("All promises fulfilled:",eachElement);
                 //Then offset them
                 var offset = 0;
                 eachElement.forEach(function(d,i){
                     //offset
                     if(d[0][0].previousElementSibling !== null){
-                        var bbox = d[0][0].previousElementSibling.getBBox();
-                        offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
-                        d.attr("transform",`translate(0,${offset})`);
+                        var bbox = d[0][0].previousElementSibling.getBBox(),
+                            xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
+                        offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator,
+
+                        d.attr("transform",`translate(${xOffset},${offset})`);
                     }
                 });
             });
+        }).catch(function(e){
+            console.warn("Group Data:",data);
+            console.warn("Group Error:",e);
         });
     };
-                         
+    
 
     //Draw the path:
     DrawUtils.drawPath = function(globalData){

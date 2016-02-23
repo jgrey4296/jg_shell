@@ -79,7 +79,7 @@ define(['underscore','Parse'],function(_,Parse){
        @purpose convert node and subnodes to a tracery style string
      */
     ShellPrototype.traceNode = function(node){
-        console.log("Tracing node:",node);
+        //console.log("Tracing node:",node);
         //no message: node is an array of children
         //message: node is a rule
 

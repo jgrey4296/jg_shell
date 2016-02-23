@@ -82,7 +82,7 @@ define(['underscore'],function(_){
        @class GraphNode
      */
     GraphNode.prototype.toString = function(){
-        return `(${this.id}) : ${this.name}`;
+        return `(${this.id}) : ${this.name.slice(0,10)}`;
     };
 
     /**

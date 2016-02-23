@@ -65,6 +65,11 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             values : _.keys(this.bindings).map(d=>`${d} <-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`)
         });
 
+        lists.push({
+            name : "SOURCE:",
+            values : this.expectationNode
+        });
+        
         return lists;
     };
     

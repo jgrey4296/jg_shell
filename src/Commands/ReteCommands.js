@@ -75,6 +75,11 @@ define(['underscore','d3'],function(_,d3){
             //todo: draw the actions being performed this step
 
         },
+        "clearRete" : function(globalData,values){
+            _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
+            globalData.shell.clearRete();
+
+        },
         "printRete" : function(globalData,values){
             console.log(globalData.shell.reteNet);
         },
