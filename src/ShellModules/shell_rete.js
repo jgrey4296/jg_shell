@@ -15,7 +15,7 @@ define(['underscore','Rete'],function(_,Rete){
        @purpose Completely reset the retenet, by building a new one
      */
     ShellPrototype.clearRete = function(){
-        this.reteNet = new Rete.ReteNet();
+        this.reteNet = new Rete();
     };
 
     /**
