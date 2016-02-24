@@ -28,7 +28,7 @@ define(['underscore','../utils'],function(_,util){
         this.previousLocation = this.cwd.id;
         //go up to parent
         if(target === ".."){
-            console.log("cd : ..");
+            //console.log("cd : ..");
             if(this.cwd._originalParent){
                 this.cdNode(this.cwd._originalParent);
             }else{

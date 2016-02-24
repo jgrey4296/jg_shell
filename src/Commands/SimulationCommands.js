@@ -62,7 +62,7 @@ define(['underscore'],function(_){
             //todo: let user specify an id of a character to act
             var charToUse = _.sample(globalData.simulation.characterPool),
                 //Get actions for that character
-                actionsForChar = _.filter(globalData.simulation.reteNet.potentialActions,
+                actionsForChar = _.filter(globalData.simulation.reteNet.proposedActions,
                                           function(d){
                                               try{
                                                   //TODO: FIX THIS
@@ -77,7 +77,7 @@ define(['underscore'],function(_){
                 actionToPerform = _.sample(actionsForChar),
                 //Get the linked actions (assertions/retractions) for that performance
                 linkedActions = actionToPerform !== undefined ? actionToPerform.parallelActions.map(function(d){
-                    return globalData.simulation.reteNet.potentialActions[d.id];
+                    return globalData.simulation.reteNet.proposedActions[d.id];
                 }) : [];
             console.log("CharToUse:",[charToUse,actionsForChar,actionToPerform]);
             

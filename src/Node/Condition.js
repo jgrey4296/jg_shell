@@ -68,7 +68,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
         lists.push({
             name : "SOURCE:",
-            values : this.expectationNode
+            values : [this.expectationNode]
         });
         
         return lists;

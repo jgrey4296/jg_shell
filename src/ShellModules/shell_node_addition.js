@@ -126,7 +126,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
             throw new Error("Insufficient test specification");
         }
         //Check the operator is a defined one
-        if(Rete.CompOperators[testParams[1]] === undefined){
+        if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
         var condition = this.allNodes[conditionId];

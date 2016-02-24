@@ -107,6 +107,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             if(targetType === 'action' && targetField === 'regex'){
                 globalData.shell.setRegex(Number(targetId),values[0],values[1],sourceId);
             }
+
+            if(targetType === 'action' && targetField === 'timing'){
+                globalData.shell.setTiming(Number(targetId),values[0],values[1],sourceId);
+            }
             
             //todo: set action tags
             

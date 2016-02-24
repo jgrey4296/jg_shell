@@ -18,6 +18,13 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         //Fact link that this action produces
         this.expectationNode = null;
 
+        //Specify timing of proposed action to create,
+        //As offsets from the time the action fires
+        this.timing = {
+            invalidateOffset : 0,
+            performOffset : 0,
+            unperformOffset: 0
+        };
         
     };
     Action.prototype = Object.create(GraphNode.prototype);
@@ -46,6 +53,13 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     };
 
+    Action.prototype.setTiming = function(timeVar,value){
+        if(this.timing[timeVar] !== undefined){
+            this.timing[timeVar] = Number(value);
+        }
+    };
+
+    
     Action.prototype.getDescriptionObjects = function(){
         var lists = [];
         lists.push({
@@ -70,6 +84,16 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         lists.push({
             name: "Regex Actions",
             values : _.keys(this.regexActions).map(d=>`${d} ~= /${this.regexActions[d][0]}/${this.regexActions[d][2]}/${this.regexActions[d][1]}`)
+        });
+
+        lists.push({
+            name: "Timing",
+            values : _.keys(this.timing).map(d=>`${d} : ${this.timing[d]}`)
+        });
+
+        lists.push({
+            name "Produces:",
+            values : [this.expectationNode]
         });
         
         return lists;

@@ -146,6 +146,16 @@ define(['underscore'],function(_){
         action.setRegex(varName,regex);
 
     };
+
+    /**
+       Modify the timing of an action
+    */
+    ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+            action = this.getNode(actionId);
+        action.setTiming(timeVar,value);
+
+    }
     
     /**
        @class CompleteShell

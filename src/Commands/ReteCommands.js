@@ -21,7 +21,7 @@ define(['underscore','d3'],function(_,d3){
             }if(values[0] === 'history'){
                 globalData.shell.clearHistory();
             }else{
-                globalData.shell.clearPotentialActions();
+                globalData.shell.clearProposedActions();
             }
         },
         "draw" : function(globalData,values){
@@ -31,12 +31,11 @@ define(['underscore','d3'],function(_,d3){
             
             //todo: draw... facts? tokens? possible actions?
 
-
             //draw asserted wmes -> actions
             var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
                 return d !== undefined;
             });
-            var actions = globalData.shell.reteNet.potentialActions;
+            var actions = globalData.shell.reteNet.proposedActions;
 
             var wmeColumn = d3.select("#mainContainer").append("g")
                 .attr("id","wmeColumn");

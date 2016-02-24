@@ -24,11 +24,13 @@ define(['underscore','Rete'],function(_,Rete){
        @purpose Clear the record of recently activated rules
      */
     ShellPrototype.clearPotentialActions = function(){
-        Rete.clearPotentialActions(this.reteNet);
+        //Rete.clearPotentialActions(this.reteNet);
+        this.reteNet.clearProposedActions();
     };
     
     ShellPrototype.clearHistory = function(){
-        Rete.clearHistory(this.reteNet);
+        //Rete.clearHistory(this.reteNet);
+        this.reteNet.clearHistory();
     };
     
     /**
@@ -52,7 +54,8 @@ define(['underscore','Rete'],function(_,Rete){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            //var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            var actionNode = this.reteNet.addRule(d.id,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
             d.actionNodeId = actionNode.id;
             return {"rule": d, "actions" :actionNode};
@@ -112,7 +115,8 @@ define(['underscore','Rete'],function(_,Rete){
         }
         //create wme objects out of them
         var newWMEs = nodes.map(function(data){
-            var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+            //var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+            var wmeId = this.reteNet.assertWME(data);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -125,14 +129,17 @@ define(['underscore','Rete'],function(_,Rete){
             throw new Error("Retractions should be in an array");
         }
         nodes.forEach(function(node){
-            Rete.retractWME_Immediately(node,this.reteNet);
+            //Rete.retractWME_Immediately(node,this.reteNet);
+            //TODO: should this be node.wmeID?
+            this.reteNet.retractWME(node);
         },this);
     };
     
     ShellPrototype.stepTime = function(){
-        Rete.incrementTime(this.reteNet);
-        console.log("Potential Actions:",this.reteNet.potentialActions);
-        return this.reteNet.potentialActions;
+        //Rete.incrementTime(this.reteNet);
+        this.reteNet.stepTime();
+        console.log("Potential Actions:",this.reteNet.proposedActions);
+        return this.reteNet.proposedActions;
     };
     
     /**

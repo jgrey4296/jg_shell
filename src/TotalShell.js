@@ -45,7 +45,7 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
         this.lastSearchResults = [];
 
         //Integrated Rete Net:
-        this.reteNet = new Rete.ReteNet();
+        this.reteNet = new Rete();
     };
     
     //Use the aggrgated shell prototype:
