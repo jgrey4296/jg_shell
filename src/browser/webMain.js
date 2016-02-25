@@ -22,8 +22,8 @@ require.config({
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
         //Shell
-        //TotalShell : "TotalShell",
-        TotalShell : "/libs/Shell.min",
+        TotalShell : "TotalShell",
+        //TotalShell : "/libs/Shell.min",
         //Rete
         Rete : "/libs/Rete.min"
     },
