@@ -92,7 +92,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         });
 
         lists.push({
-            name "Produces:",
+            name : "Produces:",
             values : [this.expectationNode]
         });
         
