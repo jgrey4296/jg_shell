@@ -16,20 +16,14 @@ require.config({
         Parse : "Parse/Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
-        GraphStructureConstructors:"Node/GraphStructureConstructors",
-        //Commands
-        NodeCommands : "Commands/NodeCommands",
-        RuleCommands : "Commands/RuleCommands",
-        ReteCommands : "Commands/ReteCommands",
-        GeneralCommands: "Commands/GeneralCommands",
-        SimulationCommands : "Commands/SimulationCommands",
-        BookMarkCommands : "Commands/BookMarkCommands",
-        TraceCommands : "Commands/TraceCommands",
+        //Commands:
+        AllCommands : "Commands/Command_Aggregate",
         //CLI
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
         //Shell
-        TotalShell : "TotalShell",
+        //TotalShell : "TotalShell",
+        TotalShell : "/libs/Shell.min",
         //Rete
         Rete : "/libs/Rete.min"
     },
@@ -37,9 +31,6 @@ require.config({
         'underscore' :{
             exports:'_'
         },
-        // uContrib :{
-        //     exports :'_'
-        // },
     }
 });
 
@@ -47,7 +38,7 @@ require.config({
    @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","SimulationCommands","BookMarkCommands","TraceCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,SimulationCommands,BookMarkCommands,TraceCommands){
+require(['d3','TotalShell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
     "use strict";
 
     //----------------------------------------
@@ -57,16 +48,9 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
         maxNumberOfNodesInAColumn : 10,
         maxNumberOfChildrenVisible : 40,
 
-        //Commands stored in here:
-        commands : {
-            "node" : NodeCommands,
-            "rule" : RuleCommands,
-            "rete" : ReteCommands,
-            "general" : GeneralCommands,
-            "sim"  : SimulationCommands,
-            "bookmark" : BookMarkCommands,
-            "trace" : TraceCommands,
-        },
+        //Command aggregate object stored here, giving interface to commands:
+        commands : AllCommands,
+        
         //The order that commands will be checked if they arent found in the current mode
         commandFallBackOrder : [
             "node","rule","rete","sim","general","bookmark","trace"

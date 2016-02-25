@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jgrey4296/jg_shell#readme",
   "dependencies": {
+    "almond": "^0.3.1",
     "underscore-contrib": "^0.3.0"
   }
 }
