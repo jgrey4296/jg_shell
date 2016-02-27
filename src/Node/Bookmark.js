@@ -1,3 +1,7 @@
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
     var Bookmark = function(name,parent,type,url,overRideId){

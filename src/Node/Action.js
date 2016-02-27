@@ -25,6 +25,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             performOffset : 0,
             unperformOffset: 0
         };
+        this.priority = 0;
         
     };
     Action.prototype = Object.create(GraphNode.prototype);
@@ -94,6 +95,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         lists.push({
             name : "Produces:",
             values : [this.expectationNode]
+        });
+
+        lists.push({
+            name : "Priority:",
+            values : [this.priority]
         });
         
         return lists;
