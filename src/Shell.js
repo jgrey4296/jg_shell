@@ -2,7 +2,12 @@
    Describes the top level Shell class, allowing authoring of a graph structure
    and integration with Rete based rule engine
    @module Shell
-   
+   @requires Rete
+   @requires underscore
+   @requires Node/GraphNode
+   @requires Node/Constructors
+   @requires utils
+   @requires ShellModules/shell_prototype_main
  */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -12,53 +17,52 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
     "use strict";
 
     /**
-       Shell
+       The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
        @constructor
-       @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
+       @alias module:Shell       
     */
     var Shell = function(){
         this.nextId = 0;
         this.tags = {};
         this.tags.type = 'Shell';
-        //the root node
+        /** The Root Node */
         this.root = new GraphNode('__root');
         
-        //disconnected nodes:
+        /** Disconnected Nodes
+            @deprecated
+        */
         this.disconnected = {
             noParents : new GraphNode('disconnectedFromParents'),
             noChildren : new GraphNode('disconnectedFromChildren'),
         };
-        //All Nodes:
+        /** All Nodes */
         this.allNodes = {};
         this.allNodes[this.root.id] = this.root;
-        //AllRules:
+        /** All Rules */
         this.allRules = [];
+        /** All Rules By Name */
         this.allRulesByName = {};
 
-        //current node/rule, as an ACTUAL OBJECT, NOT AN ID
+        /** The Current Working Node Object */
         this.cwd = this.root;
 
-        //stashed locations:
+        /** Stashed Node Objects */
         this._nodeStash = [];
+        /** The previous node id */
         this.previousLocation = 0;
 
-        //last search results:
+        /** Search Results */
         this.lastSearchResults = [];
 
-        //Integrated Rete Net:
+        /** Internal Rete Net */
         this.reteNet = new Rete();
     };
     
-    //Use the aggrgated shell prototype:
+    /** @borrows module:shell_prototype_main as shell_prototype */
     Shell.prototype = Object.create(shell_prototype);
     Shell.prototype.constructor = Shell;
 
     Shell.prototype.getCtor = getCtor;
     
-    /**
-       @interface The interface of the Shell file
-       @exports Shell 
-       @alias Shell for Shell
-     */
     return Shell;
 });

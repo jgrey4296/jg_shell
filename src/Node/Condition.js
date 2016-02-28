@@ -1,10 +1,19 @@
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
-
+/**
+   Defines a Condition, to interface with ReteNet
+   @module Node/Condition
+   @see {@link Node/Condition}
+ */
 define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     "use strict";
-    
+
+    /**
+       @constructor
+       @augments Node/GraphNode
+       @alias Node/Condition
+     */
     var Condition = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"condition",{},overRideId);
         this.tags.isPositive = true;
@@ -20,7 +29,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     Condition.prototype = Object.create(GraphNode.prototype);
     Condition.constructor = Condition;
 
-    //Modify a constant test in the condition
+    /** Modify a constant test in the condition */
     Condition.prototype.setTest = function(testId,testField,op,val){
         if(arguments < 2){
             this.constantTests.splice(testId,1);
@@ -38,7 +47,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             });
         }
     };
-
+    /** set binding */
     Condition.prototype.setBinding = function(toVar,fromVar,testPairs){
         if(arguments < 2){
             delete this.bindings[toVar];
@@ -47,7 +56,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         }
     };
 
-
+    /** get Description objects */
     Condition.prototype.getDescriptionObjects = function(){
         var lists = [];
         lists.push({

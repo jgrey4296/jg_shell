@@ -1,6 +1,7 @@
 /**
-   @file GraphNode
-   @purpose To define the base data structure for the shell
+   To define the base data structure for the shell
+   @module Node/GraphNode
+   @see {@link Node/GraphNode}
 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -9,43 +10,52 @@ if(typeof define !== 'function'){
 define(['underscore'],function(_){
     "use strict";
     var nextId = 0;
-    //The main node type of the graph:
-    //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
+    /**
+       The main node type of the graph:
+       @constructor
+       @alias Node/GraphNode
+     */
     var GraphNode = function(name,parent,type,relationsToCreate,overRideId){
-        //Id and name for identification
+        //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
+        /** The id of the node */
         this.id = overRideId || nextId++;
         if(overRideId && overRideId > nextId){
             nextId = overRideId + 1;
         }
-        
+
+        /** The Name of the Node */
         this.name = name;
 
-        //Parents and children created internally, ready to be sent to the shell for registration
+        /** Parents and children created internally, ready to be sent to the shell for registration */
         this.relatedObjects = [];
 
         //parents and children for links
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
+        /** children */
         this.children = {};
+        /** parents */
         this.parents = {};
         if(parent !== undefined){
             this._originalParent = parent.id;
             this.parents[parent.id] = parent.name;
         }
 
-        //Data stored in the node
+        /** Stored Data: Values */
         this.values = {};
+        /** Stored Data : Tags */
         this.tags = {};
+        /** Stored Data : Annotations */
         this.annotations = {};
 
-        //Used to update the prototype on json-imported data
+        /** Used to update the prototype on json-imported data */
         this.tags.type = type || 'graphnode';
 
-        //**Relations to rules:
-        //Rules that consume this fact:
+        /* Relations to Rules */
+        /** Rules that consume this fact: */
         this.expectedBy = {};
-        //Rules that produce this fact:
+        /** Rules that produce this fact: */
         this.producedBy = {};
 
 
@@ -78,20 +88,20 @@ define(['underscore'],function(_){
     GraphNode.constructor = GraphNode;
 
     /**
-       @method toString
-       @class GraphNode
+       Convert to a string
+       @method
      */
     GraphNode.prototype.toString = function(){
         return `(${this.id}) : ${this.name.slice(0,10)}`;
     };
 
     /**
-       @method toStringList
-       @class GraphNode
-       @purpose returns a list of objects for visualisation
-       @return [{name: "", values : [] }]
+       Returns a list of objects for visualisation
+       @method 
+       
      */
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
+        //returns [{name: "", values : [] }]
         //Get all fields
         var lists = fieldNameList.map(function(d){
             //as a simple { name : "key : value" } object
@@ -107,16 +117,18 @@ define(['underscore'],function(_){
         return lists;
     };
 
-
+    /**
+       Get a simple text description of the node
+       @method 
+     */
     GraphNode.prototype.getShortDescription = function(){
         return {name :`(${this.id}) ${this.name} : ${this.tags.type}` };
     };
     
     
     /**
-       @method setValue
-       @class GraphNode
-       @purpose set a value in the node. as a scalar if no parameter is specified
+       Set a value in the node. as a scalar if no parameter is specified
+       @method
      */
     GraphNode.prototype.setValue = function(value,field,parameter){
         //todo: add guards so you don't delete something important like 'id'
@@ -139,10 +151,9 @@ define(['underscore'],function(_){
     };
 
     /**
-       @method addRelation
-       @class GraphNode
-       @purpose register a NodeStyle object as a relation of this node. stores id+name
-       @purpose and adds to the relatedObjects map;
+       Register a NodeStyle object as a relation of this node. stores id+name
+       and adds to the relatedObjects map;
+       @method
      */
     GraphNode.prototype.addRelation = function(target,object){
         if(!(object instanceof GraphNode)){
@@ -160,9 +171,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @method getRelationObjects
-       @class GraphNode
-       @purpose Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+       Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+       @method
      */
     GraphNode.prototype.getRelationObjects = function(){
         var tempList = this.relatedObjects;

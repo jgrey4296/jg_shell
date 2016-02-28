@@ -1,6 +1,6 @@
 /**
-   @file utils
-   @purpose defines general utilities to use across projects
+   Defines general utilities to use across projects
+   @module utils
 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -8,8 +8,16 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+       @alias module:utils
+     */
     var util = {};
-    
+
+    /**
+       Make a random choice from the passed in array
+       @deprecated
+       @function
+     */
     util.randomChoice = function(array){
         var randIndex = Math.floor(Math.random() * array.length);
         return array[randIndex];
@@ -128,6 +136,11 @@ define(['underscore'],function(_){
     //     }
     // };
 
+    /**
+       convert a string representation of an operator to its normal form
+       @deprecated
+       @function
+     */
     util.operatorToString = function(operatorName){
         var conversion = {
             "EQ" : "==",
@@ -146,10 +159,13 @@ define(['underscore'],function(_){
         }
     };
 
-    //Take a selection, append a wrapping classname,
-    //offset by a global, and invidual amount, set a colour,
-    //and use a passed in function to fill the texts
-    //returning the resulting texts
+    /**
+       Take a selection, append a wrapping classname,
+       offset by a global, and invidual amount, set a colour,
+       and use a passed in function to fill the texts
+       returning the resulting texts
+       @function
+    */
     util.annotate = function(boundDom,className,
                              verticalOffset,nodeHeight,verticalSeparator,
                              horizontalOffset,nodeWidth,colour,textFunction,textColour){
@@ -189,8 +205,12 @@ define(['underscore'],function(_){
         return texts;
     };
 
-    //repeatedly truncate text until it fits in a certain amount of space;
-    //TODO: customise
+
+    /**
+       repeatedly truncate text until it fits in a certain amount of space;
+       @function
+       TODO: customise
+    */
     util.truncateDrawnText = function(d){
         var bbox = this.getBBox();
         var maxLength = d.name.length - 4;

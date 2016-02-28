@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Node/Condition.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Node/Condition.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+/**
+   Defines a Condition, to interface with ReteNet
+   @module Node/Condition
+   @see {@link Node/Condition}
+ */
+define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
+    "use strict";
+
+    /**
+       @constructor
+       @augments Node/GraphNode
+       @alias Node/Condition
+     */
+    var Condition = function(name,parent,type,relations,overRideId){
+        GraphNode.call(this,name,parent,"condition",{},overRideId);
+        this.tags.isPositive = true;
+        this.tags.isNegative = false;
+
+        //Test objects of form: { field: "", operator: "", value : "" }
+        this.constantTests = [];
+        //Bindings object: { boundVar : [sourceVar, [tests]] }
+        this.bindings = {};
+        //Source node
+        this.expectationNode = null;
+    };
+    Condition.prototype = Object.create(GraphNode.prototype);
+    Condition.constructor = Condition;
+
+    /** Modify a constant test in the condition */
+    Condition.prototype.setTest = function(testId,testField,op,val){
+        if(arguments &lt; 2){
+            this.constantTests.splice(testId,1);
+        }else if(testId !== undefined &amp;&amp; this.constantTests[testId] !== undefined){
+            this.constantTests[testId] = {
+                field : testField,
+                operator : op,
+                value : val
+            };
+        }else{
+            this.constantTests.push({
+                field : testField,
+                operator : op,
+                value : val
+            });
+        }
+    };
+    /** set binding */
+    Condition.prototype.setBinding = function(toVar,fromVar,testPairs){
+        if(arguments &lt; 2){
+            delete this.bindings[toVar];
+        }else{
+            this.bindings[toVar] = [fromVar,testPairs];
+        }
+    };
+
+    /** get Description objects */
+    Condition.prototype.getDescriptionObjects = function(){
+        var lists = [];
+        lists.push({
+            name: this.toString()
+        });
+        
+        //Add the constant tests
+        lists.push({
+            name: "IF:",
+            values : this.constantTests.map((d,i)=>`(${i}): wme.data.${d.field} ${util.operatorToString(d.operator)} ${d.value}`)
+        });
+
+        //Add the bindings:
+        lists.push({
+            name: "BIND:",
+            values : _.keys(this.bindings).map(d=>`${d} &lt;-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`)
+        });
+
+        lists.push({
+            name : "SOURCE:",
+            values : [this.expectationNode]
+        });
+        
+        return lists;
+    };
+    
+    return Condition;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModule_shell_node_mod.html">ShellModule/shell_node_mod</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="Node_Action.html">Node/Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_GraphNode.html">Node/GraphNode</a></li><li><a href="Node_Institution.html">Node/Institution</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 05:31:58 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

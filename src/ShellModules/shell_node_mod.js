@@ -1,18 +1,19 @@
-/**
-   @purpose Defines shell prototype methods for changing a node
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+       Defines shell prototype methods for changing a node
+       @exports ShellModule/shell_node_mod
+    */
+
     var ShellPrototype = {};
 
     /**
-       @class CompleteShell
-       @method rename
-       @purpose rename the current nodes name
+       Rename the current nodes name
+       @method
        @param name The name to rename to
      */
     ShellPrototype.rename = function(name,sourceId){
@@ -21,9 +22,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method setParameter
-       @purpose Set a key:value pair in the node[field] to value
+       Set a key:value pair in the node[field] to value
+       @method
        @param field
        @param parameter
        @param value
@@ -50,9 +50,8 @@ define(['underscore'],function(_){
 
 
     /**
-       @class CompleteShell
-       @method link
-       @purpose Interface method to add a link to the cwd. can be reciprocal
+       Interface method to add a link to the cwd. can be reciprocal
+       @method
        @param target The field of the node to add the link to
        @param id The id of the node being linked towards
        @param reciprocal Whether the node of id will have a link back
@@ -81,9 +80,8 @@ define(['underscore'],function(_){
 
 
     /**
-       @class CompleteShell
-       @method setBinding
-       @purpose Set/Add a binding pair to a condition in a rule
+       Set/Add a binding pair to a condition in a rule
+       @method
        @param conditionNum The condition to add the binding to
        @param toVar The variable name to use as the bound name
        @param fromVar the wme field to bind
@@ -106,9 +104,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method setArithmetic
-       @purpose set an arithmetic operation for an action
+       set an arithmetic operation for an action
+       @method
        @param actionNum The action to add the operation to
        @param varName the variable to change
        @param op the operator to use. ie: + - * / ....
@@ -135,7 +132,10 @@ define(['underscore'],function(_){
 
     };
 
-    //Store a regex transform for an action, in a similar way to arithmetic actions
+    /**
+       Store a regex transform for an action, in a similar way to arithmetic actions
+       @method
+    */
     ShellPrototype.setRegex = function(actionId,varName,regex,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Setting regex transform of:",actionId,varName,regex);
@@ -149,6 +149,7 @@ define(['underscore'],function(_){
 
     /**
        Modify the timing of an action
+       @method
     */
     ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd,
@@ -158,9 +159,8 @@ define(['underscore'],function(_){
     }
     
     /**
-       @class CompleteShell
-       @method setActionnValue
-       @purpose Set an internal value of an action, without going into that node itself
+       Set an internal value of an action, without going into that node itself
+       @method
        @param actionNum The action to target
        @param a The parameter name
        @param b The parameter value
@@ -181,8 +181,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method setActionType
+       Set the actiontype of an (Action) node
+       @method
        @param actionNum
        @param a the type
      */
@@ -200,9 +200,8 @@ define(['underscore'],function(_){
     };
     
     /**
-       @class CompleteShell
-       @method setTest
-       @purpose add/modify a constant test of a condition
+       Add/modify a constant test of a condition
+       @method
        @param conNum the condition to target
        @param testNum the test to target
        @param field the wme field to test

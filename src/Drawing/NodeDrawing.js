@@ -1,13 +1,17 @@
 define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     "use strict";
+    /**
+     The interface to draw Nodes
+     @exports Drawing/NodeDrawing
+     */
     var NodeDrawInterface = {},
         columnNames = ["Parents","Node","Children"];
 
     /**
-       @function drawNode
+       Main draw function for a standard GraphNode instance of the shell
+       @function
        @param globalData 
        @param node
-       @purpose main draw function for a standard GraphNode instance of the shell
     */
     NodeDrawInterface.drawNode = function(globalData,nodeToDraw){
         //console.log("Drawing:",nodeToDraw);
@@ -53,8 +57,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
 
     /**
-       @function cleanup
-       @purpose Remove anything that drawNode creates
+       Remove anything that drawNode creates
+       @function
     */
     NodeDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#node","#children","#parents");//".node",".parent",".child");
 

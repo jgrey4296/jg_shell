@@ -2,10 +2,15 @@
    tracery style parsing/text generation
    Assumes objects using $ to denote rules
    ie: { start: "$greeting", greeting: "hello" };
+   @module Parse
 */
 define(['underscore'],function(_){
     "use strict";
-    
+    /**
+       Take a grammar, create a trace expansion
+       @function
+       @alias module:Parse
+     */
     var ParseObject = function(grammarObj,start,depth=1){
         if(depth > 50){
             console.warn("Parse depth > 50");
@@ -39,10 +44,6 @@ define(['underscore'],function(_){
 
         return finalString;
     };
-
-
-
-    
 
     return ParseObject;
 });

@@ -1,10 +1,14 @@
 define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     "use strict";
+    /**
+     The General Drawing interface
+     @exports Drawing/GeneralDrawing
+     */
     var GeneralDrawInterface = {};
 
     /**
-     @function drawStash
-     @purpose Draws a simple stack of small node descriptions, in the bottom middle of the screen
+     Draws a simple stack of small node descriptions, in the bottom middle of the screen
+     @function 
      */
     GeneralDrawInterface.drawStash = function(globalData,data){
         //console.log("Drawing Stash:",data);
@@ -34,8 +38,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     };
 
     /**
-     @function drawSearchResults
-     @purpose Draws a list of node information in a left hand bar
+     Draws a list of node information in a left hand bar
+     @function
      */
     GeneralDrawInterface.drawSearchResults = function(globalData,data){
         //console.log("Search Results:",data);
@@ -81,8 +85,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     };
 
     /**
-     @function drawInspectResults
-     @purpose Draws the sidbar of data from a particular node
+     Draws the sidbar of data from a particular node
+     @function 
      */
     GeneralDrawInterface.drawInspectResults = function(globalData,data){
         //console.log("Inspecting:",data);
@@ -130,7 +134,11 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //.attr("transform","translate(-10,0)");
 
     };
-    
+
+    /**
+       unimplemented
+       @function
+     */
     GeneralDrawInterface.drawSelection = function(globalData,data){
 
 

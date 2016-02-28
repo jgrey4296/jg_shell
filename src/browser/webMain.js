@@ -1,5 +1,6 @@
 /**
-   @file altWebMain
+   The main web program that runs the web interface
+   @module Browser/WebMain
  */
 
 //Setup requirejs

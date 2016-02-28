@@ -1,13 +1,17 @@
 define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     "use strict";
+    /**
+       The interface for drawing a rule
+       @exports Drawing/RuleDrawing
+     */
     var RuleDrawInterface = {},
         columnNames = ["Conditions","Rule","Actions"];
 
     /**
-       @function drawRule
+       Main draw function for a standard rule instance of the shell
+       @function
        @param globalData 
        @param node
-       @purpose main draw function for a standard rule instance of the shell
     */
     RuleDrawInterface.drawRule = function(globalData,ruleToDraw){
         var standardData = {
@@ -53,8 +57,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
 
     /**
-       @function cleanup
-       @purpose Remove anything that drawNode creates
+       Remove anything that drawNode creates
+       @function
     */
     RuleDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#conditions","#actions","#rule");//".node",".parent",".child");
 

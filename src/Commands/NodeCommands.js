@@ -1,31 +1,36 @@
-/**
-   @file NodeCommands
-   @purpose to define the user actions that can be performed on a typical node in the shell
-*/
 
 define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
     "use strict";
     //All of the commands for the normal node mode of the shell
+    /**
+       To define the user actions that can be performed on a typical node in the shell
+       @implements module:Commands/CommandTemplate
+       @exports Commands/NodeCommands
+    */
     var nodeCommands = {
-        //The draw command
+        /** Draw */
         "draw" : function(globalData,values){
             if(NodeDraw.dummy === undefined){
                 NodeDraw.drawNode(globalData,globalData.shell.cwd);
             }
         },
+        /** Cleanup */
         "cleanup" : function(globalData, values){
             if(NodeDraw.dummy === undefined){
                 NodeDraw.cleanup();
             }
         },
+        /** Print a Node to Console */
         "printNode" : function(globalData,values){
             console.log(globalData.shell.cwd);
         },
+        /** Print the shell to console */
         "printShell" : function(globalData,values){
             console.log(globalData.shell);
         },
-        //new -> addNode,
+        /** Create a new node */
         "new" : function(globalData,values,sourceId){
+            //new -> addNode,
             //Expand out simplifications
             var target = values[0];
             if(target === "child") { target = "children"; }
@@ -33,7 +38,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             console.log("Target:",target);
             globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
-        //node creation Shortcuts:
+        /** new child utility function */
         "nc" : function(globalData,values){
             var chars = {
                 "n" : "node",
@@ -48,6 +53,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 globalData.shell.addNode(values[1],'children',values[0],values.slice(2));
             }
         },
+        /** new parent */
         "np" : function(globalData,values){
             var chars = {
                 "n" : "node",
@@ -62,34 +68,38 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 globalData.shell.addNode(values[1],'parents',values[0],values.slice(2));
             }
         },
-        //New Child Node, ncn:
+        /** New Child Node */
         "ncn" : function(globalData,values){
             globalData.shell.addNode(values[0],'children','node');
         },
-        //new child institution: nci
+        /** New Child Institution */
         "nci" : function(globalData,values){
             globalData.shell.addNode(values[0],'children','institution');
         },
-        //------------------------------
-        //rm -> removeNode,
+        /** Remove Node */
         "rm" : function(globalData,values,sourceId){
+            //rm -> removeNode,
             globalData.shell.rm(values[0],values[1],values[2],sourceId);
         },
-        //cd -> cd
+        /** Change Working node */
         "cd" : function(globalData,values){
+            //cd -> cd
             globalData.shell.cd(values[0]);
         },
-        //set -> setParameter
+        /** Set */
         "set" : function(globalData,values,sourceId){
+            //set -> setParameter
             globalData.shell.setParameter(values[0],values[1],values[2],sourceId);
         },
-        //link -> link
+        /** link */
         "link" : function(globalData,values,sourceId){
+            //link -> link
             var target = values[0];
             if(target === 'child') { target = 'children'; }
             if(target === 'parent') { target = 'parents'; }
             globalData.shell.link(target,values[1],false,sourceId);
         },
+        /** linkr */
         "linkr" : function(globalData,values,sourceId){
             var target = values[0];
             if(target === 'child') { target = 'children'; }
@@ -97,10 +107,12 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             globalData.shell.link(target,values[1],true,sourceId);
 
         },
-        //rename -> rename
+        /** rename */
         "rename" : function(globalData,values){
+            //rename -> rename
             globalData.shell.rename(values[0]);
         },
+        /** help */
         "help" : function(globalData,values){
             return {
                 "help#general" : ["", "Display General Commands Help"],

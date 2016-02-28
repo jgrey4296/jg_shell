@@ -1,12 +1,15 @@
 /**
-   @file HelpCLI
-   @purpose To parse help commands, and display the result
+   To parse help commands, and display the result
+   @module CLI/HelpCLI
  */
 
 define(['underscore','d3'],function(_,d3){
     "use strict";
     
-    //Main function called
+    /**
+       @function
+       @alias module:CLI/HelpCLI
+     */
     var HelpCLI = function(currentLine,globalData){
         var textArray = currentLine.split(" ");
         //Get the last thing typed, and split it
@@ -33,7 +36,11 @@ define(['underscore','d3'],function(_,d3){
 
     //----------------------------------------
     //Helper functions:
-    
+
+    /**
+       @function drawHelp
+       @private
+     */
     var drawHelp = function(helpObject,globalData){
         //Create the text to be displayed
         var startText = "Current Mode: " + globalData.currentCommandMode,

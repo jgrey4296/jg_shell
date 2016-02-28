@@ -27,8 +27,9 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
-   @file GraphNode
-   @purpose To define the base data structure for the shell
+   To define the base data structure for the shell
+   @module Node/GraphNode
+   @see {@link Node/GraphNode}
 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -37,43 +38,52 @@ if(typeof define !== 'function'){
 define(['underscore'],function(_){
     "use strict";
     var nextId = 0;
-    //The main node type of the graph:
-    //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
+    /**
+       The main node type of the graph:
+       @constructor
+       @alias Node/GraphNode
+     */
     var GraphNode = function(name,parent,type,relationsToCreate,overRideId){
-        //Id and name for identification
+        //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
+        /** The id of the node */
         this.id = overRideId || nextId++;
         if(overRideId &amp;&amp; overRideId > nextId){
             nextId = overRideId + 1;
         }
-        
+
+        /** The Name of the Node */
         this.name = name;
 
-        //Parents and children created internally, ready to be sent to the shell for registration
+        /** Parents and children created internally, ready to be sent to the shell for registration */
         this.relatedObjects = [];
 
         //parents and children for links
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
+        /** children */
         this.children = {};
+        /** parents */
         this.parents = {};
         if(parent !== undefined){
             this._originalParent = parent.id;
             this.parents[parent.id] = parent.name;
         }
 
-        //Data stored in the node
+        /** Stored Data: Values */
         this.values = {};
+        /** Stored Data : Tags */
         this.tags = {};
+        /** Stored Data : Annotations */
         this.annotations = {};
 
-        //Used to update the prototype on json-imported data
+        /** Used to update the prototype on json-imported data */
         this.tags.type = type || 'graphnode';
 
-        //**Relations to rules:
-        //Rules that consume this fact:
+        /* Relations to Rules */
+        /** Rules that consume this fact: */
         this.expectedBy = {};
-        //Rules that produce this fact:
+        /** Rules that produce this fact: */
         this.producedBy = {};
 
 
@@ -106,20 +116,20 @@ define(['underscore'],function(_){
     GraphNode.constructor = GraphNode;
 
     /**
-       @method toString
-       @class GraphNode
+       Convert to a string
+       @method
      */
     GraphNode.prototype.toString = function(){
         return `(${this.id}) : ${this.name.slice(0,10)}`;
     };
 
     /**
-       @method toStringList
-       @class GraphNode
-       @purpose returns a list of objects for visualisation
-       @return [{name: "", values : [] }]
+       Returns a list of objects for visualisation
+       @method 
+       
      */
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
+        //returns [{name: "", values : [] }]
         //Get all fields
         var lists = fieldNameList.map(function(d){
             //as a simple { name : "key : value" } object
@@ -135,16 +145,18 @@ define(['underscore'],function(_){
         return lists;
     };
 
-
+    /**
+       Get a simple text description of the node
+       @method 
+     */
     GraphNode.prototype.getShortDescription = function(){
         return {name :`(${this.id}) ${this.name} : ${this.tags.type}` };
     };
     
     
     /**
-       @method setValue
-       @class GraphNode
-       @purpose set a value in the node. as a scalar if no parameter is specified
+       Set a value in the node. as a scalar if no parameter is specified
+       @method
      */
     GraphNode.prototype.setValue = function(value,field,parameter){
         //todo: add guards so you don't delete something important like 'id'
@@ -167,10 +179,9 @@ define(['underscore'],function(_){
     };
 
     /**
-       @method addRelation
-       @class GraphNode
-       @purpose register a NodeStyle object as a relation of this node. stores id+name
-       @purpose and adds to the relatedObjects map;
+       Register a NodeStyle object as a relation of this node. stores id+name
+       and adds to the relatedObjects map;
+       @method
      */
     GraphNode.prototype.addRelation = function(target,object){
         if(!(object instanceof GraphNode)){
@@ -188,9 +199,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @method getRelationObjects
-       @class GraphNode
-       @purpose Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+       Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+       @method
      */
     GraphNode.prototype.getRelationObjects = function(){
         var tempList = this.relatedObjects;
@@ -211,13 +221,13 @@ define(['underscore'],function(_){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Shell.html">Shell</a></li><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModule_shell_node_mod.html">ShellModule/shell_node_mod</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="Node_Action.html">Node/Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_GraphNode.html">Node/GraphNode</a></li><li><a href="Node_Institution.html">Node/Institution</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 03:37:06 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 05:31:58 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

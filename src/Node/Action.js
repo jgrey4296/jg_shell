@@ -1,9 +1,18 @@
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
-
+/**
+   Defines an Action to interface with the ReteNet
+   @module Node/Action
+   @see {@link Node/Action}
+ */
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
+    /**
+       @constructor
+       @alias Node/Action
+       @augments module:Node/GraphNode
+     */
     var Action = function(name,parent,actionType,values,overRideId){
         GraphNode.call(this,name,parent,"action",{},overRideId);
         this.tags.actionType = actionType || "assert";
@@ -31,7 +40,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     Action.prototype = Object.create(GraphNode.prototype);
     Action.constructor = Action;
 
-    //Set or remove an arithmetic action
+    /** Set or remove an arithmetic action */
     Action.prototype.setArith = function(val,operator,modifier){
         if(arguments.length < 1){ throw new Error("setArith needs at least a value"); }
         if(arguments.length !== 3){
@@ -40,8 +49,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             this.arithmeticActions[val] = [operator,modifier];
         }
     };
-    //set or remove a regex action
+    /** set or remove a regex action */
     var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
+    /** setRegex */
     Action.prototype.setRegex = function(val,regex){
         if(regex === undefined){
             delete this.regexActions[val];
@@ -54,13 +64,15 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     };
 
+    /** setTiming */
     Action.prototype.setTiming = function(timeVar,value){
         if(this.timing[timeVar] !== undefined){
             this.timing[timeVar] = Number(value);
         }
     };
 
-    
+
+    /** getDescriptionObjects */
     Action.prototype.getDescriptionObjects = function(){
         var lists = [];
         lists.push({

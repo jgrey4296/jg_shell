@@ -1,6 +1,3 @@
-/**
-   @purpose Defines prototype methods for shell node creation
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -8,12 +5,15 @@ if(typeof define !== 'function'){
 
 define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
     "use strict";
+    /**
+       Defines prototype methods for shell node creation
+       @exports ShellModules/shell_node_addition
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method addLink
-       @purpose Add an ID number and name to a field of an object
+    /**
+       Add an ID number and name to a field of an object
+       @method
        @param node the node to add the link FROM
        @param target the field of the node to link FROM
        @param id the id of the node to link TO
@@ -32,9 +32,8 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
 
 
     /**
-       @class CompleteShell
-       @method addNode
-       @purpose Create a new node, and link it to the cwd of the shell
+       Create a new node, and link it to the cwd of the shell
+       @method
        @param name The name of the new node
        @param target The field of the cwd to add the new node to
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
@@ -102,9 +101,8 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
     };
 
     /**
-       @class CompleteShell
-       @method addTest
-       @purpose Add a constant test to a specified condition of the current rule
+       Add a constant test to a specified condition of the current rule
+       @method 
        @param conditionNumber The position in the condition array to add the test to
        @param testField the wme field to test
        @param op The operator to use in the test
@@ -135,9 +133,8 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
     };
 
     /**
-       @class CompleteShell
-       @method addAction
-       @purpose add a new action to current rule
+       Add a new action to current rule
+       @method
        @param valueArray The names of actions to create
        @return newActions an array of all actions created
     */

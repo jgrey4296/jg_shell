@@ -4,11 +4,15 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+     Extract prototype patterns of nodes in the graph
+     @exports ShellModules/shell_prototype_extraction
+     */
     var ShellPrototype = {};
 
     /**
-       @method extractFactPrototypes
-       @purpose to extract the prototypes of facts in rules, for comparison to existing prototypes
+       To extract the prototypes of facts in rules, for comparison to existing prototypes
+       @method 
        @TODO currently filtering out NCCConditions, and retractions
     */
     ShellPrototype.extractFactPrototypes = function(){

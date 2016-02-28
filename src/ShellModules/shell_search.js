@@ -13,8 +13,15 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+       @exports ShellModules/shell_search
+     */
     var ShellPrototype = {};
-    
+
+    /**
+       Search the graph for fields, tags, and regexs
+       @method
+     */
     ShellPrototype.searchForFieldTagValue = function(values,nodeSelection){
         var field = values.shift(),
             tag = values.shift(),

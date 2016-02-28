@@ -1,20 +1,21 @@
-/**
-   Commands to be able to import a json file exported from firefox, into an initial graph form
- */
 
 define(['underscore'],function(_){
     "use strict";
     var nextId = 1;
-    
+    /**
+       Commands to be able to import a json file exported from firefox, into an initial graph form
+       @exports Commands/BookMarkCommands
+    */
     var CommandTemplate = {
+        /** Draw Command */
         "draw" : function(globalData,values){
 
         },
-
+        /** Cleanup Command */
         "cleanup" : function(globalData,values){
 
         },
-        //open a new window of the bookmark's url:
+        /** open a new window of the bookmark's url: */
         "goto" : function(globalData,values){
             var bookmark = globalData.shell.cwd;
             if(values.length > 0){
@@ -29,7 +30,7 @@ define(['underscore'],function(_){
                 }
             }
         },        
-        //Modelled off general.import
+        /** Firefox Import */
         "firefoxImport" : function(globalData,values){
             try{
                 var stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
@@ -43,6 +44,7 @@ define(['underscore'],function(_){
                 console.log("Firefox import Error:",err);
             }            
         },
+        /** Firefox Load */
         "firefoxLoad" : function(globalData,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
@@ -66,7 +68,10 @@ define(['underscore'],function(_){
         
     };
 
-    //turn bookmarks into objects
+    /**
+       Turn bookmarks into objects
+       @function extractLinks
+     */
     var extractLinks = function(data){
         var childData = [];
         if(data.children !== undefined){
@@ -88,8 +93,11 @@ define(['underscore'],function(_){
         return childData;
     };
 
-    //dealing with an array of bookmarks
-    //get groups of 15 bookmarks, and then make nodes of each of those groups
+    /**
+    dealing with an array of bookmarks
+    get groups of 15 bookmarks, and then make nodes of each of those groups
+    @function groupLinks
+    */
     var groupLinks = function(data){
         var NUM_IN_GROUP = 9;
         //be able to lookup the data by id
@@ -161,8 +169,5 @@ define(['underscore'],function(_){
 
     };
 
-    
-
     return CommandTemplate;
-
 });

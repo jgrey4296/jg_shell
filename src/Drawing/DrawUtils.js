@@ -1,19 +1,26 @@
+
 define(['underscore','d3'],function(_,d3){
     "use strict";
+    /**
+       Utilities to Assist with Drawing to do
+       @requires underscore
+       @requires d3
+       @exports Drawing/DrawUtils
+     */
     var DrawUtils = {};
 
     /**
-       @function cleanup
-       @purpose Generic cleanup function, will typically be bound for each specific draw style
-       @example DrawUtils.cleanup.bind({},".node",".parent",".child")();
+       Generic cleanup function, will typically be bound for each specific draw style
+       DrawUtils.cleanup.bind({},".node",".parent",".child")();
+       @function
     */
     DrawUtils.cleanup = function(...toCleanUp){
         d3.selectAll(toCleanUp.join(", ")).remove();
     };
 
     /**
-       @function pathExtraction
-       @purpose construct a string describing the path from the cwd to the root of the shell
+       Construct a string describing the path from the cwd to the root of the shell
+       @function
     */
     DrawUtils.pathExtraction = function(globalData,depth){
         var path = [];
@@ -28,8 +35,8 @@ define(['underscore','d3'],function(_,d3){
     };
 
     /**
-       @method selectOrShare
-       @purpose select or create a container
+       Select or create a container
+       @function
        @param containerName The id of the container. ie: node
        @note the containerName does not include the #
     */
@@ -49,8 +56,8 @@ define(['underscore','d3'],function(_,d3){
 
 
     /**
-       @function wrapText
-       @purpose Take a selection of individual text objects, and wrap them within a defined width
+       Take a selection of individual text objects, and wrap them within a defined width
+       @function 
     */
     DrawUtils.wrapText = function(textSelection,width){
         //console.log("wrap text on :",textSelection);
@@ -90,7 +97,8 @@ define(['underscore','d3'],function(_,d3){
 
 
     /**
-       @function drawSingleNode
+       Draws a single node
+       @function
     */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
@@ -144,7 +152,10 @@ define(['underscore','d3'],function(_,d3){
     };
     
 
-    //
+    /**
+       Draw Data of a node
+       @function
+     */
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
         //console.log("Draw individual data:",containerSelection);
         var promiseArray = [];
@@ -215,7 +226,10 @@ define(['underscore','d3'],function(_,d3){
 
     //--------------------
 
-    
+    /**
+       Draws a group
+       @function
+     */
     DrawUtils.drawGroup = function(container,data,commonData,descriptionFunction){
         //console.log("Group draw:",container,data);
         var groupPromise = new Promise(function(resolve,reject){
@@ -273,7 +287,10 @@ define(['underscore','d3'],function(_,d3){
     };
     
 
-    //Draw the path:
+    /**
+       Extracts then draws the path of the cwd
+       @function 
+     */
     DrawUtils.drawPath = function(globalData){
         //figure out parent path:
         var path = DrawUtils.pathExtraction(globalData,10).join(" --> "),

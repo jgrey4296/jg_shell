@@ -1,6 +1,3 @@
-/**
-   @purpose Defines Shell prototype methods relating to string modification. mainly utilities
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -8,14 +5,16 @@ if(typeof define !== 'function'){
 
 define(['underscore','Parse'],function(_,Parse){
     "use strict";
+    /**
+       Defines Shell prototype methods relating to string modification. mainly utilities
+       @exports ShellModules/shell_string
+     */
     var ShellPrototype = {};
 
 
     /**
-       @class CompleteShell
-       @method getNodeListByIds
-       @utility
-       @purpose To retrieve the actual node objects indicated by an array of ids
+       To retrieve the actual node objects indicated by an array of ids
+       @method
        @param idList
        @return array of node objects
      */
@@ -28,10 +27,8 @@ define(['underscore','Parse'],function(_,Parse){
     
     //Utility functions for display Output:
     /**
-       @class CompleteShell
-       @method nodeToShortString
-       @utility
-       @purpose To convert a node to a text representation for display on screen
+       To convert a node to a text representation for display on screen
+       @method
        @param node
        @param i
      */
@@ -61,10 +58,8 @@ define(['underscore','Parse'],function(_,Parse){
     };
 
     /**
-       @class CompleteShell
-       @method ruleToStringList
-       @utility
-       @purpose Convert a rule to a string representation
+       Convert a rule to a string representation
+       @method
        @param node
      */
     ShellPrototype.ruleToStringList = function(node){
@@ -75,8 +70,8 @@ define(['underscore','Parse'],function(_,Parse){
     
 
     /**
-       @method traceNode
-       @purpose convert node and subnodes to a tracery style string
+       Convert node and subnodes to a tracery style string
+       @method
      */
     ShellPrototype.traceNode = function(node){
         //console.log("Tracing node:",node);

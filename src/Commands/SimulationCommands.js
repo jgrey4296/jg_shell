@@ -1,18 +1,24 @@
 
 define(['underscore'],function(_){
     "use strict";
-    
+
+    /**
+     Interface for controlling a simulation
+     @exports Commands/SimulationCommands
+     @implements module:Commands/CommandTemplate
+     */
     var SimulationCommands = {
+        /** draw */
         "draw" : function(globalData,values){
             //draw list of characters
 
             //draw list of performed actions
         },
-
+        /** cleanup */
         "cleanup" : function(globalData,values){
 
         },
-
+        /** setupSim */
         "setupSim" : function(globalData,values){
             console.log("Setting up simulation");
             //get all the nodes in the institution specified
@@ -46,7 +52,7 @@ define(['underscore'],function(_){
             globalData.shell.assertWMEs(institutionIds);
 
         },
-        //returns true when finished, false otherwise
+        /** stepSim : returns true when finished, false otherwise */
         "stepSim" : function(globalData,values){
             if(globalData.simulation === undefined){
                 throw new Error("Simulation must be setup first, run 'setupSim' on an institution");
@@ -101,10 +107,12 @@ define(['underscore'],function(_){
 
             return false;
         },
+        /** Depth First Search */
         "dfs" : function(globalData,values){
             if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             console.log(globalData.shell.dfs(values[0]));
         },
+        /** Help */
         "help" : function(globalData,values){
             return {
                 "setupSim" : ["$sourceId?","Initialise the retenet for simulation"],

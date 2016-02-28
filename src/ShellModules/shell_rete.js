@@ -1,42 +1,44 @@
-/**
-   @purpose Define prototype methods relating to shell <-> rete interaction
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['underscore','Rete'],function(_,Rete){
     "use strict";
+    /**
+       Define prototype methods relating to shell <-> rete interaction
+       @exports ShellModules/shell_rete
+     */
     var ShellPrototype = {};
     
     /**
-       @class CompleteShell
-       @method clearRete
-       @purpose Completely reset the retenet, by building a new one
+       Completely reset the retenet, by building a new one
+       @method
      */
     ShellPrototype.clearRete = function(){
         this.reteNet = new Rete();
     };
 
     /**
-       @class CompleteShell
-       @method clearActivatedRules
-       @purpose Clear the record of recently activated rules
+       Clear the record of recently activated rules
+       @method
      */
     ShellPrototype.clearPotentialActions = function(){
         //Rete.clearPotentialActions(this.reteNet);
         this.reteNet.clearProposedActions();
     };
-    
+
+    /**
+       Clear the history of the net
+       @method
+     */
     ShellPrototype.clearHistory = function(){
         //Rete.clearHistory(this.reteNet);
         this.reteNet.clearHistory();
     };
     
     /**
-       @class CompleteShell
-       @method compileRete
-       @purpose Retrieve all defined rules, add them to the rete net
+       Retrieve all defined rules, add them to the rete net
+       @method
      */    
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
@@ -65,10 +67,8 @@ define(['underscore','Rete'],function(_,Rete){
     };
 
     /**
-       @class CompleteShell
-       @method assertChildren
-       @purpose Assert all child nodes of the current node as facts
-       using each nodes' values field
+       Assert all child nodes of the current node as facts using each nodes' values field
+       @method
        @TODO: be able to detect bindings and resolve them prior to assertion?
      */
     ShellPrototype.assertWMEs = function(nodeIds){
@@ -88,6 +88,10 @@ define(['underscore','Rete'],function(_,Rete){
         this.assertWMEList(wmes);
     };
 
+    /**
+       Retract wmes vias the retenet
+       @method
+     */
     ShellPrototype.retractWMEs = function(nodeIds){
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
         var shellRef = this,
@@ -104,9 +108,8 @@ define(['underscore','Rete'],function(_,Rete){
     };
     
     /**
-       @class CompleteShell
-       @method assertWMEList
-       @purpose Taking a list of objects, add each as a wme to the retenet of the shell
+       Taking a list of objects, add each as a wme to the retenet of the shell
+       @method
        @param array An Array of objects
      */
     ShellPrototype.assertWMEList = function(nodes){
@@ -124,6 +127,10 @@ define(['underscore','Rete'],function(_,Rete){
         return newWMEs;
     };
 
+    /**
+       retractWMEList
+       @method
+     */
     ShellPrototype.retractWMEList = function(nodes){
         if(!(nodes instanceof Array)){
             throw new Error("Retractions should be in an array");
@@ -134,7 +141,11 @@ define(['underscore','Rete'],function(_,Rete){
             this.reteNet.retractWME(node);
         },this);
     };
-    
+
+    /**
+       Step Time
+       @method
+     */
     ShellPrototype.stepTime = function(){
         //Rete.incrementTime(this.reteNet);
         this.reteNet.stepTime();
@@ -143,9 +154,8 @@ define(['underscore','Rete'],function(_,Rete){
     };
     
     /**
-       @class CompleteShell
-       @method getNode
-       @purpose get a node by its id, utility method
+       Get a node by its id, utility method
+       @method
      */
     ShellPrototype.getNode = function(nodeId){
         nodeId = Number(nodeId);

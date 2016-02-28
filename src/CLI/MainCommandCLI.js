@@ -1,12 +1,12 @@
 /**
-   @file MainCommandCLI
-   @purpose takes text, executes relevant commands on the shell
+   Takes text, executes relevant commands on the shell
+   @module CLI/MainCommandCLI
 */
 
 
 define(['underscore'],function(_){
     "use strict";
-    
+    /** Parse Current Line */
     var parseCurrentLine = function(currentLine){
         var splitLine = currentLine.split(/ /);
 
@@ -25,8 +25,11 @@ define(['underscore'],function(_){
         return combined;
     };
 
-        
-    //The CLI Function, takes a line and finds the command to apply
+    /**
+       The CLI Function, takes a line and finds the command to apply
+       @function
+       @alias module:CLI/MainCommandCLI
+    */
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
         if(skipDraw === undefined) { skipDraw = false; }
         globalData.rawCurrentLine = currentLine;

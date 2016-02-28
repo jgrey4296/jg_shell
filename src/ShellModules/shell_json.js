@@ -1,6 +1,3 @@
-/**
-   @purpose Defines methods related to importing or exporting json from the shell
-*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -8,15 +5,16 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
-    //Object that will be copied into the shell's prototype:
+    /**
+     Defines methods related to importing or exporting json from the shell
+       @exports ShellModules/shell_json
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method exportJson
-       @purpose Converts all defined nodes to a json array of objects
+    /**
+       Converts all defined nodes to a json array of objects
+       @method exportJson       
        @return A JSON string
-
        @note As nodes only store ID numbers, the information does not contain cycles
      */
     ShellPrototype.exportJson = function(){
@@ -28,9 +26,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
+       To create a graph based on an incoming array of objects
        @method importJson
-       @purpose To create a graph based on an incoming array of objects
        @param allNodes an array or object of key:object pairs describing all nodes to load
      */
     ShellPrototype.importJson = function(importNodes){
@@ -51,9 +48,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
+       Create a node from loaded json data, forcing a specific ID number
        @method addNodeFromJson
-       @purpose create a node from loaded json data, forcing a specific ID number
        @param obj The object data to use for the node
        @return a new node object
      */
@@ -77,9 +73,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
+       Convert old style links of name->id to new style id->name
        @method convertObject
-       @purpose convert old style links of name->id to new style id->name
        @param object The object to switch around
        @return an output object of value:key pairs
        @deprecated

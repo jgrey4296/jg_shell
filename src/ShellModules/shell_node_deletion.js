@@ -1,6 +1,3 @@
-/**
-   @purpose Defines Shell prototype methods for deleting nodes
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -8,12 +5,15 @@ if(typeof define !== 'function'){
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+     Defines Shell prototype methods for deleting nodes
+     @exports ShellModules/shell_node_deletion
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method deleteNode
-       @purpose remove a node from the list of all nodes
+    /**
+       Remove a node from the list of all nodes
+       @method
        @param id The id of the node to remove
      */
     ShellPrototype.deleteNode = function(id){
@@ -24,9 +24,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method rm
-       @purpose remove a node link from the cwd
+       Remove a node link from the cwd
+       @method
        @param nodeToDelete The node object to remove from the cwd
      */
     ShellPrototype.rm = function(nodeToDelete,target,sourceId){
@@ -51,8 +50,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method removeNumericId
+       Removes by id
+       @method
        @param id
        @param target
        @TODO check this
@@ -67,9 +66,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method cleanupNode
-       @purpose To link a node to the disconnected nodes if it no longer has active links
+       To link a node to the disconnected nodes if it no longer has active links
+       @method
        @param node
        @param owningNode
      */
@@ -97,9 +95,8 @@ define(['underscore'],function(_){
     //RM FINISHED
 
     /**
-       @class CompleteShell
-       @method removeAction
-       @purpose remove an action from the current rule
+       Remove an action from the current rule
+       @method
        @note: an action is still a node, so is still in allnodes
      */
     ShellPrototype.removeAction = function(actionId,sourceId){
@@ -113,9 +110,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method removeCondition
-       @purpose remove a condition, and its tests, from a rule
+       Remove a condition, and its tests, from a rule
+       @method
      */
     ShellPrototype.removeCondition = function(condId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;        
@@ -126,9 +122,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method removeTest
-       @purpose remove a test from a condition
+       Remove a test from a condition
+       @method
        @param condNum
        @param testNum
      */
@@ -147,7 +142,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @method removeBinding
+       Remove a binding from a (condition) node
+       @method
        @param conditionNumber
        @param boundVar
      */

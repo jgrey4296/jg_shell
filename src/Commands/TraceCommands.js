@@ -1,15 +1,22 @@
 
 define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
     "use strict";
-    
+
+    /**
+     Triggering tracery style grammar expansions
+     @exports Commands/TraceCommands
+     @implements module:Commands/CommandTemplate
+     */
     var TraceCommands = {
+        /** draw */
         "draw" : function(globalData,values){
 
         },
-
+        /** cleanup */
         "cleanup" : function(globalData,values){
 
         },
+        /** trace */
         "trace" : function(globalData,values){
             var curNode = globalData.shell.cwd,
                 amt = !Number.isNaN(parseInt(values[0])) ? Array(parseInt(values[0])).fill(0) : [0],
@@ -17,6 +24,7 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
             console.log("Trace Result:",returnVals);
             TraceDrawing.drawTraces(globalData,returnVals);
         },
+        /** varsToChildren */
         "varsToChildren" : function(globalData,values){
             var curNode = globalData.shell.cwd,
                 message = curNode.values.message || curNode.name,
@@ -29,10 +37,7 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
                 }                
             });
             
-
         },
     };
-
     return TraceCommands;
-
 });

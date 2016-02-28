@@ -1,6 +1,6 @@
 /**
-   @file Institution
-   @purpose To define the base data structure for the shell
+   To define the base data structure for the shell
+   @module Node/Institution
 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -8,6 +8,11 @@ if(typeof define !== 'function'){
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
+    /**
+       @constructor
+       @alias Node/Institution
+       @augments module:Node/GraphNode
+     */
     var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
         var relations = {
             children : [
