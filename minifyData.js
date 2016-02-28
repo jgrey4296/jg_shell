@@ -11,7 +11,7 @@
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
         //Shell
-        TotalShell : "TotalShell",
+        Shell : "Shell",
         //Rete
         Rete : "../libs/Rete.min"
 
@@ -23,14 +23,14 @@
     },
     exclude : ['underscore'],
     //keepAmdefine : true,
-    include : ['../node_modules/almond/almond','TotalShell'],
+    include : ['../node_modules/almond/almond','Shell'],
     //cjsTranslate : true,
-    name : "TotalShell",
-    insertRequire : [ "TotalShell"],
+    name : "Shell",
+    insertRequire : [ "Shell"],
     out: "./libs/Shell.min.js",
     optimize: "none",
     wrap : {
         startFile : "startWrap.js",
-        end : "define('underscore',function() { return _; }); return require('TotalShell'); }));"
+        end : "define('underscore',function() { return _; }); return require('Shell'); }));"
     },
 })

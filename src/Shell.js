@@ -1,7 +1,7 @@
 /**
    Describes the top level Shell class, allowing authoring of a graph structure
    and integration with Rete based rule engine
-   @module TotalShell
+   @module Shell
    
  */
 if(typeof define !== 'function'){
@@ -12,11 +12,11 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
     "use strict";
 
     /**
-       CompleteShell
+       Shell
        @constructor
        @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
     */
-    var CompleteShell = function(){
+    var Shell = function(){
         this.nextId = 0;
         this.tags = {};
         this.tags.type = 'Shell';
@@ -50,19 +50,15 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
     };
     
     //Use the aggrgated shell prototype:
-    CompleteShell.prototype = Object.create(shell_prototype);
-    CompleteShell.prototype.constructor = CompleteShell;
+    Shell.prototype = Object.create(shell_prototype);
+    Shell.prototype.constructor = Shell;
 
-    CompleteShell.prototype.getCtor = getCtor;
+    Shell.prototype.getCtor = getCtor;
     
     /**
-       @interface The interface of the TotalShell file
-       @exports CompleteShell 
-       @alias Shell for CompleteShell
+       @interface The interface of the Shell file
+       @exports Shell 
+       @alias Shell for Shell
      */
-    var moduleInterface = {
-        "CompleteShell": CompleteShell,
-        "shell"        : CompleteShell,
-    };
-    return moduleInterface;
+    return Shell;
 });

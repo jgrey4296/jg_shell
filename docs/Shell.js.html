@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: The</title>
+    <title>JSDoc: Source: Shell.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,50 +17,82 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: The</h1>
+    <h1 class="page-title">Source: Shell.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   Describes the top level Shell class, allowing authoring of a graph structure
+   and integration with Rete based rule engine
+   @module Shell
+   
+ */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors','./utils','./ShellModules/shell_prototype_main'],function(Rete,_,GraphNode,getCtor,util,shell_prototype){
+    "use strict";
+
+    /**
+       Shell
+       @constructor
+       @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
+    */
+    var Shell = function(){
+        this.nextId = 0;
+        this.tags = {};
+        this.tags.type = 'Shell';
+        //the root node
+        this.root = new GraphNode('__root');
         
+        //disconnected nodes:
+        this.disconnected = {
+            noParents : new GraphNode('disconnectedFromParents'),
+            noChildren : new GraphNode('disconnectedFromChildren'),
+        };
+        //All Nodes:
+        this.allNodes = {};
+        this.allNodes[this.root.id] = this.root;
+        //AllRules:
+        this.allRules = [];
+        this.allRulesByName = {};
+
+        //current node/rule, as an ACTUAL OBJECT, NOT AN ID
+        this.cwd = this.root;
+
+        //stashed locations:
+        this._nodeStash = [];
+        this.previousLocation = 0;
+
+        //last search results:
+        this.lastSearchResults = [];
+
+        //Integrated Rete Net:
+        this.reteNet = new Rete();
+    };
     
-</header>
+    //Use the aggrgated shell prototype:
+    Shell.prototype = Object.create(shell_prototype);
+    Shell.prototype.constructor = Shell;
 
-<article>
-    <div class="container-overview">
+    Shell.prototype.getCtor = getCtor;
     
-        
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    /**
+       @interface The interface of the Shell file
+       @exports Shell 
+       @alias Shell for Shell
+     */
+    return Shell;
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

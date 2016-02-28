@@ -22,8 +22,8 @@ require.config({
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
         //Shell
-        TotalShell : "TotalShell",
-        //TotalShell : "/libs/Shell.min",
+        Shell : "Shell",
+        //Shell : "/libs/Shell.min",
         //Rete
         Rete : "/libs/Rete.min"
     },
@@ -35,10 +35,10 @@ require.config({
 });
 
 /**
-   @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
+   @require [d3,Shell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
    @purpose The main web program. Creates a shell, visualises it, and listens for user input
 */
-require(['d3','TotalShell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
+require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
     "use strict";
 
     //----------------------------------------
@@ -59,7 +59,7 @@ require(['d3','TotalShell','underscore',"HelpCLI","MainCommandCLI","AllCommands"
         currentCommandMode : "node",
     
         //The simulated shell:
-        shell : new Shell.CompleteShell(),
+        shell : new Shell(),
 
         lastSetOfSearchResults : [],
         lastInspectData : [],
