@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ShellModules/shell_node_addition.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ShellModules/shell_node_addition.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   @purpose Defines prototype methods for shell node creation
+ */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+
+define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
+    "use strict";
+    var ShellPrototype = {};
+
+        /**
+       @class CompleteShell
+       @method addLink
+       @purpose Add an ID number and name to a field of an object
+       @param node the node to add the link FROM
+       @param target the field of the node to link FROM
+       @param id the id of the node to link TO
+       @param name the name of the node to link TO
+    */
+    ShellPrototype.addLink = function(node,target,id,name){
+        if(isNaN(Number(id))){
+            throw new Error("Trying to link without providing a valid id number");
+        }
+        if(node &amp;&amp; node[target]){
+            node[target][Number(id)] = name;
+        }else{
+            throw new Error("Unrecognised target");
+        }
+    };
+
+
+    /**
+       @class CompleteShell
+       @method addNode
+       @purpose Create a new node, and link it to the cwd of the shell
+       @param name The name of the new node
+       @param target The field of the cwd to add the new node to
+       @param type The type of node the new node should be annotated as. See GraphStructureConstructors
+       @return the newly created node
+    */
+    ShellPrototype.addNode = function(name,target,type,values,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        
+        if(name === null || name === undefined || name === "") {
+            name = type || "anon";
+            console.warn("making an anonymous node");
+        }
+        //validate input:
+        if(source[target] === undefined){ 
+            console.warn("Creating target: ",target,source);
+            source[target] = {};
+        }
+        type = type || "GraphNode";
+
+        var ctor = getCtor(type),
+            newNode;
+        
+        if(target === 'parents' || target === 'parent'){
+            //if adding to parents,don't store the cwd as newnode's parent
+            newNode = new ctor(name,undefined,type);
+            //add the cwd to the newNodes children:
+            this.addLink(newNode,'children',source.id,source.name);
+            //newNode.children[this.cwd.id] = true;
+        }else{
+            newNode = new ctor(name,source,type);
+        }
+
+        //add to cwd:
+        //console.log("Linking new node:",newNode);
+        this.addLink(source,target,newNode.id,newNode.name);
+
+        //Store in allNodes:
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+
+        //get all subrelation objects:
+        var relationObjects = newNode.getRelationObjects();
+        while(relationObjects.length > 0){
+            //get an object off
+            var obj = relationObjects.shift();
+            //get any sub objects and add them to the list
+            relationObjects = relationObjects.concat(obj.getRelationObjects());
+            //add the obj to allNodes
+            this.allNodes[obj.id] = obj;
+        }
+        
+
+        //If the cwd WAS disconnected in some way,
+        //remove it from that designation
+        if(source[target][this.disconnected.noParents.id]){
+            this.rm(this.disconnected.noParents.id,source.id);
+        }
+        if(source[target][this.disconnected.noChildren.id]){
+            this.rm(this.disconnected.noChildren.id,source.id);                
+        }
+        
+        return newNode;        
+    };
+
+    /**
+       @class CompleteShell
+       @method addTest
+       @purpose Add a constant test to a specified condition of the current rule
+       @param conditionNumber The position in the condition array to add the test to
+       @param testField the wme field to test
+       @param op The operator to use in the test
+       @param value The constant value to test against
+     */
+    ShellPrototype.addTest = function(conditionId,testParams,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Adding test:",conditionId,testParams,source.conditions);
+        //check you're in a rule
+        if(source.tags.type !== 'rule' &amp;&amp; source.tags.type !== 'negConjCondition'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        //check the specified condition exists
+        if(source.conditions[conditionId] === undefined || this.allNodes[conditionId] === undefined){
+            console.log(conditionId,source.conditions);
+            throw new Error("Can't add a test to a non-existent condition");
+        }
+        if(testParams.length !== 3){
+            throw new Error("Insufficient test specification");
+        }
+        //Check the operator is a defined one
+        if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
+            throw new Error("Unrecognised operator");
+        }
+        var condition = this.allNodes[conditionId];
+        //Create the test
+        condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
+    };
+
+    /**
+       @class CompleteShell
+       @method addAction
+       @purpose add a new action to current rule
+       @param valueArray The names of actions to create
+       @return newActions an array of all actions created
+    */
+    ShellPrototype.addAction = function(valueArray,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        var name = valueArray.shift() || "anonAction";
+        
+        //add an action node to cwd.actions
+        var newAction = this.addNode(name,'actions','action',valueArray,sourceId);
+        return newAction;
+    };
+
+
+    return ShellPrototype;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#copyFile">copyFile</a></li><li><a href="global.html#dealWithGet">dealWithGet</a></li><li><a href="global.html#dealWithPost">dealWithPost</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#server">server</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Feb 27 2016 22:45:54 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

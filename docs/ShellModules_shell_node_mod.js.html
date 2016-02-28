@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ShellModules/shell_node_mod.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ShellModules/shell_node_mod.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   @purpose Defines shell prototype methods for changing a node
+ */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['underscore'],function(_){
+    "use strict";
+    var ShellPrototype = {};
+
+    /**
+       @class CompleteShell
+       @method rename
+       @purpose rename the current nodes name
+       @param name The name to rename to
+     */
+    ShellPrototype.rename = function(name,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        source.name = name;
+    };
+
+    /**
+       @class CompleteShell
+       @method setParameter
+       @purpose Set a key:value pair in the node[field] to value
+       @param field
+       @param parameter
+       @param value
+     */
+    ShellPrototype.setParameter = function(field,parameter,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        //if(!source[field]) throw new Error("Unrecognised field");
+        //if(field !== 'values' &amp;&amp; field !== 'tags' &amp;&amp; field !== 'annotations'){
+        //    throw new Error("Bad field");
+        //}
+        if(source[field] === undefined &amp;&amp; field !== undefined){
+            source[field] = {};
+        }
+        if(parameter === undefined &amp;&amp; field !== 'values' &amp;&amp; field !== 'tags' &amp;&amp; field !== 'children' &amp;&amp; field !== 'parents' &amp;&amp; field !== 'name' &amp;&amp; field !== 'id'){
+            delete source[field];
+        }else if(value !== undefined){
+            source[field][parameter] = value;
+        }else{
+            //if no value is specified, remove the entry
+            delete source[field][parameter];
+        }
+        
+    };
+
+
+    /**
+       @class CompleteShell
+       @method link
+       @purpose Interface method to add a link to the cwd. can be reciprocal
+       @param target The field of the node to add the link to
+       @param id The id of the node being linked towards
+       @param reciprocal Whether the node of id will have a link back
+     */
+    ShellPrototype.link = function(target,id,reciprocal,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+
+        //validate:
+        if(isNaN(Number(id))) { throw new Error("id should be a global id number"); }
+        if(this.allNodes[id] === undefined){
+            throw new Error("Node for id " + id + " does not exist");
+        }
+        if(!source[target]) { throw new Error("Unrecognised target"); }
+
+        //perform the link:
+        var nodeToLink = this.getNode(id);
+        this.addLink(source,target,nodeToLink.id,nodeToLink.name);
+        //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
+        if(reciprocal){
+            var rTarget = 'parents';
+            if(target === 'parents') { rTarget = 'children'; }
+            this.addLink(nodeToLink,rTarget,source.id,source.name);
+            //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
+        }
+    };
+
+
+    /**
+       @class CompleteShell
+       @method setBinding
+       @purpose Set/Add a binding pair to a condition in a rule
+       @param conditionNum The condition to add the binding to
+       @param toVar The variable name to use as the bound name
+       @param fromVar the wme field to bind
+
+       @ie: toVar = wme.fromVar
+     */
+    ShellPrototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Add binding to:",conditionId,toVar,fromVar);
+        if(source.tags.type !== 'rule' &amp;&amp; source.tags.type !== 'negConjCondition'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        if(source.conditions[conditionId] === undefined){
+            throw new Error("Can't add binding to non=existent condition");
+        }
+        var condition = this.getNode(conditionId);
+        //condition.bindings.push([toVar,fromVar]);
+        condition.setBinding(toVar,fromVar,testPairs);
+        console.log(condition,condition.bindings);
+    };
+
+    /**
+       @class CompleteShell
+       @method setArithmetic
+       @purpose set an arithmetic operation for an action
+       @param actionNum The action to add the operation to
+       @param varName the variable to change
+       @param op the operator to use. ie: + - * / ....
+       @param value The value to apply to the varName
+
+       @TODO allow bindings in the rhs/value field
+     */
+    ShellPrototype.setArithmetic = function(actionId,varName,op,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Setting arithmetic of:",actionId,varName,op,value);
+        console.log(_.keys(source.actions));
+        if(source.tags.type !== 'rule'){
+            throw new Error("Arithmetic can only be applied to actions of rules");
+        }
+        if(source.actions[actionId] === undefined){
+            throw new Error("Cannot add arithmetic to non-existent action");
+        }
+        var action = this.getNode(actionId);
+
+        if(action === undefined){
+            throw new Error("Could not find action");
+        }
+        action.setArith(varName,op,value);
+
+    };
+
+    //Store a regex transform for an action, in a similar way to arithmetic actions
+    ShellPrototype.setRegex = function(actionId,varName,regex,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Setting regex transform of:",actionId,varName,regex);
+        //if it includes the opening and closing /'s, remove them?
+
+        //get the action
+        var action = this.getNode(actionId);
+        action.setRegex(varName,regex);
+
+    };
+
+    /**
+       Modify the timing of an action
+    */
+    ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+            action = this.getNode(actionId);
+        action.setTiming(timeVar,value);
+
+    }
+    
+    /**
+       @class CompleteShell
+       @method setActionnValue
+       @purpose Set an internal value of an action, without going into that node itself
+       @param actionNum The action to target
+       @param a The parameter name
+       @param b The parameter value
+
+       @note If only a is supplied, sets the action's actionType tag
+     */
+    ShellPrototype.setActionValue = function(actionId,a,b,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
+            throw new Error("Can't set action values on non-actions");
+        }
+        if(source.actions[actionId] !== undefined){
+            var action = this.getNode(actionId);
+            action.setValue(b,'values',a);
+        }else{
+            throw new Error("Unrecognised action");
+        }
+    };
+
+    /**
+       @class CompleteShell
+       @method setActionType
+       @param actionNum
+       @param a the type
+     */
+    ShellPrototype.setActionType = function(actionId,a,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
+            throw new Error("Can't set action type for non-rules");
+        }
+        if(source.actions[actionId] !== undefined){
+            var action = this.allNodes[actionId];
+            action.setValue(a,'tags','actionType');
+        }else{
+            throw new Error("Unrecognised action");
+        }
+    };
+    
+    /**
+       @class CompleteShell
+       @method setTest
+       @purpose add/modify a constant test of a condition
+       @param conNum the condition to target
+       @param testNum the test to target
+       @param field the wme field to test
+       @param op The operator to test using
+       @param val the value to test against
+     */
+    ShellPrototype.setTest = function(conditionId,testId,field,op,value,sourceId){
+        console.log(conditionId,testId,field,op,value,sourceId);
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule' &amp;&amp; source.tags.type !== 'negConjCondition'){
+            throw new Error("Trying to set test on a non-rule node");
+        }
+        if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
+            throw new Error("trying to set non-existent test");
+        }
+
+        var condition = this.getNode(conditionId);
+        condition.setTest(testId,field,op,value);
+    };
+
+
+    return ShellPrototype;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#copyFile">copyFile</a></li><li><a href="global.html#dealWithGet">dealWithGet</a></li><li><a href="global.html#dealWithPost">dealWithPost</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#server">server</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Feb 27 2016 22:45:54 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

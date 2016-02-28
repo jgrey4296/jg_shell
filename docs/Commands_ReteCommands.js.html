@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Commands/ReteCommands.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Commands/ReteCommands.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   @file ReteCommands
+   @purpose To define the actions a user can perform regarding the retenet
+*/
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['underscore','d3'],function(_,d3){
+    "use strict";
+    /**
+       @data reteCommands
+       @purpose describes the user actions that can be performed in the shell regarding the rete net
+     */
+    var reteCommands = {
+        //** @command clear
+        "clear" : function(globalData,values){
+            console.log("Clearing RETE");
+            if(values[0] === 'complete'){
+                globalData.shell.clearRete();
+            }if(values[0] === 'history'){
+                globalData.shell.clearHistory();
+            }else{
+                globalData.shell.clearProposedActions();
+            }
+        },
+        "draw" : function(globalData,values){
+            //calculations:
+            var colWidth = globalData.calcWidth(globalData.usableWidth,5);
+            var halfWidth = globalData.halfWidth();
+            
+            //todo: draw... facts? tokens? possible actions?
+
+            //draw asserted wmes -> actions
+            var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
+                return d !== undefined;
+            });
+            var actions = globalData.shell.reteNet.proposedActions;
+
+            var wmeColumn = d3.select("#mainContainer").append("g")
+                .attr("id","wmeColumn");
+            var actionColumn = d3.select("#mainContainer").append("g")
+                .attr("id","actionColumn");
+
+            // var wmeNodeHeight = drawGroup(globalData,wmeColumn,wmes,"wme",(halfWidth - (colWidth * 2)), colWidth);
+            // annotateWmes(wmeColumn,wmeNodeHeight);
+            // var actionNodeHeight = drawGroup(globalData,actionColumn,actions,"action",(halfWidth + (colWidth)),colWidth);
+            // annotateActions(actionColumn,actionNodeHeight);
+            
+        },
+        "cleanup" : function(globalData,values){
+            d3.select("#wmeColumn").remove();
+            d3.select("#actionColumn").remove();
+        },
+        //** @command compile
+        "compile" : function(globalData,values){
+            console.log("Compiling Rete");
+            globalData.shell.compileRete();
+        },
+        //** @command assert
+        //full name: assert as wme:
+        "assert" : function(globalData,values){
+            console.log("Asserting rete:",values);
+            //assert the current node as a wme?
+            globalData.shell.assertWMEs(values);
+        },
+        "retract" : function(globalData,values){
+            console.log("Retracting rete:",values);
+            globalData.shell.retractWMEs(values);
+        },
+        "ruleStep" : function(globalData,values){
+            console.log("Rete Time Step");
+            globalData.shell.stepTime();
+            //todo: draw the actions being performed this step
+
+        },
+        "clearRete" : function(globalData,values){
+            _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
+            globalData.shell.clearRete();
+
+        },
+        "printRete" : function(globalData,values){
+            console.log(globalData.shell.reteNet);
+        },
+        "help" : function(globalData,values){
+            return {
+                "assert": [ "", " Assert all nodes of tag.type.wme"],
+                "compile" : [ "", " Compile all rules of tag.type.rule into the rete net"],
+                "ruleStep" : [ "", "Increment the rete net time by one, performing scheduled assertions/retractions"],
+                "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
+                "printRete" : ["", "Print to console the retenet object for debugging"],
+            };
+        },
+    };
+
+    var drawGroup = function(globalData,domRoot,data,className,xLocation,groupWidth){
+        console.log("Rete mode draw group:",data,xLocation,groupWidth);
+        var amtOfSpace, heightOfNode,
+            animationLength = 100;
+        if(data.length > 0){
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
+        }else{
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = amtOfSpace - 20;
+        }
+
+        var bound = domRoot.selectAll("."+className)
+            .data(data,function(d,i){
+                if(d.id) { return d.id; }
+                return i;
+            });
+
+        bound.exit().remove();
+
+        var enter = bound.enter().append("g")
+            .classed(className, true);
+
+        enter.append("rect")
+            .attr("width",groupWidth)
+            .attr("height",0)
+            .attr("fill",globalData.colours.lightBlue);
+
+        enter.append("text")
+            .text("default");
+        
+        domRoot.selectAll("."+className)
+            .attr("transform",function(d,i){
+                return "translate("+xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+            });
+
+        domRoot.selectAll("rect")
+            .transition()
+            .attr("height",heightOfNode);
+
+        domRoot.selectAll("text")
+            .attr("transform","translate(10," + (heightOfNode * 0.4) + ")");
+
+        return heightOfNode;
+    };
+
+    var annotateWmes = function(domRoot,nodeHeight){
+        domRoot.selectAll("text")
+            .text(function(d){
+                return "Wme: " + d.id;
+            });
+
+    };
+
+    var annotateActions = function(domRoot,nodeHeight){
+        domRoot.selectAll("text")
+            .text(function(d){
+                return "Action: " + d.action;
+            });
+    };
+    
+    return reteCommands;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#copyFile">copyFile</a></li><li><a href="global.html#dealWithGet">dealWithGet</a></li><li><a href="global.html#dealWithPost">dealWithPost</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#server">server</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Feb 27 2016 22:45:54 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

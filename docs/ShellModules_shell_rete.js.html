@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ShellModules/shell_rete.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ShellModules/shell_rete.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   @purpose Define prototype methods relating to shell &lt;-> rete interaction
+ */
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['underscore','Rete'],function(_,Rete){
+    "use strict";
+    var ShellPrototype = {};
+    
+    /**
+       @class CompleteShell
+       @method clearRete
+       @purpose Completely reset the retenet, by building a new one
+     */
+    ShellPrototype.clearRete = function(){
+        this.reteNet = new Rete();
+    };
+
+    /**
+       @class CompleteShell
+       @method clearActivatedRules
+       @purpose Clear the record of recently activated rules
+     */
+    ShellPrototype.clearPotentialActions = function(){
+        //Rete.clearPotentialActions(this.reteNet);
+        this.reteNet.clearProposedActions();
+    };
+    
+    ShellPrototype.clearHistory = function(){
+        //Rete.clearHistory(this.reteNet);
+        this.reteNet.clearHistory();
+    };
+    
+    /**
+       @class CompleteShell
+       @method compileRete
+       @purpose Retrieve all defined rules, add them to the rete net
+     */    
+    ShellPrototype.compileRete = function(nodeIds){
+        //take all defined rules from the provided list, or find all in the graph
+        if(nodeIds === undefined) { nodeIds = _.keys(this.allNodes); }
+        var shellRef = this,
+            nodes  = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            rules = nodes.filter(function(d){
+                return d.tags.type === 'rule';
+            });
+        
+        console.log("Compiling rules:",rules);
+        //and add them to the rete net
+        //returning the action nodes of the net
+        this.allActionNodes = rules.map(function(d){
+            console.log("Adding rule:",d);
+            //var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            var actionNode = this.reteNet.addRule(d.id,this.allNodes);
+            //TODO: store the returned node inside the shell's nodes?
+            d.actionNodeId = actionNode.id;
+            return {"rule": d, "actions" :actionNode};
+        },this);
+
+        console.log("All action nodes:",this.allActionNodes);
+    };
+
+    /**
+       @class CompleteShell
+       @method assertChildren
+       @purpose Assert all child nodes of the current node as facts
+       using each nodes' values field
+       @TODO: be able to detect bindings and resolve them prior to assertion?
+     */
+    ShellPrototype.assertWMEs = function(nodeIds){
+        //get all the wmes
+        if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
+        var shellRef = this,
+            nodes = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            wmes = nodes.filter(function(node){
+                return node.tags.fact !== undefined;
+            }).filter(function(node){
+                return node.wmeId === undefined;
+            });
+
+        //assert them
+        this.assertWMEList(wmes);
+    };
+
+    ShellPrototype.retractWMEs = function(nodeIds){
+        if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
+        var shellRef = this,
+            nodes = nodeIds.map(function(d){
+                return shellRef.getNode(d);
+            }),
+            wmes = nodes.filter(function(node){
+                return node.tags.fact !== undefined;
+            }).filter(function(node){
+                return node.wmeId !== undefined;
+            });
+
+        this.retractWMEList(wmes);
+    };
+    
+    /**
+       @class CompleteShell
+       @method assertWMEList
+       @purpose Taking a list of objects, add each as a wme to the retenet of the shell
+       @param array An Array of objects
+     */
+    ShellPrototype.assertWMEList = function(nodes){
+        if(!(nodes instanceof Array)){
+            throw new Error("Asserting should be in the form of an array");
+        }
+        //create wme objects out of them
+        var newWMEs = nodes.map(function(data){
+            //var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+            var wmeId = this.reteNet.assertWME(data);
+            data.wmeId = wmeId;
+            return wmeId;
+        },this);
+        console.log("New WMES:",newWMEs);
+        return newWMEs;
+    };
+
+    ShellPrototype.retractWMEList = function(nodes){
+        if(!(nodes instanceof Array)){
+            throw new Error("Retractions should be in an array");
+        }
+        nodes.forEach(function(node){
+            //Rete.retractWME_Immediately(node,this.reteNet);
+            //TODO: should this be node.wmeID?
+            this.reteNet.retractWME(node);
+        },this);
+    };
+    
+    ShellPrototype.stepTime = function(){
+        //Rete.incrementTime(this.reteNet);
+        this.reteNet.stepTime();
+        console.log("Potential Actions:",this.reteNet.proposedActions);
+        return this.reteNet.proposedActions;
+    };
+    
+    /**
+       @class CompleteShell
+       @method getNode
+       @purpose get a node by its id, utility method
+     */
+    ShellPrototype.getNode = function(nodeId){
+        nodeId = Number(nodeId);
+        
+        if(this.allNodes[nodeId]){
+            return this.allNodes[nodeId];
+        }else{
+            throw new Error("Unknown node specified: " + nodeId);
+        }        
+    };
+
+
+    return ShellPrototype;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#copyFile">copyFile</a></li><li><a href="global.html#dealWithGet">dealWithGet</a></li><li><a href="global.html#dealWithPost">dealWithPost</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#server">server</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Feb 27 2016 22:45:54 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

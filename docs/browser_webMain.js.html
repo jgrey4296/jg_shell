@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: browser/webMain.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: browser/webMain.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+   @file altWebMain
+ */
+
+//Setup requirejs
+//For soe server: baseUrl -> /~jgrey/src
+//and libs -> /~jgrey/libs
+require.config({
+    baseUrl: "/src",
+    paths:{
+        //General Utils
+        underscore : "/libs/underscore-min",
+        //uContrib : "/libs/underscore-contrib.min",
+        utils : "utils",
+        d3 : "/libs/d3.min",
+        Parse : "Parse/Parse",
+        //Nodes:
+        GraphNode : "Node/GraphNode",
+        //Commands:
+        AllCommands : "Commands/Command_Aggregate",
+        //CLI
+        HelpCLI : "CLI/HelpCLI",
+        MainCommandCLI : "CLI/MainCommandCLI",
+        //Shell
+        TotalShell : "TotalShell",
+        //TotalShell : "/libs/Shell.min",
+        //Rete
+        Rete : "/libs/Rete.min"
+    },
+    shim:{
+        'underscore' :{
+            exports:'_'
+        },
+    }
+});
+
+/**
+   @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
+   @purpose The main web program. Creates a shell, visualises it, and listens for user input
+*/
+require(['d3','TotalShell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
+    "use strict";
+
+    //----------------------------------------
+    //GLOBALS
+    //----------------------------------------
+    var globalData = {
+        maxNumberOfNodesInAColumn : 10,
+        maxNumberOfChildrenVisible : 40,
+
+        //Command aggregate object stored here, giving interface to commands:
+        commands : AllCommands,
+        
+        //The order that commands will be checked if they arent found in the current mode
+        commandFallBackOrder : [
+            "node","rule","rete","sim","general","bookmark","trace"
+        ],
+        
+        currentCommandMode : "node",
+    
+        //The simulated shell:
+        shell : new Shell.CompleteShell(),
+
+        lastSetOfSearchResults : [],
+        lastInspectData : [],
+        currentSelection : [],
+
+        
+        MainCommandCLIRef : MainCommandCLI,
+
+        
+        //COLOURS:
+        scaleToColour : d3.scale.linear()
+            .range([0,20])
+            .domain([0,20]),
+        colourScale : d3.scale.category20b(),
+        colours : {
+            grey : d3.rgb(19,21,27),
+            text : d3.rgb(237,255,255),
+            textBlue : d3.rgb(98,188,238),
+            textGrey : d3.rgb(132,146,154),
+            darkBlue : d3.rgb(23,50,77),
+            darkerBlue : d3.rgb(20,38,60),
+            lightBlue: d3.rgb(53,99,142),
+            green : d3.rgb(108,141,7),
+
+            //Specifics?
+            //node
+            //rule
+            //action
+            //condition
+            //interiorRect1
+            //interiorRect2
+            //interiorRect3
+            regexAction : "rgb(123,23,5)"
+            
+        },
+
+        //Sizes:
+        drawOffset : 50,
+        columnHeight : 300,
+        columnWidth : 200,
+        usableWidth : window.innerWidth - 30,
+        usableHeight : window.innerHeight - 30,
+        helpSize : 600,
+
+        halfWidth : function(){ return this.usableWidth * 0.5;},
+        halfHeight : function(){ return this.usableHeight * 0.5;},
+        
+        //The main svg:
+        svg : null,
+        //Columns:
+        columns : {},
+
+    //Utility Functions:
+        calcWidth : function(availableWidth,noOfColumns){
+            return availableWidth / (noOfColumns + 2);
+        },
+
+        columnPosition : function(oneColWidth,columnNumber){
+            return oneColWidth + (oneColWidth * columnNumber);
+        },
+   
+        getColumnObject : function(columnName){
+            if(globalData.columns[columnName] === undefined){
+                throw new Error("Unrecognised Column Name: " + columnName);
+            }
+            return globalData.columns[columnName];
+        },
+
+        initColumn : function(name,columnNumber,columnWidth){
+            //todo
+        },
+
+        lookupOrFallBack : function(commandName,globalData){
+            if(globalData === undefined) { globalData = this; }
+            var commandToExecute;
+            if(globalData.commands[globalData.currentCommandMode]
+               &amp;&amp; globalData.commands[globalData.currentCommandMode][commandName]){
+                //console.log("Command Search: Found");
+                commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
+            }else{        
+                //command not found, fallback
+                //console.log("Command Search: Fallback");
+                var fallBacks = _.clone(globalData.commandFallBackOrder);
+                while(fallBacks.length > 0){
+                    var currentFallback = fallBacks.shift();
+                    if(globalData.commands[currentFallback][commandName] !== undefined){
+                        commandToExecute = globalData.commands[currentFallback][commandName];
+                    }
+                }
+            }
+            return commandToExecute;
+        },
+
+        
+    };
+    //End of utilities
+    //--------------------
+    //Set up CLI:
+    d3.select("#shellInput").on("keydown",function(err){
+        try{
+            var currentLine = d3.select(this).node().value;
+            if(currentLine.length === 0) { return; }
+            
+            if(d3.event.keyCode === 13){ //ENTER
+                //clear the input:
+                d3.select(this).node().value = "";
+                MainCommandCLI(currentLine,globalData);
+            }else{//Not enter, still typing:
+                HelpCLI(currentLine + d3.event.key,globalData);
+            }
+        }catch(e){
+            console.log("Input Error: ",e);
+        }
+    });
+
+    //----------------------------------------
+    //Startup:
+    //set focus:
+    d3.select("#shellInput").node().focus();
+    //Setup the svg:
+    globalData.svg = d3.select("body").append("svg")
+        .attr("width",globalData.usableWidth)
+        .attr("height",globalData.usableHeight)
+        .style("background",globalData.colours.grey);
+
+    MainCommandCLI("",globalData);
+    
+});
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-The.html">The</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addAction">addAction</a></li><li><a href="global.html#addLink">addLink</a></li><li><a href="global.html#addNode">addNode</a></li><li><a href="global.html#addNodeFromJson">addNodeFromJson</a></li><li><a href="global.html#addTest">addTest</a></li><li><a href="global.html#assertChildren">assertChildren</a></li><li><a href="global.html#assertWMEList">assertWMEList</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#cd">cd</a></li><li><a href="global.html#cdNode">cdNode</a></li><li><a href="global.html#cleanup">cleanup</a></li><li><a href="global.html#cleanupNode">cleanupNode</a></li><li><a href="global.html#clearActivatedRules">clearActivatedRules</a></li><li><a href="global.html#clearRete">clearRete</a></li><li><a href="global.html#compileRete">compileRete</a></li><li><a href="global.html#convertObject">convertObject</a></li><li><a href="global.html#copyFile">copyFile</a></li><li><a href="global.html#dealWithGet">dealWithGet</a></li><li><a href="global.html#dealWithPost">dealWithPost</a></li><li><a href="global.html#deleteNode">deleteNode</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#drawInspectResults">drawInspectResults</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawRule">drawRule</a></li><li><a href="global.html#drawSearchResults">drawSearchResults</a></li><li><a href="global.html#drawSingleNode">drawSingleNode</a></li><li><a href="global.html#drawStash">drawStash</a></li><li><a href="global.html#exportJson">exportJson</a></li><li><a href="global.html#extractFactPrototypes">extractFactPrototypes</a></li><li><a href="global.html#getNode">getNode</a></li><li><a href="global.html#getNodeListByIds">getNodeListByIds</a></li><li><a href="global.html#importJson">importJson</a></li><li><a href="global.html#link">link</a></li><li><a href="global.html#nodeToShortString">nodeToShortString</a></li><li><a href="global.html#nodeToStringList">nodeToStringList</a></li><li><a href="global.html#pathExtraction">pathExtraction</a></li><li><a href="global.html#removeAction">removeAction</a></li><li><a href="global.html#removeBinding">removeBinding</a></li><li><a href="global.html#removeCondition">removeCondition</a></li><li><a href="global.html#removeNumericId">removeNumericId</a></li><li><a href="global.html#removeTest">removeTest</a></li><li><a href="global.html#rename">rename</a></li><li><a href="global.html#rm">rm</a></li><li><a href="global.html#ruleToStringList">ruleToStringList</a></li><li><a href="global.html#selectOrShare">selectOrShare</a></li><li><a href="global.html#server">server</a></li><li><a href="global.html#setActionnValue">setActionnValue</a></li><li><a href="global.html#setActionType">setActionType</a></li><li><a href="global.html#setArithmetic">setArithmetic</a></li><li><a href="global.html#setBinding">setBinding</a></li><li><a href="global.html#setParameter">setParameter</a></li><li><a href="global.html#setTest">setTest</a></li><li><a href="global.html#stash">stash</a></li><li><a href="global.html#top">top</a></li><li><a href="global.html#traceNode">traceNode</a></li><li><a href="global.html#unstash">unstash</a></li><li><a href="global.html#wrapText">wrapText</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sat Feb 27 2016 22:45:54 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

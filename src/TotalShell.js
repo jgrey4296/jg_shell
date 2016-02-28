@@ -1,7 +1,8 @@
 /**
-   @file TotalShell
-   @purpose Describes the top level Shell class, allowing authoring of a graph structure
+   Describes the top level Shell class, allowing authoring of a graph structure
    and integration with Rete based rule engine
+   @module TotalShell
+   
  */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
@@ -11,7 +12,7 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
     "use strict";
 
     /**
-       @class CompleteShell
+       CompleteShell
        @constructor
        @purpose The Main Shell class, provides interfaces for interacting with nodes, rules, and rete
     */
