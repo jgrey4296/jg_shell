@@ -10,6 +10,9 @@ define(['underscore'],function(_){
        Take a grammar, create a trace expansion
        @function
        @alias module:Parse
+       @param grammarObj
+       @param start
+       @param depth
      */
     var ParseObject = function(grammarObj,start,depth=1){
         if(depth > 50){

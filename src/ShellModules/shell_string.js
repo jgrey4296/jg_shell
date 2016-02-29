@@ -30,7 +30,6 @@ define(['underscore','Parse'],function(_,Parse){
        To convert a node to a text representation for display on screen
        @method
        @param node
-       @param i
      */
     ShellPrototype.nodeToShortString = function(node){
         console.log("NTSS:",node);
@@ -46,32 +45,9 @@ define(['underscore','Parse'],function(_,Parse){
     };
 
     /**
-       @class CompleteShell
-       @method nodeToStringList
-       @utility
-       @stub
-       @purpose To convert a node to a list of strings
-       @param node
-     */
-    ShellPrototype.nodeToStringList = function(node){
-        return [];
-    };
-
-    /**
-       Convert a rule to a string representation
-       @method
-       @param node
-     */
-    ShellPrototype.ruleToStringList = function(node){
-        var retList = [];
-        retList.push("(" + node.id +"): " + node.name);
-        return retList;
-    };
-    
-
-    /**
        Convert node and subnodes to a tracery style string
        @method
+       @param node
      */
     ShellPrototype.traceNode = function(node){
         //create the grammar object:

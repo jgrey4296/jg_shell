@@ -21,6 +21,8 @@ define(['underscore'],function(_){
     /**
        Search the graph for fields, tags, and regexs
        @method
+       @param values
+       @param nodeSelection
      */
     ShellPrototype.searchForFieldTagValue = function(values,nodeSelection){
         var field = values.shift(),

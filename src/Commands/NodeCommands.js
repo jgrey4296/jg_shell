@@ -7,27 +7,43 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
        @exports Commands/NodeCommands
     */
     var nodeCommands = {
-        /** Draw */
+        /** Draw a Node and its parents+children 
+         @param globalData
+         @param values
+         */
         "draw" : function(globalData,values){
             if(NodeDraw.dummy === undefined){
                 NodeDraw.drawNode(globalData,globalData.shell.cwd);
             }
         },
-        /** Cleanup */
+        /** Cleanup the drawn node/parents/children
+            @param globalData
+            @param values
+         */
         "cleanup" : function(globalData, values){
             if(NodeDraw.dummy === undefined){
                 NodeDraw.cleanup();
             }
         },
-        /** Print a Node to Console */
+        /** Print a Node to Console 
+            @param globalData
+            @param values
+         */
         "printNode" : function(globalData,values){
             console.log(globalData.shell.cwd);
         },
-        /** Print the shell to console */
+        /** Print the shell to console 
+            @param globalData
+            @param values
+         */
         "printShell" : function(globalData,values){
             console.log(globalData.shell);
         },
-        /** Create a new node */
+        /** Create a new node 
+            @param globalData
+            @param values
+            @param sourceId
+         */
         "new" : function(globalData,values,sourceId){
             //new -> addNode,
             //Expand out simplifications
@@ -37,7 +53,10 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             console.log("Target:",target);
             globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
-        /** new child utility function */
+        /** new child utility function 
+            @param globalData
+            @param values
+         */
         "nc" : function(globalData,values){
             var chars = {
                 "n" : "node",
@@ -52,7 +71,10 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 globalData.shell.addNode(values[1],'children',values[0],values.slice(2));
             }
         },
-        /** new parent */
+        /** new parent 
+            @param globalData
+            @param values
+         */
         "np" : function(globalData,values){
             var chars = {
                 "n" : "node",
@@ -67,30 +89,51 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 globalData.shell.addNode(values[1],'parents',values[0],values.slice(2));
             }
         },
-        /** New Child Node */
+        /** New Child Node 
+            @param globalData
+            @param values
+         */
         "ncn" : function(globalData,values){
             globalData.shell.addNode(values[0],'children','node');
         },
-        /** New Child Institution */
+        /** New Child Institution 
+            @param globalData
+            @param values
+         */
         "nci" : function(globalData,values){
             globalData.shell.addNode(values[0],'children','institution');
         },
-        /** Remove Node */
+        /** Remove Node 
+            @param globalData
+            @param values
+            @param sourceId
+         */
         "rm" : function(globalData,values,sourceId){
             //rm -> removeNode,
             globalData.shell.rm(values[0],values[1],values[2],sourceId);
         },
-        /** Change Working node */
+        /** Change Working node 
+            @param globalData
+            @param values
+        */
         "cd" : function(globalData,values){
             //cd -> cd
             globalData.shell.cd(values[0]);
         },
-        /** Set */
+        /** Set 
+            @param globalData
+            @param values
+            @param sourceId
+        */
         "set" : function(globalData,values,sourceId){
             //set -> setParameter
             globalData.shell.setParameter(values[0],values[1],values[2],sourceId);
         },
-        /** link */
+        /** link a node to another one
+            @param globalData
+            @param values
+            @param sourceId
+        */
         "link" : function(globalData,values,sourceId){
             //link -> link
             var target = values[0];
@@ -98,7 +141,11 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             if(target === 'parent') { target = 'parents'; }
             globalData.shell.link(target,values[1],false,sourceId);
         },
-        /** linkr */
+        /** Link two nodes, reciprocally
+            @param globalData
+            @param values
+            @param sourceId
+         */
         "linkr" : function(globalData,values,sourceId){
             var target = values[0];
             if(target === 'child') { target = 'children'; }
@@ -106,12 +153,18 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             globalData.shell.link(target,values[1],true,sourceId);
 
         },
-        /** rename */
+        /** Rename the node 
+            @param globalData
+            @param values
+         */
         "rename" : function(globalData,values){
             //rename -> rename
             globalData.shell.rename(values[0]);
         },
-        /** help */
+        /** help 
+            @param globalData
+            @param values
+        */
         "help" : function(globalData,values){
             return {
                 "help#general" : ["", "Display General Commands Help"],

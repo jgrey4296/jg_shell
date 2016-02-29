@@ -27,6 +27,8 @@ define(['underscore'],function(_){
        Remove a node link from the cwd
        @method
        @param nodeToDelete The node object to remove from the cwd
+       @param target
+       @param sourceId
      */
     ShellPrototype.rm = function(nodeToDelete,target,sourceId){
         if(target === undefined) { target = 'parents'; }
@@ -97,7 +99,8 @@ define(['underscore'],function(_){
     /**
        Remove an action from the current rule
        @method
-       @note: an action is still a node, so is still in allnodes
+       @param actionId
+       @param sourceId
      */
     ShellPrototype.removeAction = function(actionId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -112,6 +115,8 @@ define(['underscore'],function(_){
     /**
        Remove a condition, and its tests, from a rule
        @method
+       @param condId
+       @param sourceId
      */
     ShellPrototype.removeCondition = function(condId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;        
@@ -146,6 +151,7 @@ define(['underscore'],function(_){
        @method
        @param conditionNumber
        @param boundVar
+       @param sourceId
      */
     ShellPrototype.removeBinding = function(condId,boundVar,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;

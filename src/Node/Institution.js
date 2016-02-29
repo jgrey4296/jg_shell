@@ -12,6 +12,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
        @constructor
        @alias Node/Institution
        @augments module:Node/GraphNode
+       @param name
+       @param parent
+       @param dummyType
+       @param dummyRelations
+       @param overRideId
      */
     var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
         var relations = {

@@ -136,6 +136,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
        Add a new action to current rule
        @method
        @param valueArray The names of actions to create
+       @param sourceId
        @return newActions an array of all actions created
     */
     ShellPrototype.addAction = function(valueArray,sourceId){

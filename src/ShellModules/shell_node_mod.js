@@ -15,6 +15,7 @@ define(['underscore'],function(_){
        Rename the current nodes name
        @method
        @param name The name to rename to
+       @param sourceId
      */
     ShellPrototype.rename = function(name,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -27,6 +28,7 @@ define(['underscore'],function(_){
        @param field
        @param parameter
        @param value
+       @param sourceId
      */
     ShellPrototype.setParameter = function(field,parameter,value,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -55,6 +57,7 @@ define(['underscore'],function(_){
        @param target The field of the node to add the link to
        @param id The id of the node being linked towards
        @param reciprocal Whether the node of id will have a link back
+       @param sourceId
      */
     ShellPrototype.link = function(target,id,reciprocal,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -85,8 +88,8 @@ define(['underscore'],function(_){
        @param conditionNum The condition to add the binding to
        @param toVar The variable name to use as the bound name
        @param fromVar the wme field to bind
-
-       @ie: toVar = wme.fromVar
+       @param sourceId
+       @example toVar = wme.fromVar
      */
     ShellPrototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -135,6 +138,10 @@ define(['underscore'],function(_){
     /**
        Store a regex transform for an action, in a similar way to arithmetic actions
        @method
+       @param actionId
+       @param varName
+       @param regex
+       @param sourceId
     */
     ShellPrototype.setRegex = function(actionId,varName,regex,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -150,13 +157,17 @@ define(['underscore'],function(_){
     /**
        Modify the timing of an action
        @method
+       @param actionId
+       @param timeVar
+       @param value
+       @param sourceId
     */
     ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd,
             action = this.getNode(actionId);
         action.setTiming(timeVar,value);
 
-    }
+    };
     
     /**
        Set an internal value of an action, without going into that node itself
@@ -164,7 +175,7 @@ define(['underscore'],function(_){
        @param actionNum The action to target
        @param a The parameter name
        @param b The parameter value
-
+       @param sourceId
        @note If only a is supplied, sets the action's actionType tag
      */
     ShellPrototype.setActionValue = function(actionId,a,b,sourceId){
@@ -185,6 +196,7 @@ define(['underscore'],function(_){
        @method
        @param actionNum
        @param a the type
+       @param sourceId
      */
     ShellPrototype.setActionType = function(actionId,a,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
@@ -207,6 +219,7 @@ define(['underscore'],function(_){
        @param field the wme field to test
        @param op The operator to test using
        @param val the value to test against
+       @param sourceId
      */
     ShellPrototype.setTest = function(conditionId,testId,field,op,value,sourceId){
         console.log(conditionId,testId,field,op,value,sourceId);

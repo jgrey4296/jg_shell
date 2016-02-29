@@ -19,10 +19,19 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
 
         //{keyVal : [op,mod]
+        /** Arithmetic Actions
+            @type {Object}
+        */
         this.arithmeticActions = {};
         //{keyVal : [regex,options,replaceVal]
+        /** Regex Actions
+            @type {Object}
+         */
         this.regexActions = {};
-        //Fact link that this action produces
+
+        /** The linked node the action produces
+            @type {int}
+         */
         this.expectationNode = null;
 
         //Specify timing of proposed action to create,
@@ -38,7 +47,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     Action.prototype = Object.create(GraphNode.prototype);
     Action.constructor = Action;
 
-    /** Set or remove an arithmetic action */
+    /** Set Arithmetic Action
+        @param val
+        @param operator
+        @param modifer
+     */
     Action.prototype.setArith = function(val,operator,modifier){
         if(arguments.length < 1){ throw new Error("setArith needs at least a value"); }
         if(arguments.length !== 3){
@@ -49,7 +62,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
     /** set or remove a regex action */
     var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
-    /** setRegex */
+
+    /** Set Regex Action
+        @param val
+        @param regex
+     */
     Action.prototype.setRegex = function(val,regex){
         if(regex === undefined){
             delete this.regexActions[val];
@@ -62,7 +79,10 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     };
 
-    /** setTiming */
+    /** Set the timing offsets of the action
+        @param timeVar
+        @param value
+     */
     Action.prototype.setTiming = function(timeVar,value){
         if(this.timing[timeVar] !== undefined){
             this.timing[timeVar] = Number(value);
@@ -70,7 +90,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
 
 
-    /** getDescriptionObjects */
+    /** Convert the Action to a usable description
+        @returns {Array}
+     */
     Action.prototype.getDescriptionObjects = function(){
         var lists = [];
         lists.push({

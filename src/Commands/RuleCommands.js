@@ -8,7 +8,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
      @implements module:Commands/CommandTemplate
      */
     var ruleCommands = {
-        /** draw */
+        /** draw 
+            @param globalData
+            @param values
+        */
         "draw" : function(globalData,values){
             if(globalData.shell.cwd.tags.type.toLowerCase() === "rule"){
                 RuleDrawing.drawRule(globalData,globalData.shell.cwd);
@@ -22,11 +25,17 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 //NodeDrawing.drawNode(globalData,globalData.shell.cwd);
             }
         },
-        /** cleanup */
+        /** cleanup 
+            @param globalData
+            @param values
+        */
         "cleanup" : function(globalData, values){
             RuleDrawing.cleanup();
         },
-        /** cd */
+        /** Change directory / working node
+            @param globalData
+            @param values
+        */
         "cd" : function(globalData,values){
             //switch back to node mode
             var modes = _.keys(globalData.commands);
@@ -38,7 +47,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 cd(globalData,values);
             }
         },
-        /** new -> addCondition/test/action */
+        /** new -> addCondition/test/action 
+            @param globalData
+            @param values
+        */
         "new" : function(globalData,values,sourceId){
             var type = values.shift();
             if(type === "condition"){
@@ -54,7 +66,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 globalData.shell.addNode(null,'conditions','negConjCondition',values,sourceId);
             }
         },
-        /** if - a short way to define conditions */
+        /** if - a short way to define conditions 
+            @param globalData
+            @param values
+        */
         "if" : function(globalData, values,sourceId){
             values = values.map(function(d){
                 return d.replace(/,/,"");
@@ -65,7 +80,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 globalData.shell.addTest(newCondition.id,currentTest);
             }            
         },
-        /** rm */
+        /** Remove a node
+            @param globalData
+            @param values
+        */
         "rm" : function(globalData,values,sourceId){
             //remove action
             if(values[0] === 'action'){
@@ -76,7 +94,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 globalData.shell.removeCondition(values.slice(1),sourceId);
             }                
         },
-        /** set */
+        /** Set a value of a condition/action 
+            @param globalData
+            @param values
+        */
         "set" : function(globalData,values,sourceId){
             //set action 0 type assert
             //set condiiton 4 test a EQ 5
@@ -150,15 +171,24 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 }
             }
         },
-        /** rename */
+        /** Rename the rule 
+            @param globalData
+            @param values
+        */
         "rename" : function(globalData,values){
             globalData.shell.rename(values[0]);
         },
-        /** infer */
+        /** infer ?
+            @param globalData
+            @param values
+        */
         "infer" : function(globalData,values){
             globalData.shell.extractFactPrototypes();
         },
-        /** link */
+        /** Link a Condition/Action with a node in the graph 
+            @param globalData
+            @param values
+        */
         "link" : function(globalData,values){
             //currently not used, but the syntax is more pleasing if included
             var targetType = values.shift(),
@@ -193,7 +223,10 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             }
             
         },
-        /** help */
+        /** help 
+            @param globalData
+            @param values
+        */
         "help" : function(globalData,values){
             return {
                 "help#general" : [ "", "Display General Commands Help"],

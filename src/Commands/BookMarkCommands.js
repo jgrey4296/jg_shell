@@ -7,15 +7,24 @@ define(['underscore'],function(_){
        @exports Commands/BookMarkCommands
     */
     var CommandTemplate = {
-        /** Draw Command */
+        /** Draw Command 
+            @param globalData
+            @param values
+         */
         "draw" : function(globalData,values){
 
         },
-        /** Cleanup Command */
+        /** Cleanup Command 
+            @param globalData
+            @param values
+        */
         "cleanup" : function(globalData,values){
 
         },
-        /** open a new window of the bookmark's url: */
+        /** open a new window of the bookmark's url: 
+            @param globalData
+            @param values
+         */
         "goto" : function(globalData,values){
             var bookmark = globalData.shell.cwd;
             if(values.length > 0){
@@ -30,7 +39,10 @@ define(['underscore'],function(_){
                 }
             }
         },        
-        /** Firefox Import */
+        /** Firefox Import 
+            @param globalData
+            @param values
+        */
         "firefoxImport" : function(globalData,values){
             try{
                 var stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
@@ -44,7 +56,10 @@ define(['underscore'],function(_){
                 console.log("Firefox import Error:",err);
             }            
         },
-        /** Firefox Load */
+        /** Firefox Load 
+            @param globalData
+            @param values
+        */
         "firefoxLoad" : function(globalData,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){

@@ -8,15 +8,24 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
      @implements module:Commands/CommandTemplate
      */
     var TraceCommands = {
-        /** draw */
+        /** draw 
+            @param globalData
+            @param values
+        */
         "draw" : function(globalData,values){
 
         },
-        /** cleanup */
+        /** cleanup 
+            @param globalData
+            @param values
+        */
         "cleanup" : function(globalData,values){
 
         },
-        /** trace */
+        /** Expand a trace of a node 
+            @param globalData
+            @param values
+        */
         "trace" : function(globalData,values){
             var curNode = globalData.shell.cwd,
                 amt = !Number.isNaN(parseInt(values[0])) ? Array(parseInt(values[0])).fill(0) : [0],
@@ -24,7 +33,10 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
             console.log("Trace Result:",returnVals);
             TraceDrawing.drawTraces(globalData,returnVals);
         },
-        /** varsToChildren */
+        /** Convert trace variables to children 
+            @param globalData
+            @param values
+        */
         "varsToChildren" : function(globalData,values){
             var curNode = globalData.shell.cwd,
                 message = curNode.values.message || curNode.name,

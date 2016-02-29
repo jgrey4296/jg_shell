@@ -18,7 +18,9 @@ define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institut
     };
 
     /**
+       Get the Constructor specified
        @function
+       @param name
      */
     var getCtor = function(name){
         if(ctors[name.toLowerCase()] !== undefined){

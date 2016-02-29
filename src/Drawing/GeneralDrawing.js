@@ -9,6 +9,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     /**
      Draws a simple stack of small node descriptions, in the bottom middle of the screen
      @function 
+     @param globalData
+     @param data
      */
     GeneralDrawInterface.drawStash = function(globalData,data){
         //console.log("Drawing Stash:",data);
@@ -40,6 +42,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     /**
      Draws a list of node information in a left hand bar
      @function
+     @param globalData
+     @param data
      */
     GeneralDrawInterface.drawSearchResults = function(globalData,data){
         //console.log("Search Results:",data);
@@ -85,8 +89,10 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     };
 
     /**
-     Draws the sidbar of data from a particular node
-     @function 
+       Draws the sidbar of data from a particular node
+       @function 
+       @param glbalData
+       @param data
      */
     GeneralDrawInterface.drawInspectResults = function(globalData,data){
         //console.log("Inspecting:",data);

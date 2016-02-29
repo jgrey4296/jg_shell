@@ -39,6 +39,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        Retrieve all defined rules, add them to the rete net
        @method
+       @param nodeIds
      */    
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
@@ -69,6 +70,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        Assert all child nodes of the current node as facts using each nodes' values field
        @method
+       @param nodeIds
        @TODO: be able to detect bindings and resolve them prior to assertion?
      */
     ShellPrototype.assertWMEs = function(nodeIds){
@@ -91,6 +93,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        Retract wmes vias the retenet
        @method
+       @param nodeIds
      */
     ShellPrototype.retractWMEs = function(nodeIds){
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
@@ -110,6 +113,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        Taking a list of objects, add each as a wme to the retenet of the shell
        @method
+       @param nodes
        @param array An Array of objects
      */
     ShellPrototype.assertWMEList = function(nodes){
@@ -130,6 +134,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        retractWMEList
        @method
+       @param nodes
      */
     ShellPrototype.retractWMEList = function(nodes){
         if(!(nodes instanceof Array)){
@@ -156,6 +161,7 @@ define(['underscore','Rete'],function(_,Rete){
     /**
        Get a node by its id, utility method
        @method
+       @param nodeId
      */
     ShellPrototype.getNode = function(nodeId){
         nodeId = Number(nodeId);

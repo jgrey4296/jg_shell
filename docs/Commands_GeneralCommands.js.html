@@ -40,23 +40,38 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
        @exports Commands/GeneralCommands
     */
     var GeneralCommands = {
-        /** stash */
+        /** stash 
+            @param globalData
+            @param values
+        */
         "stash" : function(globalData,values){
             globalData.shell.stash();
         },
-        /** unstash */
+        /** unstash 
+            @param globalData
+            @param values
+        */
         "unstash" : function(globalData,values){
             globalData.shell.unstash();
         },
-        /** top */
+        /** top 
+            @param globalData
+            @param values
+        */
         "top" : function(globalData,values){
             globalData.shell.top();
         },
-        /** prev */
+        /** prev 
+            @param globalData
+            @param values
+        */
         "prev" : function(globalData,values){
             globalData.shell.cd(globalData.shell.previousLocation);
         },
-        /** Change Mode */
+        /** Change Mode 
+            @param globalData
+            @param values
+        */
         "mode" : function(globalData,values){
             //get the available modes
             var modes = _.keys(globalData.commands),
@@ -67,7 +82,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
-        /** Select nodes */
+        /** Select nodes 
+            @param globalData
+            @param values
+        */
         "select" : function(globalData,values){
             if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             values.forEach(function(d){
@@ -79,7 +97,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 }
             });
         },
-        /** Clear Selection */
+        /** Clear Selection 
+            @param globalData
+            @param values
+        */
         "clearSelection" : function(globalData,values){
             globalData.currentSelection = [];
         },
@@ -92,21 +113,33 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 command(globalData,values,d);                
             });
         },
-        /** print selection to console */
+        /** print selection to console 
+            @param globalData
+            @param values
+        */
         "printSelection" : function(globalData,values){
             console.log("Current Selection:",globalData.currentSelection);
 
         },        
-        /** Search */ 
+        /** Search 
+            @param globalData
+            @param values
+        */ 
         "search" : function(globalData,values){
             globalData.lastSearch = "(?)."+values.join(".");
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
         },
-        /** refine a search */
+        /** refine a search 
+            @param globalData
+            @param values
+        */
         "refine" : function(globalData,values){
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
         },
-        /** inspect */
+        /** inspect 
+            @param globalData
+            @param values
+        */
         "inspect" : function(globalData,values){
             var nodeId = values.shift(),
                 key = values.shift(),
@@ -116,7 +149,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             globalData.lastInspection = "(" + node.id + ")." + key;
             globalData.lastInspectData = pairs;
         },
-        /** Draw */
+        /** Draw 
+            @param globalData
+            @param values
+        */
         "draw" : function(globalData,values){
             //Draw the Stash:
             //drawStash(globalData,globalData.shell._nodeStash);
@@ -134,10 +170,13 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             GeneralDrawing.drawSelection(globalData,globalData.currentSelection);
 
         },
-        /** Load a file from the server */
+        /** Load a file from the server 
+            @param globalData
+            @param values
+        */
         "load" : function(globalData,values){
             var request = new XMLHttpRequest();
-            request.onreadystatechange=function(){
+            request.onreadystatechange = function(){
                 if(request.readyState===4){
                     try{
                         var receivedJson = JSON.parse(request.responseText);
@@ -153,7 +192,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             request.open("GET","/data/"+values[0]+".json",true);
             request.send();
         },
-        /** Import a text form of json data: */
+        /** Import a text form of json data: 
+            @param globalData
+            @param values
+        */
         "import" : function(globalData,values){
             try{
                 //var reconstructedJsonString = values.join(" ");
@@ -165,7 +207,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 console.log("Error Importing Json Data: ",err);
             }            
         },
-        /** Save the current graph to the server */
+        /** Save the current graph to the server 
+            @param globalData
+            @param values
+        */
         "save" : function(globalData,values){
             console.log("Saving:",values);
             var request = new XMLHttpRequest();
@@ -178,7 +223,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             request.open("POST","saveData="+values[0],true);
             request.send(globalData.shell.exportJson());
         },
-        /** Json */
+        /** Json 
+            @param globalData
+            @param values
+        */
         "json" : function(globalData,values){
             var text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
             window.exportedJson = text;
@@ -186,11 +234,17 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
             window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },
-        /** Files */
+        /** Files 
+            @param globalData
+            @param values
+        */
         "files" : function(globalData,values){
             window.open("./data/","_blank");
         },
-        /** Help */
+        /** Help 
+            @param globalData
+            @param values
+        */
         "help" : function(globalData,values){
             return {
                 "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
@@ -211,7 +265,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"]               
             };
         },
-        /** print Conditions to console */
+        /** print Conditions to console 
+            @param globalData
+            @param values
+        */
         "printConditions" : function(globalData,values){
             var allConditions = _.values(globalData.shell.allNodes).filter(function(node){
                 if(node.tags.type === "condition"){
@@ -236,7 +293,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
 
             console.log("Prototypes:",aggregateObjects);
         },
-        /** Modes */
+        /** Modes 
+            @param globalData
+            @param values
+        */
         "modes" : function(globalData,values){
             console.log("Available Modes:",_.keys(globalData.commands));
 
@@ -261,7 +321,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Feb 29 2016 03:17:40 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

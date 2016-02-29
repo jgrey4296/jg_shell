@@ -12,23 +12,38 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
        @exports Commands/GeneralCommands
     */
     var GeneralCommands = {
-        /** stash */
+        /** Store the current working node on a stack 
+            @param globalData
+            @param values
+        */
         "stash" : function(globalData,values){
             globalData.shell.stash();
         },
-        /** unstash */
+        /** Pop off the stack and go to that node 
+            @param globalData
+            @param values
+        */
         "unstash" : function(globalData,values){
             globalData.shell.unstash();
         },
-        /** top */
+        /** Go to the top of the stack, without popping
+            @param globalData
+            @param values
+        */
         "top" : function(globalData,values){
             globalData.shell.top();
         },
-        /** prev */
+        /** Go To the last node prior to the current node 
+            @param globalData
+            @param values
+        */
         "prev" : function(globalData,values){
             globalData.shell.cd(globalData.shell.previousLocation);
         },
-        /** Change Mode */
+        /** Change the active mode
+            @param globalData
+            @param values
+        */
         "mode" : function(globalData,values){
             //get the available modes
             var modes = _.keys(globalData.commands),
@@ -39,7 +54,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
-        /** Select nodes */
+        /** Add specified nodes to the current selection
+            @param globalData
+            @param values
+        */
         "select" : function(globalData,values){
             if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             values.forEach(function(d){
@@ -51,34 +69,52 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 }
             });
         },
-        /** Clear Selection */
+        /** Clear the current selection 
+            @param globalData
+            @param values
+        */
         "clearSelection" : function(globalData,values){
             globalData.currentSelection = [];
         },
         //eg: applyToSelection set tags wme 1
-        //made for node::[new,rm,set,link,linkr],rule::[new,if,rm,set]
-        //rete::assert
+        //made for node::[new,rm,set,link,linkr],rule::[new,if,rm,set,rete::assert]
+        /** apply the specified command to the current selection
+            @param globalData
+            @param values
+         */
         "applyToSelection" : function(globalData,values){
             var command = globalData.lookupOrFallBack(values.shift(),globalData);
             globalData.currentSelection.forEach(function(d){
                 command(globalData,values,d);                
             });
         },
-        /** print selection to console */
+        /** print the current selection to console 
+            @param globalData
+            @param values
+        */
         "printSelection" : function(globalData,values){
             console.log("Current Selection:",globalData.currentSelection);
 
         },        
-        /** Search */ 
+        /** Search all nodes for the specified constraints 
+            @param globalData
+            @param values
+        */ 
         "search" : function(globalData,values){
             globalData.lastSearch = "(?)."+values.join(".");
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
         },
-        /** refine a search */
+        /** Search through the current search results further
+            @param globalData
+            @param values
+        */
         "refine" : function(globalData,values){
             globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
         },
-        /** inspect */
+        /** Inspect the values of a node 
+            @param globalData
+            @param values
+        */
         "inspect" : function(globalData,values){
             var nodeId = values.shift(),
                 key = values.shift(),
@@ -88,7 +124,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             globalData.lastInspection = "(" + node.id + ")." + key;
             globalData.lastInspectData = pairs;
         },
-        /** Draw */
+        /** Draw the stash, search results, inspection results, and selection
+            @param globalData
+            @param values
+        */
         "draw" : function(globalData,values){
             //Draw the Stash:
             //drawStash(globalData,globalData.shell._nodeStash);
@@ -106,7 +145,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             GeneralDrawing.drawSelection(globalData,globalData.currentSelection);
 
         },
-        /** Load a file from the server */
+        /** Load a file from the server 
+            @param globalData
+            @param values
+        */
         "load" : function(globalData,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange = function(){
@@ -125,7 +167,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             request.open("GET","/data/"+values[0]+".json",true);
             request.send();
         },
-        /** Import a text form of json data: */
+        /** Import json data typed into the command line
+            @param globalData
+            @param values
+        */
         "import" : function(globalData,values){
             try{
                 //var reconstructedJsonString = values.join(" ");
@@ -137,7 +182,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 console.log("Error Importing Json Data: ",err);
             }            
         },
-        /** Save the current graph to the server */
+        /** Save the current graph to the server 
+            @param globalData
+            @param values
+        */
         "save" : function(globalData,values){
             console.log("Saving:",values);
             var request = new XMLHttpRequest();
@@ -150,7 +198,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             request.open("POST","saveData="+values[0],true);
             request.send(globalData.shell.exportJson());
         },
-        /** Json */
+        /** Open a new page of the exported json of the graph 
+            @param globalData
+            @param values
+        */
         "json" : function(globalData,values){
             var text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
             window.exportedJson = text;
@@ -158,11 +209,17 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
             window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
         },
-        /** Files */
+        /** Display the files available to be loaded
+            @param globalData
+            @param values
+        */
         "files" : function(globalData,values){
             window.open("./data/","_blank");
         },
-        /** Help */
+        /** Print the help menu for general commands 
+            @param globalData
+            @param values
+        */
         "help" : function(globalData,values){
             return {
                 "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
@@ -183,7 +240,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                 "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"]               
             };
         },
-        /** print Conditions to console */
+        /** Print All Conditions in the graph
+            @param globalData
+            @param values
+        */
         "printConditions" : function(globalData,values){
             var allConditions = _.values(globalData.shell.allNodes).filter(function(node){
                 if(node.tags.type === "condition"){
@@ -208,7 +268,10 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
 
             console.log("Prototypes:",aggregateObjects);
         },
-        /** Modes */
+        /** Print all available modes 
+            @param globalData
+            @param values
+        */
         "modes" : function(globalData,values){
             console.log("Available Modes:",_.keys(globalData.commands));
 

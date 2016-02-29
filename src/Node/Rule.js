@@ -11,6 +11,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     /**
        @constructor
        @alias Node/Rule
+       @param name
+       @param parent
+       @param type
+       @param relations
+       @param overRideId
      */
     var Rule = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"rule",{},overRideId);

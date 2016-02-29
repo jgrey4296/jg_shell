@@ -8,17 +8,26 @@ define(['underscore'],function(_){
      @implements module:Commands/CommandTemplate
      */
     var SimulationCommands = {
-        /** draw */
+        /** draw 
+            @param globalData
+            @param values
+        */
         "draw" : function(globalData,values){
             //draw list of characters
 
             //draw list of performed actions
         },
-        /** cleanup */
+        /** cleanup 
+            @param globalData
+            @param values
+        */
         "cleanup" : function(globalData,values){
 
         },
-        /** setupSim */
+        /** Setup the simulation 
+            @param globalData
+            @param values
+        */
         "setupSim" : function(globalData,values){
             console.log("Setting up simulation");
             //get all the nodes in the institution specified
@@ -52,7 +61,10 @@ define(['underscore'],function(_){
             globalData.shell.assertWMEs(institutionIds);
 
         },
-        /** stepSim : returns true when finished, false otherwise */
+        /** stepSim : returns true when finished, false otherwise 
+            @param globalData
+            @param values
+        */
         "stepSim" : function(globalData,values){
             if(globalData.simulation === undefined){
                 throw new Error("Simulation must be setup first, run 'setupSim' on an institution");
@@ -107,12 +119,18 @@ define(['underscore'],function(_){
 
             return false;
         },
-        /** Depth First Search */
+        /** Depth First Search 
+            @param globalData
+            @param values
+        */
         "dfs" : function(globalData,values){
             if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             console.log(globalData.shell.dfs(values[0]));
         },
-        /** Help */
+        /** Help 
+            @param globalData
+            @param values
+        */
         "help" : function(globalData,values){
             return {
                 "setupSim" : ["$sourceId?","Initialise the retenet for simulation"],

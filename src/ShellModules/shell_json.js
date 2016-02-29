@@ -28,7 +28,7 @@ define(['underscore'],function(_){
     /**
        To create a graph based on an incoming array of objects
        @method importJson
-       @param allNodes an array or object of key:object pairs describing all nodes to load
+       @param importNodes an array or object of key:object pairs describing all nodes to load
      */
     ShellPrototype.importJson = function(importNodes){
         //console.log("importing type:", typeof allNodes,allNodes.length);

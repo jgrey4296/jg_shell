@@ -46,6 +46,7 @@ define(['underscore'],function(_){
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
         this.children = {};
+        
         /** Parent  Ids of the node
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
@@ -62,10 +63,12 @@ define(['underscore'],function(_){
             @type {Object.<String,String>}
         */
         this.values = {};
+        
         /** Stored Data : Tags 
             @type {Object.<String,String>}
          */
         this.tags = {};
+        
         /** Stored Data : Annotations 
             @type {Object.<String,String>}
         */
@@ -79,6 +82,7 @@ define(['underscore'],function(_){
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
         this.expectedBy = {};
+        
         /** Rules that produce this fact: 
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
@@ -125,6 +129,7 @@ define(['underscore'],function(_){
     /**
        Returns a list of objects for visualisation
        @method 
+       @param fieldNameList
        @returns {Array.<Object>} Objects of {name: String, values: Array}
      */
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){

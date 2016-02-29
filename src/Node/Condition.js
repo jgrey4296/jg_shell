@@ -20,16 +20,29 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         this.tags.isNegative = false;
 
         //Test objects of form: { field: "", operator: "", value : "" }
+        /** Constant Tests
+            @type {Array}
+         */
         this.constantTests = [];
         //Bindings object: { boundVar : [sourceVar, [tests]] }
+        /** Bindings
+            @type {Object}
+         */
         this.bindings = {};
-        //Source node
+        /** The source node the condtion consumes
+            @type {Int}
+         */
         this.expectationNode = null;
     };
     Condition.prototype = Object.create(GraphNode.prototype);
     Condition.constructor = Condition;
 
-    /** Modify a constant test in the condition */
+    /** Modify a constant test in the condition 
+        @param testId
+        @param testField
+        @param op
+        @param val
+     */
     Condition.prototype.setTest = function(testId,testField,op,val){
         if(arguments < 2){
             this.constantTests.splice(testId,1);
@@ -47,7 +60,11 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             });
         }
     };
-    /** set binding */
+    /** set binding 
+        @param toVar
+        @param fromVar
+        @param testPairs
+     */
     Condition.prototype.setBinding = function(toVar,fromVar,testPairs){
         if(arguments < 2){
             delete this.bindings[toVar];

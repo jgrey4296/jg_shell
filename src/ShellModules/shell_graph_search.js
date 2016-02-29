@@ -18,6 +18,9 @@ define(['underscore'],function(_){
        Depth First Search from a source nodeId,
        using children in the specified fields, filtered afterwards by a criteria function
        @method dfs
+       @param nodeId
+       @param focusField
+       @param criteriaFunction
        @return ids of nodes found
      */
     ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
@@ -55,6 +58,10 @@ define(['underscore'],function(_){
        Breadth First Search on a source nodeId, for the specified fields
        filtering by the criteria, and to a specified depth
        @method bfs
+       @param nodeId
+       @param focusFields
+       @param criteriaFunction
+       @param depth
     */
        
     ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
