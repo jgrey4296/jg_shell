@@ -1,14 +1,13 @@
 /**
-   To parse help commands, and display the result
+   The CLI module that deals with help requests
    @module CLI/HelpCLI
  */
-
 define(['underscore','d3'],function(_,d3){
     "use strict";
-    
     /**
-       @function
-       @alias module:CLI/HelpCLI
+       @function HelpCLI
+       @param currentLine
+       @param globalData
      */
     var HelpCLI = function(currentLine,globalData){
         var textArray = currentLine.split(" ");
@@ -39,7 +38,8 @@ define(['underscore','d3'],function(_,d3){
 
     /**
        @function drawHelp
-       @private
+       @param helpObject
+       @param globalData
      */
     var drawHelp = function(helpObject,globalData){
         //Create the text to be displayed

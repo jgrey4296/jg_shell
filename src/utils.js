@@ -14,130 +14,8 @@ define(['underscore'],function(_){
     var util = {};
 
     /**
-       Make a random choice from the passed in array
-       @deprecated
-       @function
-     */
-    util.randomChoice = function(array){
-        var randIndex = Math.floor(Math.random() * array.length);
-        return array[randIndex];
-    };
-
-    
-    // util.textAlignPairs = function(arrayOfPairs){
-    //     console.log("Aligning:",arrayOfPairs);
-    //     //Get the largest strings on each side
-    //     var maxStringLengthLHS = Math.max.apply(null,arrayOfPairs.map(function(d){
-    //         return d[0].length;
-    //     })),
-    //         maxStringLengthRHS = Math.max.apply(null,arrayOfPairs.map(function(d){
-    //             return d[1].length;
-    //         })),
-    //         totalStringLength = Math.max(maxStringLengthLHS,maxStringLengthRHS),
-    //     //Align each side
-    //         alignedPairs = arrayOfPairs.map(function(d){
-    //             var lhsDifference = d[1].length - d[0].length,
-    //                 rhsDifference = d[0].length - d[1].length,
-    //                 lhs = "",
-    //                 rhs = "";
-                
-    //             if(lhsDifference > 0){
-    //                 lhs = new Array(lhsDifference).join("_") + d[0];
-    //             }else{
-    //                 lhs = d[0];
-    //             }
-    //             if(rhsDifference > 0){
-    //                 rhs = new Array(rhsDifference).join("_") + d[1];
-    //             }else{
-    //                 rhs = d[1];
-    //             }
-    //             return [lhs,rhs];
-    //         });
-        
-    //     return alignedPairs;
-    // };
-
-
-    // //Generic draw group function, modes will typically create their own version
-    // util.drawGroup = function(globalData,container,className,data,xLocation,groupWidth){
-    //     console.log("drawing:",data);
-    //     var heightOfNode = util.calculateNodeHeight((globalData.usableHeight - 100),
-    //                                                 20,
-    //                                                 data.length),
-    //         animationLength = 100,
-    //         boundGroup = container.selectAll("."+className)
-    //         .data(data,function(d,i){ return d.id; });
-
-    //     //exit selection
-    //     boundGroup.exit().selectAll("rect")
-    //         .transition()
-    //         .duration(animationLength)
-    //         .style("fill","red");
-
-    //     boundGroup.exit().selectAll("text").transition()
-    //         .style("opacity",0);
-        
-    //     boundGroup.exit().transition().delay(animationLength).remove();
-
-    //     //entry selection
-    //     var entryGroup = boundGroup.enter().append("g")
-    //         .classed(className, true)
-    //         .attr("transform","translate(" + xLocation + ",100)");
-
-
-    //     //create
-    //     entryGroup.append("rect")
-    //         .attr("width",0)
-    //         .attr("height",0)
-    //         .style("fill",globalData.colours.lightBlue)
-    //         .style("opacity",0)
-    //         .attr("rx",0)
-    //         .attr("ry",0);
-        
-
-    //     entryGroup.append("text")
-    //         .style("text-anchor","middle")
-    //         .style("fill","white")
-    //         .style("opacity",0);
-
-
-    //     //update selection
-    //     //transition to updated sizes etc
-    //     boundGroup.transition().delay(animationLength).attr("transform",function(d,i){
-    //         return "translate(" + xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
-    //     })
-    //         .selectAll("text")
-    //         .attr("transform","translate(" + (groupWidth * 0.5) + "," +
-    //               (heightOfNode * 0.5) + ")");
-
-        
-    //     boundGroup.selectAll("rect")
-    //         .transition().delay(animationLength*3).duration(animationLength)
-    //         .attr("width",groupWidth)
-    //         .attr("height",heightOfNode)
-    //         .attr("rx",10)
-    //         .attr("ry",10)
-    //         .style("opacity",1);
-
-    //     boundGroup.selectAll("text").transition().delay(animationLength*3).duration(animationLength)
-    //         .text(function(d){ return d.id + " : " + d.name; })
-    //         .style("opacity",1);
-        
-    //     return boundGroup;
-    // };
-
-    //calculate, given an size of an area, how far apart node are,
-    // and the number of items: the size of each individual node
-    // util.calculateNodeHeight = function(amtOfSpace,separatorSpace,dataLength){
-    //     if(dataLength > 0){
-    //         return (amtOfSpace - (dataLength * separatorSpace)) / dataLength;
-    //     }else{
-    //         return (amtOfSpace - separatorSpace);
-    //     }
-    // };
-
-    /**
        convert a string representation of an operator to its normal form
+       @param {String} operatorName See ReteComparisonOperators
        @deprecated
        @function
      */
@@ -164,6 +42,16 @@ define(['underscore'],function(_){
        offset by a global, and invidual amount, set a colour,
        and use a passed in function to fill the texts
        returning the resulting texts
+       @param boundDom
+       @param className
+       @param verticalOffset
+       @param nodeHeight
+       @param verticalSeparator
+       @param horizontalOffset
+       @param nodeWidth
+       @param colour
+       @param textFunction
+       @param textColour
        @function
     */
     util.annotate = function(boundDom,className,
@@ -208,10 +96,11 @@ define(['underscore'],function(_){
 
     /**
        repeatedly truncate text until it fits in a certain amount of space;
+       @param d 
        @function
-       TODO: customise
-    */
+     */
     util.truncateDrawnText = function(d){
+        // TODO: customise
         var bbox = this.getBBox();
         var maxLength = d.name.length - 4;
         while( bbox.wdith > 10 && maxLength > 10){
@@ -221,38 +110,6 @@ define(['underscore'],function(_){
             maxLength -= 2;
         }
     };
-
-    // //Take a text, and wrap it onto multiple 'lines'
-    // util.wrapText = function(textSelection,width,d3){
-    //     //console.log("Wrapping selection:",textSelection);
-    //     //TODO: check that the selection IS of texts?
-    //     textSelection.each(function(){
-    //             var text = d3.select(this),
-    //                 words = text.text().split(/\s+/),
-    //                 word,//current word
-    //                 line = [],//current line
-    //                 y = text.attr("y"),
-    //                 dy = parseFloat(text.attr("dy")) || parseFloat("1.4em"),
-    //                 tspan = text.text(null).append("tspan")
-    //                 .attr("x",0)
-    //                 .attr("y",y)
-    //                 .attr("dy",dy);
-
-    //         //console.log("Wrapping:",text,text.text());
-    //         while(!_.isEmpty(words)){
-    //             word = words.shift();
-    //             line.push(word);
-    //             tspan.text(line.join(" "));
-    //             if(tspan.node().getComputedTextLength() > width){
-    //                 line.pop();
-    //                 tspan.text(line.join(" "));
-    //                 line = [word];
-    //                 tspan = text.append("tspan").attr("x",20)
-    //                     .attr("dy",dy +"em").text(word);
-    //             }
-    //         }
-    //     });
-    // };
     
     return util;
 });

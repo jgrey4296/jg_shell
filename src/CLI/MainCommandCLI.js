@@ -2,11 +2,15 @@
    Takes text, executes relevant commands on the shell
    @module CLI/MainCommandCLI
 */
-
-
 define(['underscore'],function(_){
     "use strict";
-    /** Parse Current Line */
+
+    /**
+       Takes a line, and extracts the command
+       @function parseCurrentLine
+       @param currentLine
+       @returns {Array.<String>}
+     */
     var parseCurrentLine = function(currentLine){
         var splitLine = currentLine.split(/ /);
 
@@ -27,8 +31,10 @@ define(['underscore'],function(_){
 
     /**
        The CLI Function, takes a line and finds the command to apply
-       @function
-       @alias module:CLI/MainCommandCLI
+       @param currentLine
+       @param globalData
+       @param skipDraw
+       @function MainCommandCLI
     */
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
         if(skipDraw === undefined) { skipDraw = false; }

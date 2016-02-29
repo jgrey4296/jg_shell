@@ -1,61 +1,87 @@
-/**
-   To define the base data structure for the shell
-   @module Node/GraphNode
-   @see {@link Node/GraphNode}
-*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
-
+/**
+   The main node type of the graph:
+   @module Node/GraphNode
+   @see GraphNode
+*/
 define(['underscore'],function(_){
     "use strict";
     var nextId = 0;
     /**
-       The main node type of the graph:
+       A node of the overall graph
        @constructor
-       @alias Node/GraphNode
-     */
+       @alias GraphNode
+    */
     var GraphNode = function(name,parent,type,relationsToCreate,overRideId){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
-        /** The id of the node */
+        
+        /** 
+            The id of the node 
+            @type int
+            @instance
+         */
         this.id = overRideId || nextId++;
         if(overRideId && overRideId > nextId){
             nextId = overRideId + 1;
         }
 
-        /** The Name of the Node */
+        /** The Name of the Node 
+            @type String
+         */
         this.name = name;
 
-        /** Parents and children created internally, ready to be sent to the shell for registration */
+        /** Parents and children created internally, ready to be sent to the shell for registration 
+            @type {Array.<GraphNode>}
+         */
         this.relatedObjects = [];
 
         //parents and children for links
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
-        /** children */
+        
+        /** The child Ids of the node
+            @type {Object.<GraphNode#id,GraphNode#name>}
+         */
         this.children = {};
-        /** parents */
+        /** Parent  Ids of the node
+            @type {Object.<GraphNode#id,GraphNode#name>}
+         */
         this.parents = {};
         if(parent !== undefined){
+            /** The Original Parent Id of the node
+                @type {int}
+             */
             this._originalParent = parent.id;
             this.parents[parent.id] = parent.name;
         }
 
-        /** Stored Data: Values */
+        /** Stored Data: Values 
+            @type {Object.<String,String>}
+        */
         this.values = {};
-        /** Stored Data : Tags */
+        /** Stored Data : Tags 
+            @type {Object.<String,String>}
+         */
         this.tags = {};
-        /** Stored Data : Annotations */
+        /** Stored Data : Annotations 
+            @type {Object.<String,String>}
+        */
         this.annotations = {};
 
         /** Used to update the prototype on json-imported data */
         this.tags.type = type || 'graphnode';
 
-        /* Relations to Rules */
-        /** Rules that consume this fact: */
+                
+        /** Rules that consume this fact into their conditions
+            @type {Object.<GraphNode#id,GraphNode#name>}
+         */
         this.expectedBy = {};
-        /** Rules that produce this fact: */
+        /** Rules that produce this fact: 
+            @type {Object.<GraphNode#id,GraphNode#name>}
+         */
         this.producedBy = {};
 
 
@@ -90,6 +116,7 @@ define(['underscore'],function(_){
     /**
        Convert to a string
        @method
+       @returns {String} 
      */
     GraphNode.prototype.toString = function(){
         return `(${this.id}) : ${this.name.slice(0,10)}`;
@@ -98,7 +125,7 @@ define(['underscore'],function(_){
     /**
        Returns a list of objects for visualisation
        @method 
-       
+       @returns {Array.<Object>} Objects of {name: String, values: Array}
      */
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
         //returns [{name: "", values : [] }]
@@ -120,6 +147,7 @@ define(['underscore'],function(_){
     /**
        Get a simple text description of the node
        @method 
+       @returns {Object} {name: string}
      */
     GraphNode.prototype.getShortDescription = function(){
         return {name :`(${this.id}) ${this.name} : ${this.tags.type}` };
@@ -128,6 +156,9 @@ define(['underscore'],function(_){
     
     /**
        Set a value in the node. as a scalar if no parameter is specified
+       @param value
+       @param field
+       @param parameter
        @method
      */
     GraphNode.prototype.setValue = function(value,field,parameter){
@@ -153,6 +184,8 @@ define(['underscore'],function(_){
     /**
        Register a NodeStyle object as a relation of this node. stores id+name
        and adds to the relatedObjects map;
+       @param target
+       @param object
        @method
      */
     GraphNode.prototype.addRelation = function(target,object){
@@ -173,6 +206,7 @@ define(['underscore'],function(_){
     /**
        Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
        @method
+       @returns {Array.<GraphNode>}
      */
     GraphNode.prototype.getRelationObjects = function(){
         var tempList = this.relatedObjects;

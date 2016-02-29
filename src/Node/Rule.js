@@ -10,7 +10,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
     /**
        @constructor
-       @alias module:Node/Rule
+       @alias Node/Rule
      */
     var Rule = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"rule",{},overRideId);

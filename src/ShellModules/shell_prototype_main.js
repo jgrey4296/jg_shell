@@ -7,6 +7,15 @@ define(['underscore','./shell_json','./shell_node_addition','./shell_node_deleti
     /**
        Aggregates different components of the shell into one prototype
        @exports ShellModules/shell_prototype_main       
+       @requires module:ShellModules/shell_json
+       @requires module:ShellModules/shell_node_addition
+       @requires module:ShellModules/shell_node_deletion
+       @requires module:ShellModules/shell_node_mod
+       @requires module:ShellModules/shell_rete
+       @requires module:ShellModules/shell_search
+       @requires module:ShellModules/shell_string
+       @requires module:ShellModules/shell_graph_search
+       @requires module:ShellModules/shell_state_change
      */
     var shellPrototype = _.extend({},
                                   shellJson, shellAddition, shellDeletion,

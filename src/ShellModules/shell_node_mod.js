@@ -6,7 +6,7 @@ define(['underscore'],function(_){
     "use strict";
     /**
        Defines shell prototype methods for changing a node
-       @exports ShellModule/shell_node_mod
+       @exports ShellModules/shell_node_mod
     */
 
     var ShellPrototype = {};

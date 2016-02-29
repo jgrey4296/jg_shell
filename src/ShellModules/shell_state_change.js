@@ -33,7 +33,7 @@ define(['underscore','../utils'],function(_,util){
                 this.cdNode(this.cwd._originalParent);
             }else{
                 //if no original parent defined
-                var randomParentKey = util.randomChoice(_.keys(this.cwd.parents));
+                var randomParentKey = _.sample(_.keys(this.cwd.parents));
                 if(randomParentKey !== undefined){
                     this.cdNode(randomParentKey);
                 }

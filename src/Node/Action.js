@@ -2,15 +2,13 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 /**
-   Defines an Action to interface with the ReteNet
+   Describes a node that can behave as a ReteNet Action
    @module Node/Action
-   @see {@link Node/Action}
  */
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
     /**
-       @constructor
-       @alias Node/Action
+       @constructor Action
        @augments module:Node/GraphNode
      */
     var Action = function(name,parent,actionType,values,overRideId){

@@ -45,7 +45,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             values.forEach(function(d){
                 var id = Number(d);
                 if(Number.isNaN(id)) { return; }
-                
+                //selection is not included, add it:
                 if(globalData.currentSelection.indexOf(id) === -1){
                     globalData.currentSelection.push(id);
                 }
