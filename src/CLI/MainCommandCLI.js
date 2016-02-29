@@ -1,12 +1,16 @@
 /**
-   @file MainCommandCLI
-   @purpose takes text, executes relevant commands on the shell
+   Takes text, executes relevant commands on the shell
+   @module CLI/MainCommandCLI
 */
-
-
 define(['underscore'],function(_){
     "use strict";
-    
+
+    /**
+       Takes a line, and extracts the command
+       @function parseCurrentLine
+       @param currentLine
+       @returns {Array.<String>}
+     */
     var parseCurrentLine = function(currentLine){
         var splitLine = currentLine.split(/ /);
 
@@ -25,8 +29,13 @@ define(['underscore'],function(_){
         return combined;
     };
 
-        
-    //The CLI Function, takes a line and finds the command to apply
+    /**
+       The CLI Function, takes a line and finds the command to apply
+       @param currentLine
+       @param globalData
+       @param skipDraw
+       @function MainCommandCLI
+    */
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
         if(skipDraw === undefined) { skipDraw = false; }
         globalData.rawCurrentLine = currentLine;
@@ -44,7 +53,7 @@ define(['underscore'],function(_){
                 alert(e);
             }
         }else{
-            console.warn("No function specified to execute: " + currentLine);
+            //console.warn("No function specified to execute: " + currentLine);
         }
 
         //Finish if not drawing

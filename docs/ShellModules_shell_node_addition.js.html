@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ShellModules/shell_node_addition.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ShellModules/shell_node_addition.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+
+define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
+    "use strict";
+    /**
+       Defines prototype methods for shell node creation
+       @exports ShellModules/shell_node_addition
+     */
+    var ShellPrototype = {};
+
+    /**
+       Add an ID number and name to a field of an object
+       @method
+       @param node the node to add the link FROM
+       @param target the field of the node to link FROM
+       @param id the id of the node to link TO
+       @param name the name of the node to link TO
+    */
+    ShellPrototype.addLink = function(node,target,id,name){
+        if(isNaN(Number(id))){
+            throw new Error("Trying to link without providing a valid id number");
+        }
+        if(node &amp;&amp; node[target]){
+            node[target][Number(id)] = name;
+        }else{
+            throw new Error("Unrecognised target");
+        }
+    };
+
+
+    /**
+       Create a new node, and link it to the cwd of the shell
+       @method
+       @param name The name of the new node
+       @param target The field of the cwd to add the new node to
+       @param type The type of node the new node should be annotated as. See GraphStructureConstructors
+       @return the newly created node
+    */
+    ShellPrototype.addNode = function(name,target,type,values,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        
+        if(name === null || name === undefined || name === "") {
+            name = type || "anon";
+            console.warn("making an anonymous node");
+        }
+        //validate input:
+        if(source[target] === undefined){ 
+            console.warn("Creating target: ",target,source);
+            source[target] = {};
+        }
+        type = type || "GraphNode";
+
+        var ctor = getCtor(type),
+            newNode;
+        
+        if(target === 'parents' || target === 'parent'){
+            //if adding to parents,don't store the cwd as newnode's parent
+            newNode = new ctor(name,undefined,type);
+            //add the cwd to the newNodes children:
+            this.addLink(newNode,'children',source.id,source.name);
+            //newNode.children[this.cwd.id] = true;
+        }else{
+            newNode = new ctor(name,source,type);
+        }
+
+        //add to cwd:
+        //console.log("Linking new node:",newNode);
+        this.addLink(source,target,newNode.id,newNode.name);
+
+        //Store in allNodes:
+        if(this.allNodes[newNode.id] !== undefined){
+            console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
+        }
+        this.allNodes[newNode.id] = newNode;
+
+        //get all subrelation objects:
+        var relationObjects = newNode.getRelationObjects();
+        while(relationObjects.length > 0){
+            //get an object off
+            var obj = relationObjects.shift();
+            //get any sub objects and add them to the list
+            relationObjects = relationObjects.concat(obj.getRelationObjects());
+            //add the obj to allNodes
+            this.allNodes[obj.id] = obj;
+        }
+        
+
+        //If the cwd WAS disconnected in some way,
+        //remove it from that designation
+        if(source[target][this.disconnected.noParents.id]){
+            this.rm(this.disconnected.noParents.id,source.id);
+        }
+        if(source[target][this.disconnected.noChildren.id]){
+            this.rm(this.disconnected.noChildren.id,source.id);                
+        }
+        
+        return newNode;        
+    };
+
+    /**
+       Add a constant test to a specified condition of the current rule
+       @method 
+       @param conditionNumber The position in the condition array to add the test to
+       @param testField the wme field to test
+       @param op The operator to use in the test
+       @param value The constant value to test against
+     */
+    ShellPrototype.addTest = function(conditionId,testParams,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Adding test:",conditionId,testParams,source.conditions);
+        //check you're in a rule
+        if(source.tags.type !== 'rule' &amp;&amp; source.tags.type !== 'negConjCondition'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        //check the specified condition exists
+        if(source.conditions[conditionId] === undefined || this.allNodes[conditionId] === undefined){
+            console.log(conditionId,source.conditions);
+            throw new Error("Can't add a test to a non-existent condition");
+        }
+        if(testParams.length !== 3){
+            throw new Error("Insufficient test specification");
+        }
+        //Check the operator is a defined one
+        if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
+            throw new Error("Unrecognised operator");
+        }
+        var condition = this.allNodes[conditionId];
+        //Create the test
+        condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
+    };
+
+    /**
+       Add a new action to current rule
+       @method
+       @param valueArray The names of actions to create
+       @return newActions an array of all actions created
+    */
+    ShellPrototype.addAction = function(valueArray,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        if(source.tags.type !== 'rule'){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        var name = valueArray.shift() || "anonAction";
+        
+        //add an action node to cwd.actions
+        var newAction = this.addNode(name,'actions','action',valueArray,sourceId);
+        return newAction;
+    };
+
+
+    return ShellPrototype;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

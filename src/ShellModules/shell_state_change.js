@@ -4,12 +4,14 @@ if(typeof define !== 'function'){
 
 define(['underscore','../utils'],function(_,util){
     "use strict";
+    /**
+     @exports ShellModules/shell_state_change
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method cd
-       @purpose to move the cwd of the shell to a new location
+    /**
+       To move the cwd of the shell to a new location
+       @method
        @params target The id (global) or name (local) to move to
     */
     ShellPrototype.cd = function(target){
@@ -17,10 +19,8 @@ define(['underscore','../utils'],function(_,util){
     };
 
     /**
-       @class CompleteShell
-       @method cdNode
-       @utility
-       @purpose to move about normally, dealing with nodes
+       To move about normally, dealing with nodes
+       @method
        @param target
      */
     ShellPrototype.cdNode = function(target){
@@ -28,12 +28,12 @@ define(['underscore','../utils'],function(_,util){
         this.previousLocation = this.cwd.id;
         //go up to parent
         if(target === ".."){
-            console.log("cd : ..");
+            //console.log("cd : ..");
             if(this.cwd._originalParent){
                 this.cdNode(this.cwd._originalParent);
             }else{
                 //if no original parent defined
-                var randomParentKey = util.randomChoice(_.keys(this.cwd.parents));
+                var randomParentKey = _.sample(_.keys(this.cwd.parents));
                 if(randomParentKey !== undefined){
                     this.cdNode(randomParentKey);
                 }
@@ -77,18 +77,16 @@ define(['underscore','../utils'],function(_,util){
     };
 
     /**
-       @class CompleteShell
-       @method stash
-       @purpose add the cwd to the temporary stash for reference
+       Add the cwd to the temporary stash for reference
+       @method
      */
     ShellPrototype.stash = function(){
         this._nodeStash.push(this.cwd);
     };
 
     /**
-       @class CompleteShell
-       @method unstash
-       @purpose move to, and remove, the top element from the stash stack
+       Move to, and remove, the top element from the stash stack
+       @method
     */
     ShellPrototype.unstash = function(){
         if(this._nodeStash.length > 0){
@@ -97,9 +95,8 @@ define(['underscore','../utils'],function(_,util){
     };
 
     /**
-       @class CompleteShell
-       @method top
-       @purpose To move to the top element of the stash stack, without removing it
+       To move to the top element of the stash stack, without removing it
+        @method
      */
     ShellPrototype.top = function(){
         if(this._nodeStash.length > 0){

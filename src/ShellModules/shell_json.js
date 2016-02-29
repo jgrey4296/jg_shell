@@ -1,34 +1,33 @@
-/**
-   @purpose Defines methods related to importing or exporting json from the shell
-*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 
-define(['underscore','../Node/GraphNode'],function(_,GraphNode){
+define(['underscore'],function(_){
     "use strict";
-    //Object that will be copied into the shell's prototype:
+    /**
+     Defines methods related to importing or exporting json from the shell
+       @exports ShellModules/shell_json
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method exportJson
-       @purpose Converts all defined nodes to a json array of objects
+    /**
+       Converts all defined nodes to a json array of objects
+       @method exportJson       
        @return A JSON string
-
        @note As nodes only store ID numbers, the information does not contain cycles
      */
     ShellPrototype.exportJson = function(){
+        //todo: ensure that all nodes have been cleared of relation objects prir to export
+        
         var graphJson = JSON.stringify(_.values(this.allNodes),undefined,4);
         console.log("Converted to JSON:",graphJson);
         return graphJson;
     };
 
     /**
-       @class CompleteShell
+       To create a graph based on an incoming array of objects
        @method importJson
-       @purpose To create a graph based on an incoming array of objects
        @param allNodes an array or object of key:object pairs describing all nodes to load
      */
     ShellPrototype.importJson = function(importNodes){
@@ -49,48 +48,36 @@ define(['underscore','../Node/GraphNode'],function(_,GraphNode){
     };
 
     /**
-       @class CompleteShell
+       Create a node from loaded json data, forcing a specific ID number
        @method addNodeFromJson
-       @purpose create a node from loaded json data, forcing a specific ID number
        @param obj The object data to use for the node
        @return a new node object
      */
     ShellPrototype.addNodeFromJson = function(obj){
         //console.log("Loading Object:",obj);
-        var newNode = new GraphNode(obj.name,obj._originalParent,obj.parents[obj._originalParent],obj.type,obj.id);
-        _.keys(obj).forEach(function(d){
-            newNode[d] = obj[d];
-        });
         
-        if(newNode.id !== obj.id) { throw new Error("Ids need to match"); }
-        if(this.allNodes[newNode.id] !== undefined){
-            console.warn("Json loading into existing node:",newNode,this.allNodes[newNode.id]);
+        //get the constructor appropriate for the object
+        //and apply it to the object
+        //console.log("Using get ctor:",this.getCtor);
+        //console.log("Importing:",obj);
+        var ctor = this.getCtor(obj.tags.type),
+            loadedNode = _.create(ctor.prototype,obj);
+        //console.log("Loaded:",loadedNode);
+        
+        if(this.allNodes[loadedNode.id] !== undefined){
+            console.warn("Json loading into existing node:",loadedNode,this.allNodes[loadedNode.id]);
         }
-        this.allNodes[newNode.id] = newNode;
+        this.allNodes[loadedNode.id] = loadedNode;
 
-        //If necessary (from older versions)
-        //swap the keys/values pairings in children/parents
-        //ie: KEY should be a NUMBER, swap otherwise
-        var keys = _.keys(newNode.children);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.children = this.convertObject(newNode.children);
-        }
-
-        keys = _.keys(newNode.parents);
-        if(keys.length > 0 && isNaN(Number(keys[0]))){
-            //console.log("Converting from old format");
-            newNode.parents = this.convertObject(newNode.parents);
-        }
-        return newNode;
+        return loadedNode;
     };
 
     /**
-       @class CompleteShell
+       Convert old style links of name->id to new style id->name
        @method convertObject
-       @purpose convert old style links of name->id to new style id->name
        @param object The object to switch around
        @return an output object of value:key pairs
+       @deprecated
     */
     ShellPrototype.convertObject = function(object){
         var keys = _.keys(object),

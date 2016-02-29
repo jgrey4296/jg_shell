@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Node/Action.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Node/Action.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+/**
+   Describes a node that can behave as a ReteNet Action
+   @module Node/Action
+ */
+define(['underscore','./GraphNode'],function(_,GraphNode){
+    "use strict";
+    /**
+       @constructor Action
+       @augments module:Node/GraphNode
+     */
+    var Action = function(name,parent,actionType,values,overRideId){
+        GraphNode.call(this,name,parent,"action",{},overRideId);
+        this.tags.actionType = actionType || "assert";
+        while(values &amp;&amp; values.length >= 2){
+            this.values[values.shift()] = values.shift();
+        }
+
+        //{keyVal : [op,mod]
+        this.arithmeticActions = {};
+        //{keyVal : [regex,options,replaceVal]
+        this.regexActions = {};
+        //Fact link that this action produces
+        this.expectationNode = null;
+
+        //Specify timing of proposed action to create,
+        //As offsets from the time the action fires
+        this.timing = {
+            invalidateOffset : 0,
+            performOffset : 0,
+            unperformOffset: 0
+        };
+        this.priority = 0;
+        
+    };
+    Action.prototype = Object.create(GraphNode.prototype);
+    Action.constructor = Action;
+
+    /** Set or remove an arithmetic action */
+    Action.prototype.setArith = function(val,operator,modifier){
+        if(arguments.length &lt; 1){ throw new Error("setArith needs at least a value"); }
+        if(arguments.length !== 3){
+            delete this.arithmeticActions[val];
+        }else{
+            this.arithmeticActions[val] = [operator,modifier];
+        }
+    };
+    /** set or remove a regex action */
+    var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
+    /** setRegex */
+    Action.prototype.setRegex = function(val,regex){
+        if(regex === undefined){
+            delete this.regexActions[val];
+        }else{
+            var splitRegex = regex.match(regexSplitRegex);
+            if(splitRegex === null || splitRegex.length !== 4){
+                throw new Error("Invalid regex");
+            }
+            this.regexActions[val] = [splitRegex[1],splitRegex[3],splitRegex[2]];
+        }
+    };
+
+    /** setTiming */
+    Action.prototype.setTiming = function(timeVar,value){
+        if(this.timing[timeVar] !== undefined){
+            this.timing[timeVar] = Number(value);
+        }
+    };
+
+
+    /** getDescriptionObjects */
+    Action.prototype.getDescriptionObjects = function(){
+        var lists = [];
+        lists.push({
+            name : this.toString(),
+        });
+
+        lists.push({
+            name : "Tags",
+            values : _.pairs(this.tags).map(d=>d.join(" : "))
+        });
+
+        lists.push({
+            name : "Data",
+            values : _.pairs(this.values).map(d=>d.join(" : "))
+        });
+        
+        lists.push({
+            name : "Arithmetic Actions",
+            values : _.keys(this.arithmeticActions).map(d=>`${d} ${this.arithmeticActions[d][0]} ${this.arithmeticActions[d][1]}`)
+        });
+
+        lists.push({
+            name: "Regex Actions",
+            values : _.keys(this.regexActions).map(d=>`${d} ~= /${this.regexActions[d][0]}/${this.regexActions[d][2]}/${this.regexActions[d][1]}`)
+        });
+
+        lists.push({
+            name: "Timing",
+            values : _.keys(this.timing).map(d=>`${d} : ${this.timing[d]}`)
+        });
+
+        lists.push({
+            name : "Produces:",
+            values : [this.expectationNode]
+        });
+
+        lists.push({
+            name : "Priority:",
+            values : [this.priority]
+        });
+        
+        return lists;
+    };
+    
+    
+    return Action;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

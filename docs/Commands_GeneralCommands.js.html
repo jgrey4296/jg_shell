@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Commands/GeneralCommands.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Commands/GeneralCommands.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,GeneralDrawing){
+    "use strict";
+
+    /**
+       Implements non-specific commands like loading and saving for the shell
+       @implements module:Commands/CommandTemplate
+       @exports Commands/GeneralCommands
+    */
+    var GeneralCommands = {
+        /** stash */
+        "stash" : function(globalData,values){
+            globalData.shell.stash();
+        },
+        /** unstash */
+        "unstash" : function(globalData,values){
+            globalData.shell.unstash();
+        },
+        /** top */
+        "top" : function(globalData,values){
+            globalData.shell.top();
+        },
+        /** prev */
+        "prev" : function(globalData,values){
+            globalData.shell.cd(globalData.shell.previousLocation);
+        },
+        /** Change Mode */
+        "mode" : function(globalData,values){
+            //get the available modes
+            var modes = _.keys(globalData.commands),
+                newMode = modes.indexOf(values[0]) > -1 ? values[0] : modes[0];
+
+            //cleanup the current mode
+            globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
+            //Change to new mode
+            globalData.currentCommandMode = newMode;
+        },
+        /** Select nodes */
+        "select" : function(globalData,values){
+            if(values.length === 0) { values = [globalData.shell.cwd.id]; }
+            values.forEach(function(d){
+                var id = Number(d);
+                if(Number.isNaN(id)) { return; }
+                //selection is not included, add it:
+                if(globalData.currentSelection.indexOf(id) === -1){
+                    globalData.currentSelection.push(id);
+                }
+            });
+        },
+        /** Clear Selection */
+        "clearSelection" : function(globalData,values){
+            globalData.currentSelection = [];
+        },
+        //eg: applyToSelection set tags wme 1
+        //made for node::[new,rm,set,link,linkr],rule::[new,if,rm,set]
+        //rete::assert
+        "applyToSelection" : function(globalData,values){
+            var command = globalData.lookupOrFallBack(values.shift(),globalData);
+            globalData.currentSelection.forEach(function(d){
+                command(globalData,values,d);                
+            });
+        },
+        /** print selection to console */
+        "printSelection" : function(globalData,values){
+            console.log("Current Selection:",globalData.currentSelection);
+
+        },        
+        /** Search */ 
+        "search" : function(globalData,values){
+            globalData.lastSearch = "(?)."+values.join(".");
+            globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
+        },
+        /** refine a search */
+        "refine" : function(globalData,values){
+            globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
+        },
+        /** inspect */
+        "inspect" : function(globalData,values){
+            var nodeId = values.shift(),
+                key = values.shift(),
+                node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,                
+                pairs = key === "#all" ? _.keys(node) : _.pairs(node[key]) || [];
+
+            globalData.lastInspection = "(" + node.id + ")." + key;
+            globalData.lastInspectData = pairs;
+        },
+        /** Draw */
+        "draw" : function(globalData,values){
+            //Draw the Stash:
+            //drawStash(globalData,globalData.shell._nodeStash);
+            GeneralDrawing.drawStash(globalData,globalData.shell._nodeStash);
+            //Draw search results:
+            //drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            GeneralDrawing.drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            
+            //draw inspect data
+            //drawInspectBar(globalData,globalData.lastInspectData);
+            GeneralDrawing.drawInspectResults(globalData,globalData.lastInspectData);
+
+            //TODO:
+            //Draw Selection
+            GeneralDrawing.drawSelection(globalData,globalData.currentSelection);
+
+        },
+        /** Load a file from the server */
+        "load" : function(globalData,values){
+            var request = new XMLHttpRequest();
+            request.onreadystatechange=function(){
+                if(request.readyState===4){
+                    try{
+                        var receivedJson = JSON.parse(request.responseText);
+                        console.log("Received JSON:",receivedJson);
+                        globalData.shell.importJson(receivedJson);
+                        globalData.lookupOrFallBack("draw",globalData)(globalData,[]);
+                    }catch(err){
+                        alert("Error loading data: \n" + err.message);
+                        console.log("Error loading data:",err);
+                    }
+                }
+            };
+            request.open("GET","/data/"+values[0]+".json",true);
+            request.send();
+        },
+        /** Import a text form of json data: */
+        "import" : function(globalData,values){
+            try{
+                //var reconstructedJsonString = values.join(" ");
+                var stringMinusCommand = globalData.rawCurrentLine.replace(/^import /,"");
+                var reconJson = JSON.parse(stringMinusCommand);
+                globalData.shell.importJson(reconJson);
+            }catch(err){
+                alert("Error Importing Json String:\n" + err.message);
+                console.log("Error Importing Json Data: ",err);
+            }            
+        },
+        /** Save the current graph to the server */
+        "save" : function(globalData,values){
+            console.log("Saving:",values);
+            var request = new XMLHttpRequest();
+            request.onreadystatechange=function(){
+                if (request.readyState===4){
+                    console.log("Finished");
+                    console.log(request.responseText);
+                }
+            };
+            request.open("POST","saveData="+values[0],true);
+            request.send(globalData.shell.exportJson());
+        },
+        /** Json */
+        "json" : function(globalData,values){
+            var text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
+            window.exportedJson = text;
+
+            //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window
+            window.open('data:application/json;' + (window.btoa?'base64,'+btoa(text):text));
+        },
+        /** Files */
+        "files" : function(globalData,values){
+            window.open("./data/","_blank");
+        },
+        /** Help */
+        "help" : function(globalData,values){
+            return {
+                "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
+                "save"  : [ "$fileName", " Save to a specified file. With paired server ONLY"],
+                "json"  : [ "", " Open a tab with the shell as json"],
+                "files" : [ "", " Display a list of available files to load"],
+                "stash" : [ "", " Add the current node to the temp stack."],
+                "unstash": ["", " Pop off and move to the head of the temp stack."],
+                "top"   : [ "", " Move to the top of the temp stack."],
+                "prev"  : [ "", " Move to the node previously you were at before the current node. "],
+                "search" : ["$field $tag $value", "Search for nodes with a field, tag, value. Last param is a regex"],
+                "refine" : ["$field $tag $value", "Searches through the currently displayed search results"],
+                "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
+                "select" : ["$nodeId?", "add the cwd or a specific node to a temp selection"],
+                "clearSelection" : ["","Clear the temp selection"],
+                "applyToSelection" : [ "$command","Apply new,rm,set,link,linkr,if commands to every node in the selection"],
+                "printSelection" : ["","Print the node ids in the selection to console"],
+                "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"]               
+            };
+        },
+        /** print Conditions to console */
+        "printConditions" : function(globalData,values){
+            var allConditions = _.values(globalData.shell.allNodes).filter(function(node){
+                if(node.tags.type === "condition"){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+            console.log("Conditions:",allConditions);
+
+            //for each condition, aggregate the fields of its tests
+            var aggregateObjects = allConditions.map(function(condition){
+                var tests = _.keys(condition.constantTests).map(function(testId){
+                    return globalData.shell.allNodes[testId];
+                });
+                var aggregateFields = tests.reduce(function(m,test){
+                    m[test.values.field] = 1;
+                    return m;
+                },{});
+                return aggregateFields;
+            });
+
+            console.log("Prototypes:",aggregateObjects);
+        },
+        /** Modes */
+        "modes" : function(globalData,values){
+            console.log("Available Modes:",_.keys(globalData.commands));
+
+        }
+    };
+    
+    return GeneralCommands;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,7 +1,3 @@
-/**
-   @file altWebMain
- */
-
 //Setup requirejs
 //For soe server: baseUrl -> /~jgrey/src
 //and libs -> /~jgrey/libs
@@ -9,81 +5,102 @@ require.config({
     baseUrl: "/src",
     paths:{
         //General Utils
-        underscore : "/libs/underscore",
+        underscore : "/libs/underscore-min",
+        //uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
         d3 : "/libs/d3.min",
         Parse : "Parse/Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
-        GraphStructureConstructors:"Node/GraphStructureConstructors",
-        //Commands
-        NodeCommands : "Commands/NodeCommands",
-        RuleCommands : "Commands/RuleCommands",
-        ReteCommands : "Commands/ReteCommands",
-        GeneralCommands: "Commands/GeneralCommands",
-        SimulationCommands : "Commands/SimulationCommands",
-        BookMarkCommands : "Commands/BookMarkCommands",
-        TraceCommands : "Commands/TraceCommands",
+        //Commands:
+        AllCommands : "Commands/Command_Aggregate",
         //CLI
         HelpCLI : "CLI/HelpCLI",
         MainCommandCLI : "CLI/MainCommandCLI",
         //Shell
-        TotalShell : "TotalShell",
+        Shell : "Shell",
+        //Shell : "/libs/Shell.min",
         //Rete
         Rete : "/libs/Rete.min"
     },
     shim:{
-        underscore :{
+        'underscore' :{
             exports:'_'
         },
     }
 });
 
 /**
-   @require [d3,TotalShell,underscore,NodeCommands,RuleCommands,ReteCommands,utils]
-   @purpose The main web program. Creates a shell, visualises it, and listens for user input
+   The main web program. Creates a shell, visualises it, and listens for user input
+   @module Browser/WebMain
+   @requires d3
+   @requires underscore
+   @requires module:Shell
+   @requires module:Commands/NodeCommands
+   @requires module:Commands/RuleCommands
+   @requires module:Commands/ReteCommands
+   @requires module:utils
+   @see module:globalData
 */
-require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteCommands","utils","GeneralCommands","HelpCLI","MainCommandCLI","SimulationCommands","BookMarkCommands","TraceCommands"],function(d3,Shell,_,NodeCommands,RuleCommands,ReteCommands,utils,GeneralCommands,HelpCLI,MainCommandCLI,SimulationCommands,BookMarkCommands,TraceCommands){
+require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
     "use strict";
 
-    //----------------------------------------
-    //GLOBALS
-    //----------------------------------------
+    /**
+       The Data Passed around for global purposes
+       @exports globalData
+    */
     var globalData = {
+        /** The maximum allowed number of nodes in a column before grouping. */
         maxNumberOfNodesInAColumn : 10,
+        /** The maximum number of children to display at one time */
         maxNumberOfChildrenVisible : 40,
 
-        //Commands stored in here:
-        commands : {
-            "node" : NodeCommands,
-            "rule" : RuleCommands,
-            "rete" : ReteCommands,
-            "general" : GeneralCommands,
-            "sim"  : SimulationCommands,
-            "bookmark" : BookMarkCommands,
-            "trace" : TraceCommands,
-        },
-        //The order that commands will be checked if they arent found in the current mode
+        /** 
+            Command aggregate object stored here, giving interface to commands:
+            @see module:Commands/Command_Aggregate
+        */
+        commands : AllCommands,
+        
+        /** The order that commands will be checked if they arent found in the current mode */
         commandFallBackOrder : [
             "node","rule","rete","sim","general","bookmark","trace"
         ],
-        
+
+        /** The current command node to use initially */
         currentCommandMode : "node",
     
-        //The simulated shell:
-        shell : new Shell.CompleteShell(),
+        /** The Shell the web component uses
+            @type {Shell}
+         */
+        shell : new Shell(),
 
+        /** The last set of nodes found by searching
+            @type {Array.<Node/GraphNode>}
+        */
         lastSetOfSearchResults : [],
+        /** The last component set to be inspected
+            @type {Array}
+        */
+        lastInspectData : [],
+        /** The current set of selected node ids
+            @type {Node/GraphNode#id}
+        */
+        currentSelection : [],
+
+        /**
+           General Reference to the CLI, to allow internal commands to be called easily
+           @see module:CLI/MainCommandCLI
+         */
         MainCommandCLIRef : MainCommandCLI,
 
-        //selection for applying actions to multiple nodes
-        currentSelection : [],
         
-        //COLOURS:
         scaleToColour : d3.scale.linear()
             .range([0,20])
             .domain([0,20]),
         colourScale : d3.scale.category20b(),
+        /**
+           Colours to use in the visualisations
+         */
         colours : {
             grey : d3.rgb(19,21,27),
             text : d3.rgb(237,255,255),
@@ -106,43 +123,50 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             
         },
 
-        //Sizes:
+        /** The draw offset for a component */
         drawOffset : 50,
+        /** The height of a column */
         columnHeight : 300,
+        /** The width of a column */
         columnWidth : 200,
+        /** The total width on the screen available for use */
         usableWidth : window.innerWidth - 30,
+        /** The total height on the screen available for use */
         usableHeight : window.innerHeight - 30,
+        /** The Size of the help window */
         helpSize : 600,
 
+        /** Utility function to get the mid point based on usable width */
         halfWidth : function(){ return this.usableWidth * 0.5;},
+        /** Utility function to get the mid point based on usable height */
         halfHeight : function(){ return this.usableHeight * 0.5;},
         
-        //The main svg:
+        /** The main svg of the view */
         svg : null,
-        //Columns:
-        columns : {},
-
-    //Utility Functions:
+        
+        /** Calculate the width of a column
+            @param availableWidth
+            @param noOfColumsn 
+        */
         calcWidth : function(availableWidth,noOfColumns){
             return availableWidth / (noOfColumns + 2);
         },
-
+        /**
+           Calculate the position of a column
+           @param oneColWidth
+           @param columnNumber
+         */
         columnPosition : function(oneColWidth,columnNumber){
             return oneColWidth + (oneColWidth * columnNumber);
         },
-   
-        getColumnObject : function(columnName){
-            if(globalData.columns[columnName] === undefined){
-                throw new Error("Unrecognised Column Name: " + columnName);
-            }
-            return globalData.columns[columnName];
-        },
 
-        initColumn : function(name,columnNumber,columnWidth){
-            //todo
-        },
-
+        /**
+           Lookup a command, falling back in order to find the first available match
+           @param commandName
+           @param globalData
+         */
         lookupOrFallBack : function(commandName,globalData){
+            if(globalData === undefined) { globalData = this; }
             var commandToExecute;
             if(globalData.commands[globalData.currentCommandMode]
                && globalData.commands[globalData.currentCommandMode][commandName]){
@@ -179,8 +203,8 @@ require(['d3','TotalShell','underscore',"NodeCommands","RuleCommands","ReteComma
             }else{//Not enter, still typing:
                 HelpCLI(currentLine + d3.event.key,globalData);
             }
-        }catch(err){
-            console.log("Input Error: ",err);
+        }catch(e){
+            console.log("Input Error: ",e);
         }
     });
 

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ShellModules/shell_graph_search.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ShellModules/shell_graph_search.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+/**
+   @module ShellModules/shell_graph_search
+*/
+define(['underscore'],function(_){
+    "use strict";
+    /**
+       @alias module:ShellModules/shell_graph_search
+     */
+    var ShellPrototype = {};
+    //--------------------
+    //DFS and BFS searches:
+    //--------------------
+
+    /**
+       Depth First Search from a source nodeId,
+       using children in the specified fields, filtered afterwards by a criteria function
+       @method dfs
+       @return ids of nodes found
+     */
+    ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
+        if(focusFields === undefined) { focusFields = ['children']; }
+        var shellRef = this,
+            currentStack = [this.getNode(nodeId)],
+            visitedListOfIds = [];
+        
+        //discover all applicable nodes
+        while(currentStack.length > 0){
+            var curr = currentStack.pop();
+            //avoid duplicates and loops
+            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
+            //store
+            visitedListOfIds.push(curr.id);
+            //add children to search
+            focusFields.forEach(function(focusField){
+                currentStack = currentStack.concat(_.keys(curr[focusField]).map(function(d){
+                    return shellRef.getNode(d);
+                }).reverse());
+            });
+        }
+
+        //apply the criteria function to the discovered nodes
+        if(criteriaFunction !== undefined &amp;&amp; typeof criteriaFunction === 'function'){
+            return visitedListOfIds.filter(function(d){
+                return criteriaFunction(this.getNode(d));
+            },shellRef);
+        }else{
+            return visitedListOfIds;
+        }        
+    };
+
+    /**
+       Breadth First Search on a source nodeId, for the specified fields
+       filtering by the criteria, and to a specified depth
+       @method bfs
+    */
+       
+    ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
+        if(focusFields === undefined) { focusFields = ['children']; }
+        if(depth === undefined) { depth = 2; }
+        var shellRef = this,
+            currentQueue = [this.getNode(nodeId)],
+            visitedListOfIds = [];
+
+        while(currentQueue.length > 0){
+            var curr = currentQueue.shift();
+            //skip duplicates
+            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
+            visitedListOfIds.push(curr.id);
+            
+            focusFields.forEach(function(focusField){
+                _.keys(curr[focusField]).forEach(function(d){
+                    currentQueue.push(shellRef.getNode(d));
+                });
+            });
+        }
+        
+        if(criteriaFunction !== undefined &amp;&amp; typeof criteriaFunction === 'function'){
+            return visitedListOfIds.filter(function(d){
+                return criteriaFunction(this.getNode(d));
+            },shellRef);
+        }else{
+            return visitedListOfIds;
+        }
+    };
+    
+    return ShellPrototype;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

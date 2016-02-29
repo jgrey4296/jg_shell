@@ -7,12 +7,12 @@ if(typeof define !== 'function'){
 }
 
 var _ = require('underscore'),
-    TotalShell = require('../../src/TotalShell'),
-    makeShell = function(){return new TotalShell.CompleteShell();},
+    Shell = require('../../src/Shell'),
+    makeShell = function(){return new Shell();},
     globalShell = makeShell();
 
 
-exports.TotalShellTests = {
+exports.ShellTests = {
 
     initTest : function(test){
         var shell = makeShell();

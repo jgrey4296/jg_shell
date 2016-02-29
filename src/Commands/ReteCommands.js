@@ -1,7 +1,3 @@
-/**
-   @file ReteCommands
-   @purpose To define the actions a user can perform regarding the retenet
-*/
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
@@ -9,11 +5,12 @@ if(typeof define !== 'function'){
 define(['underscore','d3'],function(_,d3){
     "use strict";
     /**
-       @data reteCommands
-       @purpose describes the user actions that can be performed in the shell regarding the rete net
+     To define the actions a user can perform regarding the retenet
+     @exports Commands/ReteCommands
+     @implements module:Commands/CommandTemplate
      */
     var reteCommands = {
-        //** @command clear
+        /** clear */
         "clear" : function(globalData,values){
             console.log("Clearing RETE");
             if(values[0] === 'complete'){
@@ -21,9 +18,10 @@ define(['underscore','d3'],function(_,d3){
             }if(values[0] === 'history'){
                 globalData.shell.clearHistory();
             }else{
-                globalData.shell.clearPotentialActions();
+                globalData.shell.clearProposedActions();
             }
         },
+        /** draw */
         "draw" : function(globalData,values){
             //calculations:
             var colWidth = globalData.calcWidth(globalData.usableWidth,5);
@@ -31,12 +29,11 @@ define(['underscore','d3'],function(_,d3){
             
             //todo: draw... facts? tokens? possible actions?
 
-
             //draw asserted wmes -> actions
             var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
                 return d !== undefined;
             });
-            var actions = globalData.shell.reteNet.potentialActions;
+            var actions = globalData.shell.reteNet.proposedActions;
 
             var wmeColumn = d3.select("#mainContainer").append("g")
                 .attr("id","wmeColumn");
@@ -49,35 +46,45 @@ define(['underscore','d3'],function(_,d3){
             // annotateActions(actionColumn,actionNodeHeight);
             
         },
+        /** cleanup */
         "cleanup" : function(globalData,values){
             d3.select("#wmeColumn").remove();
             d3.select("#actionColumn").remove();
         },
-        //** @command compile
+        /** compile */
         "compile" : function(globalData,values){
             console.log("Compiling Rete");
             globalData.shell.compileRete();
         },
-        //** @command assert
-        //full name: assert as wme:
+        /** assert */
         "assert" : function(globalData,values){
             console.log("Asserting rete:",values);
             //assert the current node as a wme?
             globalData.shell.assertWMEs(values);
         },
+        /** retract */
         "retract" : function(globalData,values){
             console.log("Retracting rete:",values);
             globalData.shell.retractWMEs(values);
         },
+        /** ruleStep */
         "ruleStep" : function(globalData,values){
             console.log("Rete Time Step");
             globalData.shell.stepTime();
             //todo: draw the actions being performed this step
 
         },
+        /** clearRete */
+        "clearRete" : function(globalData,values){
+            _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
+            globalData.shell.clearRete();
+
+        },
+        /** print Rete */
         "printRete" : function(globalData,values){
             console.log(globalData.shell.reteNet);
         },
+        /** help */
         "help" : function(globalData,values){
             return {
                 "assert": [ "", " Assert all nodes of tag.type.wme"],
@@ -89,6 +96,11 @@ define(['underscore','d3'],function(_,d3){
         },
     };
 
+    /** 
+     Draw Group
+     @function 
+     @private
+     */
     var drawGroup = function(globalData,domRoot,data,className,xLocation,groupWidth){
         console.log("Rete mode draw group:",data,xLocation,groupWidth);
         var amtOfSpace, heightOfNode,
@@ -135,6 +147,11 @@ define(['underscore','d3'],function(_,d3){
         return heightOfNode;
     };
 
+    /** 
+     annotateWMEs
+     @function
+     @private
+     */
     var annotateWmes = function(domRoot,nodeHeight){
         domRoot.selectAll("text")
             .text(function(d){
@@ -143,6 +160,11 @@ define(['underscore','d3'],function(_,d3){
 
     };
 
+    /**
+     annotate actions
+     @function
+     @private
+     */
     var annotateActions = function(domRoot,nodeHeight){
         domRoot.selectAll("text")
             .text(function(d){

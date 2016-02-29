@@ -1,40 +1,44 @@
-/**
-   @purpose Define prototype methods relating to shell <-> rete interaction
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['underscore','Rete'],function(_,Rete){
     "use strict";
+    /**
+       Define prototype methods relating to shell <-> rete interaction
+       @exports ShellModules/shell_rete
+     */
     var ShellPrototype = {};
     
     /**
-       @class CompleteShell
-       @method clearRete
-       @purpose Completely reset the retenet, by building a new one
+       Completely reset the retenet, by building a new one
+       @method
      */
     ShellPrototype.clearRete = function(){
-        this.reteNet = new Rete.ReteNet();
+        this.reteNet = new Rete();
     };
 
     /**
-       @class CompleteShell
-       @method clearActivatedRules
-       @purpose Clear the record of recently activated rules
+       Clear the record of recently activated rules
+       @method
      */
     ShellPrototype.clearPotentialActions = function(){
-        Rete.clearPotentialActions(this.reteNet);
+        //Rete.clearPotentialActions(this.reteNet);
+        this.reteNet.clearProposedActions();
     };
-    
+
+    /**
+       Clear the history of the net
+       @method
+     */
     ShellPrototype.clearHistory = function(){
-        Rete.clearHistory(this.reteNet);
+        //Rete.clearHistory(this.reteNet);
+        this.reteNet.clearHistory();
     };
     
     /**
-       @class CompleteShell
-       @method compileRete
-       @purpose Retrieve all defined rules, add them to the rete net
+       Retrieve all defined rules, add them to the rete net
+       @method
      */    
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
@@ -52,7 +56,8 @@ define(['underscore','Rete'],function(_,Rete){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            //var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
+            var actionNode = this.reteNet.addRule(d.id,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
             d.actionNodeId = actionNode.id;
             return {"rule": d, "actions" :actionNode};
@@ -62,10 +67,8 @@ define(['underscore','Rete'],function(_,Rete){
     };
 
     /**
-       @class CompleteShell
-       @method assertChildren
-       @purpose Assert all child nodes of the current node as facts
-       using each nodes' values field
+       Assert all child nodes of the current node as facts using each nodes' values field
+       @method
        @TODO: be able to detect bindings and resolve them prior to assertion?
      */
     ShellPrototype.assertWMEs = function(nodeIds){
@@ -85,6 +88,10 @@ define(['underscore','Rete'],function(_,Rete){
         this.assertWMEList(wmes);
     };
 
+    /**
+       Retract wmes vias the retenet
+       @method
+     */
     ShellPrototype.retractWMEs = function(nodeIds){
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
         var shellRef = this,
@@ -101,9 +108,8 @@ define(['underscore','Rete'],function(_,Rete){
     };
     
     /**
-       @class CompleteShell
-       @method assertWMEList
-       @purpose Taking a list of objects, add each as a wme to the retenet of the shell
+       Taking a list of objects, add each as a wme to the retenet of the shell
+       @method
        @param array An Array of objects
      */
     ShellPrototype.assertWMEList = function(nodes){
@@ -112,7 +118,8 @@ define(['underscore','Rete'],function(_,Rete){
         }
         //create wme objects out of them
         var newWMEs = nodes.map(function(data){
-            var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+            //var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
+            var wmeId = this.reteNet.assertWME(data);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -120,25 +127,35 @@ define(['underscore','Rete'],function(_,Rete){
         return newWMEs;
     };
 
+    /**
+       retractWMEList
+       @method
+     */
     ShellPrototype.retractWMEList = function(nodes){
         if(!(nodes instanceof Array)){
             throw new Error("Retractions should be in an array");
         }
         nodes.forEach(function(node){
-            Rete.retractWME_Immediately(node,this.reteNet);
+            //Rete.retractWME_Immediately(node,this.reteNet);
+            //TODO: should this be node.wmeID?
+            this.reteNet.retractWME(node);
         },this);
     };
-    
+
+    /**
+       Step Time
+       @method
+     */
     ShellPrototype.stepTime = function(){
-        Rete.incrementTime(this.reteNet);
-        console.log("Potential Actions:",this.reteNet.potentialActions);
-        return this.reteNet.potentialActions;
+        //Rete.incrementTime(this.reteNet);
+        this.reteNet.stepTime();
+        console.log("Potential Actions:",this.reteNet.proposedActions);
+        return this.reteNet.proposedActions;
     };
     
     /**
-       @class CompleteShell
-       @method getNode
-       @purpose get a node by its id, utility method
+       Get a node by its id, utility method
+       @method
      */
     ShellPrototype.getNode = function(nodeId){
         nodeId = Number(nodeId);

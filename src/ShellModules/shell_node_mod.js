@@ -1,18 +1,19 @@
-/**
-   @purpose Defines shell prototype methods for changing a node
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 define(['underscore'],function(_){
     "use strict";
+    /**
+       Defines shell prototype methods for changing a node
+       @exports ShellModules/shell_node_mod
+    */
+
     var ShellPrototype = {};
 
     /**
-       @class CompleteShell
-       @method rename
-       @purpose rename the current nodes name
+       Rename the current nodes name
+       @method
        @param name The name to rename to
      */
     ShellPrototype.rename = function(name,sourceId){
@@ -21,9 +22,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class CompleteShell
-       @method setParameter
-       @purpose Set a key:value pair in the node[field] to value
+       Set a key:value pair in the node[field] to value
+       @method
        @param field
        @param parameter
        @param value
@@ -50,9 +50,8 @@ define(['underscore'],function(_){
 
 
     /**
-       @class CompleteShell
-       @method link
-       @purpose Interface method to add a link to the cwd. can be reciprocal
+       Interface method to add a link to the cwd. can be reciprocal
+       @method
        @param target The field of the node to add the link to
        @param id The id of the node being linked towards
        @param reciprocal Whether the node of id will have a link back
@@ -68,7 +67,7 @@ define(['underscore'],function(_){
         if(!source[target]) { throw new Error("Unrecognised target"); }
 
         //perform the link:
-        var nodeToLink = this.allNodes[id];
+        var nodeToLink = this.getNode(id);
         this.addLink(source,target,nodeToLink.id,nodeToLink.name);
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
@@ -81,9 +80,8 @@ define(['underscore'],function(_){
 
 
     /**
-       @class CompleteShell
-       @method setBinding
-       @purpose Set/Add a binding pair to a condition in a rule
+       Set/Add a binding pair to a condition in a rule
+       @method
        @param conditionNum The condition to add the binding to
        @param toVar The variable name to use as the bound name
        @param fromVar the wme field to bind
@@ -99,16 +97,15 @@ define(['underscore'],function(_){
         if(source.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        var condition = this.allNodes[conditionId];
+        var condition = this.getNode(conditionId);
         //condition.bindings.push([toVar,fromVar]);
-        condition.bindings[toVar] = [fromVar,testPairs];
-        console.log(source.conditions[conditionId].bindings);
+        condition.setBinding(toVar,fromVar,testPairs);
+        console.log(condition,condition.bindings);
     };
 
     /**
-       @class CompleteShell
-       @method setArithmetic
-       @purpose set an arithmetic operation for an action
+       set an arithmetic operation for an action
+       @method
        @param actionNum The action to add the operation to
        @param varName the variable to change
        @param op the operator to use. ie: + - * / ....
@@ -126,38 +123,44 @@ define(['underscore'],function(_){
         if(source.actions[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
-        var action = this.allNodes[actionId];
+        var action = this.getNode(actionId);
 
         if(action === undefined){
             throw new Error("Could not find action");
         }
+        action.setArith(varName,op,value);
 
-        if(op && value){
-            action.arithmeticActions[varName] = [op,value];
-        }else{
-            delete action.arithmeticActions[varName];
-        }
     };
 
-    //Store a regex transform for an action, in a similar way to arithmetic actions
-    ShellPrototype.setRegex = function(actionId,varName,regex, options, replaceValue,sourceId){
+    /**
+       Store a regex transform for an action, in a similar way to arithmetic actions
+       @method
+    */
+    ShellPrototype.setRegex = function(actionId,varName,regex,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        console.log("Setting regex transform of:",actionId,varName,regex,replaceValue);
+        console.log("Setting regex transform of:",actionId,varName,regex);
         //if it includes the opening and closing /'s, remove them?
 
         //get the action
-        var action = this.allNodes[actionId];
-
-        if(regex && replaceValue){
-            action.regexActions[varName] = [regex,options, replaceValue];
-        }
+        var action = this.getNode(actionId);
+        action.setRegex(varName,regex);
 
     };
+
+    /**
+       Modify the timing of an action
+       @method
+    */
+    ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+            action = this.getNode(actionId);
+        action.setTiming(timeVar,value);
+
+    }
     
     /**
-       @class CompleteShell
-       @method setActionValue
-       @purpose Set an internal value of an action, without going into that node itself
+       Set an internal value of an action, without going into that node itself
+       @method
        @param actionNum The action to target
        @param a The parameter name
        @param b The parameter value
@@ -170,20 +173,16 @@ define(['underscore'],function(_){
             throw new Error("Can't set action values on non-actions");
         }
         if(source.actions[actionId] !== undefined){
-            var action = this.allNodes[actionId];
-            if(b){
-                action.values[a] = b;
-            }else{
-                delete action.values[a];
-            }
+            var action = this.getNode(actionId);
+            action.setValue(b,'values',a);
         }else{
             throw new Error("Unrecognised action");
         }
     };
 
     /**
-       @class CompleteShell
-       @method setActionType
+       Set the actiontype of an (Action) node
+       @method
        @param actionNum
        @param a the type
      */
@@ -194,20 +193,15 @@ define(['underscore'],function(_){
         }
         if(source.actions[actionId] !== undefined){
             var action = this.allNodes[actionId];
-            if(a){
-                action.tags.actionType = a;
-            }else{
-                throw new Error("Setting action type requires a type be specified");
-            }
+            action.setValue(a,'tags','actionType');
         }else{
             throw new Error("Unrecognised action");
         }
     };
     
     /**
-       @class CompleteShell
-       @method setTest
-       @purpose add/modify a constant test of a condition
+       Add/modify a constant test of a condition
+       @method
        @param conNum the condition to target
        @param testNum the test to target
        @param field the wme field to test
@@ -224,12 +218,8 @@ define(['underscore'],function(_){
             throw new Error("trying to set non-existent test");
         }
 
-        var condition = this.getNode(conditionId),
-            test = condition.constantTests[testId];
-        
-        test.field = field;
-        test.operator = op;
-        test.value = value;
+        var condition = this.getNode(conditionId);
+        condition.setTest(testId,field,op,value);
     };
 
 

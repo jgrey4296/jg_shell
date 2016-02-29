@@ -1,27 +1,28 @@
-/**
-   Commands to be able to import a json file exported from firefox, into an initial graph form
- */
 
 define(['underscore'],function(_){
     "use strict";
     var nextId = 1;
-    
+    /**
+       Commands to be able to import a json file exported from firefox, into an initial graph form
+       @exports Commands/BookMarkCommands
+    */
     var CommandTemplate = {
+        /** Draw Command */
         "draw" : function(globalData,values){
 
         },
-
+        /** Cleanup Command */
         "cleanup" : function(globalData,values){
 
         },
-        //open a new window of the bookmark's url:
+        /** open a new window of the bookmark's url: */
         "goto" : function(globalData,values){
             var bookmark = globalData.shell.cwd;
             if(values.length > 0){
                 bookmark = globalData.shell.getNode(values[0]);
             }
             
-            if(bookmark.type === "Bookmark" && bookmark.url !== undefined){
+            if(bookmark.tags.type === "bookmark" && bookmark.url !== undefined){
                 if(bookmark.url instanceof Array){
                     window.open(bookmark.url[0],bookmark.name);
                 }else{
@@ -29,7 +30,7 @@ define(['underscore'],function(_){
                 }
             }
         },        
-        //Modelled off general.import
+        /** Firefox Import */
         "firefoxImport" : function(globalData,values){
             try{
                 var stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
@@ -43,6 +44,7 @@ define(['underscore'],function(_){
                 console.log("Firefox import Error:",err);
             }            
         },
+        /** Firefox Load */
         "firefoxLoad" : function(globalData,values){
             var request = new XMLHttpRequest();
             request.onreadystatechange=function(){
@@ -66,7 +68,10 @@ define(['underscore'],function(_){
         
     };
 
-    //turn bookmarks into objects
+    /**
+       Turn bookmarks into objects
+       @function extractLinks
+     */
     var extractLinks = function(data){
         var childData = [];
         if(data.children !== undefined){
@@ -77,10 +82,10 @@ define(['underscore'],function(_){
         if(data.title !== undefined && data.uri !== undefined){
             childData.push({
                 id: nextId++,
-                name : data.title.slice(0,10),
+                name : data.title,//.slice(0,10),
                 longName : [data.title],
                 url : [data.uri],
-                type : "Bookmark",
+                tags : {type : "bookmark"},
                 children : {},
                 parents : {},
             });
@@ -88,9 +93,13 @@ define(['underscore'],function(_){
         return childData;
     };
 
-    //dealing with an array of bookmarks
-    //get groups of 15 bookmarks, and then make nodes of each of those groups
+    /**
+    dealing with an array of bookmarks
+    get groups of 15 bookmarks, and then make nodes of each of those groups
+    @function groupLinks
+    */
     var groupLinks = function(data){
+        var NUM_IN_GROUP = 9;
         //be able to lookup the data by id
         var lookupObject = data.reduce(function(m,v){
                 if(m[v.id] === undefined){
@@ -104,7 +113,7 @@ define(['underscore'],function(_){
             }),
             //group in 15's
             groupedIds = ids.reduce(function(m,v){
-                if(_.last(m).length > 15){
+                if(_.last(m).length > NUM_IN_GROUP){
                     m.push([]);
                 }
                 _.last(m).push(v);
@@ -120,11 +129,11 @@ define(['underscore'],function(_){
                 },{});
             }),
             //create the group nodes
-            groupNodes = groupObjects.map(function(d){
+            groupNodes = groupObjects.map(function(d,i){
                 var newGroup = {
-                    id : nextId,
-                    name : "Group " + nextId++,
-                    type : "BookmarkGroup",
+                    id : nextId++,
+                    name : "Group_" + i,
+                    tags : {type : "BookmarkGroup"},
                     children : d,
                     parents : { 0 : "Bookmark Root"},
                     _originalParent : 0
@@ -148,7 +157,7 @@ define(['underscore'],function(_){
         endList.push({
             id : 0,
             name : "Bookmark Root",
-            type : "Group",
+            tags : {type : "Group" },
             children : groupChildrenObject,
             parents : {},
         });
@@ -160,8 +169,5 @@ define(['underscore'],function(_){
 
     };
 
-    
-
     return CommandTemplate;
-
 });

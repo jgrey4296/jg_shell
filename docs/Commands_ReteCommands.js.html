@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Commands/ReteCommands.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Commands/ReteCommands.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['underscore','d3'],function(_,d3){
+    "use strict";
+    /**
+     To define the actions a user can perform regarding the retenet
+     @exports Commands/ReteCommands
+     @implements module:Commands/CommandTemplate
+     */
+    var reteCommands = {
+        /** clear */
+        "clear" : function(globalData,values){
+            console.log("Clearing RETE");
+            if(values[0] === 'complete'){
+                globalData.shell.clearRete();
+            }if(values[0] === 'history'){
+                globalData.shell.clearHistory();
+            }else{
+                globalData.shell.clearProposedActions();
+            }
+        },
+        /** draw */
+        "draw" : function(globalData,values){
+            //calculations:
+            var colWidth = globalData.calcWidth(globalData.usableWidth,5);
+            var halfWidth = globalData.halfWidth();
+            
+            //todo: draw... facts? tokens? possible actions?
+
+            //draw asserted wmes -> actions
+            var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
+                return d !== undefined;
+            });
+            var actions = globalData.shell.reteNet.proposedActions;
+
+            var wmeColumn = d3.select("#mainContainer").append("g")
+                .attr("id","wmeColumn");
+            var actionColumn = d3.select("#mainContainer").append("g")
+                .attr("id","actionColumn");
+
+            // var wmeNodeHeight = drawGroup(globalData,wmeColumn,wmes,"wme",(halfWidth - (colWidth * 2)), colWidth);
+            // annotateWmes(wmeColumn,wmeNodeHeight);
+            // var actionNodeHeight = drawGroup(globalData,actionColumn,actions,"action",(halfWidth + (colWidth)),colWidth);
+            // annotateActions(actionColumn,actionNodeHeight);
+            
+        },
+        /** cleanup */
+        "cleanup" : function(globalData,values){
+            d3.select("#wmeColumn").remove();
+            d3.select("#actionColumn").remove();
+        },
+        /** compile */
+        "compile" : function(globalData,values){
+            console.log("Compiling Rete");
+            globalData.shell.compileRete();
+        },
+        /** assert */
+        "assert" : function(globalData,values){
+            console.log("Asserting rete:",values);
+            //assert the current node as a wme?
+            globalData.shell.assertWMEs(values);
+        },
+        /** retract */
+        "retract" : function(globalData,values){
+            console.log("Retracting rete:",values);
+            globalData.shell.retractWMEs(values);
+        },
+        /** ruleStep */
+        "ruleStep" : function(globalData,values){
+            console.log("Rete Time Step");
+            globalData.shell.stepTime();
+            //todo: draw the actions being performed this step
+
+        },
+        /** clearRete */
+        "clearRete" : function(globalData,values){
+            _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
+            globalData.shell.clearRete();
+
+        },
+        /** print Rete */
+        "printRete" : function(globalData,values){
+            console.log(globalData.shell.reteNet);
+        },
+        /** help */
+        "help" : function(globalData,values){
+            return {
+                "assert": [ "", " Assert all nodes of tag.type.wme"],
+                "compile" : [ "", " Compile all rules of tag.type.rule into the rete net"],
+                "ruleStep" : [ "", "Increment the rete net time by one, performing scheduled assertions/retractions"],
+                "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
+                "printRete" : ["", "Print to console the retenet object for debugging"],
+            };
+        },
+    };
+
+    /** 
+     Draw Group
+     @function 
+     @private
+     */
+    var drawGroup = function(globalData,domRoot,data,className,xLocation,groupWidth){
+        console.log("Rete mode draw group:",data,xLocation,groupWidth);
+        var amtOfSpace, heightOfNode,
+            animationLength = 100;
+        if(data.length > 0){
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = (amtOfSpace - (data.length * 20)) / data.length;
+        }else{
+            amtOfSpace = (globalData.usableHeight - 100);
+            heightOfNode = amtOfSpace - 20;
+        }
+
+        var bound = domRoot.selectAll("."+className)
+            .data(data,function(d,i){
+                if(d.id) { return d.id; }
+                return i;
+            });
+
+        bound.exit().remove();
+
+        var enter = bound.enter().append("g")
+            .classed(className, true);
+
+        enter.append("rect")
+            .attr("width",groupWidth)
+            .attr("height",0)
+            .attr("fill",globalData.colours.lightBlue);
+
+        enter.append("text")
+            .text("default");
+        
+        domRoot.selectAll("."+className)
+            .attr("transform",function(d,i){
+                return "translate("+xLocation + "," + (100 + (i * (heightOfNode + 20))) + ")";
+            });
+
+        domRoot.selectAll("rect")
+            .transition()
+            .attr("height",heightOfNode);
+
+        domRoot.selectAll("text")
+            .attr("transform","translate(10," + (heightOfNode * 0.4) + ")");
+
+        return heightOfNode;
+    };
+
+    /** 
+     annotateWMEs
+     @function
+     @private
+     */
+    var annotateWmes = function(domRoot,nodeHeight){
+        domRoot.selectAll("text")
+            .text(function(d){
+                return "Wme: " + d.id;
+            });
+
+    };
+
+    /**
+     annotate actions
+     @function
+     @private
+     */
+    var annotateActions = function(domRoot,nodeHeight){
+        domRoot.selectAll("text")
+            .text(function(d){
+                return "Action: " + d.action;
+            });
+    };
+    
+    return reteCommands;
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Sun Feb 28 2016 23:19:21 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

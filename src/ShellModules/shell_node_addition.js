@@ -1,19 +1,19 @@
-/**
-   @purpose Defines prototype methods for shell node creation
- */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
 
-define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','Rete'],function(_,GraphNode,DSCtors,Rete){
+define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
     "use strict";
+    /**
+       Defines prototype methods for shell node creation
+       @exports ShellModules/shell_node_addition
+     */
     var ShellPrototype = {};
 
-        /**
-       @class CompleteShell
-       @method addLink
-       @purpose Add an ID number and name to a field of an object
+    /**
+       Add an ID number and name to a field of an object
+       @method
        @param node the node to add the link FROM
        @param target the field of the node to link FROM
        @param id the id of the node to link TO
@@ -32,9 +32,8 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
 
 
     /**
-       @class CompleteShell
-       @method addNode
-       @purpose Create a new node, and link it to the cwd of the shell
+       Create a new node, and link it to the cwd of the shell
+       @method
        @param name The name of the new node
        @param target The field of the cwd to add the new node to
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
@@ -48,21 +47,23 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
             console.warn("making an anonymous node");
         }
         //validate input:
-        if(source[target] === undefined){ //throw new Error("Unknown target");
+        if(source[target] === undefined){ 
             console.warn("Creating target: ",target,source);
             source[target] = {};
         }
         type = type || "GraphNode";
+
+        var ctor = getCtor(type),
+            newNode;
         
-        var newNode;
         if(target === 'parents' || target === 'parent'){
             //if adding to parents,don't store the cwd as newnode's parent
-            newNode = new GraphNode(name,undefined,undefined,type);
+            newNode = new ctor(name,undefined,type);
             //add the cwd to the newNodes children:
             this.addLink(newNode,'children',source.id,source.name);
             //newNode.children[this.cwd.id] = true;
         }else{
-            newNode = new GraphNode(name,source.id,source.name,type);
+            newNode = new ctor(name,source,type);
         }
 
         //add to cwd:
@@ -74,23 +75,18 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
             console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
         }
         this.allNodes[newNode.id] = newNode;
-        
-        //Extend the structure of the new node as necessary:
-        if(DSCtors[type] !== undefined){
-            console.log("Calling ctor:",type);
-            var newChildren = DSCtors[type](newNode,values);
-            if(newChildren && newChildren.length > 0){
-                var flatChildren = _.flatten(newChildren);
-                flatChildren.forEach(function(d){
-                    if(this.allNodes[d.id] !== undefined){
-                        console.warn("Overwriting existing node:",d,this.allNodes[d.id]);
-                    }
-                    this.allNodes[d.id] = d;
-                },this);
-            }
-        }else if(type !== 'GraphNode' && type !== 'node'){
-            console.warn("No ctor for:",type);
+
+        //get all subrelation objects:
+        var relationObjects = newNode.getRelationObjects();
+        while(relationObjects.length > 0){
+            //get an object off
+            var obj = relationObjects.shift();
+            //get any sub objects and add them to the list
+            relationObjects = relationObjects.concat(obj.getRelationObjects());
+            //add the obj to allNodes
+            this.allNodes[obj.id] = obj;
         }
+        
 
         //If the cwd WAS disconnected in some way,
         //remove it from that designation
@@ -105,9 +101,8 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
     };
 
     /**
-       @class CompleteShell
-       @method addTest
-       @purpose Add a constant test to a specified condition of the current rule
+       Add a constant test to a specified condition of the current rule
+       @method 
        @param conditionNumber The position in the condition array to add the test to
        @param testField the wme field to test
        @param op The operator to use in the test
@@ -129,22 +124,17 @@ define(['underscore','../Node/GraphNode','../Node/GraphStructureConstructors','R
             throw new Error("Insufficient test specification");
         }
         //Check the operator is a defined one
-        if(Rete.CompOperators[testParams[1]] === undefined){
+        if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
         var condition = this.allNodes[conditionId];
         //Create the test
-        condition.constantTests.push({
-            field: testParams[0],
-            operator: testParams[1],
-            value: testParams[2]
-        });
+        condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
     };
 
     /**
-       @class CompleteShell
-       @method addAction
-       @purpose add a new action to current rule
+       Add a new action to current rule
+       @method
        @param valueArray The names of actions to create
        @return newActions an array of all actions created
     */

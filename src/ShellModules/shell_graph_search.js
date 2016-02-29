@@ -1,19 +1,23 @@
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
-
+/**
+   @module ShellModules/shell_graph_search
+*/
 define(['underscore'],function(_){
     "use strict";
+    /**
+       @alias module:ShellModules/shell_graph_search
+     */
     var ShellPrototype = {};
     //--------------------
     //DFS and BFS searches:
     //--------------------
 
     /**
-       @class CompleteShell
-       @method dfs
-       @purpose Depth First Search from a source nodeId,
+       Depth First Search from a source nodeId,
        using children in the specified fields, filtered afterwards by a criteria function
+       @method dfs
        @return ids of nodes found
      */
     ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
@@ -48,11 +52,11 @@ define(['underscore'],function(_){
     };
 
     /**
-       @class TotalShell
-       @method bfs
-       @purpose Breadth First Search on a source nodeId, for the specified fields
+       Breadth First Search on a source nodeId, for the specified fields
        filtering by the criteria, and to a specified depth
-     */
+       @method bfs
+    */
+       
     ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
         if(focusFields === undefined) { focusFields = ['children']; }
         if(depth === undefined) { depth = 2; }
