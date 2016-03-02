@@ -54,6 +54,15 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             //Change to new mode
             globalData.currentCommandMode = newMode;
         },
+        /**
+           Draw the selection (by piggy backing on draw search)
+           @param globalData
+           @param values
+        */
+        "selection" : function(globalData,values){
+            var selection = globalData.currentSelection.map(d=>globalData.shell.getNode(d));
+            globalData.lastSetOfSearchResults = selection;
+        },
         /** Add specified nodes to the current selection
             @param globalData
             @param values
@@ -68,6 +77,14 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
                     globalData.currentSelection.push(id);
                 }
             });
+        },
+        /**
+           Select all results in the search column
+           @param globalData
+           @param values
+        */
+        "selectSearch" : function(globalData,values){
+            globalData.shell.lastSearchResults.forEach(d=>globalData.currentSelection.push(d.id));
         },
         /** Clear the current selection 
             @param globalData
@@ -87,6 +104,9 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             globalData.currentSelection.forEach(function(d){
                 command(globalData,values,d);                
             });
+        },
+        "apply" : function(globalData,values){
+            GeneralCommands.applyToSelection(globalData,values);
         },
         /** print the current selection to console 
             @param globalData
@@ -134,6 +154,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             GeneralDrawing.drawStash(globalData,globalData.shell._nodeStash);
             //Draw search results:
             //drawSearchResults(globalData,globalData.lastSetOfSearchResults);
+            console.log("Last Search results:",globalData.lastSetOfSearchResults);
             GeneralDrawing.drawSearchResults(globalData,globalData.lastSetOfSearchResults);
             
             //draw inspect data

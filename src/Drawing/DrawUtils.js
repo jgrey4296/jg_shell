@@ -199,10 +199,12 @@ define(['underscore','d3'],function(_,d3){
                 //offset the texts
                 var offset = 0;
                 boundTexts.each(function(e,i){
-                    var text = d3.select(this),
-                        bbox = this.previousElementSibling.getBBox();
-                    offset += i===0 ? groupData.nodeDataSeparator : bbox.height + groupData.nodeDataSeparator;                    
-                    text.attr('transform',`translate(0,${offset})`);
+                    if(this.previousElementSibling !== undefined && this.previousElementSibling !== null){
+                        var text = d3.select(this),
+                            bbox = this.previousElementSibling.getBBox();
+                        offset += i===0 ? groupData.nodeDataSeparator : bbox.height + groupData.nodeDataSeparator;                    
+                        text.attr('transform',`translate(0,${offset})`);
+                    }
                 });
             }).catch(function(e){
                 console.warn("Ind Group Error:",e);

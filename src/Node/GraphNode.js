@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 /**
-   The main node type of the graph:
+   The main node type of the graph
    @module Node/GraphNode
    @see GraphNode
 */

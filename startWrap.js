@@ -7,7 +7,7 @@
         module.exports = factory(_);
     } else {
         // change "myLib" to whatever your library is called
-        root.Rete = factory(root._);
+        root.Shell = factory(root._);
     }
 }(this, function (_) {
 

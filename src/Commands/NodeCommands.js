@@ -75,7 +75,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             @param globalData
             @param values
          */
-        "np" : function(globalData,values){
+        "np" : function(globalData,values,sourceId){
             var chars = {
                 "n" : "node",
                 "i" : "institution",
@@ -84,17 +84,18 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 "rc": "rulecontainer",
             };
             if(chars[values[0]]){
-                globalData.shell.addNode(values[1],'parents',chars[values[0]],values.slice(2));
+                globalData.shell.addNode(values[1],'parents',chars[values[0]],values.slice(2),sourceId);
             }else{
-                globalData.shell.addNode(values[1],'parents',values[0],values.slice(2));
+                globalData.shell.addNode(values[1],'parents',values[0],values.slice(2),sourceId);
             }
         },
         /** New Child Node 
             @param globalData
             @param values
          */
-        "ncn" : function(globalData,values){
-            globalData.shell.addNode(values[0],'children','node');
+        "ncn" : function(globalData,values,sourceId){
+            console.log("ncn:",values,sourceId);
+            globalData.shell.addNode(values[0],'children','node',undefined,sourceId);
         },
         /** New Child Institution 
             @param globalData
@@ -129,6 +130,24 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             //set -> setParameter
             globalData.shell.setParameter(values[0],values[1],values[2],sourceId);
         },
+        /**
+           sv: shortcut for set values
+           @param globalData
+           @param values
+           @param sourceId
+        */
+        "sv" : function(globalData,values,sourceId){
+            globalData.shell.setParameter("values",values[0],values[1],sourceId);
+        },
+        /**
+           st : shortcut for set tags
+           @param globalData
+           @param values
+           @param sourceId
+        */
+        "st" : function(globalData,values,sourceId){
+            globalData.shell.setParameter("tags",values[0],values[1],sourceId);
+        },        
         /** link a node to another one
             @param globalData
             @param values

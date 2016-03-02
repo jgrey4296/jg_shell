@@ -13,7 +13,7 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
             @param values
         */
         "draw" : function(globalData,values){
-
+            
         },
         /** cleanup 
             @param globalData

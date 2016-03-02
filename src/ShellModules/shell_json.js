@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore'],function(_){
+define(['underscore','Node/GraphNode'],function(_,GraphNode){
     "use strict";
     /**
      Defines methods related to importing or exporting json from the shell
@@ -33,7 +33,7 @@ define(['underscore'],function(_){
     ShellPrototype.importJson = function(importNodes){
         //console.log("importing type:", typeof allNodes,allNodes.length);
         //clear the shell:
-        this.allNodes = [];
+        this.allNodes = {};
         
         if(importNodes instanceof Array){
             importNodes.forEach(function(d){
@@ -44,6 +44,10 @@ define(['underscore'],function(_){
                 this.addNodeFromJson(d);
             },this);
         }
+        //Create a dummy node that sets the next Id
+        var maxId = Math.max.apply(null,_.keys(this.allNodes)),
+            dummyNode = new GraphNode("dummy",undefined,"dummy",{},maxId);
+        
         this.cwd = this.allNodes[0];
     };
 

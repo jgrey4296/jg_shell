@@ -57,19 +57,25 @@ define(['underscore'],function(_){
                     return false;
                 }
             }
+
+            //if field exists, tag specified, but value isnt:
+            if(field && tag && tagValue === undefined){
+                var keys = _.keys(node[field]).filter(d=>pattern.test(d));
+                if(keys.length > 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
             
             //if field is an object
             if(node[field][tag] !== undefined){
-                if(tagValue === undefined){
-                    return true;
-                }else{
                     pattern = new RegExp(tagValue);
                     if(pattern.test(node[field][tag])){
                         return true;
                     }else{
                         return false;
                     }
-                }
             }
             return false;
         });

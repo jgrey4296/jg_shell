@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','d3'],function(_,d3){
+define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
     "use strict";
     /**
      To define the actions a user can perform regarding the retenet
@@ -29,36 +29,18 @@ define(['underscore','d3'],function(_,d3){
             @param values
         */
         "draw" : function(globalData,values){
-            //calculations:
-            var colWidth = globalData.calcWidth(globalData.usableWidth,5);
-            var halfWidth = globalData.halfWidth();
-            
-            //todo: draw... facts? tokens? possible actions?
-
-            //draw asserted wmes -> actions
-            var wmes = globalData.shell.reteNet.allWMEs.filter(function(d){
-                return d !== undefined;
-            });
-            var actions = globalData.shell.reteNet.proposedActions;
-
-            var wmeColumn = d3.select("#mainContainer").append("g")
-                .attr("id","wmeColumn");
-            var actionColumn = d3.select("#mainContainer").append("g")
-                .attr("id","actionColumn");
-
-            // var wmeNodeHeight = drawGroup(globalData,wmeColumn,wmes,"wme",(halfWidth - (colWidth * 2)), colWidth);
-            // annotateWmes(wmeColumn,wmeNodeHeight);
-            // var actionNodeHeight = drawGroup(globalData,actionColumn,actions,"action",(halfWidth + (colWidth)),colWidth);
-            // annotateActions(actionColumn,actionNodeHeight);
-            
+            if(ReteDraw.dummy === undefined){
+                ReteDraw.DrawNet(globalData,globalData.shell.reteNet);
+            }
         },
         /** cleanup 
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
-            d3.select("#wmeColumn").remove();
-            d3.select("#actionColumn").remove();
+            if(ReteDraw.dummy === undefined){
+                ReteDraw.cleanup();
+            }
         },
         /** Compile All Rules in the Graph into the ReteNet
             @param globalData
