@@ -26,11 +26,11 @@
     include : ['../node_modules/almond/almond','Shell'],
     //cjsTranslate : true,
     name : "Shell",
-    insertRequire : [ "Shell"],
+    //insertRequire : [ "Shell"],
     out: "./libs/Shell.min.js",
     optimize: "none",
     wrap : {
         startFile : "startWrap.js",
         end : "define('underscore',function() { return _; }); return require('Shell'); }));"
     },
-})
+});
