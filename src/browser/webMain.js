@@ -21,7 +21,8 @@ require.config({
         Shell : "Shell",
         //Shell : "/libs/Shell.min",
         //Rete
-        Rete : "/libs/Rete.min"
+        Rete : "/libs/Rete.min",
+        ReteAlert : "ReteActions/alertAction"
     },
     shim:{
         'underscore' :{
@@ -42,7 +43,7 @@ require.config({
    @requires module:utils
    @see module:globalData
 */
-require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
+require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'ReteAlert'],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands,ReteAlert){
     "use strict";
 
     /**
@@ -72,7 +73,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],fun
         /** The Shell the web component uses
             @type {Shell}
          */
-        shell : new Shell(),
+        shell : new Shell([ReteAlert]),
 
         /** The last set of nodes found by searching
             @type {Array.<Node/GraphNode>}

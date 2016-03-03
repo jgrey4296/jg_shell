@@ -22,8 +22,9 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
        Methods are separated into modules at {@link module:ShellModules/shell_prototype_main shell_prototype_main}
        @exports Shell
        @constructor
+       @param {Array} ReteActionsToRegister
      */
-    var Shell = function(){
+    var Shell = function(ReteActionsToRegister){
         this.nextId = 0;
         this.tags = {};
         this.tags.type = 'Shell';
@@ -85,7 +86,7 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
             @type {ReteNet}
             @instance
         */
-        this.reteNet = new Rete();
+        this.reteNet = new Rete(ReteActionsToRegister);
     };
     
     /*** @borrows module:shell_prototype_main as shell_prototype */

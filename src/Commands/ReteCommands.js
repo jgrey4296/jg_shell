@@ -59,6 +59,15 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
             //assert the current node as a wme?
             globalData.shell.assertWMEs(values);
         },
+        /** Schedule an action
+            @param globalData
+            @param values
+        */
+        "schedule" : function(globalData,values){
+            if(globalData.shell.reteNet.proposedActions[values[0]] !== undefined){
+                globalData.shell.reteNet.scheduleAction(values[0]);
+            }
+        },
         /** Retract wmes from the retenet 
             @param globalData
             @param values
@@ -82,6 +91,7 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
             @param values
         */
         "clearRete" : function(globalData,values){
+            //cleanup asserted wmeids
             _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
             globalData.shell.clearRete();
 
