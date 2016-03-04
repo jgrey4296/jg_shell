@@ -49,7 +49,8 @@ require.config({
         Shell : "Shell",
         //Shell : "/libs/Shell.min",
         //Rete
-        Rete : "/libs/Rete.min"
+        Rete : "/libs/Rete.min",
+        ReteAlert : "ReteActions/alertAction"
     },
     shim:{
         'underscore' :{
@@ -70,7 +71,7 @@ require.config({
    @requires module:utils
    @see module:globalData
 */
-require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands){
+require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'ReteAlert'],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands,ReteAlert){
     "use strict";
 
     /**
@@ -100,7 +101,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],fun
         /** The Shell the web component uses
             @type {Shell}
          */
-        shell : new Shell(),
+        shell : new Shell([ReteAlert(globalData)]),
 
         /** The last set of nodes found by searching
             @type {Array.&lt;Node/GraphNode>}
@@ -115,6 +116,12 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],fun
         */
         currentSelection : [],
 
+        /**
+           Rete outputs:
+           @type {Array}
+         */
+        reteOutput : [],
+        
         /**
            General Reference to the CLI, to allow internal commands to be called easily
            @see module:CLI/MainCommandCLI
@@ -261,13 +268,13 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands"],fun
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Browser_WebMain.html">Browser/WebMain</a></li><li><a href="module-CLI_HelpCLI.html">CLI/HelpCLI</a></li><li><a href="module-CLI_MainCommandCLI.html">CLI/MainCommandCLI</a></li><li><a href="module-Commands_BookMarkCommands.html">Commands/BookMarkCommands</a></li><li><a href="module-Commands_Command_Aggregate.html">Commands/Command_Aggregate</a></li><li><a href="module-Commands_CommandTemplate.html">Commands/CommandTemplate</a></li><li><a href="module-Commands_GeneralCommands.html">Commands/GeneralCommands</a></li><li><a href="module-Commands_NodeCommands.html">Commands/NodeCommands</a></li><li><a href="module-Commands_ReteCommands.html">Commands/ReteCommands</a></li><li><a href="module-Commands_RuleCommands.html">Commands/RuleCommands</a></li><li><a href="module-Commands_SimulationCommands.html">Commands/SimulationCommands</a></li><li><a href="module-Commands_TraceCommands.html">Commands/TraceCommands</a></li><li><a href="module-Drawing_DrawUtils.html">Drawing/DrawUtils</a></li><li><a href="module-Drawing_GeneralDrawing.html">Drawing/GeneralDrawing</a></li><li><a href="module-Drawing_NodeDrawing.html">Drawing/NodeDrawing</a></li><li><a href="module-Drawing_ReteDrawing.html">Drawing/ReteDrawing</a></li><li><a href="module-Drawing_RuleDrawing.html">Drawing/RuleDrawing</a></li><li><a href="module-Drawing_TraceDrawing.html">Drawing/TraceDrawing</a></li><li><a href="module-globalData.html">globalData</a></li><li><a href="module-Node_Action.html">Node/Action</a></li><li><a href="module-Node_Bookmark.html">Node/Bookmark</a></li><li><a href="module-Node_Condition.html">Node/Condition</a></li><li><a href="module-Node_Constructors.html">Node/Constructors</a></li><li><a href="module-Node_GraphNode.html">Node/GraphNode</a></li><li><a href="module-Node_Institution.html">Node/Institution</a></li><li><a href="module-Node_Rule.html">Node/Rule</a></li><li><a href="module-Parse.html">Parse</a></li><li><a href="module-Shell.html">Shell</a></li><li><a href="module-ShellModules_shell_graph_search.html">ShellModules/shell_graph_search</a></li><li><a href="module-ShellModules_shell_json.html">ShellModules/shell_json</a></li><li><a href="module-ShellModules_shell_node_addition.html">ShellModules/shell_node_addition</a></li><li><a href="module-ShellModules_shell_node_deletion.html">ShellModules/shell_node_deletion</a></li><li><a href="module-ShellModules_shell_node_mod.html">ShellModules/shell_node_mod</a></li><li><a href="module-ShellModules_shell_prototype_extraction.html">ShellModules/shell_prototype_extraction</a></li><li><a href="module-ShellModules_shell_prototype_main.html">ShellModules/shell_prototype_main</a></li><li><a href="module-ShellModules_shell_rete.html">ShellModules/shell_rete</a></li><li><a href="module-ShellModules_shell_search.html">ShellModules/shell_search</a></li><li><a href="module-ShellModules_shell_state_change.html">ShellModules/shell_state_change</a></li><li><a href="module-ShellModules_shell_string.html">ShellModules/shell_string</a></li><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="GraphNode.html">GraphNode</a></li><li><a href="module-Node_Action-Action.html">Action</a></li><li><a href="Node_Bookmark.html">Node/Bookmark</a></li><li><a href="Node_Condition.html">Node/Condition</a></li><li><a href="Node_Institution.html">Node/Institution</a></li><li><a href="Node_Rule.html">Node/Rule</a></li><li><a href="Shell.html">Shell</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Feb 29 2016 04:09:45 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Mar 02 2016 23:18:25 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

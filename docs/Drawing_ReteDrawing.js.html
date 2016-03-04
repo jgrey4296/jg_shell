@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: CLI/MainCommandCLI</title>
+    <title>JSDoc: Source: Drawing/ReteDrawing.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,436 +17,63 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: CLI/MainCommandCLI</h1>
+    <h1 class="page-title">Source: Drawing/ReteDrawing.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
+
+    /** The interface for drawing elements from the retenet
+        @exports Drawing/ReteDrawing
+     */
+    var ReteDrawInterface = {};
+
+    /** Draw the proposed actions
+        @function
+        @param globalData
+        @param net
+     */
+    ReteDrawInterface.drawNet = function(globalData,net){
+        var standardData = {
+            nodeDataSeparator : 10,
+            groupDataSeparator : 10,
+            widthAddition : 10,
+            colHeight : globalData.usableHeight - 150,
+            colWidth : globalData.calcWidth(globalData.usableWidth,columnNames.length),
+            halfWidth : globalData.halfWidth(),
+            globalData : globalData,
+            //Get Data from the node:
+            nodeDescriptions : nodeToDraw.getDescriptionObjects("id name values tags annotations expectedBy producedBy".split(" ")),
+            childrenData : _.keys(nodeToDraw.children).map(d=>globalData.shell.getNode(d)),
+            parentsData : _.keys(nodeToDraw.parents).map(d=>globalData.shell.getNode(d)),
             
-        
-    
-</header>
+        };
 
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Takes text, executes relevant commands on the shell</div>
-        
+        //Add calculated offsets for parents and children:
+        standardData.halfCol = standardData.colWidth * 0.5;
+        standardData.childrenOffset = (standardData.halfWidth + standardData.colWidth) + standardData.halfCol;
+        standardData.parentOffset = (standardData.halfWidth - (standardData.colWidth*2)) + standardData.halfCol;
 
-        
-            
 
+    };
 
+    /**
+       Remove anything that DrawRete creates
+       @function
+    */
+    ReteDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#node");
 
 
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="~MainCommandCLI"><span class="type-signature">(inner) </span>MainCommandCLI<span class="signature">(currentLine, globalData, skipDraw)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    The CLI Function, takes a line and finds the command to apply
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>currentLine</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>globalData</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>skipDraw</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line32">line 32</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="~parseCurrentLine"><span class="type-signature">(inner) </span>parseCurrentLine<span class="signature">(currentLine)</span><span class="type-signature"> &rarr; {Array.&lt;String>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Takes a line, and extracts the command
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>currentLine</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line8">line 8</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;String></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    return ReteDrawInterface;
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

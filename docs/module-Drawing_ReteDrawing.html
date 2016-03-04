@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: CLI/MainCommandCLI</title>
+    <title>JSDoc: Module: Drawing/ReteDrawing</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: CLI/MainCommandCLI</h1>
+    <h1 class="page-title">Module: Drawing/ReteDrawing</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">Takes text, executes relevant commands on the shell</div>
+            <div class="description">The interface for drawing elements from the retenet</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line1">line 1</a>
+        <a href="Drawing_ReteDrawing.js.html">Drawing/ReteDrawing.js</a>, <a href="Drawing_ReteDrawing.js.html#line6">line 6</a>
     </li></ul></dd>
     
 
@@ -137,14 +137,96 @@
 
     
 
-    <h4 class="name" id="~MainCommandCLI"><span class="type-signature">(inner) </span>MainCommandCLI<span class="signature">(currentLine, globalData, skipDraw)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".cleanup"><span class="type-signature">(static) </span>cleanup<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    The CLI Function, takes a line and finds the command to apply
+    Remove anything that DrawRete creates
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Drawing_ReteDrawing.js.html">Drawing/ReteDrawing.js</a>, <a href="Drawing_ReteDrawing.js.html#line41">line 41</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".drawNet"><span class="type-signature">(static) </span>drawNet<span class="signature">(globalData, net)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Draw the proposed actions
 </div>
 
 
@@ -176,24 +258,6 @@
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>currentLine</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
     
 
         <tr>
@@ -216,7 +280,7 @@
 
         <tr>
             
-                <td class="name"><code>skipDraw</code></td>
+                <td class="name"><code>net</code></td>
             
 
             <td class="type">
@@ -268,7 +332,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line32">line 32</a>
+        <a href="Drawing_ReteDrawing.js.html">Drawing/ReteDrawing.js</a>, <a href="Drawing_ReteDrawing.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -291,150 +355,6 @@
 
 
 
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="~parseCurrentLine"><span class="type-signature">(inner) </span>parseCurrentLine<span class="signature">(currentLine)</span><span class="type-signature"> &rarr; {Array.&lt;String>}</span></h4>
-
-    
-
-
-
-<div class="description">
-    Takes a line, and extracts the command
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>currentLine</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="CLI_MainCommandCLI.js.html">CLI/MainCommandCLI.js</a>, <a href="CLI_MainCommandCLI.js.html#line8">line 8</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;String></span>
-
-
-    </dd>
-</dl>
-
-    
 
 
 
