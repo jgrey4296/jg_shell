@@ -67,13 +67,10 @@ define(['underscore','Parse'],function(_,Parse){
                         vars = message.match(/\$\w+/g);
                     //no substrings to expand:
                     if(vars === null){
-                        m[v.id] = message;
+                        m[v.id] = [message];
                     }else{
-                        //todo: filter vars that are defined in values, use them in preference
-                        //to descendents
-
-
-                        
+                        //todo: filter vars that are defined in values, use them in preference to descendents
+                      
                         //substring conversion:
                         var ids = vars.map(function(d){
                             return invertedChildren[d.slice(1)];
@@ -90,13 +87,15 @@ define(['underscore','Parse'],function(_,Parse){
                     //turn each child into a rule
                     //m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
                     //turn each child into a rule, or use the name of the node
-                    m[v.name] = _.values(v.children).length > 0 ? m[v.name].concat(_.values(v.children).map(function(d){
+                    m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
                         return "$"+d;
                     })) : m[v.id].concat([v.name]);
                }                
                 return m;
             },{});
 
+        console.log("Tracing for Grammar:",grammar);
+        
         var retString;
         try{
             retString = Parse(grammar,node.id);

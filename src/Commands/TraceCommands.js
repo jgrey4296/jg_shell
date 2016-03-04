@@ -13,14 +13,16 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
             @param values
         */
         "draw" : function(globalData,values){
-            
+            if(TraceDrawing.dummy === undefined){
+                TraceDrawing.drawTraces(globalData,globalData.lastTraces);
+            }
         },
         /** cleanup 
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
-
+            TraceDrawing.cleanup();
         },
         /** Expand a trace of a node 
             @param globalData
@@ -28,10 +30,14 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
         */
         "trace" : function(globalData,values){
             var amt = !isNaN(parseInt(values[0])) ? Array(parseInt(values.shift())).fill(0) : [0],
-                curNode = globalData.shell.getNode(values[0])  || globalData.shell.cwd,
+                curNode = values[0] !== undefined ? globalData.shell.getNode(values[0]) : globalData.shell.cwd,
                 returnVals = amt.map(()=>globalData.shell.traceNode(curNode));
             console.log("Trace Result:",returnVals);
-            TraceDrawing.drawTraces(globalData,returnVals);
+            globalData.lastTraces = {
+                id : curNode.id,
+                name : curNode.name,
+                values : returnVals
+            };
         },
         /** Convert trace variables to children 
             @param globalData

@@ -93,6 +93,16 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
            @type {Array}
          */
         reteOutput : [],
+
+        /**
+           Trace output
+           @type {Object}
+        */
+        lastTraces : {
+            id : null,
+            name : null,
+            values : null
+        },
         
         /**
            General Reference to the CLI, to allow internal commands to be called easily
