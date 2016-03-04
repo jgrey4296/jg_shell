@@ -32,8 +32,13 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         //draw the proposed column
         DrawUtils.drawGroup(proposed,data,standardData,function(d){
             return [{
-                name : `Prop (${d.id}): ${d.actionType}`,
-                values : JSON.stringify(d.payload)
+                name : `Propose (${d.id}): ${d.actionType}`,
+                values : _.pairs(d.payload).map(function(d){
+                    if(d[0] === 'bindings'){
+                        return d[0] + JSON.stringify(d[1]);
+                    }
+                    return d.join(": ");
+                })
             }];
         });
     };
@@ -65,8 +70,13 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         //draw the column
         DrawUtils.drawGroup(scheduled,data,standardData,function(d){
             return [{
-                name : "",
-                values : []
+                name : `Schedule (${d.id}): ${d.actionType}`,
+                values : _.pairs(d.payload).map(function(d){
+                    if(d[0] === 'bindings'){
+                        return d[0] + JSON.stringify(d[1]);
+                    }
+                    return d.join(": ");
+                })
             }];
         });
     };
@@ -107,6 +117,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     */
     ReteDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#proposed","#scheduled","#reteLog");
 
-
+    
+    
     return ReteDrawInterface;
 });
