@@ -5,32 +5,99 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
      */
     var ReteDrawInterface = {};
 
-    /** Draw the entire network. 
+    /** Draw the proposed actions
         @function
         @param globalData
-        @param net
+        @param {Array.<ProposedAction>} data
      */
-    ReteDrawInterface.drawNet = function(globalData,net){
+    ReteDrawInterface.drawProposed = function(globalData,data){
         var standardData = {
             nodeDataSeparator : 10,
             groupDataSeparator : 10,
             widthAddition : 10,
             colHeight : globalData.usableHeight - 150,
-            colWidth : globalData.calcWidth(globalData.usableWidth,columnNames.length),
+            colWidth : globalData.calcWidth(globalData.usableWidth,2),
             halfWidth : globalData.halfWidth(),
             globalData : globalData,
-            //Get Data from the node:
-            nodeDescriptions : nodeToDraw.getDescriptionObjects("id name values tags annotations expectedBy producedBy".split(" ")),
-            childrenData : _.keys(nodeToDraw.children).map(d=>globalData.shell.getNode(d)),
-            parentsData : _.keys(nodeToDraw.parents).map(d=>globalData.shell.getNode(d)),
-            
         };
 
         //Add calculated offsets for parents and children:
         standardData.halfCol = standardData.colWidth * 0.5;
-        standardData.childrenOffset = (standardData.halfWidth + standardData.colWidth) + standardData.halfCol;
-        standardData.parentOffset = (standardData.halfWidth - (standardData.colWidth*2)) + standardData.halfCol;
 
+        //create the main container
+        var mainContainer = DrawUtils.createOrShare("mainContainer"),
+        //create the proposed column
+            proposed = DrawUtils.createOrShare("proposed",mainContainer)
+            .attr("transform",`translate(${standardData.halfWidth - standardData.colWidth},100)`);
+        //draw the proposed column
+        DrawUtils.drawGroup(proposed,data,standardData,function(d){
+            return [{
+                name : `Prop (${d.id}): ${d.actionType}`,
+                values : JSON.stringify(d.payload)
+            }];
+        });
+    };
+
+        
+    /** Draw the scheduled actions
+        @function
+        @param globalData
+        @param {Array.<ProposedAction>} data
+     */
+    ReteDrawInterface.drawSchedule = function(globalData,data){
+        var standardData = {
+            nodeDataSeparator : 10,
+            groupDataSeparator : 10,
+            widthAddition : 10,
+            colHeight : globalData.usableHeight - 150,
+            colWidth : globalData.calcWidth(globalData.usableWidth,2),
+            halfWidth : globalData.halfWidth(),
+            globalData : globalData,
+        };
+
+        //Add calculated offsets for parents and children:
+        standardData.halfCol = standardData.colWidth * 0.5;
+
+        //main container
+        var mainContainer = DrawUtils.createOrShare("mainContainer"),
+        //create the schedule column
+            scheduled = DrawUtils.createOrShare("scheduled",mainContainer)            .attr("transform",`translate(${standardData.halfWidth + standardData.colWidth},100)`);
+        //draw the column
+        DrawUtils.drawGroup(scheduled,data,standardData,function(d){
+            return [{
+                name : "",
+                values : []
+            }];
+        });
+    };
+
+    
+    /** Draw the saved log of rete actions
+        @function
+        @param globalData
+        @param {Array.<String>} data
+     */
+    ReteDrawInterface.drawLog = function(globalData,data){
+        var standardData = {
+            nodeDataSeparator : 10,
+            groupDataSeparator : 10,
+            widthAddition : 10,
+            colHeight : globalData.usableHeight - 150,
+            colWidth : globalData.calcWidth(globalData.usableWidth,2),
+            halfWidth : globalData.halfWidth(),
+            globalData : globalData,
+        };
+
+        //Add calculated offsets for parents and children:
+        standardData.halfCol = standardData.colWidth * 0.5;
+
+        //main container
+        var mainContainer = DrawUtils.createOrShare("mainContainer"),
+        //create the log column
+            reteLog = DrawUtils.createOrShare("reteLog",mainContainer);
+        //draw the column
+        
+        
 
     };
 
@@ -38,7 +105,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        Remove anything that DrawRete creates
        @function
     */
-    ReteDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#node");
+    ReteDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#proposed","#scheduled","#reteLog");
 
 
     return ReteDrawInterface;

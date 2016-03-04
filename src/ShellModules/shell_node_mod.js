@@ -155,7 +155,7 @@ define(['underscore'],function(_){
     };
 
     /**
-       Modify the timing of an action
+       Modify the timing of an {@link Action}
        @method
        @param actionId
        @param timeVar
@@ -167,6 +167,19 @@ define(['underscore'],function(_){
             action = this.getNode(actionId);
         action.setTiming(timeVar,value);
 
+    };
+
+    /**
+       Set the priority of an action
+       @param actionId
+       @param priorityVal
+     */
+    ShellPrototype.setPriority = function(actionId,priorityVal,sourceId){
+        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+            action = this.getNode(actionId);
+        if(isNaN(Number(priorityVal))){
+            throw new Error("Priority needs to be a number");                   }
+        action.setPriority(Number(priorityVal));
     };
     
     /**

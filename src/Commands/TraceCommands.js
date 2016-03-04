@@ -24,11 +24,11 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
         },
         /** Expand a trace of a node 
             @param globalData
-            @param values
+            @param {Array} values of [amt,nodeId]
         */
         "trace" : function(globalData,values){
-            var curNode = globalData.shell.cwd,
-                amt = !Number.isNaN(parseInt(values[0])) ? Array(parseInt(values[0])).fill(0) : [0],
+            var amt = !isNaN(parseInt(values[0])) ? Array(parseInt(values.shift())).fill(0) : [0],
+                curNode = globalData.shell.getNode(values[0])  || globalData.shell.cwd,
                 returnVals = amt.map(()=>globalData.shell.traceNode(curNode));
             console.log("Trace Result:",returnVals);
             TraceDrawing.drawTraces(globalData,returnVals);

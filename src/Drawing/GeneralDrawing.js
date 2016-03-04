@@ -15,7 +15,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     GeneralDrawInterface.drawStash = function(globalData,data){
         //console.log("Drawing Stash:",data);
         //note the reversal
-        var stashedList = data.map(d=>({name: d.toString()})).reverse(),
+        var stashedList = data.map(d=>(d.toString())).reverse(),
             commonData = {
                 nodeDataSeparator : 10,
                 groupDataSeparator : 10,
@@ -35,8 +35,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
                 return "translate(" + (commonData.halfWidth) + "," + (globalData.usableHeight * 0.6 ) + ")";
             });
         });
-
-        DrawUtils.drawGroup(stashContainer,stashedList,commonData,d=>[d]);
+        DrawUtils.drawGroup(stashContainer,stashedList,commonData);
     };
 
     /**
@@ -72,6 +71,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         });
 
         //Draw the group of data, with a header title
+        //GraphNode -> description...
         DrawUtils.drawGroup(searchResults,data,commonData,x=>[{name:x.toString()}])
             .then(function(){
                 var rect = searchResults.select("#EnclosingRect");
@@ -91,7 +91,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     /**
        Draws the sidbar of data from a particular node
        @function 
-       @param glbalData
+       @param globalData
        @param data
      */
     GeneralDrawInterface.drawInspectResults = function(globalData,data){
@@ -121,7 +121,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         });
 
         //Draw the group
-        DrawUtils.drawGroup(inspectResults,data,commonData,d=>[{name:d}])
+        //value -> [{name:value}]
+        DrawUtils.drawGroup(inspectResults,data,commonData)
             .then(function(){
                 var rect = inspectResults.select("rect");
                 rect.attr("width",10).attr("transform","translate(-10,0)");

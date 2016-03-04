@@ -90,6 +90,17 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     };
 
 
+    /**
+       Set the priority of the action
+       @param {Number} priorityVal
+    */
+    Action.prototype.setPriority = function(priorityVal){
+        if(isNaN(priorityVal)){
+            throw new Error("Priority must be a number");
+        }
+        this.priority = priorityVal;
+    };
+
     /** Convert the Action to a usable description
         @returns {Array}
      */

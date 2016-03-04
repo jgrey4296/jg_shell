@@ -30,7 +30,14 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
         */
         "draw" : function(globalData,values){
             if(ReteDraw.dummy === undefined){
-                ReteDraw.DrawNet(globalData,globalData.shell.reteNet);
+                //Draw Proposed Actions
+                ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));
+                //Draw the scheduled actions for the next timestep
+                var actionsForTimePoint = _.reject(_.flatten(_.values(globalData.shell.reteNet.schedule).map(d=>d[globalData.shell.reteNet.currentTime])),d=>d===undefined);
+
+                ReteDraw.drawSchedule(globalData,actionsForTimePoint);
+                //Draw output
+                ReteDraw.drawLog(globalData,globalData.reteOutput);
             }
         },
         /** cleanup 

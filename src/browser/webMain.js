@@ -73,7 +73,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
         /** The Shell the web component uses
             @type {Shell}
          */
-        shell : new Shell([ReteAlert]),
+        shell : new Shell([ReteAlert(globalData)]),
 
         /** The last set of nodes found by searching
             @type {Array.<Node/GraphNode>}
@@ -88,6 +88,12 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
         */
         currentSelection : [],
 
+        /**
+           Rete outputs:
+           @type {Array}
+         */
+        reteOutput : [],
+        
         /**
            General Reference to the CLI, to allow internal commands to be called easily
            @see module:CLI/MainCommandCLI

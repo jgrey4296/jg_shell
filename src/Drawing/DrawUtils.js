@@ -21,6 +21,8 @@ define(['underscore','d3'],function(_,d3){
     /**
        Construct a string describing the path from the cwd to the root of the shell
        @function
+       @param globalData
+       @param depth
     */
     DrawUtils.pathExtraction = function(globalData,depth){
         var path = [];
@@ -38,7 +40,9 @@ define(['underscore','d3'],function(_,d3){
        Select or create a container
        @function
        @param containerName The id of the container. ie: node
-       @note the containerName does not include the #
+       @param parent
+       @param setupFunc
+       @param type
     */
     DrawUtils.createOrShare = function(containerName,parent,setupFunc,type="g"){
         var container;
@@ -58,6 +62,8 @@ define(['underscore','d3'],function(_,d3){
     /**
        Take a selection of individual text objects, and wrap them within a defined width
        @function 
+       @param textSelection
+       @param width
     */
     DrawUtils.wrapText = function(textSelection,width){
         //console.log("wrap text on :",textSelection);
@@ -99,6 +105,10 @@ define(['underscore','d3'],function(_,d3){
     /**
        Draws a single node
        @function
+       @param container
+       @param {Array.<{name:String,values:[]}>} nodeData
+       @param groupData
+       @param offsetName       
     */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
@@ -155,6 +165,8 @@ define(['underscore','d3'],function(_,d3){
     /**
        Draw Data of a node
        @function
+       @param containerSelection Where each datum is {name: String, values : []}
+       @param groupData
      */
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
         //console.log("Draw individual data:",containerSelection);
@@ -231,6 +243,10 @@ define(['underscore','d3'],function(_,d3){
     /**
        Draws a group
        @function
+       @param container in which to draw
+       @param {Array.<Object>} data 
+       @param commonData The settings object
+       @param descriptionFunc d=>[ {name : String, values : []} ]
      */
     DrawUtils.drawGroup = function(container,data,commonData,descriptionFunction){
         //console.log("Group draw:",container,data);
@@ -256,7 +272,7 @@ define(['underscore','d3'],function(_,d3){
             //draw each individual node
             boundNodes.each(function(d,i){
                 var cur = d3.select(this),
-                    describedData = descriptionFunction !== undefined ? descriptionFunction(d) : d;
+                    describedData = descriptionFunction !== undefined ? descriptionFunction(d) : [{name:d}];
                 
                 promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
                                   .then(function(){
@@ -292,6 +308,7 @@ define(['underscore','d3'],function(_,d3){
     /**
        Extracts then draws the path of the cwd
        @function 
+       @param globalData
      */
     DrawUtils.drawPath = function(globalData){
         //figure out parent path:
