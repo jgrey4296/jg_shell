@@ -31,7 +31,7 @@ define([],function(){
                 
             },
             perform : function(proposedAction,reteNet){
-                context.reteOutput.push("blah");
+                context.reteOutput.push(proposedAction.payload.message);
                 
             }
         };
