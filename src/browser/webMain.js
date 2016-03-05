@@ -67,13 +67,20 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
             "node","rule","rete","sim","general","bookmark","trace"
         ],
 
+        /** State for control of modes */
+        modeState : {
+            "rete" : {},
+            "node" : {},
+            "rule" : {},
+        },
+        
         /** The current command node to use initially */
         currentCommandMode : "node",
     
         /** The Shell the web component uses
             @type {Shell}
          */
-        shell : new Shell([ReteAlert(globalData)]),
+        shell : null,
 
         /** The last set of nodes found by searching
             @type {Array.<Node/GraphNode>}
@@ -205,6 +212,10 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
 
         
     };
+    //Create the shell, passing global data in as context for retealert
+    globalData.shell = new Shell([ReteAlert(globalData)]),
+
+    
     //End of utilities
     //--------------------
     //Set up CLI:
