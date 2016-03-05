@@ -15,7 +15,7 @@ define(['underscore','Rete'],function(_,Rete){
        @method
      */
     ShellPrototype.clearRete = function(){
-        this.reteNet = new Rete();
+        this.reteNet = new Rete(this._reteNetBackupActions);
     };
 
     /**
