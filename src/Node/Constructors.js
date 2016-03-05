@@ -8,14 +8,14 @@ if(typeof define !== 'function'){
  */
 define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution','./Bookmark'],function(_,GraphNode,Rule,Condition,Action,Institution,Bookmark){
     "use strict";
-    var ctors = {
-        "graphnode" : GraphNode,
-        "rule"      : Rule,
-        "condition" : Condition,
-        "action"    : Action,
-        "institution" : Institution,
-        "bookmark" : Bookmark
-    };
+    const ctors = new Map([
+        ["graphnode" , GraphNode],
+        ["rule"      , Rule],
+        ["condition" , Condition],
+        ["action"    , Action],
+        ["institution" , Institution],
+        ["bookmark" , Bookmark]
+    ]);
 
     /**
        Get the Constructor specified
@@ -23,10 +23,10 @@ define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institut
        @param name
      */
     var getCtor = function(name){
-        if(ctors[name.toLowerCase()] !== undefined){
-            return ctors[name.toLowerCase()];
+        if(ctors.has(name.toLowerCase())){
+            return ctors.get(name.toLowerCase());
         }
-        return ctors.graphnode;
+        return ctors.get("graphnode");
     };
     
     return getCtor;
