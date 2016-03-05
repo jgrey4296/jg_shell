@@ -151,6 +151,36 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         return newAction;
     };
 
+    /**
+       Copy a source node to be a new child of the target
+       @param sourceNodeId the id of the node to copy
+       @param targetNodeId the id of the node to copy to
+       @param deepOrNot whether to dfs the source node
+    */
+    ShellPrototype.copyNode = function(sourceNodeId,targetNodeId,deepOrNot){
+        var sourceNode = this.getNode(sourceNodeId),
+            targetNode = this.getNode(targetNodeId);
+        if(sourceNode === undefined || targetNode === undefined){
+            throw new Error("Unrecognised source or target for copy");
+        }
+        //create a dummy node for a new id
+        var graphNodeCtor = this.getCtor(),
+            dummyNode = new graphNodeCtor("dummy",undefined,"dummy",{}),
+            //get the ctor for the source node:
+            ctor = this.getCtor(sourceNode.tags.type),
+            //create the new node
+            newNode = _.create(ctor.prototype,JSON.parse(JSON.stringify(sourceNode)));
+        //set a new id:
+        newNode.id = dummyNode.id;
+
+        //add it to the allNodes list:
+        this.allNodes[newNode.id] = newNode;
+
+        //add it to the targetNode
+        targetNode.addRelation('child',newNode);
+        
+    };
+    
 
     return ShellPrototype;
 });
