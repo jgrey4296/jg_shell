@@ -58,15 +58,15 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             @param values
          */
         "nc" : function(globalData,values){
-            var chars = {
-                "n" : "node",
-                "i" : "institution",
-                "r" : "role",
-                "a" : "activity",
-                "rc": "rulecontainer",
-            };
-            if(chars[values[0]]){
-                globalData.shell.addNode(values[1],'children',chars[values[0]],values.slice(2));
+            const chars = new Map([
+                ["n" , "node"],
+                ["i" , "institution"],
+                ["r" , "role"],
+                ["a" , "activity"],
+                ["rc", "rulecontainer"],
+            ]);
+            if(chars.has(values[0])){
+                globalData.shell.addNode(values[1],'children',chars.get(values[0]),values.slice(2));
             }else{
                 globalData.shell.addNode(values[1],'children',values[0],values.slice(2));
             }
@@ -179,6 +179,20 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
         "rename" : function(globalData,values){
             //rename -> rename
             globalData.shell.rename(values[0]);
+        },
+        /**
+           Copy a node to be a child of a different node
+           @param globalData
+           @param values Comprised of 
+           @param nodeToCopy the source node to copy
+           @param target the target to copy to
+           @param deepOrNot whether to dfs the copy, or do it shallowly
+         */
+        "cp" : function(globalData,values){
+            var nodeToCopy = values.shift(),
+                target = values.shift(),
+                deepOrNot = values.shift();
+            globalData.shell.copyNode(nodeToCopy,target);
         },
         /** help 
             @param globalData
