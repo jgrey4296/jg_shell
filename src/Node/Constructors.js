@@ -23,7 +23,7 @@ define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institut
        @param name
      */
     var getCtor = function(name){
-        if(ctors.has(name.toLowerCase())){
+        if(name !== undefined && ctors.has(name.toLowerCase())){
             return ctors.get(name.toLowerCase());
         }
         return ctors.get("graphnode");
