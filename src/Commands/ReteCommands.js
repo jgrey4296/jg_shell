@@ -30,14 +30,17 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
         */
         "draw" : function(globalData,values){
             if(ReteDraw.dummy === undefined){
-                //Draw Proposed Actions
-                ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));
-                //Draw the scheduled actions for the next timestep
-                var actionsForTimePoint = _.reject(_.flatten(_.values(globalData.shell.reteNet.schedule).map(d=>d[globalData.shell.reteNet.currentTime])),d=>d===undefined);
-
-                ReteDraw.drawSchedule(globalData,actionsForTimePoint);
-                //Draw output
-                ReteDraw.drawLog(globalData,globalData.reteOutput);
+                if(globalData.modeState.rete.log){
+                    //Draw output
+                    ReteDraw.drawLog(globalData,globalData.reteOutput);
+                }else{
+                    //Draw Proposed Actions
+                    ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));
+                    //Draw the scheduled actions for the next timestep
+                    var actionsForTimePoint = _.reject(_.flatten(_.values(globalData.shell.reteNet.schedule).map(d=>d[globalData.shell.reteNet.currentTime])),d=>d===undefined);
+                    
+                    ReteDraw.drawSchedule(globalData,actionsForTimePoint);
+                }
             }
         },
         /** cleanup 
@@ -49,6 +52,22 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
                 ReteDraw.cleanup();
             }
         },
+        /**
+           Draw the output log of the retenet
+           Slightly hacky, disabling the normal draw of retemode by setting retdraw.dummy -> 1
+           @param globalData
+           @param values
+        */
+        "reteLog" : function(globalData,values){
+            if(globalData.modeState.rete.log === undefined){
+                globalData.modeState.rete.log = 1;
+                reteCommands.cleanup();
+            }else{
+                reteCommands.cleanup();
+                delete globalData.modeState.rete.log;
+            }
+            
+        },        
         /** Compile All Rules in the Graph into the ReteNet
             @param globalData
             @param values
