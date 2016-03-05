@@ -237,6 +237,12 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         "files" : function(globalData,values){
             window.open("./data/","_blank");
         },
+        /**
+           Print the global data to console
+        */
+        "printGlobal" : function(globalData,values){
+            console.log(globalData);
+        },        
         /** Print the help menu for general commands 
             @param globalData
             @param values
