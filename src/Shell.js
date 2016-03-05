@@ -87,6 +87,12 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
             @instance
         */
         this.reteNet = new Rete(ReteActionsToRegister);
+
+        /**
+           Backup of rete actions, for when resetting the retenet
+           @type {Array}
+        */
+        this._reteNetBackupActions = ReteActionsToRegister;
     };
     
     /*** @borrows module:shell_prototype_main as shell_prototype */
