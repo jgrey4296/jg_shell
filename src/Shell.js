@@ -99,6 +99,7 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
     Shell.prototype = Object.create(shell_prototype);
     Shell.prototype.constructor = Shell;
 
+    /** Get A Node Constructor by name. @see Node/Constructors */
     Shell.prototype.getCtor = getCtor;
 
     return Shell;
