@@ -136,13 +136,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         });
 
         lists.push({
-            name : "Produces:",
-            values : [this.expectationNode]
+            name : `Produces: ${this.expectationNode}`,
         });
 
         lists.push({
-            name : "Priority:",
-            values : [this.priority]
+            name : `Priority: ${this.priority}`,
         });
         
         return lists;
