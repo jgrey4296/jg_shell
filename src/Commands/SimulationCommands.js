@@ -64,6 +64,7 @@ define(['underscore'],function(_){
         /** stepSim : returns true when finished, false otherwise 
             @param globalData
             @param values
+            @returns {Bool} true on completion, false otherwise;
         */
         "stepSim" : function(globalData,values){
             if(globalData.simulation === undefined){
@@ -92,12 +93,11 @@ define(['underscore'],function(_){
                 //select a performance... based on something?
                 //based on lookup of values of aggregates?
                 //!!!! - base on normative level???
-                actionToPerform = _.sample(actionsForChar),
-                //Get the linked actions (assertions/retractions) for that performance
-                linkedActions = actionToPerform !== undefined ? actionToPerform.parallelActions.map(function(d){
-                    return globalData.simulation.reteNet.proposedActions[d.id];
-                }) : [];
-            console.log("CharToUse:",[charToUse,actionsForChar,actionToPerform]);
+                actionToPerform = _.sample(actionsForChar);
+                //Schedule the action:
+                globalData.simulation.reteNet.scheduleAction(actionToPerform);
+            
+                console.log("Scheduled:",[charToUse,actionToPerform]);
             
             //return early if theres no available actions
             if(actionToPerform === undefined) { return false; }
