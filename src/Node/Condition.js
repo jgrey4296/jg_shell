@@ -75,6 +75,11 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
     /** get Description objects */
     Condition.prototype.getDescriptionObjects = function(){
+        if(this.minimised){
+            return [{
+                name : this.toString()
+            }];
+        }
         var lists = [];
         lists.push({
             name: this.toString()

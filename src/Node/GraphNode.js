@@ -88,6 +88,11 @@ define(['underscore'],function(_){
          */
         this.producedBy = {};
 
+        /**
+           Track whether the node is minimised or not
+           @type {Boolean}
+         */
+        this.minimised = false;
 
         //Create the relations passed in:
         //Each entry in the list: L = { name: "", children : [L], parents : [L] }
@@ -133,6 +138,11 @@ define(['underscore'],function(_){
        @returns {Array.<Object>} Objects of {name: String, values: Array}
      */
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
+        if(this.minimised){
+            return [{
+                name : this.toString()
+            }];
+        }
         //returns [{name: "", values : [] }]
         //Get all fields
         var lists = fieldNameList.map(function(d){

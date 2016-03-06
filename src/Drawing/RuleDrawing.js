@@ -26,7 +26,6 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             ruleDescriptions : ruleToDraw.getDescriptionObjects("id name tags annotations".split(" ")),
             conditionData : _.keys(ruleToDraw.conditions).map(d=>globalData.shell.getNode(d)),
             actionData : _.keys(ruleToDraw.actions).map(d=>globalData.shell.getNode(d)),
-            
         };
 
         //Add calculated offsets for conditions and actions

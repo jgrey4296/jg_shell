@@ -194,6 +194,15 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 deepOrNot = values.shift();
             globalData.shell.copyNode(nodeToCopy,target);
         },
+        /**
+           Minimise a node in the view
+        */
+        "min" : function(globalData,values){
+            var node = globalData.shell.getNode(values.shift());
+            if(node){
+                node.minimised = ! node.minimised;
+            }
+        },        
         /** help 
             @param globalData
             @param values

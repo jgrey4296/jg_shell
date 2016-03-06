@@ -105,6 +105,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         @returns {Array}
      */
     Action.prototype.getDescriptionObjects = function(){
+        if(this.minimised){
+            return [{
+                name : this.toString()
+            }];
+        }
         var lists = [];
         lists.push({
             name : this.toString(),
