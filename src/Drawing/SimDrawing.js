@@ -12,7 +12,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
      */
     SimDrawInterface.drawLog = function(globalData,data){
         //add the title:
-        data = ["Rete Output Log:"].concat(data);
+        data = ["Sim Output Log:"].concat(data);
         console.log("data:",data);
         var standardData = {
             nodeDataSeparator : 10,
