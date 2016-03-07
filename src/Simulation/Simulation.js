@@ -6,11 +6,11 @@ define(['underscore'],function(_){
        @param globalData
        @param maxTurns
      */
-    var Simulation = function(globalData,maxTurns){
-        this.shell = globalData.shell;
+    var Simulation = function(shell,maxTurns){
+        this.shell = shell;
         this.reteNet = this.shell.reteNet;
         /** @type {Array.<GraphNode>} */
-        this.characterPool = _.values(globalData.shell.allNodes.filter(d=>d.tags.character!==undefined));
+        this.characterPool = _.values(this.shell.allNodes.filter(d=>d.tags.character!==undefined));
         this.usedCharacterPool = [];
         this.turn = 0;
         this.maxTurns = maxTurns;
