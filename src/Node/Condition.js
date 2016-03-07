@@ -77,7 +77,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     Condition.prototype.getDescriptionObjects = function(){
         if(this.minimised){
             return [{
-                name : this.toString()
+                name : this.toString() + "..."
             }];
         }
         var lists = [];
@@ -94,13 +94,28 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         //Add the bindings:
         lists.push({
             name: "BIND:",
-            values : _.keys(this.bindings).map(d=>`${d} <-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`)
+            values : _.keys(this.bindings).map(function(d){
+                if(/^[#\$]id/.test(d[0])){
+                    return `${d} <-- wme.id :: ${_.flatten(this.bindings[d][1]).join(" ")}`;
+                }else{
+                    return `${d} <-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`;
+                }
+            },this)
+            //d=>`${d} <-- wme.data.${this.bindings[d][0]} :: ${_.flatten(this.bindings[d][1]).join(" ")}`)
         });
 
+        //the source node
         lists.push({
             name : "SOURCE:",
             values : [this.expectationNode]
         });
+
+        //tags:
+        lists.push({
+            name : "Tags",
+            values : _.keys(this.tags).map(d=>`${d} : ${this.tags[d]}`)
+        });
+
         
         return lists;
     };

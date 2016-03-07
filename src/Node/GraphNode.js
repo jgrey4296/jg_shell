@@ -140,7 +140,7 @@ define(['underscore'],function(_){
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
         if(this.minimised){
             return [{
-                name : this.toString()
+                name : this.toString() + "..."
             }];
         }
         //returns [{name: "", values : [] }]

@@ -107,7 +107,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     Action.prototype.getDescriptionObjects = function(){
         if(this.minimised){
             return [{
-                name : this.toString()
+                name : this.toString() + "..."
             }];
         }
         var lists = [];
@@ -146,6 +146,11 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
         lists.push({
             name : `Priority: ${this.priority}`,
+        });
+
+        lists.push({
+            name : "Tags",
+            values : _.keys(this.tags).map(d=>`${d} : ${this.tags[d]}`)
         });
         
         return lists;
