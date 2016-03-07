@@ -90,6 +90,7 @@ define(['underscore'],function(_){
                                                   return false;
                                               }
                                           }),
+                
                 //select a performance... based on something?
                 //based on lookup of values of aggregates?
                 //!!!! - base on normative level???

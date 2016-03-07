@@ -44,13 +44,8 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
         if(nodeIds === undefined) { nodeIds = _.keys(this.allNodes); }
-        var shellRef = this,
-            nodes  = nodeIds.map(function(d){
-                return shellRef.getNode(d);
-            }),
-            rules = nodes.filter(function(d){
-                return d.tags.type === 'rule';
-            });
+        var nodes  = nodeIds.map(d=>this.getNode(d)),
+            rules = nodes.filter(d=>d.tags.type==='rule');
         
         console.log("Compiling rules:",rules);
         //and add them to the rete net
@@ -76,16 +71,8 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.assertWMEs = function(nodeIds){
         //get all the wmes
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
-        var shellRef = this,
-            nodes = nodeIds.map(function(d){
-                return shellRef.getNode(d);
-            }),
-            wmes = nodes.filter(function(node){
-                return node.tags.fact !== undefined;
-            }).filter(function(node){
-                return node.wmeId === undefined;
-            });
-
+        nodes = nodeIds.map(d=>this.getNode(d)),
+            wmes = nodes.filter(d=>d.tags.fact !== undefined).filter(d=>d.wmeId === undefined);
         //assert them
         this.assertWMEList(wmes);
     };
