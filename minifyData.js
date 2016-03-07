@@ -13,8 +13,9 @@
         //Shell
         Shell : "Shell",
         //Rete
-        Rete : "../libs/Rete.min"
-
+        Rete : "../libs/Rete.min",
+        //Simulation:
+        Simulation : "Simulation/Simulation"
     },
     shim: {
         underscore : {

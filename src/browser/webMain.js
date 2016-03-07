@@ -22,7 +22,9 @@ require.config({
         //Shell : "/libs/Shell.min",
         //Rete
         Rete : "/libs/Rete.min",
-        ReteAlert : "ReteActions/alertAction"
+        ReteAlert : "ReteActions/alertAction",
+        //Simulation:
+        Simulation : "Simulation/Simulation"
     },
     shim:{
         'underscore' :{

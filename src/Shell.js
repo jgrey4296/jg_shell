@@ -93,6 +93,12 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
            @type {Array}
         */
         this._reteNetBackupActions = ReteActionsToRegister;
+
+        /**
+           The current simulation:
+           @type { Simulation }
+        */
+        this.simulation = null;
     };
     
     /*** @borrows module:shell_prototype_main as shell_prototype */
