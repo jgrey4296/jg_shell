@@ -272,7 +272,7 @@ define(['underscore','d3'],function(_,d3){
             //draw each individual node
             boundNodes.each(function(d,i){
                 var cur = d3.select(this),
-                    describedData = descriptionFunction !== undefined ? descriptionFunction(d) : [{name:d}];
+                    describedData = descriptionFunction !== undefined ? descriptionFunction(d) : d instanceof Array ? d : [{name:d}];
                 
                 promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
                                   .then(function(){

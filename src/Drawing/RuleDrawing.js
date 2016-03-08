@@ -24,8 +24,22 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             globalData : globalData,
             /** Get Data from the node: */
             ruleDescriptions : ruleToDraw.getDescriptionObjects("id name tags annotations".split(" ")),
-            conditionData : _.keys(ruleToDraw.conditions).map(d=>globalData.shell.getNode(d)),
-            actionData : _.keys(ruleToDraw.actions).map(d=>globalData.shell.getNode(d)),
+            conditionData : _.keys(ruleToDraw.conditions).map(function(d){
+                var node = globalData.shell.getNode(d);
+                if(node instanceof globalData.shell.getCtor('condition')){
+                    return node.getDescriptionObjects();
+                }else {
+                    return [node.getShortDescription()];
+                }
+            }),
+            actionData : _.keys(ruleToDraw.actions).map(function(d){
+                var node = globalData.shell.getNode(d);
+                if(node instanceof globalData.shell.getCtor('action')){
+                    return node.getDescriptionObjects();
+                }else{
+                    return [node.getShortDescription()];
+                }
+            })
         };
 
         //Add calculated offsets for conditions and actions
@@ -47,8 +61,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         //These are promises
         DrawUtils.drawSingleNode(rule,standardData.ruleDescriptions,standardData);
         //Draw the children:
-        DrawUtils.drawGroup(conditionGroup,standardData.conditionData,standardData,x=>x.getDescriptionObjects());
-        DrawUtils.drawGroup(actionGroup,standardData.actionData,standardData,x=>x.getDescriptionObjects());
+        DrawUtils.drawGroup(conditionGroup,standardData.conditionData,standardData);
+        DrawUtils.drawGroup(actionGroup,standardData.actionData,standardData);
 
         DrawUtils.drawPath(globalData);
         

@@ -15,11 +15,9 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
         "draw" : function(globalData,values){
             if(globalData.shell.cwd.tags.type.toLowerCase() === "rule"){
                 RuleDrawing.drawRule(globalData,globalData.shell.cwd);
-                //drawRule(globalData);
             }else if(globalData.shell.cwd.tags.type === "negConjCondition"){
                 //TODO: draw neg conj condition
                 RuleDrawing.drawRule(globalData,globalData.shell.cwd);
-                //drawRule(globalData);
             }else{
                 //ruleCommands.cleanup();
                 //NodeDrawing.drawNode(globalData,globalData.shell.cwd);

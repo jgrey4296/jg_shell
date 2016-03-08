@@ -97,15 +97,15 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     GeneralDrawInterface.drawInspectResults = function(globalData,data){
         //console.log("Inspecting:",data);
         var commonData = {
-                nodeDataSeparator : 10,
-                groupDataSeparator : 10,
-                widthAddition : 10,
-                colHeight : globalData.usableHeight - 150,
-                colWidth : globalData.calcWidth(globalData.usableWidth,5),
-                halfWidth : globalData.halfWidth(),
-                globalData : globalData,
-                searchData : data
-            };
+            nodeDataSeparator : 10,
+            groupDataSeparator : 10,
+            widthAddition : 10,
+            colHeight : globalData.usableHeight - 150,
+            colWidth : globalData.calcWidth(globalData.usableWidth,5),
+            halfWidth : globalData.halfWidth(),
+            globalData : globalData,
+            searchData : data.map(d=>d instanceof Array ? d.join(": ") : d)
+        };
         commonData.halfCol = commonData.colWidth * 0.5;
         commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*-0.5);
         
@@ -122,7 +122,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
 
         //Draw the group
         //value -> [{name:value}]
-        DrawUtils.drawGroup(inspectResults,data,commonData)
+        DrawUtils.drawGroup(inspectResults,commonData.searchData,commonData)
             .then(function(){
                 var rect = inspectResults.select("rect");
                 rect.attr("width",10).attr("transform","translate(-10,0)");
