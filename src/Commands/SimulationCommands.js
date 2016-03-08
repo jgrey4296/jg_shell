@@ -33,14 +33,22 @@ define(['underscore'],function(_){
             //get all the nodes in the institution specified
             var maxTurns = values.shift() || 10;
             globalData.shell.setupSimulation(maxTurns);
-        },        
+        },
+        /**
+           stepSim : take a single turn in the simulation
+           @param globalData
+           @param values
+        */
+        "stepSim" : function(globalData,values){
+            globalData.shell.stepSimulation();
+        },
         /** runSim : Runs the entire simulation to end
             @param globalData
             @param values
             @returns {Bool} true on completion, false otherwise;
         */
         "runSim" : function(globalData,values){
-            this.shell.runSimulation();
+            globalData.shell.runSimulation();
         },
         /** Depth First Search 
             @param globalData
