@@ -21,7 +21,6 @@ define(['underscore'],function(_){
         this.shell.assertWMEList(characterPool);
         //todo: assert other starting facts
 
-        //todo: possible register output actions and have a simulation log?
         
     };
 
