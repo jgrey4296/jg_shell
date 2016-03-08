@@ -28,12 +28,14 @@ define(['underscore'],function(_){
         "cleanup" : function(globalData,values){
 
         },
-        /** Help 
+        /** Help - For drawing to the gui help information
             @param {module:globalData} globalData
             @param values
         */
         "help" : function(globalData,values){
-
+            return {
+                "someCommand" : ["Param Strings","Description" ]
+            };
         }
     };
 
