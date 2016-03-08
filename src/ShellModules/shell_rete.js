@@ -15,27 +15,9 @@ define(['underscore','Rete'],function(_,Rete){
        @method
      */
     ShellPrototype.clearRete = function(){
+        _.values(this.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
         this.reteNet = new Rete(this._reteNetBackupActions);
     };
-
-    /**
-       Clear the record of recently activated rules
-       @method
-     */
-    ShellPrototype.clearPotentialActions = function(){
-        //Rete.clearPotentialActions(this.reteNet);
-        this.reteNet.clearProposedActions();
-    };
-
-    /**
-       Clear the history of the net
-       @method
-     */
-    ShellPrototype.clearHistory = function(){
-        //Rete.clearHistory(this.reteNet);
-        this.reteNet.clearHistory();
-    };
-    
     /**
        Retrieve all defined rules, add them to the rete net
        @method
