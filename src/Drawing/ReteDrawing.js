@@ -42,7 +42,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
                 name : `(${d.id}): ${d.actionType}`,
                 values : _.pairs(d.payload).map(function(d){
                     if(d[0] === 'bindings'){
-                        return d[0] + JSON.stringify(d[1]);
+                        return d[0] + JSON.stringify(d[1]).replace(",",", ");
                     }
                     return d.join(": ");
                 })

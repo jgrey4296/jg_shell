@@ -148,11 +148,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             name : `Priority: ${this.priority}`,
         });
 
-        lists.push({
-            name : "Tags",
-            values : _.keys(this.tags).map(d=>`${d} : ${this.tags[d]}`)
-        });
-        
         return lists;
     };
     
