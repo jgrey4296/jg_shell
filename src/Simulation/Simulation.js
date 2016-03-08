@@ -13,15 +13,15 @@ define(['underscore'],function(_){
         this.characterPool = _.values(this.shell.allNodes.filter(d=>d.tags.character!==undefined));
         this.usedCharacterPool = [];
         this.turn = 0;
-        this.maxTurns = maxTurns;
+        this.maxTurns = maxTurns || 10;
         
         //compile the reteNet using the rules in the institution
         this.shell.compileRete();
         //assert starting characters
         this.shell.assertWMEList(characterPool);
         //todo: assert other starting facts
-
-        
+        var startingFacts = _.values(this.shell.allNodes).filter(d=>d.tags.fact!==undefined);
+        this.shell.assertWMEList(startingFacts);        
     };
 
     /**
