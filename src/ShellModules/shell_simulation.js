@@ -12,7 +12,9 @@ define(['underscore','Simulation'],function(_,Simulation){
        @method
      */
     ShellPrototype.setupSimulation = function(maxTurns){
-        this.simulation = new Simulation(maxTurns);
+        console.groupCollapsed();
+        this.simulation = new Simulation(this,maxTurns);
+        console.groupEnd();
     };
 
     /**
@@ -24,9 +26,9 @@ define(['underscore','Simulation'],function(_,Simulation){
         if(this.simulation === null || this.simulation === undefined){
             throw new Error("Simulation needs to be initialised");
         }
+        console.log("Simulation step:",this.simulation.turn);
         return this.simulation.step();
     };
-
     /**
        Run a simulation to end
      */

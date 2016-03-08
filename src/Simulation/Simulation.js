@@ -1,3 +1,7 @@
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
 define(['underscore'],function(_){
 
     /**
@@ -8,9 +12,12 @@ define(['underscore'],function(_){
      */
     var Simulation = function(shell,maxTurns){
         this.shell = shell;
+        //Reset the retenet
+        this.shell.clearRete();
+        //shortcut to the retenet
         this.reteNet = this.shell.reteNet;
         /** @type {Array.<GraphNode>} */
-        this.characterPool = _.values(this.shell.allNodes.filter(d=>d.tags.character!==undefined));
+        this.characterPool = _.values(this.shell.allNodes).filter(d=>d.tags.character!==undefined);
         this.usedCharacterPool = [];
         this.turn = 0;
         this.maxTurns = maxTurns || 10;
@@ -18,8 +25,8 @@ define(['underscore'],function(_){
         //compile the reteNet using the rules in the institution
         this.shell.compileRete();
         //assert starting characters
-        this.shell.assertWMEList(characterPool);
-        //todo: assert other starting facts
+        this.shell.assertWMEList(this.characterPool);
+        //assert other starting facts
         var startingFacts = _.values(this.shell.allNodes).filter(d=>d.tags.fact!==undefined);
         this.shell.assertWMEList(startingFacts);        
     };
@@ -29,20 +36,18 @@ define(['underscore'],function(_){
        @returns {Boolean} True for finished, false for not finished
      */
     Simulation.prototype.step = function(){
-        if(this.turn++ > this.maxTurns) { return true; }
+        if(this.turn++ >= this.maxTurns) { this.turn--; return true; }
 
         //Get a Character:
         var currentCharacter = this.getCharacter(),
             //get the actions for the character:
             availableActions = this.getActionsForCharacter(currentCharacter),
             //get one of those potential actions:
-            chosenAction = this.chooseAction(actions,character);
+            chosenAction = this.chooseAction(availableActions,currentCharacter);
 
 
         if(chosenAction === undefined) { return false; }
-        
         this.reteNet.scheduleAction(chosenAction);
-
         this.reteNet.stepTime();
         return false;
     };
@@ -67,7 +72,7 @@ define(['underscore'],function(_){
         var charToUse = _.sample(this.characterPool);
         //remove from the character pool:
         this.usedCharacterPool.push(charToUse);
-        this.characterPool = this.characterPool.reject(d=>d.id === charToUse.id);
+        this.characterPool = _.reject(this.characterPool,d=>d.id === charToUse.id);
         return charToUse;
     };
 
