@@ -249,22 +249,27 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         */
         "help" : function(globalData,values){
             return {
-                "load"  : [ "$fileName", " Load a specified file in to populate the shell"],
-                "save"  : [ "$fileName", " Save to a specified file. With paired server ONLY"],
-                "json"  : [ "", " Open a tab with the shell as json"],
-                "files" : [ "", " Display a list of available files to load"],
-                "stash" : [ "", " Add the current node to the temp stack."],
-                "unstash": ["", " Pop off and move to the head of the temp stack."],
-                "top"   : [ "", " Move to the top of the temp stack."],
-                "prev"  : [ "", " Move to the node previously you were at before the current node. "],
-                "search" : ["$field $tag $value", "Search for nodes with a field, tag, value. Last param is a regex"],
-                "refine" : ["$field $tag $value", "Searches through the currently displayed search results"],
-                "inspect" : ["$key ($id)?", "Display the values of a key. Specify $id to inspect a remote node. Use #all to inspect all keys of a node"],
-                "select" : ["$nodeId?", "add the cwd or a specific node to a temp selection"],
-                "clearSelection" : ["","Clear the temp selection"],
-                "applyToSelection" : [ "$command","Apply new,rm,set,link,linkr,if commands to every node in the selection"],
-                "printSelection" : ["","Print the node ids in the selection to console"],
-                "mode"  : ["$modeType", "Changes to the specified command mode. (node,rule,rete at the moment)"]               
+                "stash" : ["","Temporarily store the current node in a stack"],
+                "unstash" : ["","Pop off from the temp store, and move to that node"],
+                "top" : ["","Move to the top of the stack, but don't pop"],
+                "prev" : ["","Move to the node you were at immediately prior to the current node"],
+                "mode" : ["$modeName","Change to the specified mode, prioritises that modes commands, and drawing routines"],
+                "selection" : ["","Display in the left sidebar the currently selected nodes"],
+                "select" : ["$nodeId $nodeId..","Add the specified nodes to a selection list"],
+                "selectSearch" : ["","Copy the selection into the search result list"],
+                "clearSelection" : ["","Empty the selection list"],
+                "applyToSelection" : ["$command $vars...","Apply the command to every node in the selection. Ie: 'set tags type test'"],
+                "apply" : ["$command $vars","Synonym for applyToSelection"],
+                "printSelection" : ["","Print the selection list to the console"],
+                "search" : ["$field $tag $tagValue?","Search all nodes for the specified (regex) pattern. Ie: 'search tags type node'"],
+                "refine" : ["$field $tag $tagValue?","Search the current search results, further constraining them"],
+                "inspect" : ["$id [#all $field]","Display details about a node in the right sidebar"],
+                "load" : ["$fileName","Load a json file from the server"],
+                "import" : ["$rawJSONString","Import a raw json string copy pasted into the cli bar"],
+                "json" : ["","Open a new tab with the pretty printed json of the current shell displayed"],
+                "files" : ["","Display in a new tab the files available for loading"],
+                "printGlobal" : ["","Print the global object to the console"]
+                
             };
         },
         /** Print All Conditions in the graph

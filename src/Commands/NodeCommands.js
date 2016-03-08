@@ -50,7 +50,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             var target = values[0];
             if(target === "child") { target = "children"; }
             if(target === "parent") { target  = "parents"; }
-            console.log("Target:",target);
+            //console.log("Target:",target);
             globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
         /** new child utility function 
@@ -61,9 +61,6 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             const chars = new Map([
                 ["n" , "node"],
                 ["i" , "institution"],
-                ["r" , "role"],
-                ["a" , "activity"],
-                ["rc", "rulecontainer"],
             ]);
             if(chars.has(values[0])){
                 globalData.shell.addNode(values[1],'children',chars.get(values[0]),values.slice(2));
@@ -79,9 +76,6 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             var chars = {
                 "n" : "node",
                 "i" : "institution",
-                "r" : "role",
-                "a" : "activity",
-                "rc": "rulecontainer",
             };
             if(chars[values[0]]){
                 globalData.shell.addNode(values[1],'parents',chars[values[0]],values.slice(2),sourceId);
@@ -209,18 +203,23 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
         */
         "help" : function(globalData,values){
             return {
-                "help#general" : ["", "Display General Commands Help"],
-                "new"   : ["$target $type $name", "Add a node to the graph."],
-                "nc"    : [ "[n | i | r | a ] $name", " Shortcuts for adding children. Nodes, institutions, roles, activities."],
-                "np"    : [ "[n | i | r | a ] $name", " Shortcuts for adding parents."],
-                "[ncn | nci]" : [ "$name", "new child node/institution."],
-                "rm"    : [ "$id", " Remove a node by id number."],
-                "cd"    : [ "[.. | $name | $id]", " Move to a node by name or id."],
-                "rename": [ "$name", " Rename a node."],
-                "set"   : [ "$field $parameter $value", " Set a value of a node. ie: set tag type myType."],
-                "link"  : [ "$target $id", " Link two existing nodes."],
-                "linkr" : [ "$target $id", " Link two existing nodes reciprocally."],
-                "search" : [ "$target $pattern $focusType", " Search for all nodes where a pattern applied to a type in the target field matches."],
+                "printNode" : ["","Print the current node to console"],
+                "printShell" : ["","Print the shell to the console"],
+                "new" : ["$target $type $name","Create a new node in the target field of the current node"],
+                "nc" : ["$[ni]/$type $name","Synonym for new child (node/institution/other)"],
+                "np" : ["$[ni]/$type $name","Synonym for new parent (node/institution/other)"],
+                "ncn" : ["$name","Synonym for new child node"],
+                "nci" : ["$name","Synonym for new child institution"],
+                "rm" : ["$nodeId","Remove the specified node from the current node"],
+                "cd" : ["$nodeId/$nodeName","Set the current node to the specified node, by name or id"],
+                "set" : ["$field $parameter $value","Set the node[field][parameter] = value"],
+                "sv" : ["$parameter $value","Synonym for set values"],
+                "st" : ["$parameter $value","Synonym for set tags"],
+                "link" : ["$target $nodeId","Link an existing node as a $target of the current node"],
+                "linkr" : ["$target $nodeId","link reciprocally"],
+                "rename" : ["$name","Change the name of the current node"],
+                "cp" : ["$sourceId $targetId $deep","Copy an existing node to be a child of the targetId, todo: deep copy"],
+                "min" : ["$nodeId", "Minimise a node representation"]
             };
         }
     };

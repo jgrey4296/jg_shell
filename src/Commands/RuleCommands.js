@@ -233,18 +233,21 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
         */
         "help" : function(globalData,values){
             return {
-                "help#general" : [ "", "Display General Commands Help"],
-                "cd"    : [ "[.. | $name | $id]", "Move to other nodes. Reverts to node mode"],
-                "new condition" : [ " ", " Create a new condition for the current rule. (IF)"],
-                "new negCondtion" : ["", "Create a negative condition"],
-                "new negConjCondition" : ["","Create a Negated Conjunctive Condition"],
-                "new action" : [ "$name+", " Create a new action for the current rule. (THEN)"],
-                "rm"     : [ "[condition | action] $id", " Remove a condition/action/test"],
-                "set" : ["$targetType $targetId $targetFocus $values", "ie: set condition 5 binding a b"],
-                "rename" : ["", " Rename the rule"],
-                "link"   : ["$target $conditionOrActionId $nodeId", "Link a condition or action with the node in the graph it tests or produces"],
-                "set action" : ["$id regex $varname $regex $options $replaceVal", ""],
-                //todo: explain setting action data/arith/regex
+                "cd" : ["$nodeId","Switch to node mode, and move to the specified node"],
+                "new" : ["[condition,action,negCondition,negConjCondition]","Create a new condition or action for the current rule"],
+                "if" : ["(test), (test)...","Create a new condition, automatically with the specified tests. ie: if a EQ 5, b GT 10, c LT 15"],
+                "rm" : ["[action,condition] $nodeId","Remove a condition or action from the rule"],
+                "set" : ["[condition,action] $nodeId $targetField (values)...","Set the relevant condition or actions field with the values specified."],
+                "set action $actionId type" : ["$value","Set the action's performance type"],
+                "set action $actionId data" : ["$parameter $value", "Set or delete the action.data[parameter] to $value. Value can be a $binding"],
+                "set action $actionId arith" : ["$var $operator $value","Set a variable (defined in data) arithmetic operation. Can be $bound"],
+                "set action $actionId regex" : ["$var $regex","Set the action's regex action for the $var. regex is of the form /a/A/g"],
+                "set action $actionId timing" : ["$timingVar $value", "Set an actions invalidate/perform/unperform offset value"],
+                "set action $actionId priority" : ["$value","Set an actions priority"],
+                "set condition $conditionId test" : ["$testId? $field $operator $value","Set,create,or remove a condition's test."],
+                "set condition $conditionId binding" : ["$bindVar $sourceParam $test $test $test","Set or delete a conditions binding for a variable name, with optional tests to apply to the binding"],
+                "rename" : ["$name","Rename the rule"],
+                "link" : ["[condition/action] $id $targetId","Specify the target that a condition consumes, or action produces"],
             };
         },
     };

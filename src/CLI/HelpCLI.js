@@ -45,9 +45,8 @@ define(['underscore','d3'],function(_,d3){
         //Create the text to be displayed
         var startText = "Current Mode: " + globalData.currentCommandMode,
             availableModes = "Available Modes: " + _.keys(globalData.commands).join(" "),
-            helpText = [startText,availableModes,"","Available Commands: ",""].concat(_.keys(helpObject).map(function(d){
-            return d + " " + helpObject[d].join(" ---> ");
-        }));
+            helpValues = alignArrows(_.keys(helpObject).map(d=>`${d} ${helpObject[d].join(" ---> ")}`)),
+            helpText = [startText,availableModes,"","Available Commands: ",""].concat(helpValues);
 
         //Get the container:
         var helpWindow = d3.select("#helpWindow");
@@ -78,11 +77,28 @@ define(['underscore','d3'],function(_,d3){
         })
             .text(function(d){
                 return d;
-            });
+            })
+            .style("white-space","pre");
 
         boundSelection.exit().remove();
     };
 
+
+    var alignArrows = function(textArray){
+        var furthestArrow = textArray.reduce(function(m,v){
+            var currOffset = v.search(/ ---> /);
+            if(currOffset > m){
+                return currOffset;
+            }
+            return m;
+        },0),
+            offsetTexts = textArray.map(function(d){
+                var amtToOffset = furthestArrow - d.search(/ ---> /);
+                return d.replace(/ ---> /,(Array(amtToOffset + 2).join(" ") + " ---> "));
+            });
+        return offsetTexts;
+    };
+    
 
     //Return just the main function
     return HelpCLI;

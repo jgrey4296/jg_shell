@@ -80,9 +80,22 @@ define(['underscore'],function(_){
             request.open("GET","/data/"+values[0]+".json",true);
             request.send();
         },
-        
+        /**
+           Help texts
+        */
+        "help" : function(globalData,values){
+            return {
+                "goto" : ["$nodeId","Open a new window using the nodes url"],
+                "firefoxImport" : ["$rawJSON","Import a raw json string of exported bookmarks from firefox"],
+                "firefoxLoad" : ["$fileName","Request and load a firefox bookmarks json from the server"]
+            };
+        }        
     };
-
+    
+    //----------------------------------------
+    // Utilities:
+    //----------------------------------------
+    
     /**
        Turn bookmarks into objects
        @function extractLinks
