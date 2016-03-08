@@ -45,8 +45,11 @@ define(['underscore'],function(_){
             //get one of those potential actions:
             chosenAction = this.chooseAction(availableActions,currentCharacter);
 
-
+        
+        console.log(`Character: ${currentCharacter.name}`);
         if(chosenAction === undefined) { return false; }
+        console.log("Chosen Action:",chosenAction);
+        
         this.reteNet.scheduleAction(chosenAction);
         this.reteNet.stepTime();
         return false;
