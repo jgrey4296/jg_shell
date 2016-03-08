@@ -154,7 +154,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             GeneralDrawing.drawStash(globalData,globalData.shell._nodeStash);
             //Draw search results:
             //drawSearchResults(globalData,globalData.lastSetOfSearchResults);
-            console.log("Last Search results:",globalData.lastSetOfSearchResults);
+            //console.log("Last Search results:",globalData.lastSetOfSearchResults);
             GeneralDrawing.drawSearchResults(globalData,globalData.lastSetOfSearchResults);
             
             //draw inspect data
