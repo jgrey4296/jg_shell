@@ -10,20 +10,6 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
      @implements module:Commands/CommandTemplate
      */
     var reteCommands = {
-        /** Clear the rete net 
-            @param globalData
-            @param values
-        */
-        "clear" : function(globalData,values){
-            console.log("Clearing RETE");
-            if(values[0] === 'complete'){
-                globalData.shell.clearRete();
-            }if(values[0] === 'history'){
-                globalData.shell.clearHistory();
-            }else{
-                globalData.shell.clearProposedActions();
-            }
-        },
         /** Draw rete results 
             @param globalData
             @param values
@@ -117,8 +103,6 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
             @param values
         */
         "clearRete" : function(globalData,values){
-            //cleanup asserted wmeids
-            _.values(globalData.shell.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
             globalData.shell.clearRete();
 
         },
@@ -138,8 +122,8 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
                 "assert": [ "", " Assert all nodes of tag.type.wme"],
                 "compile" : [ "", " Compile all rules of tag.type.rule into the rete net"],
                 "ruleStep" : [ "", "Increment the rete net time by one, performing scheduled assertions/retractions"],
-                "clear" : [ "[complete]", " Clear wmes from the rete net, or reinit the net completely"],
                 "printRete" : ["", "Print to console the retenet object for debugging"],
+                "clearRete" : ["","Reset the rete net, removing wmeId's from any asserted nodes"]
             };
         },
     };
