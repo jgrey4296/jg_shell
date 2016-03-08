@@ -99,6 +99,13 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
            @type { Simulation }
         */
         this.simulation = null;
+
+        /**
+           Rete Logged output
+           @type {Array.<String>}
+        */
+        this.reteOutput = [];
+        
     };
     
     /*** @borrows module:shell_prototype_main as shell_prototype */

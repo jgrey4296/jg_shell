@@ -17,8 +17,10 @@ define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
         "draw" : function(globalData,values){
             if(ReteDraw.dummy === undefined){
                 if(globalData.modeState.rete.log){
+                    //TODO: wrap in nodes to allow minimisation
+                    
                     //Draw output
-                    ReteDraw.drawLog(globalData,globalData.reteOutput);
+                    ReteDraw.drawLog(globalData,globalData.shell.reteOutput);
                 }else{
                     //Draw Proposed Actions
                     ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));

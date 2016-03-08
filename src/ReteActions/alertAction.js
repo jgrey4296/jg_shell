@@ -31,7 +31,7 @@ define([],function(){
                 
             },
             perform : function(proposedAction,reteNet){
-                context.reteOutput.push(proposedAction.payload.message);
+                context.shell.reteOutput.push(proposedAction.payload.message);
                 
             }
         };

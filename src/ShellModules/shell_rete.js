@@ -16,6 +16,7 @@ define(['underscore','Rete'],function(_,Rete){
      */
     ShellPrototype.clearRete = function(){
         _.values(this.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
+        this.reteOutput = [];
         this.reteNet = new Rete(this._reteNetBackupActions);
     };
     /**
