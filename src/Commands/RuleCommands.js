@@ -173,13 +173,6 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 }
             }
         },
-        /** Rename the rule 
-            @param globalData
-            @param values
-        */
-        "rename" : function(globalData,values){
-            globalData.shell.rename(values[0]);
-        },
         /** infer ?
             @param globalData
             @param values

@@ -66,7 +66,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
             newG.append("rect").attr("id","EnclosingRect")
                 .attr("width",10)
                 .attr("height", globalData.usableHeight * 0.8)
-                .style("fill","red")
+                .style("fill",globalData.colours.greyTwo)
                 .attr("rx",5).attr("ry",5);
         });
 
@@ -115,7 +115,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
             newG.append("rect")
                 .attr("width",10)
                 .attr("height",globalData.usableHeight*0.8)
-                .style("fill","red")
+                .style("fill",globalData.colours.greyTwo)
                 .attr("rx",5).attr("ry",5)
                 .attr("transform","translate(-10,0)");
         });

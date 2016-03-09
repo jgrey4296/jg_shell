@@ -170,9 +170,9 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             @param globalData
             @param values
          */
-        "rename" : function(globalData,values){
+        "rename" : function(globalData,values,sourceId){
             //rename -> rename
-            globalData.shell.rename(values[0]);
+            globalData.shell.rename(values[0],sourceId);
         },
         /**
            Copy a node to be a child of a different node
