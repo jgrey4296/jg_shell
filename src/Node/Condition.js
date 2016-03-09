@@ -106,8 +106,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
         //the source node
         lists.push({
-            name : "SOURCE:",
-            values : [this.expectationNode]
+            name : `SOURCE ID: ${this.expectationNode}`
         });
 
         //tags:

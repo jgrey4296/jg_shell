@@ -141,7 +141,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         });
 
         lists.push({
-            name : `Produces: ${this.expectationNode}`,
+            name : `PROTOTYPE ID: ${this.expectationNode}`,
         });
 
         lists.push({
