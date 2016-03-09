@@ -106,7 +106,7 @@ define(['underscore','d3'],function(_,d3){
        Draws a single node
        @function
        @param container
-       @param {Array.<{name:String,values:[]}>} nodeData
+       @param nodeData Array.<Object> Object=name:String,values:[]
        @param groupData
        @param offsetName       
     */
@@ -165,7 +165,7 @@ define(['underscore','d3'],function(_,d3){
     /**
        Draw Data of a node
        @function
-       @param containerSelection Where each datum is {name: String, values : []}
+       @param containerSelection Where each datum =name: String, values : []
        @param groupData
      */
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
@@ -246,7 +246,7 @@ define(['underscore','d3'],function(_,d3){
        @param container in which to draw
        @param {Array.<Object>} data 
        @param commonData The settings object
-       @param descriptionFunc d=>[ {name : String, values : []} ]
+       @param descriptionFunc d=>[ |name : String, values : []| ]
      */
     DrawUtils.drawGroup = function(container,data,commonData,descriptionFunction){
         //console.log("Group draw:",container,data);
