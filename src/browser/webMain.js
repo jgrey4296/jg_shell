@@ -129,6 +129,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
          */
         colours : {
             grey : d3.rgb(19,21,27),
+            greyTwo : d3.rgb(40,40,40),
             text : d3.rgb(237,255,255),
             textBlue : d3.rgb(98,188,238),
             textGrey : d3.rgb(132,146,154),

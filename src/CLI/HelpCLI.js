@@ -58,7 +58,7 @@ define(['underscore','d3'],function(_,d3){
                 .attr("id","helpWindow");
             
             helpWindow.append("rect")
-                .style("fill",globalData.colours.darkBlue)
+                .style("fill",globalData.colours.greyTwo)
                 .attr("width",globalData.usableWidth * 0.8)
                 .attr("height",globalData.helpSize)
                 .attr("rx",10)
@@ -69,7 +69,7 @@ define(['underscore','d3'],function(_,d3){
 
         boundSelection.enter()
             .append("text")
-            .style("text-anchor","left")
+            .style("text-anchor","start")
             .style("fill",globalData.colours.textBlue);
         
         boundSelection.attr("transform",function(d,i){
