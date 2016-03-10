@@ -9,6 +9,11 @@ if(typeof define !== 'function'){
 define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     "use strict";
 
+        var allowableConditionTypes = [
+            "positive","negative","negConjCondition"
+        ];
+
+    
     /**
        @constructor
        @augments Node/GraphNode
@@ -16,8 +21,8 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
      */
     var Condition = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"condition",{},overRideId);
-        this.tags.isPositive = true;
-        this.tags.isNegative = false;
+        this.tags.conditionType = 'positive';
+
 
         //Test objects of form: { field: "", operator: "", value : "" }
         /** Constant Tests
@@ -33,10 +38,27 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             @type {Int}
          */
         this.expectationNode = null;
+
+        /**
+           Sub-conditions, for when the condition is a negated conjunctive condition
+        */
+        this.conditions = {};
     };
     Condition.prototype = Object.create(GraphNode.prototype);
     Condition.constructor = Condition;
 
+    /**
+       Prefered way to set the condition type, safely
+       @param {String} conditionType
+    */
+    Condition.prototype.setConditionType = function(conditionType){
+        if(allowableConditionTypes.indexOf(conditionType) !== -1){
+            this.tags.conditionType = conditionType;
+        }else{
+            throw new Error("Unrecognised condition type");
+        }
+    };
+    
     /** Modify a constant test in the condition 
         @param testId
         @param testField
@@ -118,6 +140,9 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         
         return lists;
     };
+
+
+
     
     return Condition;
 });
