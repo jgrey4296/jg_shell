@@ -42,33 +42,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             })
         };
 
-        //Add a 'Bindings' field to the drawn rule, of all conditions (and rules conditions) bindings
-        //1)get initial conditions:
-        var initialList = _.keys(ruleToDraw.conditions).map(d=>globalData.shell.getNode(d)),
-            foundSet = new Set(initialList.map(d=>d.id)),
-            //split into rules and conditions:
-            rules = _.filter(initialList,d=>d instanceof globalData.shell.getCtor('rule')),
-            conditions = _.reject(initialList,d=>d instanceof globalData.shell.getCtor('rule'));
-
-        //Get all conditions, even of rules
-        while(rules.length > 0){
-            var currRule = rules.shift(),
-                ruleConditions = _.keys(currRule.conditions).map(d=>globalData.shell.getNode(d));
-            //record the action has been found:
-            foundSet.add(currRule.id);
-            ruleConditions.forEach(function(d){
-                if(!foundSet.has(d.id) && d instanceof globalData.shell.getCtor('condition')){
-                    conditions.push(d);
-                    foundSet.add(d.id);
-                }else if(!foundSet.has(d.id) && d instanceof globalData.shell.getCtor('rule')){
-                    rules.push(d);
-                    foundSet.add(d.id);
-                }
-            });
-        }
-
         //Get the bindings for all the conditions:
-        var allBindings = Array.from(new Set(_.flatten(conditions.map(d=>_.keys(d.bindings)))));
+        var allBindings = globalData.shell.getConditionBindings(ruleToDraw);
         //store the result:
         standardData.ruleDescriptions.push({
             name : "Bindings",
