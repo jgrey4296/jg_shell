@@ -103,10 +103,10 @@ define(['underscore','d3'],function(_,d3){
 
 
     /**
-       Draws a single node
+       Draws a single node. Node Data can include color fields
        @function
        @param container
-       @param nodeData Array.<Object> Object=name:String,values:[]
+       @param {Array.<{name : String, values : Array}>} nodeData
        @param groupData
        @param offsetName       
     */
@@ -181,10 +181,11 @@ define(['underscore','d3'],function(_,d3){
                 if(cur.select("rect").empty()){
                     cur.append("rect");
                 }
+                var colour = d.background ? groupData.globalData.colours[d.background] : groupData.globalData.colours.lightBlue;
                 var rect = cur.select("rect")
                     .attr("transform",`translate(${-groupData.halfCol},-5)`)
                     .attr("width",groupData.colWidth)
-                    .style("fill",groupData.globalData.colours.lightBlue)
+                    .style("fill",colour)
                     .attr("height",0)
                     .attr("rx",10)
                     .attr("ry",10);

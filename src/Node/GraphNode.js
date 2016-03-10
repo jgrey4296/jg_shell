@@ -8,7 +8,14 @@ if(typeof define !== 'function'){
 */
 define(['underscore'],function(_){
     "use strict";
-    var nextId = 0;
+    var nextId = 0,
+        //for a field name 'a' lookup a colour in global data called 'b'
+        colourMap = {
+            'values' : 'data',
+            'tags' : 'tags',
+            'expectedBy' : 'link',
+            'producedBy' : 'link'
+        };
     /**
        A node of the overall graph
        @constructor
@@ -140,22 +147,48 @@ define(['underscore'],function(_){
     GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
         if(this.minimised){
             return [{
-                name : this.toString() + "..."
+                name : this.toString() + "...",
+                background : 'title'
             }];
         }
         //returns [{name: "", values : [] }]
         //Get all fields
-        var lists = fieldNameList.map(function(d){
-            //as a simple { name : "key : value" } object
-            if(typeof this[d] === "string" || typeof this[d] === 'number'){
-                return { name : `${d} : ${this[d]}` };
-            }
-            //as a { name : key, values : ["$key : $value"] } object
-            return {
-                name: d,
-                values : _.keys(this[d]).sort().map(e=>`${e} : ${this[d][e]}`)
-            };
-        },this);
+        var lists = [];
+        lists.push({
+            name : this.toString(),
+            background : 'title'
+        });
+
+        lists.push({
+            name : "Tags",
+            values : _.pairs(this.tags).map(d=>d.join(" : ")),
+            background : 'tags'
+        });
+
+        lists.push({
+            name : "Values",
+            values : _.pairs(this.values).map(d=>d.join(" : ")),
+            background : 'data'
+        });
+
+        lists.push({
+            name : "Annotations",
+            values : _.pairs(this.annotations).map(d=>d.join(" : ")),
+            background : "lightBlue"
+        });
+
+        lists.push({
+            name : "ExpectedBy",
+            values : _.pairs(this.expectedBy).map(d=>d.join(" : ")),
+            background : "link",
+        });
+
+        lists.push({
+            name : "ProducedBy",
+            values : _.pairs(this.producedBy).map(d=>d.join(" : ")),
+            background : "link"
+        });
+        
         return lists;
     };
 
@@ -165,7 +198,9 @@ define(['underscore'],function(_){
        @returns {Object} {name: string}
      */
     GraphNode.prototype.getShortDescription = function(){
-        return {name :`(${this.id}) ${this.name} : ${this.tags.type}` };
+        return { name :`(${this.id}) ${this.name} : ${this.tags.type}`,
+                 background : 'title'
+               };
     };
     
     

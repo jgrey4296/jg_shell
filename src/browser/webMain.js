@@ -138,6 +138,17 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
             lightBlue: d3.rgb(53,99,142),
             green : d3.rgb(108,141,7),
 
+            //from trapdoor palette:
+            title : d3.rgb("#da7346"),
+            test : d3.rgb("#927a82"),
+            binding : d3.rgb("#6cbd6c"),
+            link : d3.rgb("#684828"),
+            tags : d3.rgb("#383820"),
+            data : d3.rgb("#887668"),
+            arith : d3.rgb("#308888"),
+            regex : d3.rgb("#7a2a1e"),
+            priority : d3.rgb("#cf8f8e"),
+            
             //Specifics?
             //node
             //rule

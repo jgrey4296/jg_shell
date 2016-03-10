@@ -32,14 +32,14 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
                     return [node.getShortDescription()];
                 }
             }),
-            actionData : _.keys(ruleToDraw.actions).map(function(d){
+            actionData : ruleToDraw.actions ? _.keys(ruleToDraw.actions).map(function(d){
                 var node = globalData.shell.getNode(d);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();
                 }else{
                     return [node.getShortDescription()];
                 }
-            })
+            }) : []
         };
 
         //Get the bindings for all the conditions:
@@ -47,7 +47,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         //store the result:
         standardData.ruleDescriptions.push({
             name : "Bindings",
-            values : allBindings
+            values : allBindings,
+            background : 'binding'
         });
 
         console.log("Final description:",standardData.ruleDescriptions);

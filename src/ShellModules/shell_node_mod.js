@@ -94,8 +94,8 @@ define(['underscore'],function(_){
     ShellPrototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
-        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
-            throw new Error("Trying to modify a rule when not located at a rule");
+        if(source.tags.type !== 'rule' && (source.tags.type === 'condition' && source.tags.conditionType !== 'negConjCondition')){
+            throw new Error("Trying to modify a rule when not located at a rule or condition");
         }
         if(source.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");

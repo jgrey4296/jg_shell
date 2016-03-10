@@ -107,45 +107,54 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     Action.prototype.getDescriptionObjects = function(){
         if(this.minimised){
             return [{
-                name : this.toString() + "..."
+                name : this.toString() + "...",
+                background : 'title'
             }];
         }
         var lists = [];
         lists.push({
             name : this.toString(),
+            background : 'title'            
         });
 
         lists.push({
             name : "Tags",
-            values : _.pairs(this.tags).map(d=>d.join(" : "))
+            values : _.pairs(this.tags).map(d=>d.join(" : ")),
+            background : 'tags'
         });
 
         lists.push({
             name : "Data",
-            values : _.pairs(this.values).map(d=>d.join(" : "))
+            values : _.pairs(this.values).map(d=>d.join(" : ")),
+            background : 'data'
         });
         
         lists.push({
             name : "Arithmetic Actions",
-            values : _.keys(this.arithmeticActions).map(d=>`${d} ${this.arithmeticActions[d][0]} ${this.arithmeticActions[d][1]}`)
+            values : _.keys(this.arithmeticActions).map(d=>`${d} ${this.arithmeticActions[d][0]} ${this.arithmeticActions[d][1]}`),
+            background : 'arith'
         });
 
         lists.push({
             name: "Regex Actions",
-            values : _.keys(this.regexActions).map(d=>`${d} ~= /${this.regexActions[d][0]}/${this.regexActions[d][2]}/${this.regexActions[d][1]}`)
+            values : _.keys(this.regexActions).map(d=>`${d} ~= /${this.regexActions[d][0]}/${this.regexActions[d][2]}/${this.regexActions[d][1]}`),
+            background : 'regex'
         });
 
         lists.push({
             name: "Timing",
-            values : _.keys(this.timing).map(d=>`${d} : ${this.timing[d]}`)
+            values : _.keys(this.timing).map(d=>`${d} : ${this.timing[d]}`),
+            background : 'priority'
         });
 
         lists.push({
             name : `PROTOTYPE ID: ${this.expectationNode}`,
+            background : 'link'            
         });
 
         lists.push({
             name : `Priority: ${this.priority}`,
+            background : 'priority'
         });
 
         return lists;

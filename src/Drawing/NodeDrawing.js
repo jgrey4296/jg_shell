@@ -24,7 +24,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             halfWidth : globalData.halfWidth(),
             globalData : globalData,
             //Get Data from the node:
-            nodeDescriptions : nodeToDraw.getDescriptionObjects("id name values tags annotations expectedBy producedBy".split(" ")),
+            nodeDescriptions : nodeToDraw.getDescriptionObjects(),
             childrenData : _.keys(nodeToDraw.children).map(d=>globalData.shell.getNode(d)),
             parentsData : _.keys(nodeToDraw.parents).map(d=>globalData.shell.getNode(d)),
         };
