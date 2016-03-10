@@ -1,4 +1,4 @@
-
+/* jshint esversion : 6 */
 define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],function(d3,util,_,RuleDrawing,NodeDrawing){
     "use strict";
 
@@ -57,11 +57,13 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 }
                 globalData.shell.addNode(null,'conditions','condition',values,sourceId);
             }else if(type === "action"){
-                globalData.shell.addAction(values,sourceId);
+                globalData.shell.addNode(null,'actions','action',values,sourceId);
             }else if(type === "negCondition"){
-                globalData.shell.addNode(null,'conditions','negCondition',values,sourceId);
+                let newNode = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+                newNode.setConditionType('negative');
             }else if(type === "negConjCondition"){
-                globalData.shell.addNode(null,'conditions','negConjCondition',values,sourceId);
+                let newNode = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+                newNode.setConditionType('negConjCondition');
             }
         },
         /** if - a short way to define conditions 
