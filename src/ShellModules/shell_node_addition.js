@@ -46,6 +46,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
             name = type || "anon";
             console.warn("making an anonymous node");
         }
+        
         //validate input:
         if(source[target] === undefined){ 
             console.warn("Creating target: ",target,source);
@@ -53,6 +54,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         }
         type = type || "GraphNode";
 
+        //Get the constructor
         var ctor = getCtor(type),
             newNode;
         
@@ -85,16 +87,6 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
             relationObjects = relationObjects.concat(obj.getRelationObjects());
             //add the obj to allNodes
             this.allNodes[obj.id] = obj;
-        }
-        
-
-        //If the cwd WAS disconnected in some way,
-        //remove it from that designation
-        if(source[target][this.disconnected.noParents.id]){
-            this.rm(this.disconnected.noParents.id,source.id);
-        }
-        if(source[target][this.disconnected.noChildren.id]){
-            this.rm(this.disconnected.noChildren.id,source.id);                
         }
         
         return newNode;        
@@ -130,25 +122,6 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         var condition = this.allNodes[conditionId];
         //Create the test
         condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
-    };
-
-    /**
-       Add a new action to current rule
-       @method
-       @param valueArray The names of actions to create
-       @param sourceId
-       @return newActions an array of all actions created
-    */
-    ShellPrototype.addAction = function(valueArray,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(source.tags.type !== 'rule'){
-            throw new Error("Trying to modify a rule when not located at a rule");
-        }
-        var name = valueArray.shift() || "anonAction";
-        
-        //add an action node to cwd.actions
-        var newAction = this.addNode(name,'actions','action',valueArray,sourceId);
-        return newAction;
     };
 
     /**

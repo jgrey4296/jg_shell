@@ -54,7 +54,7 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.assertWMEs = function(nodeIds){
         //get all the wmes
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
-        nodes = nodeIds.map(d=>this.getNode(d)),
+        var nodes = nodeIds.map(d=>this.getNode(d)),
             wmes = nodes.filter(d=>d.tags.fact !== undefined).filter(d=>d.wmeId === undefined);
         //assert them
         this.assertWMEList(wmes);
