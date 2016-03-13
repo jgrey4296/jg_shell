@@ -104,7 +104,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Adding test:",conditionId,testParams,source.conditions);
         //check you're in a rule
-        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
+        if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to modify a rule when not located at a rule");
         }
         //check the specified condition exists
