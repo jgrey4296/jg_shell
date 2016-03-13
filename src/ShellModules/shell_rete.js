@@ -17,7 +17,8 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.clearRete = function(){
         _.values(this.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
         this.reteOutput = [];
-        this.reteNet = new Rete(this._reteNetBackupActions);
+        this.reteNet.cleanup();
+        //this.reteNet = new Rete(this._reteNetBackupActions);
     };
     /**
        Retrieve all defined rules, add them to the rete net
@@ -70,14 +71,9 @@ define(['underscore','Rete'],function(_,Rete){
         var shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);
-            }),
-            wmes = nodes.filter(function(node){
-                return node.tags.fact !== undefined;
-            }).filter(function(node){
-                return node.wmeId !== undefined;
-            });
-
-        this.retractWMEList(wmes);
+            }).filter(d=>d.wmeId !== undefined);
+        
+        this.retractWMEList(nodes);
     };
     
     /**
@@ -111,9 +107,8 @@ define(['underscore','Rete'],function(_,Rete){
             throw new Error("Retractions should be in an array");
         }
         nodes.forEach(function(node){
-            //Rete.retractWME_Immediately(node,this.reteNet);
-            //TODO: should this be node.wmeID?
-            this.reteNet.retractWME(node);
+            this.reteNet.retractWME(node.wmeId);
+            delete node.wmeId;
         },this);
     };
 
