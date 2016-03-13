@@ -94,7 +94,7 @@ define(['underscore'],function(_){
     ShellPrototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
-        if(source.tags.type !== 'rule' && (source.tags.type === 'condition' && source.tags.conditionType !== 'negConjCondition')){
+        if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to modify a rule when not located at a rule or condition");
         }
         if(source.conditions[conditionId] === undefined){
@@ -237,7 +237,7 @@ define(['underscore'],function(_){
     ShellPrototype.setTest = function(conditionId,testId,field,op,value,sourceId){
         console.log(conditionId,testId,field,op,value,sourceId);
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(source.tags.type !== 'rule' && source.tags.type !== 'negConjCondition'){
+        if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to set test on a non-rule node");
         }
         if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
