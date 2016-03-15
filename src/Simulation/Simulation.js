@@ -22,7 +22,7 @@ define(['underscore'],function(_){
         this.turn = 0;
         this.maxTurns = maxTurns || 10;
         
-        //compile the reteNet using the rules in the institution
+        //compile the reteNet using the rules in the graph (todo: just the institution)
         this.shell.compileRete();
         //assert starting characters
         this.shell.assertWMEList(this.characterPool);

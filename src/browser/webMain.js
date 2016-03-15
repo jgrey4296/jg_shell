@@ -148,6 +148,8 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
             arith : d3.rgb("#308888"),
             regex : d3.rgb("#7a2a1e"),
             priority : d3.rgb("#cf8f8e"),
+
+            warning : d3.rgb("red"),
             
             //Specifics?
             //node

@@ -181,7 +181,7 @@ define(['underscore','d3'],function(_,d3){
                 if(cur.select("rect").empty()){
                     cur.append("rect");
                 }
-                var colour = d.background ? groupData.globalData.colours[d.background] : groupData.globalData.colours.lightBlue;
+                var colour = d.background && groupData.globalData.colours[d.background] ? groupData.globalData.colours[d.background] : groupData.globalData.colours.lightBlue;
                 var rect = cur.select("rect")
                     .attr("transform",`translate(${-groupData.halfCol},-5)`)
                     .attr("width",groupData.colWidth)

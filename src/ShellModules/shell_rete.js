@@ -28,7 +28,7 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.compileRete = function(nodeIds){
         //take all defined rules from the provided list, or find all in the graph
         if(nodeIds === undefined) { nodeIds = _.keys(this.allNodes); }
-        var nodes  = nodeIds.map(d=>this.getNode(d)),
+        let nodes  = nodeIds.map(d=>this.getNode(d)),
             rules = nodes.filter(d=>d.tags.type==='rule');
         
         console.log("Compiling rules:",rules);
@@ -36,8 +36,7 @@ define(['underscore','Rete'],function(_,Rete){
         //returning the action nodes of the net
         this.allActionNodes = rules.map(function(d){
             console.log("Adding rule:",d);
-            //var actionNode = Rete.addRule(d.id,this.reteNet,this.allNodes);
-            var actionNode = this.reteNet.addRule(d.id,this.allNodes);
+            let actionNode = this.reteNet.addRule(d.id,this.allNodes);
             //TODO: store the returned node inside the shell's nodes?
             d.actionNodeId = actionNode.id;
             return {"rule": d, "actions" :actionNode};

@@ -101,7 +101,7 @@ define(['underscore'],function(_){
     ShellPrototype.getConditionBindings = function(rule){
         //Add a 'Bindings' field to the drawn rule, of all conditions (and rules conditions) bindings
         //1)get initial conditions:
-        var initialList = _.keys(rule.conditions).map(d=>this.getNode(d)),
+        let initialList = _.keys(rule.conditions).map(d=>this.getNode(d)),
             foundSet = new Set(initialList.map(d=>d.id)),
             //split into rules and conditions:
             rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
@@ -109,7 +109,7 @@ define(['underscore'],function(_){
 
         //Get all conditions, even of rules
         while(rules.length > 0){
-            var currRule = rules.shift(),
+            let currRule = rules.shift(),
                 ruleConditions = _.keys(currRule.conditions).map(d=>this.getNode(d));
             //record the action has been found:
             foundSet.add(currRule.id);
@@ -121,14 +121,55 @@ define(['underscore'],function(_){
                     rules.push(d);
                     foundSet.add(d.id);
                 }
-            });
+            },this);
         }
 
         //Get the bindings for all the conditions:
-        var allBindings = Array.from(new Set(_.flatten(conditions.map(d=>_.keys(d.bindings)))));
+        let allBindings = Array.from(new Set(_.flatten(conditions.map(d=>_.keys(d.bindings)))));
         return allBindings;
     };
-    
+
+
+    /**
+       Get the bindings for all actions
+     */
+    ShellPrototype.getActionBindings = function(rule){
+        let initialList = _.keys(rule.actions).map(d=>this.getNode(d)),
+            foundSet = new Set(initialList.map(d=>d.id)),
+            rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
+            actions = _.reject(initialList,d=>d instanceof this.getCtor('rule'));
+
+        while(rules.length > 0){
+            let currRule = rule.shift(),
+                ruleActions = _.keys(currRule.actions).map(d=>this.getNode(d));
+            foundSet.add(currRule.id);
+            ruleActions.forEach(function(d){
+                if(!foundSet.has(d.id) && d instanceof this.getCtor('action')){
+                    actions.push(d);
+                    foundSet.add(d.id);
+                }else if(!foundSet.has(d.id) && d instanceof this.getCtor('rule')){
+                    rules.push(d);
+                    foundSet.add(d.id);
+                }
+            },this);
+
+        }
+
+        //get all the binding names from all values in the action:
+        let allValues = _.flatten(actions.map(d=>_.values(d.values))),
+            varRegex = /\${(\w+)}/g,
+            extractedVarNames = new Set();
+
+        allValues.forEach(function(d){
+            let vMatch = varRegex.exec(d);
+            while(vMatch !== null){
+                extractedVarNames.add(vMatch[1]);
+                vMatch = varRegex.exec(d);
+            }
+        });
+        
+        return Array.from(extractedVarNames);
+    };
     
     return ShellPrototype;
 });

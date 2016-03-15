@@ -14,7 +14,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        @param node
     */
     RuleDrawInterface.drawRule = function(globalData,ruleToDraw){
-        var standardData = {
+        let standardData = {
             nodeDataSeparator : 10,
             groupDataSeparator : 10,
             widthAddition : 10,
@@ -25,7 +25,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             /** Get Data from the node: */
             ruleDescriptions : ruleToDraw.getDescriptionObjects("id name tags annotations".split(" ")),
             conditionData : _.keys(ruleToDraw.conditions).map(function(d){
-                var node = globalData.shell.getNode(d);
+                let node = globalData.shell.getNode(d);
                 if(node instanceof globalData.shell.getCtor('condition')){
                     return node.getDescriptionObjects();
                 }else {
@@ -33,7 +33,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
                 }
             }),
             actionData : ruleToDraw.actions ? _.keys(ruleToDraw.actions).map(function(d){
-                var node = globalData.shell.getNode(d);
+                let node = globalData.shell.getNode(d);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();
                 }else{
@@ -43,13 +43,34 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         };
 
         //Get the bindings for all the conditions:
-        var allBindings = globalData.shell.getConditionBindings(ruleToDraw);
-        //store the result:
+        let allConditionBindings = globalData.shell.getConditionBindings(ruleToDraw),
+            allActionBindings = globalData.shell.getActionBindings(ruleToDraw);
+            
+        //store the results:
         standardData.ruleDescriptions.push({
-            name : "Bindings",
-            values : allBindings,
+            name : "Condition Bindings",
+            values : allConditionBindings,
             background : 'binding'
         });
+
+        standardData.ruleDescriptions.push({
+            name : "Action Bindings",
+            values : allActionBindings,
+            background : 'binding'
+        });
+
+        //Get the mismatches:
+        let misMatchSet = _.difference(allActionBindings,allConditionBindings);
+        if(misMatchSet.length > 0){
+            standardData.ruleDescriptions.push({
+                name : "MISMATCHES",
+                values : misMatchSet,
+                background : "warning"
+            });
+        }
+
+        
+        
 
         console.log("Final description:",standardData.ruleDescriptions);
 
