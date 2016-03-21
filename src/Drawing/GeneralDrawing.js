@@ -32,7 +32,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         var stashContainer = DrawUtils.createOrShare("stashContainer",undefined,function(selection,name){
             //setup the container here
             selection.attr("transform",function(){
-                return "translate(" + (commonData.halfWidth) + "," + (globalData.usableHeight * 0.6 ) + ")";
+                return "translate(" + (commonData.halfWidth) + "," + (globalData.usableHeight * 0.8 ) + ")";
             });
         });
         DrawUtils.drawGroup(stashContainer,stashedList,commonData);

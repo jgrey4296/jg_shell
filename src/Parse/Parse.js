@@ -1,7 +1,7 @@
 /**
    tracery style parsing/text generation
-   Assumes objects using $ to denote rules
-   ie: { start: "$greeting", greeting: "hello" };
+   Assumes objects are of the form ${name} to denote rules
+   ie: { start: "${greeting}", greeting: "hello" };
    @module Parse
 */
 define(['underscore'],function(_){
