@@ -4,11 +4,14 @@ if(typeof define !== 'function'){
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
 
-    var Event = function(name,parent,type,relations,overRideId){
-        GraphNode.call(this,name,parent,'event',{},overRideId);
+    var FSM = function(name,parent,type,relations,overRideId){
+        GraphNode.call(this,name,parent,'fsm',{},overRideId);
+        this.states = {};
+        this.events = {};
+        //token generation from values?
     };
-    Event.prototype = Object.create(GraphNode.prototype);
-    Event.constructor = Event;
+    FSM.prototype = Object.create(GraphNode.prototype);
+    FSM.constructor = Event;
 
-    return Event;
+    return FSM;
 });

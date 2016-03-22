@@ -6,7 +6,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var State = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'state',{},overRideId);
+        this.parentFSM = null;
         this.conditions = {};
+        //actions to perform on entry?
         this.actions = {};
         this.rules = {};
         this.events = {};

@@ -105,7 +105,7 @@ define(['Rete','underscore','./Node/GraphNode','./Node/Constructors','./utils','
            @type {Array.<String>}
         */
         this.reteOutput = [];
-        
+
     };
     
     /*** @borrows module:shell_prototype_main as shell_prototype */

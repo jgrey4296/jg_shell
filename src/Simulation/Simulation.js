@@ -28,7 +28,17 @@ define(['underscore'],function(_){
         this.shell.assertWMEList(this.characterPool);
         //assert other starting facts
         var startingFacts = _.values(this.shell.allNodes).filter(d=>d.tags.fact!==undefined);
-        this.shell.assertWMEList(startingFacts);        
+        this.shell.assertWMEList(startingFacts);
+
+        /**
+           Store instantiatedFSMs
+           key:character
+           an fsm is instantiated from a token containing appropriate bindings,
+           passed into an fsm constructor, along with node references
+           value: the fsm
+        */
+        this.instantiatedFSMs = new Map();
+        
     };
 
     /**
