@@ -10,7 +10,7 @@
    @requires module:Commands/SimulationCommands
    @requires module:Commands/TraceCommands
  */
-define(['Commands/BookMarkCommands','Commands/GeneralCommands','Commands/NodeCommands','Commands/ReteCommands','Commands/RuleCommands','Commands/SimulationCommands','Commands/TraceCommands'],function(bkmkC,genC,nodeC,reteC,ruleC,simC,traceC){
+define(['Commands/BookMarkCommands','Commands/GeneralCommands','Commands/NodeCommands','Commands/ReteCommands','Commands/RuleCommands','Commands/SimulationCommands','Commands/TraceCommands','Commands/FSMCommands'],function(bkmkC,genC,nodeC,reteC,ruleC,simC,traceC,FSMC){
 
     /** @alias module:Commands/Command_Aggregate */
     return {
@@ -21,6 +21,7 @@ define(['Commands/BookMarkCommands','Commands/GeneralCommands','Commands/NodeCom
         "sim"  : simC,
         "bookmark" : bkmkC,
         "trace" : traceC,
+        "fsm" : FSMC
     };
 });
 
