@@ -13,8 +13,6 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             "positive","negative","negConjCondition"
         ];
 
-
-    
     /**
        @constructor
        @augments Node/GraphNode
@@ -173,6 +171,19 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     };
 
 
+    Condition.prototype.getActiveLinks = function(keyList){
+        if(keyList === undefined) { keyList = ['children','parents','conditions']; }
+        //take a keylist, return an array of all ids in those fields
+        let members = new Set();
+        keyList.forEach(function(key){
+            if(typeof this[key] !== 'object'){ return; }
+            _.keys(this[key]).forEach(d=>members.add(d));
+        },this);
+
+        return Array.from(members);
+
+
+    }
 
     
     return Condition;

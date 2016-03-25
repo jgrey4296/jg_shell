@@ -307,7 +307,25 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         "modes" : function(globalData,values){
             console.log("Available Modes:",_.keys(globalData.commands));
 
+        },
+        /**
+           debug command to check for disconnected nodes
+         */
+        "printDisconnected" : function(globalData,values){
+            //from the root, dfs for ['children','parents','conditions','actions','events','states',
+            //and expectation nodes etc, statepairs,
+            let allNodes = _.keys(globalData.shell.allNodes).map(d=>parseInt(d)),
+                foundNodes = globalData.shell.dfs('0'),
+                unconnected = _.difference(allNodes,foundNodes);
+
+            console.log("AllNodes:",allNodes);
+            console.log("Found Nodes:",foundNodes);
+            console.log("Unconnected:",unconnected);
+
+            
+
         }
+        
     };
     
     return GeneralCommands;

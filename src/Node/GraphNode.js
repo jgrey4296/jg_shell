@@ -264,6 +264,18 @@ define(['underscore'],function(_){
         return tempList;
     };
 
+    GraphNode.prototype.getActiveLinks = function(keyList){
+        if(keyList == undefined){ keyList = ["children",'parents']; }
+        //take a keylist, return an array of all ids in those fields
+        let members = new Set();
+        keyList.forEach(function(key){
+            if(typeof this[key] !== 'object'){ return; }
+            _.keys(this[key]).forEach(d=>members.add(d));
+        },this);
+
+        return Array.from(members);
+    };
+
     
     return GraphNode;
 });

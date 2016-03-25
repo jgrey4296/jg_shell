@@ -24,33 +24,25 @@ define(['underscore'],function(_){
        @return ids of nodes found
      */
     ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
-        if(focusFields === undefined) { focusFields = ['children']; }
         var shellRef = this,
             currentStack = [this.getNode(nodeId)],
-            visitedListOfIds = [];
+            visitedIds = new Set();
         
         //discover all applicable nodes
         while(currentStack.length > 0){
             var curr = currentStack.pop();
             //avoid duplicates and loops
-            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
-            //store
-            visitedListOfIds.push(curr.id);
+            if(visitedIds.has(curr.id)) { continue ; }
+               visitedIds.add(curr.id);
             //add children to search
-            focusFields.forEach(function(focusField){
-                currentStack = currentStack.concat(_.keys(curr[focusField]).map(function(d){
-                    return shellRef.getNode(d);
-                }).reverse());
-            });
+            currentStack = currentStack.concat(curr.getActiveLinks(focusFields).map(d=>shellRef.getNode(d)).reverse());
         }
 
         //apply the criteria function to the discovered nodes
         if(criteriaFunction !== undefined && typeof criteriaFunction === 'function'){
-            return visitedListOfIds.filter(function(d){
-                return criteriaFunction(this.getNode(d));
-            },shellRef);
+            return Array.from(visitedIds).filter(d=>criteriaFunction(shellRef.getNode(d)));
         }else{
-            return visitedListOfIds;
+            return Array.from(visitedIds);
         }        
     };
 
@@ -69,27 +61,20 @@ define(['underscore'],function(_){
         if(depth === undefined) { depth = 2; }
         var shellRef = this,
             currentQueue = [this.getNode(nodeId)],
-            visitedListOfIds = [];
+            visitedIds = new Set();
 
         while(currentQueue.length > 0){
             var curr = currentQueue.shift();
             //skip duplicates
-            if(visitedListOfIds.indexOf(curr.id) !== -1) { continue; }
-            visitedListOfIds.push(curr.id);
-            
-            focusFields.forEach(function(focusField){
-                _.keys(curr[focusField]).forEach(function(d){
-                    currentQueue.push(shellRef.getNode(d));
-                });
-            });
+            if(visitedIds.has(curr.id)){ continue; }
+            visitedIds.add(curr.id);
+            currnetQueue = currentQueue.concat(curr.getActiveLinks(focusFields).map(d=>shellRef.getNode(d)))
         }
         
         if(criteriaFunction !== undefined && typeof criteriaFunction === 'function'){
-            return visitedListOfIds.filter(function(d){
-                return criteriaFunction(this.getNode(d));
-            },shellRef);
+            return Array.from(visitedIds).filter(d=>criteriaFunction(shellRef.getNode(d)));
         }else{
-            return visitedListOfIds;
+            return Array.from(visitedIds);
         }
     };
 
