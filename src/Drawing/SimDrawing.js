@@ -13,27 +13,19 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     SimDrawInterface.drawLog = function(globalData,data){
         //add the title:
         data = ["Sim Output Log:"].concat(data);
-        console.log("data:",data);
-        var standardData = {
-            nodeDataSeparator : 10,
-            groupDataSeparator : 10,
-            widthAddition : 10,
-            colHeight : globalData.usableHeight - 150,
-            colWidth : globalData.calcWidth(globalData.usableWidth,1),
-            halfWidth : globalData.halfWidth(),
-            globalData : globalData,
-        };
-
-        //Add calculated offsets for parents and children:
-        standardData.halfCol = standardData.colWidth * 0.5;
+        //console.log("data:",data);
+        let commonData = new DrawUtils.CommonData(globalData,data,1);
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
 
         //main container
-        var mainContainer = DrawUtils.createOrShare("mainContainer"),
+        let mainContainer = DrawUtils.createOrShare("mainContainer"),
         //create the log column
             reteLog = DrawUtils.createOrShare("simLog",mainContainer)
-            .attr("transform",`translate(${standardData.halfWidth},100)`);
+            .attr("transform",`translate(${commonData.halfWidth},100)`);
         //draw the column
-        DrawUtils.drawGroup(reteLog,data,standardData,d=>([{name: d}]));
+        DrawUtils.drawGroup(reteLog,data,commonData,d=>([{name: d}]));
     };
 
     /**

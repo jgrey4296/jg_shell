@@ -1,11 +1,11 @@
+/* jshint esversion : 6 */
 define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     "use strict";
     /**
        The interface for drawing a rule
        @exports Drawing/RuleDrawing
-     */
-    var RuleDrawInterface = {},
-        columnNames = ["Conditions","Rule","Actions"];
+    */
+    var RuleDrawInterface = {};
 
     /**
        Main draw function for a standard rule instance of the shell
@@ -14,94 +14,87 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        @param node
     */
     RuleDrawInterface.drawRule = function(globalData,ruleToDraw){
-        let standardData = {
-            nodeDataSeparator : 10,
-            groupDataSeparator : 10,
-            widthAddition : 10,
-            colHeight : globalData.usableHeight - 150,
-            colWidth : globalData.calcWidth(globalData.usableWidth,columnNames.length),
-            halfWidth : globalData.halfWidth(),
-            globalData : globalData,
-            /** Get Data from the node: */
-            ruleDescriptions : ruleToDraw.getDescriptionObjects("id name tags annotations".split(" ")),
-            conditionData : _.keys(ruleToDraw.conditions).map(function(d){
-                let node = globalData.shell.getNode(d);
-                if(node instanceof globalData.shell.getCtor('condition')){
-                    return node.getDescriptionObjects();
-                }else {
-                    return [node.getShortDescription()];
-                }
-            }),
-            actionData : ruleToDraw.actions ? _.keys(ruleToDraw.actions).map(function(d){
+        let commonData = new DrawUtils.CommonData(globalData,null,3);
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
+        /* Get Data from the node= */
+        commonData.data = ruleToDraw.getDescriptionObjects("id name tags annotations".split(" "));
+        delete commonData.groupNodeTransform;
+
+        
+        //condition data transform
+        let conditionData = _.keys(ruleToDraw.conditions).map(function(d){
+            let node = globalData.shell.getNode(d);
+            if(node instanceof globalData.shell.getCtor('condition')){
+                return node.getDescriptionObjects();
+            }else {
+                return [node.getShortDescription()];
+            }
+        }),
+            //action data transform
+            actionData = ruleToDraw.actions ? _.keys(ruleToDraw.actions).map(function(d){
                 let node = globalData.shell.getNode(d);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();
                 }else{
                     return [node.getShortDescription()];
                 }
-            }) : []
-        };
+            }) : [],
+            // BINDING EXTRACTION:
+            allConditionBindings = globalData.shell.getConditionBindings(ruleToDraw),
+            allActionBindings = globalData.shell.getActionBindings(ruleToDraw),
+            //Get the mismatches:
+            misMatchSet = _.difference(allActionBindings,allConditionBindings);
 
-        //Get the bindings for all the conditions:
-        let allConditionBindings = globalData.shell.getConditionBindings(ruleToDraw),
-            allActionBindings = globalData.shell.getActionBindings(ruleToDraw);
-            
+        
         //store the results:
-        standardData.ruleDescriptions.push({
+        commonData.data.push({
             name : "Condition Bindings",
             values : allConditionBindings,
             background : 'binding'
         });
-
-        standardData.ruleDescriptions.push({
+        commonData.data.push({
             name : "Action Bindings",
             values : allActionBindings,
             background : 'binding'
         });
 
-        //Get the mismatches:
-        let misMatchSet = _.difference(allActionBindings,allConditionBindings);
         if(misMatchSet.length > 0){
-            standardData.ruleDescriptions.push({
+            commonData.data.push({
                 name : "MISMATCHES",
                 values : misMatchSet,
                 background : "warning"
             });
         }
-
-        
-        
-
-        console.log("Final description:",standardData.ruleDescriptions);
+        console.log("Final description:",commonData.data);
 
         //----
-        
-        //Add calculated offsets for conditions and actions
-        standardData.halfCol = standardData.colWidth * 0.5;
-        standardData.actionOffset = (standardData.halfWidth + standardData.colWidth) + standardData.halfCol;
-        standardData.conditionOffset = (standardData.halfWidth - (standardData.colWidth*2)) + standardData.halfCol;
+        //horizontal offsets of groups:
+        commonData.actionOffset = (commonData.halfWidth + commonData.colWidth) + commonData.halfCol;
+        commonData.conditionOffset = (commonData.halfWidth - (commonData.colWidth*2)) + commonData.halfCol;
 
-        //The group everything is in
-        var mainContainer = DrawUtils.createOrShare('mainContainer'),
+        //The master group:
+        let mainContainer = DrawUtils.createOrShare('mainContainer'),
             //Select (or create) and bind the node
             rule = DrawUtils.createOrShare('rule',mainContainer)
-            .attr("transform",`translate(${standardData.halfWidth},100)`),
+            .attr("transform",`translate(${commonData.halfWidth},100)`),
             conditionGroup = DrawUtils.createOrShare('conditions',mainContainer)
-	        .attr("transform",`translate(${standardData.conditionOffset},100)`),
+	        .attr("transform",`translate(${commonData.conditionOffset},100)`),
             actionGroup = DrawUtils.createOrShare('actions',mainContainer)
-    	    .attr("transform",`translate(${standardData.actionOffset},100)`);
+    	    .attr("transform",`translate(${commonData.actionOffset},100)`);
 
 
         //These are promises
-        DrawUtils.drawSingleNode(rule,standardData.ruleDescriptions,standardData);
-        //Draw the children:
-        DrawUtils.drawGroup(conditionGroup,standardData.conditionData,standardData);
-        DrawUtils.drawGroup(actionGroup,standardData.actionData,standardData);
-
+        DrawUtils.drawSingleNode(rule,commonData.data,commonData);
+        //Draw the conditions:
+        commonData.data = conditionData;
+        DrawUtils.drawGroup(conditionGroup,commonData);
+        //draw the actions:
+        commonData.data = actionData;
+        DrawUtils.drawGroup(actionGroup,commonData);
         DrawUtils.drawPath(globalData);
-        
     };
-
 
     /**
        Remove anything that drawNode creates

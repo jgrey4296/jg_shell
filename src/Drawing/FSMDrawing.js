@@ -1,23 +1,27 @@
+/* jshint esversion : 6 */
 define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     "use strict";
     /**
        A Template drawing module
     */
-    var TemplateDrawInterface = {};
+    var FSMDrawInterface = {};
 
-    TemplateDrawInterface.drawFSM = function(globalData,fsm){
-        console.log("Todo: drawFSM");
+    FSMDrawInterface.drawFSM = function(globalData,fsmNode){
+        let commonData = new DrawUtils.CommonData(globalData,fsmNode);
+        
     };
 
-    TemplateDrawInterface.drawEvent = function(globalData,event){
+    FSMDrawInterface.drawEvent = function(globalData,event){
         console.log("Todo: drawEvent");
     };
 
-    TemplateDrawInterface.drawState = function(globalData,state){
+    FSMDrawInterface.drawState = function(globalData,state){
         console.log("Todo: DrawState");
     };
+
+    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#fsm","#events","#states");
     
-    // TemplateDrawInterface.drawSearchResults = function(globalData,data){
+    // FSMDrawInterface.drawSearchResults = function(globalData,data){
     //     //console.log("Search Results:",data);
     //     var commonData = {
     //         nodeDataSeparator : 5,
@@ -62,5 +66,5 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     // };
 
 
-    return TemplateDrawInterface;
+    return FSMDrawInterface;
 });
