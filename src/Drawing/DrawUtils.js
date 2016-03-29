@@ -330,7 +330,7 @@ define(['underscore','d3'],function(_,d3){
                 });
             });
         }).catch(function(e){
-            console.warn("Group Data:",data);
+            console.warn("Group Data:",commonData.data);
             console.warn("Group Error:",e);
         });
     };
