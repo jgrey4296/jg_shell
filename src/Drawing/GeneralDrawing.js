@@ -15,27 +15,21 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     GeneralDrawInterface.drawStash = function(globalData,data){
         //console.log("Drawing Stash:",data);
         //note the reversal
-        var stashedList = data.map(d=>(d.toString())).reverse(),
-            commonData = {
-                nodeDataSeparator : 10,
-                groupDataSeparator : 10,
-                widthAddition : 10,
-                colHeight : globalData.usableHeight - 150,
-                colWidth : globalData.calcWidth(globalData.usableWidth,3),
-                halfWidth : globalData.halfWidth(),
-                globalData : globalData,
-                stashData : stashedList
-            };
-        commonData.halfCol = commonData.colWidth * 0.5;
+        let stashedList = data.map(d=>(d.toString())).reverse(),
+            commonData = new DrawUtils.CommonData(globalData,stashedList,3);
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
+        delete commonData.groupNodeTransform;
 
         //Create the stash container
-        var stashContainer = DrawUtils.createOrShare("stashContainer",undefined,function(selection,name){
+        let stashContainer = DrawUtils.createOrShare("stashContainer",undefined,function(selection,name){
             //setup the container here
             selection.attr("transform",function(){
                 return "translate(" + (commonData.halfWidth) + "," + (globalData.usableHeight * 0.8 ) + ")";
             });
         });
-        DrawUtils.drawGroup(stashContainer,stashedList,commonData);
+        DrawUtils.drawGroup(stashContainer,commonData);
     };
 
     /**
@@ -46,22 +40,11 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
      */
     GeneralDrawInterface.drawSearchResults = function(globalData,data){
         //console.log("Search Results:",data);
-        var commonData = {
-            nodeDataSeparator : 5,
-            groupDataSeparator : 2,
-            widthAddition : 0,
-            colHeight : globalData.usableHeight - 150,
-            colWidth : globalData.calcWidth(globalData.usableWidth,5),
-            halfWidth : globalData.halfWidth(),
-            globalData : globalData,
-            searchData : data,
-            //translate each groupNode over
-        };
-        commonData.halfCol = commonData.colWidth * 0.5;
-        commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
+        let commonData = new DrawUtils.CommonData(globalData,data);
 
+        
         //create the container, and the enclosing rectangle
-        var searchResults = DrawUtils.createOrShare("searchResults",undefined,function(newG,name){
+        let searchResults = DrawUtils.createOrShare("searchResults",undefined,function(newG,name){
             newG.attr("transform","translate("+ 0 +"," + (globalData.usableHeight * 0.1) + ")");
             newG.append("rect").attr("id","EnclosingRect")
                 .attr("width",10)
@@ -72,7 +55,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
 
         //Draw the group of data, with a header title
         //GraphNode -> description...
-        DrawUtils.drawGroup(searchResults,data,commonData,x=>[{name:x.toString()}])
+        DrawUtils.drawGroup(searchResults,commonData,x=>[{name:x.toString()}])
             .then(function(){
                 var rect = searchResults.select("#EnclosingRect");
                 rect.attr("width",10);
@@ -96,21 +79,15 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
      */
     GeneralDrawInterface.drawInspectResults = function(globalData,data){
         //console.log("Inspecting:",data);
-        var commonData = {
-            nodeDataSeparator : 10,
-            groupDataSeparator : 10,
-            widthAddition : 10,
-            colHeight : globalData.usableHeight - 150,
-            colWidth : globalData.calcWidth(globalData.usableWidth,5),
-            halfWidth : globalData.halfWidth(),
-            globalData : globalData,
-            searchData : data.map(d=>d instanceof Array ? d.join(": ") : d)
-        };
-        commonData.halfCol = commonData.colWidth * 0.5;
+        let commonData = new DrawUtils.CommonData(globalData,data.map(d=>d instanceof Array ? d.join(": ") : d));
+        
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
         commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*-0.5);
         
         //Create the container
-        var inspectResults = DrawUtils.createOrShare("inspectResults",undefined,function(newG,name){
+        let inspectResults = DrawUtils.createOrShare("inspectResults",undefined,function(newG,name){
             newG.attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
             newG.append("rect")
                 .attr("width",10)
@@ -122,25 +99,16 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
 
         //Draw the group
         //value -> [{name:value}]
-        DrawUtils.drawGroup(inspectResults,commonData.searchData,commonData)
+        DrawUtils.drawGroup(inspectResults,commonData)
             .then(function(){
-                var rect = inspectResults.select("rect");
+                let rect = inspectResults.select("rect");
                 rect.attr("width",10).attr("transform","translate(-10,0)");
-                var bbox = inspectResults[0][0].getBBox();
-                rect.attr("transform",`translate(${-bbox.width},0)`)
-                    .attr("width",bbox.width);
                 
+                let  bbox = inspectResults[0][0].getBBox();
+                 rect.attr("transform",`translate(${-bbox.width},0)`)
+                    .attr("width",bbox.width);
             });
-        
-
-        //shrink the  window if given an empty dataset
-        //inspectResults.selectAll(".inspectResult").remove();
-        //inspectResults.selectAll(".inspectText").remove();
-        //inspectResults.select("rect").transition()
-        //.attr("width",10)
-        //.attr("transform","translate(-10,0)");
-
-    };
+      };
 
     /**
        unimplemented
