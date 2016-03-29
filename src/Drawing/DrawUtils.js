@@ -10,6 +10,36 @@ define(['underscore','d3'],function(_,d3){
     var DrawUtils = {};
 
     /**
+       Common Data Constructor
+       The DrawUtils functions assume a standard set of data, which can be customised. 
+       This constructor provides an initial form of that data, and documents it
+    */
+    DrawUtils.CommonData = function(globalData,data,columns){
+        //the internal vertical separator of a node
+        this.nodeDataSeparator = 5;
+        //the external vertical separator between nodes
+        this.groupDataSeparator = 2;
+        //horizontal border to wrap a node
+        this.widthAddition = 0;
+        //The number of vertical columns to use on the screen
+        this.numOfColumns = columns || 5;
+        //The width of each column
+        this.colWidth = globalData.calcWidth(globalData.usableWidth,this.numOfColumns);
+        //Half of a column, to allow centring
+        this.halfCol = this.colWidth * 0.5;
+        //Centre point of the screen, for offsetting relative to
+        this.halfWidth = globalData.halfWidth();
+        //the data that will actually be drawn
+        this.data = data;
+        //a reference to the global data object
+        this.globalData = globalData;
+        //transform function specifying initial xoffset
+        //for centring
+        this.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
+    };
+
+    
+    /**
        Generic cleanup function, will typically be bound for each specific draw style
        DrawUtils.cleanup.bind({},".node",".parent",".child")();
        @function
@@ -107,8 +137,8 @@ define(['underscore','d3'],function(_,d3){
        @function
        @param container
        @param {Array.<{name : String, values : Array}>} nodeData
-       @param groupData
-       @param offsetName       
+       @param groupData The CommonData 
+       @param offsetName The fieldName specifying vertical separation
     */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
@@ -166,7 +196,7 @@ define(['underscore','d3'],function(_,d3){
        Draw Data of a node
        @function
        @param containerSelection Where each datum =name: String, values : []
-       @param groupData
+       @param groupData The CommonData
      */
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
         //console.log("Draw individual data:",containerSelection);
@@ -249,11 +279,11 @@ define(['underscore','d3'],function(_,d3){
        @param commonData The settings object
        @param descriptionFunc d=>[ |name : String, values : []| ]
      */
-    DrawUtils.drawGroup = function(container,data,commonData,descriptionFunction){
+    DrawUtils.drawGroup = function(container,commonData,descriptionFunction){
         //console.log("Group draw:",container,data);
-        var groupPromise = new Promise(function(resolve,reject){
+        let groupPromise = new Promise(function(resolve,reject){
             //create the individual nodes
-            var boundNodes =  container.selectAll(".groupNode").data(data);
+            let boundNodes =  container.selectAll(".groupNode").data(commonData.data);
             boundNodes.enter().append("g").classed("groupNode",true)
                 .on("click",function(d){
                     //console.log("click:",d);
@@ -268,11 +298,11 @@ define(['underscore','d3'],function(_,d3){
 
         //When nodes have been created
         return groupPromise.then(function(boundNodes){
-            var promiseArray = [];
+            let promiseArray = [];
             //console.log("Post initial group promise:",boundNodes);
             //draw each individual node
             boundNodes.each(function(d,i){
-                var cur = d3.select(this),
+                let cur = d3.select(this),
                     describedData = descriptionFunction !== undefined ? descriptionFunction(d) : d instanceof Array ? d : [{name:d}];
                 
                 promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
@@ -287,11 +317,11 @@ define(['underscore','d3'],function(_,d3){
             return Promise.all(promiseArray).then(function(eachElement){
                 //console.log("All promises fulfilled:",eachElement);
                 //Then offset them
-                var offset = 0;
+                let offset = 0;
                 eachElement.forEach(function(d,i){
                     //offset
                     if(d[0][0].previousElementSibling !== null){
-                        var bbox = d[0][0].previousElementSibling.getBBox(),
+                        let bbox = d[0][0].previousElementSibling.getBBox(),
                             xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
                         offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
 
@@ -313,7 +343,7 @@ define(['underscore','d3'],function(_,d3){
      */
     DrawUtils.drawPath = function(globalData){
         //figure out parent path:
-        var path = DrawUtils.pathExtraction(globalData,10).join(" --> "),
+        let path = DrawUtils.pathExtraction(globalData,10).join(" --> "),
             pathText = d3.select("#pathText");
         if(pathText.empty()){
             pathText = d3.select("svg").append("text").attr("id","pathText")
