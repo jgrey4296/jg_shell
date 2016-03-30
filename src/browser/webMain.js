@@ -257,7 +257,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
     //set focus:
     d3.select("#shellInput").node().focus();
     //Setup the svg:
-    globalData.svg = d3.select("body").append("svg")
+    globalData.svg = d3.select("body").insert("svg","#shellInput")
         .attr("width",globalData.usableWidth)
         .attr("height",globalData.usableHeight)
         .style("background",globalData.colours.grey);
