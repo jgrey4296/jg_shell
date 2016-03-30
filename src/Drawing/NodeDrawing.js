@@ -22,12 +22,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         delete commonData.groupNodeTransform;
         //Get Data from the node:
         let nodeDescriptions = nodeToDraw.getDescriptionObjects(),
-            childrenData = _.keys(nodeToDraw.children).map(d=>globalData.shell.getNode(d)),
-            parentsData = _.keys(nodeToDraw.parents).map(d=>globalData.shell.getNode(d));
-
-        //Add calculated offsets for parents and children:
-        commonData.childrenOffset = (commonData.halfWidth + commonData.colWidth) + commonData.halfCol;
-        commonData.parentOffset = (commonData.halfWidth - (commonData.colWidth*2)) + commonData.halfCol;
+            childrenData = _.keys(nodeToDraw.children).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            parentsData = _.keys(nodeToDraw.parents).map(d=>[globalData.shell.getNode(d).getShortDescription()]);
 
         //The group everything is in
         let mainContainer = DrawUtils.createOrShare('mainContainer'),
@@ -35,18 +31,20 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             node = DrawUtils.createOrShare('node',mainContainer)
             .attr("transform",`translate(${commonData.halfWidth},100)`),
             childGroup = DrawUtils.createOrShare('children',mainContainer)
-	        .attr("transform",`translate(${commonData.childrenOffset},100)`),
+	        .attr("transform",`translate(${commonData.rightOffset},100)`),
             parentGroup = DrawUtils.createOrShare('parents',mainContainer)
-    	    .attr("transform",`translate(${commonData.parentOffset},100)`);
+    	    .attr("transform",`translate(${commonData.leftOffset},100)`);
 
         //Promises:
         DrawUtils.drawSingleNode(node,nodeDescriptions,commonData);
         //Draw the children:
+        childrenData.unshift([{ name : "Children: "}]);//background?
         commonData.data = childrenData;
-        DrawUtils.drawGroup(childGroup,commonData,x=>[x.getShortDescription()]);
+        DrawUtils.drawGroup(childGroup,commonData);//x=>[x.getShortDescription()]);
         //Draw the parents
+        parentsData.unshift([{name : "Parents: "}]);//background?
         commonData.data = parentsData;
-        DrawUtils.drawGroup(parentGroup,commonData,x=>[x.getShortDescription()]);
+        DrawUtils.drawGroup(parentGroup,commonData);//,x=>[x.getShortDescription()]);
         //Draw the current path
         DrawUtils.drawPath(globalData);
     };

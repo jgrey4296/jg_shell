@@ -70,27 +70,27 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         console.log("Final description:",commonData.data);
 
         //----
-        //horizontal offsets of groups:
-        commonData.actionOffset = (commonData.halfWidth + commonData.colWidth) + commonData.halfCol;
-        commonData.conditionOffset = (commonData.halfWidth - (commonData.colWidth*2)) + commonData.halfCol;
-
         //The master group:
         let mainContainer = DrawUtils.createOrShare('mainContainer'),
             //Select (or create) and bind the node
             rule = DrawUtils.createOrShare('rule',mainContainer)
             .attr("transform",`translate(${commonData.halfWidth},100)`),
+            //
             conditionGroup = DrawUtils.createOrShare('conditions',mainContainer)
-	        .attr("transform",`translate(${commonData.conditionOffset},100)`),
+	        .attr("transform",`translate(${commonData.leftOffset},100)`),
+            //
             actionGroup = DrawUtils.createOrShare('actions',mainContainer)
-    	    .attr("transform",`translate(${commonData.actionOffset},100)`);
+    	    .attr("transform",`translate(${commonData.rightOffset},100)`);
 
 
         //These are promises
         DrawUtils.drawSingleNode(rule,commonData.data,commonData);
         //Draw the conditions:
+        conditionData.unshift([{name: "Conditions:"}]);
         commonData.data = conditionData;
         DrawUtils.drawGroup(conditionGroup,commonData);
         //draw the actions:
+        actionData.unshift([{name:"Actions:"}]);
         commonData.data = actionData;
         DrawUtils.drawGroup(actionGroup,commonData);
         DrawUtils.drawPath(globalData);

@@ -36,6 +36,10 @@ define(['underscore','d3'],function(_,d3){
         //transform function specifying initial xoffset
         //for centring
         this.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
+
+        //Default offsets:
+        this.leftOffset = (this.halfWidth - (this.colWidth * 2)) + this.halfCol;
+        this.rightOffset = (this.halfWidth + this.colWidth) + this.halfCol;        
     };
 
     
