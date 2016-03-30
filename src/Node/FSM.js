@@ -13,5 +13,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     FSM.prototype = Object.create(GraphNode.prototype);
     FSM.constructor = Event;
 
+    
     return FSM;
 });

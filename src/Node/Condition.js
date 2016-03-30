@@ -183,7 +183,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         return Array.from(members);
 
 
-    }
+    };
 
     
     return Condition;

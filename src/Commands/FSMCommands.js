@@ -14,7 +14,7 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
         "draw" : function(globalData,values){
             let cwdType = globalData.shell.cwd.tags.type;
             if(cwdType === 'fsm'){
-                //FSMDrawing.drawFSM(globalData,globalData.shell.cwd);
+                FSMDrawing.drawFSM(globalData,globalData.shell.cwd);
             }else if(cwdType === 'event'){
                 //FSMDrawing.drawEvent(globalData,globalData.shell.cwd);
             }else if(cwdType === 'state'){
@@ -39,19 +39,20 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
                 "someCommand" : ["Param Strings","Description" ]
             };
         },
+        "rm" : function(globalData,values){
 
-        /**
-           add an event or state to the fsm
-        */
-        "new" : function(globalData,values){
-            let target = values.shift();
-            if(target === 'event'){
+        },
+        //add, or link, a new state
+        "state" : function(globalData,values){
 
-            }else if(target === 'state'){
+        },
+        //add, or link, a new event
+        "event" : function(globalData,values){
 
-            }else{
-                throw new Error("New: Unrecognised FSM target type");
-            }
+        },
+        "help" : function(globalData,values){
+            
+
         },
     };
 

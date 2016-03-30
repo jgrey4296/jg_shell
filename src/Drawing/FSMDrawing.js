@@ -7,19 +7,68 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     var FSMDrawInterface = {};
 
     FSMDrawInterface.drawFSM = function(globalData,fsmNode){
-        let commonData = new DrawUtils.CommonData(globalData,fsmNode);
+        let fsmData = fsmNode.getDescriptionObjects(),
+            stateData = [],
+            eventData = [],
+            commonData = new DrawUtils.CommonData(globalData,fsmData,3);
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
+        delete commonData.groupNodeTransform;
+        
+        //DOM elements:
+        let mainContainer = DrawUtils.createOrShare('mainContainer'),
+            fsmContainer = DrawUtils.createOrShare('fsmContainer',mainContainer)
+            .attr('transform',`translate(${commonData.halfWidth},100)`),
+            //
+            stateContainer = DrawUtils.createOrShare('states',mainContainer)
+            .attr('transform',`translate(${commonData.leftOffset},100)`),
+            //
+            eventContainer = DrawUtils.createOrShare('events',mainContainer)
+            .attr('transform',`translate(${commonData.rightOffset},100)`);
+        
+        //draw the main fsm node
+        DrawUtils.drawSingleNode(fsmContainer,fsmData,commonData);
+            
+        
+        //draw the states
+        stateData.unshift([{name: "States:"}]);
+        commonData.data = stateData;
+        DrawUtils.drawGroup(stateContainer,commonData);
+        
+        //draw the events
+        eventData.unshift([{name:"Events:"}]);
+        commonData.data = eventData;
+        DrawUtils.drawGroup(eventContainer,commonData);
         
     };
 
     FSMDrawInterface.drawEvent = function(globalData,event){
         console.log("Todo: drawEvent");
+        //Draw the event
+        
+        //Draw the source states
+
+        //draw the result states
+        
     };
 
     FSMDrawInterface.drawState = function(globalData,state){
         console.log("Todo: DrawState");
+
+        //draw the source states
+        
+        //draw source events
+
+        //draw the state
+        
+        //draw the outgoing events
+
+        //draw the resulting states
+        
     };
 
-    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#fsm","#events","#states");
+    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#fsmContainer","#events","#states");
     
     // FSMDrawInterface.drawSearchResults = function(globalData,data){
     //     //console.log("Search Results:",data);
