@@ -46,7 +46,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         */
         "mode" : function(globalData,values){
             //get the available modes
-            var modes = _.keys(globalData.commands),
+            let modes = _.keys(globalData.commands),
                 newMode = modes.indexOf(values[0]) > -1 ? values[0] : modes[0];
 
             //cleanup the current mode

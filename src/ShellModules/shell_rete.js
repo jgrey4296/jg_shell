@@ -121,21 +121,6 @@ define(['underscore','Rete'],function(_,Rete){
         console.log("Potential Actions:",this.reteNet.proposedActions);
         return this.reteNet.proposedActions;
     };
-    
-    /**
-       Get a node by its id, utility method
-       @method
-       @param nodeId
-     */
-    ShellPrototype.getNode = function(nodeId){
-        nodeId = Number(nodeId);
-        
-        if(this.allNodes[nodeId]){
-            return this.allNodes[nodeId];
-        }else{
-            throw new Error("Unknown node specified: " + nodeId);
-        }        
-    };
 
 
     return ShellPrototype;

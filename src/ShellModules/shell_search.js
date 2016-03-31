@@ -87,5 +87,21 @@ define(['underscore'],function(_){
         //TODO
     };
 
+    
+    /**
+       Get a node by its id, utility method
+       @method
+       @param nodeId
+     */
+    ShellPrototype.getNode = function(nodeId){
+        nodeId = Number(nodeId);
+        if(this.allNodes[nodeId]){
+            return this.allNodes[nodeId];
+        }else{
+            throw new Error("Unknown node specified: " + nodeId);
+        }        
+    };
+
+    
     return ShellPrototype;
 });
