@@ -6,8 +6,8 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var Event = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'event',{},overRideId);
-        this.parentFSM = null;
-        //state PAIRINGS: source -> dest
+        this.parentFSM = _.keys(this.parents)[0];
+        //state PAIRINGS: Source.State.id => Dest.State.id
         this.statePairs = {};
         //Actions to perform with this event
         //will use a manually generated token to fullfill?
