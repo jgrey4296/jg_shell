@@ -148,7 +148,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     /**
        Setup the cleanup method for this interface
      */
-    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#focusNode","#events","#states",'#sourceStates','#sinkStates','#sourceEvents','#sinkEvents');
+    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#focusNode","#events","#states",'#sourceStates','#sinkStates','#sourceEvents','#sinkEvents','#sources','#sinks');
     
     return FSMDrawInterface;
 });
