@@ -66,7 +66,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
         
         /** The order that commands will be checked if they arent found in the current mode */
         commandFallBackOrder : [
-            "node","rule","rete","sim","general","bookmark","trace"
+            "node","rule","fsm","rete","sim","general","bookmark","trace"
         ],
 
         /** State for control of modes */
