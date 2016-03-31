@@ -38,8 +38,11 @@ define(['underscore','d3'],function(_,d3){
         this.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
 
         //Default offsets:
-        this.leftOffset = (this.halfWidth - (this.colWidth * 2)) + this.halfCol;
-        this.rightOffset = (this.halfWidth + this.colWidth) + this.halfCol;        
+        this.leftOffset = (this.halfWidth - (this.colWidth)) - this.halfCol;
+        this.doubleLeftOffset = (this.halfWidth - (this.colWidth )) - (3.5 * this.halfCol);
+        this.rightOffset = (this.halfWidth + this.colWidth) + this.halfCol;
+        this.doubleRightOffset = (this.halfWidth + this.colWidth) + (3.5 * this.halfCol);
+
     };
 
     

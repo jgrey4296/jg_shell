@@ -40,7 +40,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
        @return the newly created node
     */
     ShellPrototype.addNode = function(name,target,type,values,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         
         if(name === null || name === undefined || name === "") {
             name = type || "anon";

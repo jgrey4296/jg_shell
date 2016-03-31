@@ -6,10 +6,13 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     */
     var FSMDrawInterface = {};
 
+    /**
+       Draw the Central FSM
+     */
     FSMDrawInterface.drawFSM = function(globalData,fsmNode){
         let fsmData = fsmNode.getDescriptionObjects(),
-            stateData = [],
-            eventData = [],
+            stateData = _.keys(fsmNode.states).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            eventData = _.keys(fsmNode.events).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
             commonData = new DrawUtils.CommonData(globalData,fsmData,3);
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
@@ -18,7 +21,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         
         //DOM elements:
         let mainContainer = DrawUtils.createOrShare('mainContainer'),
-            fsmContainer = DrawUtils.createOrShare('fsmContainer',mainContainer)
+            fsmContainer = DrawUtils.createOrShare('focusNode',mainContainer)
             .attr('transform',`translate(${commonData.halfWidth},100)`),
             //
             stateContainer = DrawUtils.createOrShare('states',mainContainer)
@@ -43,77 +46,109 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         
     };
 
-    FSMDrawInterface.drawEvent = function(globalData,event){
-        console.log("Todo: drawEvent");
+    /**
+       Draw an Event of the FSM, with incoming states and outgoing states
+     */
+    FSMDrawInterface.drawEvent = function(globalData,eventNode){
         //Draw the event
+        let eventData = eventNode.getDescriptionObjects(),
+            commonData = new DrawUtils.CommonData(globalData,eventData,3),
+            sourceData = _.keys(eventNode.statePairs).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            sinkData = _.values(eventNode.statePairs).map(d=>[globalData.shell.getNode(d).getShortDescription()]);
+
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
+        delete commonData.groupNodeTransform;
         
         //Draw the source states
-
-        //draw the result states
+        let mainContainer = DrawUtils.createOrShare('mainContainer'),
+            eventContainer = DrawUtils.createOrShare('focusNode',mainContainer)
+            .attr('transform',`translate(${commonData.halfWidth},100)`),
+            //
+            sources = DrawUtils.createOrShare('sources',mainContainer)
+            .attr('transform',`translate(${commonData.leftOffset},100)`),
+            //
+            sinks = DrawUtils.createOrShare('sinks',mainContainer)
+            .attr('transform',`translate(${commonData.rightOffset},100)`);
         
+        //draw the elements:
+        DrawUtils.drawSingleNode(eventContainer,eventData,commonData);
+
+        //sources
+        sourceData.unshift([{name:"Source States"}]);
+        commonData.data = sourceData;
+        DrawUtils.drawGroup(sources,commonData);
+        //sinks
+        sinkData.unshift([{name:"Sink States"}]);
+        commonData.data = sinkData;
+        DrawUtils.drawGroup(sinks,commonData);
     };
 
-    FSMDrawInterface.drawState = function(globalData,state){
-        console.log("Todo: DrawState");
+    /**
+       Draw an FSM state, showing incoming states+events,
+       and outoing states+events
+     */
+    FSMDrawInterface.drawState = function(globalData,stateNode){
+        //Draw the event
+        let stateData = stateNode.getDescriptionObjects(),
+            commonData = new DrawUtils.CommonData(globalData,stateData,5),
+            //source side data
+            sourceEventData = _.keys(stateNode.inEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            sourceStateData = _.values(stateNode.inEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            //sink side data
+            sinkEventData = _.keys(stateNode.outEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            sinkStateData = _.values(stateNode.outEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]);
 
-        //draw the source states
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 10;
+        delete commonData.groupNodeTransform;
         
-        //draw source events
+        //Draw the source states
+        let mainContainer = DrawUtils.createOrShare('mainContainer'),
+            //central
+            stateContainer = DrawUtils.createOrShare('focusNode',mainContainer)
+            .attr('transform',`translate(${commonData.halfWidth},100)`),
+            //Left containers
+            sourceStates = DrawUtils.createOrShare('sourceStates',mainContainer)
+            .attr('transform',`translate(${commonData.doubleLeftOffset},100)`),
+            sourceEvents = DrawUtils.createOrShare('sourceEvents',mainContainer)
+            .attr('transform',`translate(${commonData.leftOffset},100)`),
+            //right containers
+            sinkStates = DrawUtils.createOrShare('sinkStates',mainContainer)
+            .attr('transform',`translate(${commonData.doubleRightOffset},100)`),
+            sinkEvents = DrawUtils.createOrShare('sinkEvents',mainContainer)
+            .attr('transform',`translate(${commonData.rightOffset},100)`);
+        
+        //draw the elements:
+        DrawUtils.drawSingleNode(stateContainer,stateData,commonData);
 
-        //draw the state
-        
-        //draw the outgoing events
+        //source states
+        sourceStateData.unshift([{name:"Source States"}]);
+        commonData.data = sourceStateData;
+        DrawUtils.drawGroup(sourceStates,commonData);
 
-        //draw the resulting states
+        //source events
+        sourceEventData.unshift([{name:"Source Events"}]);
+        commonData.data = sourceEventData;
+        DrawUtils.drawGroup(sourceEvents,commonData);
         
+        //sink states
+        sinkStateData.unshift([{name:"Sink States"}]);
+        commonData.data = sinkStateData;
+        DrawUtils.drawGroup(sinkStates,commonData);
+
+        //sink events
+        sinkEventData.unshift([{name:"Sink Events"}]);
+        commonData.data = sinkEventData;
+        DrawUtils.drawGroup(sinkEvents,commonData);
     };
 
-    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#fsmContainer","#events","#states");
+    /**
+       Setup the cleanup method for this interface
+     */
+    FSMDrawInterface.cleanup = DrawUtils.cleanup.bind({},"#focusNode","#events","#states",'#sourceStates','#sinkStates','#sourceEvents','#sinkEvents');
     
-    // FSMDrawInterface.drawSearchResults = function(globalData,data){
-    //     //console.log("Search Results:",data);
-    //     var commonData = {
-    //         nodeDataSeparator : 5,
-    //         groupDataSeparator : 2,
-    //         widthAddition : 0,
-    //         colHeight : globalData.usableHeight - 150,
-    //         colWidth : globalData.calcWidth(globalData.usableWidth,5),
-    //         halfWidth : globalData.halfWidth(),
-    //         globalData : globalData,
-    //         searchData : data,
-    //         //translate each groupNode over
-    //     };
-    //     commonData.halfCol = commonData.colWidth * 0.5;
-    //     commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
-
-    //     //create the container, and the enclosing rectangle
-    //     var searchResults = DrawUtils.createOrShare("searchResults",undefined,function(newG,name){
-    //         newG.attr("transform","translate("+ 0 +"," + (globalData.usableHeight * 0.1) + ")");
-    //         newG.append("rect").attr("id","EnclosingRect")
-    //             .attr("width",10)
-    //             .attr("height", globalData.usableHeight * 0.8)
-    //             .style("fill",globalData.colours.greyTwo)
-    //             .attr("rx",5).attr("ry",5);
-    //     });
-
-    //     //Draw the group of data, with a header title
-    //     //GraphNode -> description...
-    //     DrawUtils.drawGroup(searchResults,data,commonData,x=>[{name:x.toString()}])
-    //         .then(function(){
-    //             var rect = searchResults.select("#EnclosingRect");
-    //             rect.attr("width",10);
-    //             var bbox = searchResults[0][0].getBBox();
-    //             rect.attr("width",bbox.width);
-
-    //         });
-    //     //shrink the window back if given an empty dataset
-    //     // searchResults.selectAll(".searchResult").remove();
-    //     // searchResults.selectAll(".searchText").remove();
-    //     // searchResults.select("rect").transition()
-    //     //     .attr("width",10);
-
-    // };
-
-
     return FSMDrawInterface;
 });
