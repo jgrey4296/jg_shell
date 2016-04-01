@@ -9,7 +9,7 @@ require.config({
         //uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
         d3 : "/libs/d3.min",
-        Parse : "Parse/Parse",
+        Parse : "/libs/Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
         //Commands:
