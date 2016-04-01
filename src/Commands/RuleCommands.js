@@ -34,17 +34,17 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             @param globalData
             @param values
         */
-        "cd" : function(globalData,values){
-            //switch back to node mode
-            var modes = _.keys(globalData.commands);
-            if(modes.indexOf('node') !== -1){
-                globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
-                globalData.currentCommandMode = modes[modes.indexOf('node')];
-                //execute cd
-                var cd = globalData.lookupOrFallBack('cd',globalData);
-                cd(globalData,values);
-            }
-        },
+        // "cd" : function(globalData,values){
+        //     //switch back to node mode
+        //     let modes = _.keys(globalData.commands);
+        //     if(modes.indexOf('node') !== -1){
+        //         globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
+        //         globalData.currentCommandMode = modes[modes.indexOf('node')];
+        //         //execute cd
+        //         var cd = globalData.lookupOrFallBack('cd',globalData);
+        //         cd(globalData,values);
+        //     }
+        // },
         /** new -> addCondition/test/action 
             @param globalData
             @param values

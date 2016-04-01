@@ -10,19 +10,19 @@ define(['underscore','d3'],function(_,d3){
        @param globalData
      */
     var HelpCLI = function(currentLine,globalData){
-        var textArray = currentLine.split(" ");
-        //Get the last thing typed, and split it
-        var commandNameArray = textArray.pop().split("#");
+        let textArray = currentLine.split(" "),
+            //Get the last thing typed, and split it
+            commandNameArray = textArray.pop().split("#");
         if(commandNameArray[0] === "help"){
             //console.log("Help!");
             //Get the help text object:
-            var helpObject = null;
+            let helpObject = null;
             //if the user specifies a mode
             if(commandNameArray.length > 1 && globalData.commands[commandNameArray[1]]){
                 helpObject = globalData.commands[commandNameArray[1]].help();
             //otherwise use current command mode:
-            }else if(globalData.commands[globalData.currentCommandMode].help !== undefined){
-                helpObject = globalData.commands[globalData.currentCommandMode].help();
+            }else if(globalData.commands[globalData.currentCommandMode[0]].help !== undefined){
+                helpObject = globalData.commands[globalData.currentCommandMode[0]].help();
             }
             //Draw
             if(helpObject){
@@ -43,7 +43,7 @@ define(['underscore','d3'],function(_,d3){
      */
     var drawHelp = function(helpObject,globalData){
         //Create the text to be displayed
-        var startText = "Current Mode: " + globalData.currentCommandMode,
+        var startText = "Current Mode: " + globalData.currentCommandMode[0],
             availableModes = "Available Modes: " + _.keys(globalData.commands).join(" "),
             helpValues = alignArrows(_.keys(helpObject).map(d=>`${d} ${helpObject[d].join(" ---> ")}`)),
             helpText = [startText,availableModes,"","Available Commands: ",""].concat(helpValues);

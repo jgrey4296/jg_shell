@@ -114,6 +114,12 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
         "cd" : function(globalData,values){
             //cd -> cd
             globalData.shell.cd(values[0]);
+            //udpate the command mode
+            let lookupMode = globalData.nodeModeLookup[globalData.shell.cwd.tags.type];
+            if(lookupMode !== undefined){
+                globalData.currentCommandMode.unshift(lookupMode);
+            }
+            
         },
         /** Set 
             @param globalData

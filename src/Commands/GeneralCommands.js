@@ -47,12 +47,9 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         "mode" : function(globalData,values){
             //get the available modes
             let modes = _.keys(globalData.commands),
-                newMode = modes.indexOf(values[0]) > -1 ? values[0] : modes[0];
+                newMode = modes.indexOf(values[0]) > -1 ? values[0] : null;
 
-            //cleanup the current mode
-            globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
-            //Change to new mode
-            globalData.currentCommandMode = newMode;
+            globalData.currentCommandMode.unshift(newMode);
         },
         /**
            Draw the selection (by piggy backing on draw search)

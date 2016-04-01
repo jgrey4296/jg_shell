@@ -14,6 +14,7 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
          */
         "draw" : function(globalData,values){
             let cwdType = globalData.shell.cwd.tags.type;
+            FSMDrawing.cleanup();
             if(cwdType === 'fsm'){
                 FSMDrawing.drawFSM(globalData,globalData.shell.cwd);
             }else if(cwdType === 'event'){
@@ -49,17 +50,17 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
            Remove an event or state from the fsm
          */
         "rm" : function(globalData,values){
-
+            let component = values.shift();
+            globalData.shell.rmFSMComponent(component);
         },
         //add, or link, a new state
         "new" : function(globalData,values){
             let type = values.shift(),
-                name = values.shift(),
-                target = values.shift();
-            if(type === undefined || name === undefined || (type !== 'state' && type !== 'event')){
+                names = values.slice(0);
+            if(type === undefined || names.length === 0 || (type !== 'state' && type !== 'event')){
                 throw new Error("New Specification incorrect");
             }
-            globalData.shell.addFSMComponent(type,name,target);
+            globalData.shell.addFSMComponent(type,names);
             
         },
         //specify state => link => state link of the current fsm
@@ -79,7 +80,10 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
            unlink an event from its source and sink
         */
         "unlink" : function(globalData,values){
-
+            let source = values.shift(),
+                event = values.shift(),
+                sink = values.shift();
+            globalData.shell.removeFSMLink(source,event,sink);
         },
     };
 

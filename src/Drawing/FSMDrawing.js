@@ -53,8 +53,9 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //Draw the event
         let eventData = eventNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,eventData,3),
-            sourceData = _.keys(eventNode.statePairs).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
-            sinkData = _.values(eventNode.statePairs).map(d=>[globalData.shell.getNode(d).getShortDescription()]);
+            linkData = _.keys(eventNode.links).map(d=>d.split('->')),
+            sourceData = linkData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            sinkData = linkData.map(d=>[globalData.shell.getNode(d[2]).getShortDescription()]);
 
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
@@ -94,11 +95,13 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         let stateData = stateNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,stateData,5),
             //source side data
-            sourceEventData = _.keys(stateNode.inEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
-            sourceStateData = _.values(stateNode.inEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            sourceData = _.keys(stateNode.inEvents).map(d=>d.split('->')),
+            sourceStateData = sourceData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            sourceEventData = sourceData.map(d=>[globalData.shell.getNode(d[1]).getShortDescription()]),
             //sink side data
-            sinkEventData = _.keys(stateNode.outEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
-            sinkStateData = _.values(stateNode.outEvents).map(d=>[globalData.shell.getNode(d).getShortDescription()]);
+            sinkData = _.keys(stateNode.outEvents).map(d=>d.split('->')),
+            sinkStateData = sinkData.map(d=>[globalData.shell.getNode(d[2]).getShortDescription()]),
+            sinkEventData = sinkData.map(d=>[globalData.shell.getNode(d[1]).getShortDescription()]);
 
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
@@ -130,7 +133,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         DrawUtils.drawGroup(sourceStates,commonData);
 
         //source events
-        sourceEventData.unshift([{name:"Source Events"}]);
+        sourceEventData.unshift([{name:"-->"}]);
         commonData.data = sourceEventData;
         DrawUtils.drawGroup(sourceEvents,commonData);
         
@@ -140,7 +143,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         DrawUtils.drawGroup(sinkStates,commonData);
 
         //sink events
-        sinkEventData.unshift([{name:"Sink Events"}]);
+        sinkEventData.unshift([{name:"-->"}]);
         commonData.data = sinkEventData;
         DrawUtils.drawGroup(sinkEvents,commonData);
     };

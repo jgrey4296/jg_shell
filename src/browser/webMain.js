@@ -69,6 +69,18 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
             "node","rule","fsm","rete","sim","general","bookmark","trace"
         ],
 
+        //A lookup to automatically set the mode based on node type:
+        nodeModeLookup : {
+            'graphnode' : 'node',
+            'node' : 'node',
+            'fsm' : 'fsm',
+            'rule' : 'rule',
+            'state' : 'fsm',
+            'event' : 'fsm',
+            'condition' : 'node',
+            'action' : 'node'
+        },
+        
         /** State for control of modes */
         modeState : {
             "rete" : {},
@@ -76,9 +88,9 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
             "rule" : {},
         },
         
-        /** The current command node to use initially */
-        currentCommandMode : "node",
-    
+        /** The current command node to use initially AS A QUEUE */
+        currentCommandMode : ['node'],
+        
         /** The Shell the web component uses
             @type {Shell}
          */
@@ -205,21 +217,24 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
            @param commandName
            @param globalData
          */
-        lookupOrFallBack : function(commandName,globalData){
+        lookupOrFallBack : function(commandName,globalData,mode){
             if(globalData === undefined) { globalData = this; }
-            var commandToExecute;
-            if(globalData.commands[globalData.currentCommandMode]
-               && globalData.commands[globalData.currentCommandMode][commandName]){
+            mode = mode || globalData.currentCommandMode[0];
+            let commandToExecute;
+
+            //Check the current command mode:
+            if(mode && globalData.commands[mode] && globalData.commands[mode][commandName]){
                 //console.log("Command Search: Found");
-                commandToExecute = globalData.commands[globalData.currentCommandMode][commandName];
+                commandToExecute = globalData.commands[mode][commandName];
             }else{        
                 //command not found, fallback
                 //console.log("Command Search: Fallback");
-                var fallBacks = _.clone(globalData.commandFallBackOrder);
+                let fallBacks = _.clone(globalData.commandFallBackOrder);
                 while(fallBacks.length > 0){
-                    var currentFallback = fallBacks.shift();
+                    let currentFallback = fallBacks.shift();
                     if(globalData.commands[currentFallback][commandName] !== undefined){
                         commandToExecute = globalData.commands[currentFallback][commandName];
+                        break;
                     }
                 }
             }

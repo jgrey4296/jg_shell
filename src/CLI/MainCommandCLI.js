@@ -39,10 +39,10 @@ define(['underscore'],function(_){
     var MainCommandCLI = function(currentLine,globalData,skipDraw){
         if(skipDraw === undefined) { skipDraw = false; }
         globalData.rawCurrentLine = currentLine;
-        var splitLine = parseCurrentLine(currentLine),
+        let splitLine = parseCurrentLine(currentLine),
             commandName = splitLine.shift();
         //lookup command
-        var commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
+        let commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
         
         //perform command
         if(commandToExecute && typeof commandToExecute === 'function'){
@@ -59,8 +59,16 @@ define(['underscore'],function(_){
         //Finish if not drawing
         if(skipDraw) { return; }
         //Else draw:
+        //if current command mode is different from previous command mode, cleanup previous:
+        let currCommandMode = globalData.currentCommandMode[0],
+            prevCommandMode = globalData.currentCommandMode[1];
+        if(prevCommandMode !== undefined && currCommandMode !== prevCommandMode){
+            let prevCleanup = globalData.lookupOrFallBack('cleanup',globalData,prevCommandMode);
+            prevCleanup(globalData);
+        }
+        
         //call the mode specific draw command
-        var drawCommand = globalData.lookupOrFallBack("draw",globalData);
+        let drawCommand = globalData.lookupOrFallBack("draw",globalData);
         if(drawCommand && typeof drawCommand === 'function'){
             try{
                 drawCommand(globalData);
@@ -74,7 +82,11 @@ define(['underscore'],function(_){
         //Draw the general draw command:
         if(globalData.commands.general.draw && typeof globalData.commands.general.draw === 'function'){
             globalData.commands.general.draw(globalData);
-        }        
+        }
+
+        //keep the size of the currentCommandMode queue to a reasonable size:
+        globalData.currentCommandMode = globalData.currentCommandMode.slice(0,3);
+        
     };
     
     return MainCommandCLI;

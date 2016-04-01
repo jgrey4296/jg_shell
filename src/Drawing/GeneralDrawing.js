@@ -115,10 +115,12 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
        @function
      */
     GeneralDrawInterface.drawSelection = function(globalData,data){
+        //TODO
+    };
 
-
-
-    };    
+    GeneralDrawInterface.drawModeNotification = function(globalData,data){
+        //top left hand corner, draw a button showing the mode
+    };
 
     return GeneralDrawInterface;
 });
