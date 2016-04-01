@@ -43,7 +43,6 @@ define(['underscore'],function(_){
             @type {Array.<GraphNode>}
          */
         this.relatedObjects = [];
-
         //parents and children for links
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
@@ -128,7 +127,7 @@ define(['underscore'],function(_){
         
     };
     GraphNode.constructor = GraphNode;
-
+    
     /**
        Convert to a string
        @method
@@ -254,7 +253,8 @@ define(['underscore'],function(_){
     };
 
     /**
-       Returns the objects needing to be added to the shell, as the node shouldnt store them for json compatibility
+       Returns the objects needing to be added to the shell, 
+       as the node shouldnt store them for json compatibility
        @method
        @returns {Array.<GraphNode>}
      */

@@ -24,13 +24,13 @@ define(['underscore'],function(_){
        @return ids of nodes found
      */
     ShellPrototype.dfs = function(nodeId,focusFields,criteriaFunction){
-        var shellRef = this,
+        let shellRef = this,
             currentStack = [this.getNode(nodeId)],
             visitedIds = new Set();
         
         //discover all applicable nodes
         while(currentStack.length > 0){
-            var curr = currentStack.pop();
+            let curr = currentStack.pop();
             //avoid duplicates and loops
             if(visitedIds.has(curr.id)) { continue ; }
                visitedIds.add(curr.id);
@@ -59,12 +59,12 @@ define(['underscore'],function(_){
     ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
         if(focusFields === undefined) { focusFields = ['children']; }
         if(depth === undefined) { depth = 2; }
-        var shellRef = this,
+        let shellRef = this,
             currentQueue = [this.getNode(nodeId)],
             visitedIds = new Set();
 
         while(currentQueue.length > 0){
-            var curr = currentQueue.shift();
+            let curr = currentQueue.shift();
             //skip duplicates
             if(visitedIds.has(curr.id)){ continue; }
             visitedIds.add(curr.id);

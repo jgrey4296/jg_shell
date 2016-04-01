@@ -318,9 +318,6 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             console.log("AllNodes:",allNodes);
             console.log("Found Nodes:",foundNodes);
             console.log("Unconnected:",unconnected);
-
-            
-
         }
         
     };
