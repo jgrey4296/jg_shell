@@ -49,7 +49,7 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
         
         //validate input:
         if(source[target] === undefined){ 
-            console.warn("Creating target: ",target,source);
+            //console.warn("Creating target: ",target,source);
             source[target] = {};
         }
         type = type || "GraphNode";

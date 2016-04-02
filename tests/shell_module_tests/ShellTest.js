@@ -1,11 +1,8 @@
 /**
    @file Tests to verify the shell
 
- */
-if(typeof define !== 'function'){
-    var define = require('amdefine')(module);
-}
-
+*/
+"use strict";
 var _ = require('underscore'),
     Shell = require('../../src/Shell'),
     makeShell = function(){return new Shell();};
@@ -16,7 +13,7 @@ exports.ShellTests = {
     initTest : function(test){
         var shell = makeShell();
         test.ok(shell.root !== undefined);
-        test.ok(Object.keys(shell.allNodes).length === 3);
+        test.ok(Object.keys(shell.allNodes).length === 1);
         test.ok(shell.allRules.length === 0);
         test.ok(Object.keys(shell.allRulesByName).length === 0);
         test.ok(shell.cwd.id === shell.root.id);
@@ -26,8 +23,8 @@ exports.ShellTests = {
     createNodeTest : function(test){
         var shell = makeShell();
         var newNode = shell.addNode("test",'children');
-        test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id] === newNode.name);
+        test.ok(shell.cwd.linkedNodes.children[newNode.id] !== undefined);
+        test.ok(shell.cwd.linkedNodes.children[newNode.id] === newNode.name);
         test.ok(shell.allNodes[newNode.id].name === newNode.name);
         test.done();
     },
@@ -37,7 +34,7 @@ exports.ShellTests = {
         var n1 = shell.addNode("test1",'children');
         var n2 = shell.addNode('test2','children');
         test.ok(n1.id !== n2.id);
-        test.ok(Object.keys(shell.cwd.children).length === 2);
+        test.ok(Object.keys(shell.cwd.linkedNodes.children).length === 2);
         test.done();
     },
 
@@ -45,17 +42,17 @@ exports.ShellTests = {
         var shell = makeShell();
         var parentNode = shell.addNode('test1','parents');
         test.ok(parentNode !== undefined);
-        test.ok(Object.keys(shell.cwd.parents).length === 1);
+        test.ok(Object.keys(shell.cwd.linkedNodes.parents).length === 1);
         test.ok(shell.cwd._originalParent === undefined);
-        test.ok(shell.cwd.parents[parentNode.id] === parentNode.name);
-        test.ok(parentNode.children[shell.cwd.id] === shell.cwd.name);
+        test.ok(shell.cwd.linkedNodes.parents[parentNode.id] === parentNode.name);
+        test.ok(parentNode.linkedNodes.children[shell.cwd.id] === shell.cwd.name);
         test.done();
     },
 
     changeDirTest : function(test){
         var shell = makeShell();
         var child = shell.addNode('test1','children');
-        test.ok(Object.keys(shell.cwd.children).length === 1);
+        test.ok(Object.keys(shell.cwd.linkedNodes.children).length === 1);
         shell.cd(child.id);
         test.ok(shell.cwd.id === child.id);
         shell.cd(shell.root.id);
@@ -78,34 +75,20 @@ exports.ShellTests = {
         var shell = makeShell();
         var child1 = shell.addNode('test1','children','role');
         test.ok(child1.tags.type === "role");
-        test.ok(child1._originalParent === shell.cwd.id)
+        test.ok(child1.linkedNodes._originalParent === shell.cwd.id)
 
         var child2 = shell.addNode('test2','children','institution');
-        test.ok(child2.tags.type === "institution");
-        test.ok(child2._originalParent === shell.cwd.id);
+        test.ok(child2.tags.type === "institution",child2.tags.type);
+        test.ok(child2.linkedNodes._originalParent === shell.cwd.id);
         test.done();        
     },
 
-    checkRoleConstructionTest : function(test){
-        var shell = makeShell();
-        var newNode = shell.addNode('test1','children','role');
-        shell.cd('test1');
-        test.ok(newNode.id === shell.cwd.id);
-        test.ok(newNode.name === 'test1');
-        test.ok(newNode.tags.type === 'role');
-        test.ok(_.keys(newNode.children).length === 2);
-        test.ok(shell.allNodes[_.keys(newNode.children)[0]].name === "ConstitutiveRules");
-        test.ok(shell.allNodes[_.keys(newNode.children)[1]].name === "RegulativeRules");
-
-        test.done();
-    },
-
     checkInstitutionConstructionTest : function(test){
-        var shell = makeShell();
-        var newNode = shell.addNode('test1','children','institution');
+        let shell = makeShell(),
+        newNode = shell.addNode('test1','children','institution');
         test.ok(newNode.tags.type === 'institution');
-        test.ok(_.keys(newNode.children).length === 7,_.keys(newNode.children).length);
-        test.ok(_.keys(newNode.parents).length === 2); 
+        test.ok(_.keys(newNode.linkedNodes.children).length === 6,_.keys(newNode.linkedNodes.children).length);
+        test.ok(_.keys(newNode.linkedNodes.parents).length === 2); 
         test.done();
     },
 
@@ -122,20 +105,6 @@ exports.ShellTests = {
         test.done();
     },
 
-    checkActivityConstructionTest : function(test){
-        var shell = makeShell();
-        var newNode = shell.addNode('test1','children','activity');
-        test.ok(newNode.name === 'test1');
-        test.ok(newNode.tags.type === 'activity');
-        test.ok(newNode.values.actor === null);
-        test.ok(newNode.values.object === null);
-        test.ok(newNode.values.tool === null);
-        test.ok(newNode.values.outcome === null);
-        test.ok(_.keys(newNode.children).length === 4);
-        test.done();
-    },
-
-    
     getNodeListByIdsTest : function(test){
         var shell = makeShell();
         var nodes = [];
@@ -189,11 +158,11 @@ exports.ShellTests = {
         var thirdNode = shell.addNode('test3','children');
         shell.cd(node2.id);
 
-        test.ok(thirdNode._originalParent === newNode.id);
+        test.ok(thirdNode.linkedNodes._originalParent === newNode.id);
         test.ok(shell.cwd.id === node2.id);
 
         shell.link('parents',thirdNode.id);
-        test.ok(shell.cwd.parents[thirdNode.id] === thirdNode.name);
+        test.ok(shell.cwd.linkedNodes.parents[thirdNode.id] === thirdNode.name);
         test.ok(shell.allNodes[thirdNode.id].name === thirdNode.name);
         test.done();
     },
@@ -201,10 +170,10 @@ exports.ShellTests = {
     rmTest : function(test){
         var shell = makeShell();
         var newNode = shell.addNode('test1','children');
-        test.ok(shell.cwd.children[newNode.id] !== undefined);
-        test.ok(shell.cwd.children[newNode.id] === newNode.name);
+        test.ok(shell.cwd.linkedNodes.children[newNode.id] !== undefined);
+        test.ok(shell.cwd.linkedNodes.children[newNode.id] === newNode.name);
         shell.rm(newNode.id);
-        test.ok(shell.cwd.children[newNode.id] === undefined);
+        test.ok(shell.cwd.linkedNodes.children[newNode.id] === undefined);
         
         test.done();
     },
@@ -263,7 +232,7 @@ exports.ShellTests = {
         var test1Data = require('../testData/test1.json');
         var shell = makeShell();
 
-        test.ok(_.keys(shell.allNodes).length === 3);
+        test.ok(_.keys(shell.allNodes).length === 1);
         shell.importJson(test1Data);
         test.ok(_.keys(shell.allNodes).length === 7,_.keys(shell.allNodes));
         

@@ -108,12 +108,12 @@ define(['underscore'],function(_){
         //Each entry in the list: L = { name: "", children : [L], parents : [L] }
         if(relationsToCreate !== undefined && relationsToCreate.children !== undefined){
             relationsToCreate.children.forEach(function(d){
-                var relations = {
+                let relations = (d.children && d.parents) ? {
                     children : d.children,
                     parents : d.parents,
-                },
+                } : undefined,
                     subName = d.name || d;
-                this.addRelation('child',new GraphNode(subName,this,undefined,relations));
+                this.addRelation('children',new GraphNode(subName,this,undefined,relations));
             },this);
         }
 
@@ -124,7 +124,7 @@ define(['underscore'],function(_){
                     parents : d.parents,
                 },
                     subName = d.name || d;
-                this.addRelation('parent',new GraphNode(subName,this,undefined,relations));
+                this.addRelation('parents',new GraphNode(subName,this,undefined,relations));
             },this);
 
         }

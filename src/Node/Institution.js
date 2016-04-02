@@ -19,7 +19,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
        @param overRideId
      */
     var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
-        var relations = {
+        let relations = {
             children : [
                 {name: "roles", children : "incumbent challenger controlled exempt".split(" ")},
                 {name: "activities", children : "physical symbolic communicative unbound".split(" ")},
@@ -30,7 +30,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             ],
             parents : ["externalEffectors"]
         };
-        GraphNode.call(this,name,parent,"Institution",relations,overRideId);
+        GraphNode.call(this,name,parent,"institution",relations,overRideId);
     };
     Institution.constructor = Institution;
     Institution.prototype = Object.create(GraphNode.prototype);
