@@ -33,15 +33,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             @type {Object}
          */
         this.bindings = {};
-        /** The source node the condtion consumes
-            @type {Int}
-        */
-        this.linkedNodes.consumes = {};
 
-        /**
-           Sub-conditions, for when the condition is a negated conjunctive condition
-        */
-        this.linkedNodes.conditions = {};
     };
     Condition.prototype = Object.create(GraphNode.prototype);
     Condition.constructor = Condition;
@@ -97,6 +89,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
     /** get Description objects */
     Condition.prototype.getDescriptionObjects = function(){
         "use strict";
+        //minimal version:
         if(this.minimised){
             return [{
                 name : this.toString() + "...",
@@ -104,6 +97,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
             }];
         }
 
+        //NCC version
         if(this.tags.conditionType === "negConjCondition"){
             let nccList = [];
             nccList.push({
@@ -113,7 +107,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
             nccList.push({
                 name : "Conditions",
-                values : _.pairs(this.conditions).map(d=>d.join(" : ")),
+                values : _.pairs(this.linkedNodes).filter(d=>/condition/.test(d[1])).map(d=>d.join(" : ")),
                 background : "link"
             });
 
@@ -125,7 +119,8 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
             return nccList;
         }
-        
+
+        //Main version:
         var lists = [];
         lists.push({
             name: this.toString(),
@@ -154,11 +149,25 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         });
 
         //the source node
-        lists.push({
-            name : `SOURCE ID: ${this.expectationNode}`,
-            background : 'link'
-        });
-
+        let sources = _.pairs(this.linkedNodes).filter(d=>/source/.test(d[1]));
+        if(sources.length === 0){
+            lists.push({
+                name : "SOURCE ID: NULL",
+                background : "link"
+            });
+        }else if(sources.length === 1){
+            lists.push({
+                name : `SOURCE ID: ${sources[0][0]}`,
+                background : 'link'
+            });
+        }else if(sources.length > 1){
+            lists.push({
+                name : "SOURCE IDS:",
+                values : sources.map(d=>d[0]),
+                background : "link"
+            });
+        }
+        
         //tags:
         lists.push({
             name : "Tags",

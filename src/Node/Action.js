@@ -29,11 +29,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
          */
         this.regexActions = {};
 
-        /** The linked node the action produces
-            @type {int}
-        */
-        this.linkedNodes.produces = {};
-
         //Specify timing of proposed action to create,
         //As offsets from the time the action fires
         this.timing = {
@@ -147,11 +142,31 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             background : 'priority'
         });
 
-        lists.push({
-            name : `PROTOTYPE ID: ${this.expectationNode}`,
-            background : 'link'            
-        });
+        // lists.push({
+        //     name : `PROTOTYPE ID: ${this.expectationNode}`,
+        //     background : 'link'            
+        // });
 
+        //the sink/prototype nodes
+        let sinks = _.pairs(this.linkedNodes).filter(d=>/sink/.test(d[1]));
+        if(sinks.length === 0){
+            lists.push({
+                name : "SINK ID: NULL",
+                background : "link"
+            });
+        }else if(sinks.length === 1){
+            lists.push({
+                name : `SINK ID: ${sinks[0][0]}`,
+                background : 'link'
+            });
+        }else if(sinks.length > 1){
+            lists.push({
+                name : "SINK IDS:",
+                values : sinks.map(d=>d[0]),
+                background : "link"
+            });
+        }
+        
         lists.push({
             name : `Priority: ${this.priority}`,
             background : 'priority'

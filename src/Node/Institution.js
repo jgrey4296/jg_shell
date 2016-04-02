@@ -19,17 +19,15 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
        @param overRideId
      */
     var Institution = function(name,parent,dummyType,dummyRelations,overRideId){
-        let relations = {
-            children : [
-                {name: "roles", children : "incumbent challenger controlled exempt".split(" ")},
-                {name: "activities", children : "physical symbolic communicative unbound".split(" ")},
-                "IGU",
-                {name: "FactGrammar", children : "physical symbolic communicative unbound".split(" ")},
-                "valueHierarchy",
-                {name: "norms", children : "empiricallyExpected normativelyExpected sanctionable".split(" ")}
-            ],
-            parents : ["externalEffectors"]
-        };
+        let relations = [
+            {name: "roles", relType : 'child', recType : 'parent', subRelations : "incumbent challenger controlled exempt".split(" ").map(d=>({name:d, relType : 'child', recType : 'parent'}))},
+            {name: "activities", subRelations : "physical symbolic communicative unbound".split(" ").map(d=>({name:d, relType : 'child', recType : 'parent'}))},
+            {name : "IGU", relType : 'child', recType : 'parent'},
+            {name: "FactGrammar", relType : 'child', recType : 'parent', subRelations : "physical symbolic communicative unbound".split(" ").map(d=>({name:d, relType : 'child', recType : 'parent'}))},
+            {name : "valueHierarchy", relType : 'child', recType : 'parent'},
+            {name: "norms", relType : 'child', recType :'parent', subRelations : "empiricallyExpected normativelyExpected sanctionable".split(" ").map(d=>({name:d, relType :'child',recType:'parent'}))},
+            {name: "externalEffectors", relType : 'child', recType : 'parent'}
+        ];
         GraphNode.call(this,name,parent,"institution",relations,overRideId);
     };
     Institution.constructor = Institution;

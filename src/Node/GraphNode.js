@@ -43,12 +43,9 @@ define(['underscore'],function(_){
         //therefore no cycles, therefore json export
 
         //linked Nodes
-        this.linkedNodes = {
-            children : {},
-            parents : {},
-            consumedBy : {},
-            producedBy : {}
-        };
+        //id -> relationType. eg: child, parent, rule
+        this.linkedNodes = {};
+
         
         /** The child Ids of the node
             @type {Object.<GraphNode#id,GraphNode#name>}
@@ -63,8 +60,7 @@ define(['underscore'],function(_){
             /** The Original Parent Id of the node
                 @type {int}
              */
-            this.linkedNodes._originalParent = parent.id;
-            this.linkedNodes.parents[parent.id] = parent.name;
+            this.linkedNodes[parent.id] = "parent->original";
         }
 
         /** Stored Data: Values 
@@ -85,17 +81,6 @@ define(['underscore'],function(_){
         /** Used to update the prototype on json-imported data */
         this.tags.type = type || 'graphnode';
 
-                
-        /** Rules that consume this fact into their conditions
-            @type {Object.<GraphNode#id,GraphNode#name>}
-         */
-        //this.expectedBy = {};
-        
-        /** Rules that produce this fact: 
-            @type {Object.<GraphNode#id,GraphNode#name>}
-         */
-        //this.producedBy = {};
-
         /**
            Track whether the node is minimised or not
            @type {Boolean}
@@ -103,28 +88,13 @@ define(['underscore'],function(_){
         this.minimised = false;
 
         //Create the relations passed in:
-        //Each entry in the list: L = { name: "", children : [L], parents : [L] }
-        if(relationsToCreate !== undefined && relationsToCreate.children !== undefined){
-            relationsToCreate.children.forEach(function(d){
-                let relations = (d.children && d.parents) ? {
-                    children : d.children,
-                    parents : d.parents,
-                } : undefined,
-                    subName = d.name || d;
-                this.addRelation('children',new GraphNode(subName,this,undefined,relations));
-            },this);
-        }
-
-        if(relationsToCreate !== undefined && relationsToCreate.parents !== undefined){
-            relationsToCreate.parents.forEach(function(d){
-                var relations = {
-                    children : d.children,
-                    parents : d.parents,
-                },
-                    subName = d.name || d;
-                this.addRelation('parents',new GraphNode(subName,this,undefined,relations));
-            },this);
-
+        /*
+          r = [
+          {name, type, relType,recType, subRelations : [<r>]}
+          ]
+         */
+        if(relationsToCreate !== undefined && relationsToCreate instanceof Array){
+            this.relatedObjects = relationsToCreate;
         }
         
     };
@@ -179,14 +149,14 @@ define(['underscore'],function(_){
         });
 
         lists.push({
-            name : "ExpectedBy",
-            values : _.pairs(this.expectedBy).map(d=>d.join(" : ")),
+            name : "Source For:",
+            values : _.pairs(this.linkedNodes).filter(d=>/source/.test(d[1])).map(d=>d.join(" : ")),
             background : "link",
         });
 
         lists.push({
-            name : "ProducedBy",
-            values : _.pairs(this.producedBy).map(d=>d.join(" : ")),
+            name : "Sink For:",
+            values : _.pairs(this.linkedNodes).filter(d=>/sink/.test(d[1])).map(d=>d.join(" : ")),
             background : "link"
         });
         
@@ -233,48 +203,39 @@ define(['underscore'],function(_){
     };
 
     /**
-       Register a NodeStyle object as a relation of this node. stores id+name
-       and adds to the relatedObjects map;
-       @param target
-       @param object
-       @method
-     */
-    GraphNode.prototype.addRelation = function(target,object){
-        if(!(object instanceof GraphNode)){
-            throw new Error("Trying to add a non-GraphNode relation");
-        }
-        this.relatedObjects.push(object);
-        if(this.linkedNodes[target] === undefined){
-            this.linkedNodes[target] = {};
-        }
-        this.linkedNodes[target][object.id] = object.name;
-        return object;
-    };
-
-    /**
        Returns the objects needing to be added to the shell, 
        as the node shouldnt store them for json compatibility
        @method
        @returns {Array.<GraphNode>}
      */
-    GraphNode.prototype.getRelationObjects = function(){
-        var tempList = this.relatedObjects;
+    GraphNode.prototype.pullRelationObjects = function(){
+        let tempList = this.relatedObjects;
         this.relatedObjects = [];
         return tempList;
     };
 
-    GraphNode.prototype.getActiveLinks = function(keyList){
-        if(keyList == undefined){ keyList = _.keys(this.linkedNodes); }
-        //take a keylist, return an array of all ids in those fields
+    /**
+       Search through the linkedNodes member for the specific relationtype
+       @param {Array.<RegExp>} relationTypes
+     */
+    GraphNode.prototype.getActiveLinks = function(relationTypes){
+        if(relationTypes == undefined || (relationTypes instanceof Array && relationTypes.length === 0)){
+            //return everything this node is connected to
+            return _.keys(this.linkedNodes);
+        }
+        if(!(relationTypes instanceof Array)){
+            relationTypes = [relationTypes];
+        }
+        
+        //take a keylist, return an array of all ids with matching relationtypes
         let members = new Set();
-        keyList.forEach(function(key){
-            if(typeof this.linkedNodes[key] === 'object'){
-                _.keys(this.linkedNodes[key]).forEach(d=>members.add(d));
-            }else{
-                members.add(this.linkedNodes[key]);
-            }
-        },this);
-
+        _.pairs(this.linkedNodes).forEach(function(linkPair){
+            relationTypes.forEach(function(regex){
+                if(regex.test(linkPair[1])){
+                    members.add(linkPair(1));
+                }
+            });
+        });
         return Array.from(members);
     };
 

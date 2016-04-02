@@ -19,25 +19,9 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
      */
     var Rule = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,"rule",{},overRideId);
-        //id -> name of condition objects
-        this.linkedNodes.conditions = {};
-        //id -> name of action objects
-        this.linkedNodes.actions = {};
     };
     Rule.prototype = Object.create(GraphNode.prototype);
     Rule.constructor = Rule;
 
-    Rule.prototype.getActiveLinks = function(keyList){
-        if(keyList === undefined) { keyList = ['children','parents','conditions','actions']; }
-                //take a keylist, return an array of all ids in those fields
-        let members = new Set();
-        keyList.forEach(function(key){
-            if(typeof this[key] !== 'object'){ return; }
-            _.keys(this[key]).forEach(d=>members.add(d));
-        },this);
-
-        return Array.from(members);
-    };
-    
     return Rule;
 });
