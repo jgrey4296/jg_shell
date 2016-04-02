@@ -24,7 +24,7 @@ require.config({
         Rete : "/libs/Rete.min",
         ReteAlert : "ReteActions/alertAction",
         //Simulation:
-        Simulation : "Simulation/Simulation"
+        //Simulation : "Simulation/Simulation"
     },
     shim:{
         'underscore' :{
