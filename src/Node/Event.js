@@ -6,13 +6,13 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var Event = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'event',{},overRideId);
-        this.parentFSM = _.keys(this.parents)[0];
+        this.linkedNodes.parentFSM = _.keys(this.parents)[0];
         //state PAIRINGS: Source.State.id => Dest.State.id
-        this.links = {};
+        this.linkedNodes.links = {};
         //Actions to perform with this event
         //will use a manually generated token to fullfill?
-        this.conditions = {};
-        this.actions = {};
+        this.linkedNodes.conditions = {};
+        this.linkedNodes.actions = {};
     };
     Event.prototype = Object.create(GraphNode.prototype);
     Event.constructor = Event;

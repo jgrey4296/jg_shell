@@ -6,12 +6,12 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var FSM = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'fsm',{},overRideId);
-        this.states = {};
-        this.events = {};
+        this.linkedNodes.states = {};
+        this.linkedNodes.events = {};
         //token generation from values?
     };
     FSM.prototype = Object.create(GraphNode.prototype);
-    FSM.constructor = Event;
+    FSM.constructor = FSM;
 
     
     return FSM;

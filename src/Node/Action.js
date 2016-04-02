@@ -31,8 +31,8 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
         /** The linked node the action produces
             @type {int}
-         */
-        this.expectationNode = null;
+        */
+        this.linkedNodes.produces = {};
 
         //Specify timing of proposed action to create,
         //As offsets from the time the action fires

@@ -24,19 +24,13 @@ define(['underscore'],function(_){
     var GraphNode = function(name,parent,type,relationsToCreate,overRideId){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         
-        /** 
-            The id of the node 
-            @type int
-            @instance
-         */
+        /** @type int The Id of the node */
         this.id = overRideId || nextId++;
         if(overRideId && overRideId > nextId){
             nextId = overRideId + 1;
         }
 
-        /** The Name of the Node 
-            @type String
-         */
+        /** @type String The Name of the Node */
         this.name = name;
 
         /** Parents and children created internally, ready to be sent to the shell for registration 
@@ -47,22 +41,32 @@ define(['underscore'],function(_){
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
+
+        //linked Nodes
+        this.linkedNodes = {
+            children : {},
+            parents : {},
+            consumedBy : {},
+            producedBy : {}
+        };
         
         /** The child Ids of the node
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
-        this.children = {};
+        //this.children = {};
         
         /** Parent  Ids of the node
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
-        this.parents = {};
+        //this.parents = {};
+
+        
         if(parent !== undefined){
             /** The Original Parent Id of the node
                 @type {int}
              */
-            this._originalParent = parent.id;
-            this.parents[parent.id] = parent.name;
+            this.linkedNodes._originalParent = parent.id;
+            this.linkedNodes.parents[parent.id] = parent.name;
         }
 
         /** Stored Data: Values 
@@ -87,12 +91,12 @@ define(['underscore'],function(_){
         /** Rules that consume this fact into their conditions
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
-        this.expectedBy = {};
+        //this.expectedBy = {};
         
         /** Rules that produce this fact: 
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
-        this.producedBy = {};
+        //this.producedBy = {};
 
         /**
            Track whether the node is minimised or not
@@ -242,13 +246,10 @@ define(['underscore'],function(_){
             throw new Error("Trying to add a non-GraphNode relation");
         }
         this.relatedObjects.push(object);
-        if(target === 'child'){
-            this.children[object.id] = object.name;
-        }else if(target === 'parent'){
-            this.parents[object.id] = object.name;
-        }else{
-            throw new Error(`Unrecognised target for relation: ${target}`);
+        if(this.linkedNodes[target] === undefined){
+            this.linkedNodes[target] = {};
         }
+        this.linkedNodes[target][object.id] = object.name;
         return object;
     };
 
@@ -265,12 +266,15 @@ define(['underscore'],function(_){
     };
 
     GraphNode.prototype.getActiveLinks = function(keyList){
-        if(keyList == undefined){ keyList = ["children",'parents']; }
+        if(keyList == undefined){ keyList = _.keys(this.linkedNodes); }
         //take a keylist, return an array of all ids in those fields
         let members = new Set();
         keyList.forEach(function(key){
-            if(typeof this[key] !== 'object'){ return; }
-            _.keys(this[key]).forEach(d=>members.add(d));
+            if(typeof this.linkedNodes[key] === 'object'){
+                _.keys(this.linkedNodes[key]).forEach(d=>members.add(d));
+            }else{
+                members.add(this.linkedNodes[key]);
+            }
         },this);
 
         return Array.from(members);

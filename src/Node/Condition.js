@@ -35,13 +35,13 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         this.bindings = {};
         /** The source node the condtion consumes
             @type {Int}
-         */
-        this.expectationNode = null;
+        */
+        this.linkedNodes.consumes = {};
 
         /**
            Sub-conditions, for when the condition is a negated conjunctive condition
         */
-        this.conditions = {};
+        this.linkedNodes.conditions = {};
     };
     Condition.prototype = Object.create(GraphNode.prototype);
     Condition.constructor = Condition;

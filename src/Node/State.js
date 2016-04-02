@@ -6,15 +6,15 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var State = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'state',{},overRideId);
-        this.parentFSM = _.keys(this.parents)[0];
-        this.conditions = {};
+        this.linkedNodes.parentFSM = _.keys(this.parents)[0];
+        this.linkedNodes.conditions = {};
         //actions to perform on entry?
-        this.actions = {};
-        this.rules = {};
+        this.linkedNodes.actions = {};
+        this.linkedNodes.rules = {};
         //events that result in this state:
-        this.inEvents = {};
+        this.linkedNodes.inEvents = {};
         //events that are emitted from this state
-        this.outEvents = {};
+        this.linkedNodes.outEvents = {};
         
     }
     State.prototype = Object.create(GraphNode.prototype);
