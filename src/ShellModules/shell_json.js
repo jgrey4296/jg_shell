@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','Node/GraphNode'],function(_,GraphNode){
+define(['underscore','../Node/GraphNode'],function(_,GraphNode){
     "use strict";
     /**
      Defines methods related to importing or exporting json from the shell

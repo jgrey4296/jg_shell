@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','Simulation'],function(_,Simulation){
+define(['underscore','../Simulation/Simulation'],function(_,Simulation){
 
     var ShellPrototype = {};
 

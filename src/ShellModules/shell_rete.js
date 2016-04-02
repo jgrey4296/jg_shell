@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','Rete'],function(_,Rete){
+define(['underscore'],function(_){
     "use strict";
     /**
        Define prototype methods relating to shell <-> rete interaction
@@ -18,7 +18,6 @@ define(['underscore','Rete'],function(_,Rete){
         _.values(this.allNodes).forEach(d=>d.setValue(undefined,"wmeId",undefined));
         this.reteOutput = [];
         this.reteNet.cleanup();
-        //this.reteNet = new Rete(this._reteNetBackupActions);
     };
     /**
        Retrieve all defined rules, add them to the rete net
@@ -54,7 +53,7 @@ define(['underscore','Rete'],function(_,Rete){
     ShellPrototype.assertWMEs = function(nodeIds){
         //get all the wmes
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
-        var nodes = nodeIds.map(d=>this.getNode(d)),
+        let nodes = nodeIds.map(d=>this.getNode(d)),
             wmes = nodes.filter(d=>d.tags.fact !== undefined).filter(d=>d.wmeId === undefined);
         //assert them
         this.assertWMEList(wmes);
@@ -67,7 +66,7 @@ define(['underscore','Rete'],function(_,Rete){
      */
     ShellPrototype.retractWMEs = function(nodeIds){
         if(nodeIds === undefined || nodeIds.length === 0) { nodeIds = _.keys(this.allNodes); }
-        var shellRef = this,
+        let shellRef = this,
             nodes = nodeIds.map(function(d){
                 return shellRef.getNode(d);
             }).filter(d=>d.wmeId !== undefined);
@@ -86,9 +85,9 @@ define(['underscore','Rete'],function(_,Rete){
             throw new Error("Asserting should be in the form of an array");
         }
         //create wme objects out of them
-        var newWMEs = nodes.map(function(data){
+        let newWMEs = nodes.map(function(data){
             //var wmeId = Rete.assertWME_Immediately(data,this.reteNet);
-            var wmeId = this.reteNet.assertWME(data);
+            let wmeId = this.reteNet.assertWME(data);
             data.wmeId = wmeId;
             return wmeId;
         },this);
@@ -125,3 +124,4 @@ define(['underscore','Rete'],function(_,Rete){
 
     return ShellPrototype;
 });
+

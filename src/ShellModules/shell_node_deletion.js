@@ -20,6 +20,7 @@ define(['underscore'],function(_){
         if(this.allNodes[id] === undefined){
             throw new Error("unrecognised node to delete");
         }
+        //todo remove all reciprocal links
         delete this.allNodes[id];
     };
 
@@ -32,8 +33,8 @@ define(['underscore'],function(_){
      */
     ShellPrototype.rm = function(nodeToDelete,target,sourceId){
         if(target === undefined) { target = 'parents'; }
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        var removedNode = null;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd,
+            removedNode = null;
         if(!isNaN(Number(nodeToDelete))){
             //delete numeric id node
             removedNode = this.removeNumericId(Number(nodeToDelete),target,source);
@@ -59,10 +60,10 @@ define(['underscore'],function(_){
        @TODO check this
      */
     ShellPrototype.removeNumericId = function(id,target,source){
-        var removedNode = null;
-        if(source[target][id] !== undefined){
+        let removedNode = null;
+        if(source.linkedNodes[target][id] !== undefined){
             removedNode = this.allNodes[id];
-            delete source[target][id];
+            delete source.linkedNodes[target][id];
         }
         return removedNode;
     };
@@ -75,26 +76,13 @@ define(['underscore'],function(_){
      */
     ShellPrototype.cleanupNode = function(node,owningNode){
         //remove the owning node from any link in the node:
-        if(node.parents && node.parents[owningNode.id]){
-            delete node.parents[owningNode.id];
+        if(node.linkedNodes.parents && node.linkedNodes.parents[owningNode.id]){
+            delete node.linkedNodes.parents[owningNode.id];
         }
-        if(node.children && node.children[owningNode.id]){
-            delete node.children[owningNode.id];
-        }
-        
-        //if now parent-less:
-        if(_.values(node.parents).filter(function(d){return d;}).length === 0){
-            this.addLink(this.disconnected.noParents,'children',node.id,node.name);
-            this.addLink(node,'parents',this.disconnected.noParents.id,this.disconnected.noParents.name);
-        }
-        //if now child-less:
-        if(_.values(node.children).filter(function(d){return d;}).length === 0){
-            
-            this.addLink(this.disconnected.noChildren,'parents',node.id,node.name);
-            this.addLink(node,'children',this.disconnected.noChildren.id,this.disconnected.noChildren.name);
+        if(node.linkedNodes.children && node.linkedNodes.children[owningNode.id]){
+            delete node.linkedNodes.children[owningNode.id];
         }
     };
-    //RM FINISHED
 
     /**
        Remove an action from the current rule
@@ -104,11 +92,11 @@ define(['underscore'],function(_){
      */
     ShellPrototype.removeAction = function(actionId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(source.actions[actionId] === undefined){
+        if(source.linkedNodes.actions[actionId] === undefined){
             throw new Error("Can't delete a non-existent action");
         }
         //remove from the rule
-        delete source.actions[actionId];
+        delete source.linkedNodes.actions[actionId];
         //remove from allnodes
     };
 
@@ -120,10 +108,10 @@ define(['underscore'],function(_){
      */
     ShellPrototype.removeCondition = function(condId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;        
-        if(source.conditions[condId] === undefined){
+        if(source.linkedNodes.conditions[condId] === undefined){
             throw new Error("Can't delete an non-existent condition");
         }
-        delete source.conditions[condId];
+        delete source.linkedNodes.conditions[condId];
     };
 
     /**
@@ -133,14 +121,14 @@ define(['underscore'],function(_){
        @param testNum
      */
     ShellPrototype.removeTest = function(condId,testId,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         
-        if(source.conditions[condId] === undefined ||
+        if(source.linkedNodes.conditions[condId] === undefined ||
            this.allNodes[condId] === undefined ||
            this.allNodes[condId].constantTests[testId] === undefined){
             throw new Error("can't delete a non-existent test");
         }
-        var condition = this.allNodes[condId];
+        let condition = this.allNodes[condId];
         if(condition.constantTests[testId] !== undefined){
             condition.constantTests.splice(testId,1);
         }
@@ -154,12 +142,12 @@ define(['underscore'],function(_){
        @param sourceId
      */
     ShellPrototype.removeBinding = function(condId,boundVar,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("removing binding:",condId,boundVar);
-        if(source.conditions[condId] === undefined || this.allNodes[condId] === undefined){
+        if(source.linkedNodes.conditions[condId] === undefined || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
-        var condition = this.allNodes[condId];
+        let condition = this.allNodes[condId];
         if(condition.bindings[boundVar] !== undefined){
             delete condition.bindings[boundVar];
         }else{

@@ -57,7 +57,6 @@ define(['underscore'],function(_){
     */
        
     ShellPrototype.bfs = function(nodeId,focusFields,criteriaFunction,depth){
-        if(focusFields === undefined) { focusFields = ['children']; }
         if(depth === undefined) { depth = 2; }
         let shellRef = this,
             currentQueue = [this.getNode(nodeId)],
@@ -84,9 +83,12 @@ define(['underscore'],function(_){
        @returns {Array} A List of all binding variables from all conditions and rules
     */
     ShellPrototype.getConditionBindings = function(rule){
+        if(rule.linkedNodes === undefined){
+            throw new Error("Invalid object passed to getConditionBindings");
+        }
         //Add a 'Bindings' field to the drawn rule, of all conditions (and rules conditions) bindings
         //1)get initial conditions:
-        let initialList = _.keys(rule.conditions).map(d=>this.getNode(d)),
+        let initialList = _.keys(rule.linkedNodes.conditions).map(d=>this.getNode(d)),
             foundSet = new Set(initialList.map(d=>d.id)),
             //split into rules and conditions:
             rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
@@ -95,7 +97,7 @@ define(['underscore'],function(_){
         //Get all conditions, even of rules
         while(rules.length > 0){
             let currRule = rules.shift(),
-                ruleConditions = _.keys(currRule.conditions).map(d=>this.getNode(d));
+                ruleConditions = _.keys(currRule.linkedNodes.conditions).map(d=>this.getNode(d));
             //record the action has been found:
             foundSet.add(currRule.id);
             ruleConditions.forEach(function(d){
@@ -119,14 +121,14 @@ define(['underscore'],function(_){
        Get the bindings for all actions
      */
     ShellPrototype.getActionBindings = function(rule){
-        let initialList = _.keys(rule.actions).map(d=>this.getNode(d)),
+        let initialList = _.keys(rule.linkedNodes.actions).map(d=>this.getNode(d)),
             foundSet = new Set(initialList.map(d=>d.id)),
             rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
             actions = _.reject(initialList,d=>d instanceof this.getCtor('rule'));
 
         while(rules.length > 0){
             let currRule = rule.shift(),
-                ruleActions = _.keys(currRule.actions).map(d=>this.getNode(d));
+                ruleActions = _.keys(currRule.linkedNodes.actions).map(d=>this.getNode(d));
             foundSet.add(currRule.id);
             ruleActions.forEach(function(d){
                 if(!foundSet.has(d.id) && d instanceof this.getCtor('action')){

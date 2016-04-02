@@ -4,12 +4,12 @@ if(typeof define !== 'function'){
 }
 
 define(['underscore'],function(_){
-
+    "use strict";
     var ShellPrototype = {};
 
     ShellPrototype.addFSMComponent = function(typename,names,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd,
-            parentFSMId = source.tags.type === 'fsm' ? source.id : source.parentFSM ? source.parentFSM : null,
+            parentFSMId = source.tags.type === 'fsm' ? source.id : source.linkedNodes.parentFSM ? source.linkedNodes.parentFSM : null,
             target = typename === 'event' ? 'events' : 'states';
 
         //update the parent FSM if its defined
@@ -23,7 +23,7 @@ define(['underscore'],function(_){
         let source = this.getNode(sourceStateId),
             event = this.getNode(eventId),
             sink = this.getNode(sinkStateId),
-        //todo: 'hash' the link (1->2->3) for key, to allow conflicts
+        //simplisticly 'hash' the link (1->2->3) for key. allows multiple start,end, and/or event usage   
             linkHash = `${sourceStateId}->${eventId}->${sinkStateId}`;
 
         if(source.tags.type !== 'state' || event .tags.type !== 'event' || source.tags.type !== 'state'){
@@ -31,11 +31,11 @@ define(['underscore'],function(_){
         }
         
         //link the source via event to result
-        source.outEvents[linkHash] = 1;
+        source.linkedNodes.outEvents[linkHash] = 1;
         //connect the event to the source and result
-        event.links[linkHash] = 1;
+        event.linkedNodes.links[linkHash] = 1;
         //connect the result to its event
-        sink.inEvents[linkHash] = 1;
+        sink.linkedNodes.inEvents[linkHash] = 1;
     };
 
     ShellPrototype.removeFSMLink = function(sourceStateId,eventId,sinkStateId){
@@ -51,7 +51,7 @@ define(['underscore'],function(_){
 
     ShellPrototype.rmFSMComponent = function(componentId){
         let component = this.getNode(componentId),
-            fsm = component.parentFSM ? this.getNode(component.parentFSM) : null;
+            fsm = component.linkedNodes.parentFSM ? this.getNode(component.linkedNodes.parentFSM) : null;
         //in fsm: remove state, unlink all events from it
         if(fsm !== null){
             //remove the specified component

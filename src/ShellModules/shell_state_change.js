@@ -30,10 +30,10 @@ define(['underscore','../utils'],function(_,util){
         if(target === ".."){
             //console.log("cd : ..");
             if(this.cwd._originalParent){
-                this.cdNode(this.cwd._originalParent);
+                this.cdNode(this.cwd.linkedNodes._originalParent);
             }else{
-                //if no original parent defined
-                var randomParentKey = _.sample(_.keys(this.cwd.parents));
+                //if no original parent defined get the first parent in the list                
+                let randomParentKey = _.keys(this.cwd.linkedNodes.parents)[0];
                 if(randomParentKey !== undefined){
                     this.cdNode(randomParentKey);
                 }
@@ -50,25 +50,14 @@ define(['underscore','../utils'],function(_,util){
         
         //passed a name. convert it to an id
         //console.log("Cd-ing: ",target);
-        var nameIdPairs = {};
-        var children = this.cwd.children;
-
-        _.keys(children).map(function(d){
-            return this.allNodes[d];
-        },this).forEach(function(d){
-            this[d.name] = d.id;
-        },nameIdPairs);//pay attention to the state arg
-        
-        var parents = this.cwd.parents;
-        _.keys(parents).map(function(d){
-            return this.allNodes[d];
-        },this).forEach(function(d){
-            this[d.name] = d.id;
-        },nameIdPairs);//state arg
+        let nameIdPairs = _.keys(this.cwd.linkedNodes.children).map(d=>this.getNode(d)).concat( _.keys(this.cwd.linkedNodes.parents).map(d=>this.getNode(d))).reduce(function(m,v){
+            m[v.name] = v.id;
+            return m;
+        },{});
 
         //console.log("Available keys:",_.keys(nameIdPairs));
         //if you can find the target to move to:
-        if(nameIdPairs[target]){
+        if(nameIdPairs[target] !== undefined){
             this.cd(nameIdPairs[target]);
         }else{
             //cant find the target, complain
@@ -80,17 +69,26 @@ define(['underscore','../utils'],function(_,util){
        Add the cwd to the temporary stash for reference
        @method
      */
-    ShellPrototype.stash = function(){
-        this._nodeStash.push(this.cwd);
+    ShellPrototype.stash = function(id){
+        this._nodeStash.push(id || this.cwd);
     };
 
     /**
        Move to, and remove, the top element from the stash stack
        @method
     */
-    ShellPrototype.unstash = function(){
-        if(this._nodeStash.length > 0){
-            this.cd(this._nodeStash.pop().id);
+    ShellPrototype.unstash = function(id){
+        if(id !== undefined){
+            let index = this._nodeStash.indexOf(id),
+                val = this._nodeStash[index];
+            if(index > -1){
+                this._nodeStash.splice(index,1);
+                this.cd(val);
+            }
+        }else{
+            if(this._nodeStash.length > 0){
+                this.cd(this._nodeStash.pop().id);
+            }
         }
     };
 

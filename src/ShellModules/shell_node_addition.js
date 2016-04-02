@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
+define(['underscore','../Node/Constructors'],function(_,getCtor){
     "use strict";
     /**
        Defines prototype methods for shell node creation
@@ -23,8 +23,8 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         if(isNaN(Number(id))){
             throw new Error("Trying to link without providing a valid id number");
         }
-        if(node && node[target]){
-            node[target][Number(id)] = name;
+        if(node && node.linkedNodes[target]){
+            node.linkedNodes[target][Number(id)] = name;
         }else{
             throw new Error("Unrecognised target");
         }
@@ -55,7 +55,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         type = type || "GraphNode";
 
         //Get the constructor
-        var ctor = getCtor(type),
+        let ctor = getCtor(type),
             newNode;
         
         if(target === 'parents' || target === 'parent'){
@@ -63,7 +63,6 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
             newNode = new ctor(name,undefined,type);
             //add the cwd to the newNodes children:
             this.addLink(newNode,'children',source.id,source.name);
-            //newNode.children[this.cwd.id] = true;
         }else{
             newNode = new ctor(name,source,type);
         }
@@ -79,10 +78,10 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         this.allNodes[newNode.id] = newNode;
 
         //get all subrelation objects:
-        var relationObjects = newNode.getRelationObjects();
+        let relationObjects = newNode.getRelationObjects();
         while(relationObjects.length > 0){
             //get an object off
-            var obj = relationObjects.shift();
+            let obj = relationObjects.shift();
             //get any sub objects and add them to the list
             relationObjects = relationObjects.concat(obj.getRelationObjects());
             //add the obj to allNodes
@@ -119,7 +118,7 @@ define(['underscore','../Node/Constructors','Rete'],function(_,getCtor,Rete){
         if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
             throw new Error("Unrecognised operator");
         }
-        var condition = this.allNodes[conditionId];
+        let condition = this.allNodes[conditionId];
         //Create the test
         condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
     };

@@ -39,7 +39,7 @@ define(['underscore'],function(_){
         if(source[field] === undefined && field !== undefined){
             source[field] = {};
         }
-        if(parameter === undefined && field !== 'values' && field !== 'tags' && field !== 'children' && field !== 'parents' && field !== 'name' && field !== 'id'){
+        if(parameter === undefined && field !== 'values' && field !== 'tags' && field !== 'linkedNodes' && field !== 'name' && field !== 'id'){
             delete source[field];
         }else if(value !== undefined){
             source[field][parameter] = value;
@@ -60,21 +60,22 @@ define(['underscore'],function(_){
        @param sourceId
      */
     ShellPrototype.link = function(target,id,reciprocal,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
 
         //validate:
         if(isNaN(Number(id))) { throw new Error("id should be a global id number"); }
         if(this.allNodes[id] === undefined){
             throw new Error("Node for id " + id + " does not exist");
         }
-        if(!source[target]) { throw new Error("Unrecognised target"); }
+        if(!source.linkedNodes[target]) { throw new Error("Unrecognised target"); }
 
         //perform the link:
-        var nodeToLink = this.getNode(id);
+        let nodeToLink = this.getNode(id);
         this.addLink(source,target,nodeToLink.id,nodeToLink.name);
         //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
         if(reciprocal){
-            var rTarget = 'parents';
+            //todo: invert links
+            let rTarget = 'parents';
             if(target === 'parents') { rTarget = 'children'; }
             this.addLink(nodeToLink,rTarget,source.id,source.name);
             //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
@@ -92,7 +93,7 @@ define(['underscore'],function(_){
        @example toVar = wme.fromVar
      */
     ShellPrototype.setBinding = function(conditionId,toVar,fromVar,testPairs,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Add binding to:",conditionId,toVar,fromVar);
         if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to modify a rule when not located at a rule or condition");
@@ -100,7 +101,7 @@ define(['underscore'],function(_){
         if(source.conditions[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
-        var condition = this.getNode(conditionId);
+        let condition = this.getNode(conditionId);
         //condition.bindings.push([toVar,fromVar]);
         condition.setBinding(toVar,fromVar,testPairs);
         console.log(condition,condition.bindings);
@@ -117,16 +118,16 @@ define(['underscore'],function(_){
        @TODO allow bindings in the rhs/value field
      */
     ShellPrototype.setArithmetic = function(actionId,varName,op,value,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Setting arithmetic of:",actionId,varName,op,value);
-        console.log(_.keys(source.actions));
+        console.log(_.keys(source.linkedNodes.actions));
         if(source.tags.type !== 'rule'){
             throw new Error("Arithmetic can only be applied to actions of rules");
         }
-        if(source.actions[actionId] === undefined){
+        if(source.linkedNodes.actions[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
-        var action = this.getNode(actionId);
+        let action = this.getNode(actionId);
 
         if(action === undefined){
             throw new Error("Could not find action");
@@ -144,12 +145,12 @@ define(['underscore'],function(_){
        @param sourceId
     */
     ShellPrototype.setRegex = function(actionId,varName,regex,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Setting regex transform of:",actionId,varName,regex);
         //if it includes the opening and closing /'s, remove them?
 
         //get the action
-        var action = this.getNode(actionId);
+        let action = this.getNode(actionId);
         action.setRegex(varName,regex);
 
     };
@@ -163,7 +164,7 @@ define(['underscore'],function(_){
        @param sourceId
     */
     ShellPrototype.setTiming = function(actionId,timeVar,value,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+        let source = sourceId ? this.getNode(sourceId) : this.cwd,
             action = this.getNode(actionId);
         action.setTiming(timeVar,value);
 
@@ -175,10 +176,11 @@ define(['underscore'],function(_){
        @param priorityVal
      */
     ShellPrototype.setPriority = function(actionId,priorityVal,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd,
+        let source = sourceId ? this.getNode(sourceId) : this.cwd,
             action = this.getNode(actionId);
         if(isNaN(Number(priorityVal))){
-            throw new Error("Priority needs to be a number");                   }
+            throw new Error("Priority needs to be a number");
+        }
         action.setPriority(Number(priorityVal));
     };
     
@@ -192,12 +194,12 @@ define(['underscore'],function(_){
        @note If only a is supplied, sets the action's actionType tag
      */
     ShellPrototype.setActionValue = function(actionId,a,b,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(source.tags.type !== 'rule'){
             throw new Error("Can't set action values on non-actions");
         }
         if(source.actions[actionId] !== undefined){
-            var action = this.getNode(actionId);
+            let action = this.getNode(actionId);
             action.setValue(b,'values',a);
         }else{
             throw new Error("Unrecognised action");
@@ -212,12 +214,12 @@ define(['underscore'],function(_){
        @param sourceId
      */
     ShellPrototype.setActionType = function(actionId,a,sourceId){
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(source.tags.type !== 'rule'){
             throw new Error("Can't set action type for non-rules");
         }
-        if(source.actions[actionId] !== undefined){
-            var action = this.allNodes[actionId];
+        if(source.linkedNodes.actions[actionId] !== undefined){
+            let action = this.allNodes[actionId];
             action.setValue(a,'tags','actionType');
         }else{
             throw new Error("Unrecognised action");
@@ -236,15 +238,15 @@ define(['underscore'],function(_){
      */
     ShellPrototype.setTest = function(conditionId,testId,field,op,value,sourceId){
         console.log(conditionId,testId,field,op,value,sourceId);
-        var source = sourceId ? this.getNode(sourceId) : this.cwd;
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to set test on a non-rule node");
         }
-        if(source.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
+        if(source.linkedNodes.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
 
-        var condition = this.getNode(conditionId);
+        let condition = this.getNode(conditionId);
         condition.setTest(testId,field,op,value);
     };
 

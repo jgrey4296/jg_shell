@@ -23,9 +23,10 @@ define(['underscore'],function(_){
        @method
        @param values
        @param nodeSelection
+       @todo adapt this to new linkedNodes structure
      */
     ShellPrototype.searchForFieldTagValue = function(values,nodeSelection){
-        var field = values.shift(),
+        let field = values.shift(),
             tag = values.shift(),
             tagValue = values.shift(),
             pattern = new RegExp(tag,"i");
@@ -38,7 +39,7 @@ define(['underscore'],function(_){
             this.lastSearchResults = [];
         }
         
-        var nodes = nodeSelection.filter(function(node){
+        let nodes = nodeSelection.filter(function(node){
             if(node[field] === undefined) { return false; }
             //if field is a string
             if(typeof node[field] === "string"){
@@ -60,7 +61,7 @@ define(['underscore'],function(_){
 
             //if field exists, tag specified, but value isnt:
             if(field && tag && tagValue === undefined){
-                var keys = _.keys(node[field]).filter(d=>pattern.test(d));
+                let keys = _.keys(node[field]).filter(d=>pattern.test(d));
                 if(keys.length > 0){
                     return true;
                 }else{

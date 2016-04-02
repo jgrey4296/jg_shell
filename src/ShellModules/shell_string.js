@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','Parse'],function(_,Parse){
+define(['underscore','../../libs/Parse'],function(_,Parse){
     "use strict";
     /**
        Defines Shell prototype methods relating to string modification. mainly utilities
@@ -52,7 +52,7 @@ define(['underscore','Parse'],function(_,Parse){
     ShellPrototype.traceNode = function(node){
         //create the grammar object:
         //first get relevant descendant rules
-        var descendents = this.dfs(node.id).map(function(d){
+        let descendents = this.dfs(node.id).map(function(d){
             return this.getNode(d);
         },this),
             //fold into a single grammar object, using id's as rule keys:
@@ -62,7 +62,7 @@ define(['underscore','Parse'],function(_,Parse){
                 }
                 if(v.values.message !== undefined){
                     //convert the message to use id numbers instead of var names
-                    var invertedChildren = _.invert(v.children),
+                    let invertedChildren = _.invert(v.linkedNodes.children),
                         message = v.values.message,
                         vars = message.match(/\$\w+/g);
                     //no substrings to expand:
@@ -72,7 +72,7 @@ define(['underscore','Parse'],function(_,Parse){
                         //todo: filter vars that are defined in values, use them in preference to descendents
                       
                         //substring conversion:
-                        var ids = vars.map(function(d){
+                       let ids = vars.map(function(d){
                             return invertedChildren[d.slice(1)];
                         }),
                             //pair with strings to replace
@@ -87,7 +87,7 @@ define(['underscore','Parse'],function(_,Parse){
                     //turn each child into a rule
                     //m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
                     //turn each child into a rule, or use the name of the node
-                    m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
+                    m[v.id] = _.values(v.linkedNodeschildren).length > 0 ? m[v.id].concat(_.keys(v.linkedNodes.children).map(function(d){
                         return "$"+d;
                     })) : m[v.id].concat([v.name]);
                }                
