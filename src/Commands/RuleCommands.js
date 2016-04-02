@@ -30,21 +30,6 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
         "cleanup" : function(globalData, values){
             RuleDrawing.cleanup();
         },
-        /** Change directory / working node
-            @param globalData
-            @param values
-        */
-        // "cd" : function(globalData,values){
-        //     //switch back to node mode
-        //     let modes = _.keys(globalData.commands);
-        //     if(modes.indexOf('node') !== -1){
-        //         globalData.commands[globalData.currentCommandMode].cleanup(globalData,[]);
-        //         globalData.currentCommandMode = modes[modes.indexOf('node')];
-        //         //execute cd
-        //         var cd = globalData.lookupOrFallBack('cd',globalData);
-        //         cd(globalData,values);
-        //     }
-        // },
         /** new -> addCondition/test/action 
             @param globalData
             @param values
@@ -175,48 +160,35 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 }
             }
         },
-        /** infer ?
-            @param globalData
-            @param values
-        */
-        "infer" : function(globalData,values){
-            globalData.shell.extractFactPrototypes();
-        },
         /** Link a Condition/Action with a node in the graph 
             @param globalData
             @param values
         */
         "link" : function(globalData,values){
             //currently not used, but the syntax is more pleasing if included
-            var targetType = values.shift(),
+            let targetType = values.shift(),
             //get the condition/action being targeted
                 condOrAction = globalData.shell.getNode(values.shift()),
-            //get the node being linked
+            //get the node that will be 'used' by the cond or action
                 nodeToLink = globalData.shell.getNode(values.shift());
 
-            if(condOrAction === undefined || condOrAction.expectationNode === undefined){
-                throw new Error("Linking needs a valid node to hold expectation");
+            if(condOrAction === undefined){
+                throw new Error("Linking needs a value node to hold the link");
+            }
+            if(condOrAction.linkedNodes.consumes === undefined && condOrAction.linkedNodes.produces === undefined){
+                throw new Error("Linking needs a valid entry to hold expectation");
             }
             if(nodeToLink === undefined){
                 throw new Error("Linking needs a valid node to expect");
             }
-            //if you are overwriting an expectation:
-            //remove the old expectation
-            if(condOrAction.expectationNode !== null){
-                var oldExpectation = globalData.shell.getNode(condOrAction.expectationNode);
-                if(oldExpectation && condOrAction.tags.type === "condition"){
-                    delete oldExpectation.expectedBy[condOrAction.id];
-                }else if(oldExpectation && condOrAction.tags.type === "action"){
-                    delete oldExpectation.producedBy[condOrAction.id];
-                }
-            }
-            //assign it to the expectation node
-            condOrAction.expectationNode = nodeToLink.id;
-            //store the expectation in the node
+
+            //store the relation in linked nodes
             if(condOrAction.tags.type === "condition"){
-                nodeToLink.expectedBy[condOrAction.id] = condOrAction.name;
+                condOrAction.linkedNodes.consumes[nodeToLink.id] = nodeToLink.name;
+                nodeToLink.linkedNodes.consumedBy[condOrAction.id] = condOrAction.name;
             }else if(condOrAction.tags.type === "action"){
-                nodeToLink.producedBy[condOrAction.id] = condOrAction.name;
+                condOrAction.linkedNodes.produces[nodeToLink.id] = nodeToLink.name;
+                nodeToLink.linkedNodes.producedBy[condOrAction.id] = condOrAction.name;
             }
             
         },

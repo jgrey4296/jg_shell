@@ -274,7 +274,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             @param values
         */
         "printConditions" : function(globalData,values){
-            var allConditions = _.values(globalData.shell.allNodes).filter(function(node){
+            let allConditions = _.values(globalData.shell.allNodes).filter(function(node){
                 if(node.tags.type === "condition"){
                     return true;
                 }else{
@@ -284,11 +284,11 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             console.log("Conditions:",allConditions);
 
             //for each condition, aggregate the fields of its tests
-            var aggregateObjects = allConditions.map(function(condition){
-                var tests = _.keys(condition.constantTests).map(function(testId){
+            let aggregateObjects = allConditions.map(function(condition){
+                let tests = _.keys(condition.constantTests).map(function(testId){
                     return globalData.shell.allNodes[testId];
                 });
-                var aggregateFields = tests.reduce(function(m,test){
+                let aggregateFields = tests.reduce(function(m,test){
                     m[test.values.field] = 1;
                     return m;
                 },{});

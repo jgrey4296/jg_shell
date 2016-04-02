@@ -9,6 +9,7 @@
    @requires module:Commands/RuleCommands
    @requires module:Commands/SimulationCommands
    @requires module:Commands/TraceCommands
+   @requires module:Commands/FSMCommands
  */
 define(['Commands/BookMarkCommands','Commands/GeneralCommands','Commands/NodeCommands','Commands/ReteCommands','Commands/RuleCommands','Commands/SimulationCommands','Commands/TraceCommands','Commands/FSMCommands'],function(bkmkC,genC,nodeC,reteC,ruleC,simC,traceC,FSMC){
 

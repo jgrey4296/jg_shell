@@ -98,6 +98,7 @@ define(['underscore'],function(_){
     
     /**
        Turn bookmarks into objects
+       @param data JSON bookmark data 
        @function extractLinks
      */
     var extractLinks = function(data){
