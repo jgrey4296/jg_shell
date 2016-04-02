@@ -95,7 +95,41 @@ exports.ShellTests = {
         test.done();
     },
 
+    link_node_bad_id : function(test){
+        let shell = makeShell(),
+            newNode1 = shell.addNode('test1');
+        test.throws(function(){
+            shell.addLink(newNode1,'children','blah','awef');
+        });
+        test.throws(function(){
+            shell.addLink(newNode,'awef',shell.root.id,'root');
+        });
+        test.done();
+    },
+
+    node_ctor_call_test : function(test){
+        //check different constructor calls work
+        test.fail();
+        test.done();
+    },    
+
+    condition_construction_test : function(test){
+        //create a condition to check you can
+        test.fail();
+        test.done();
+    },
+
+    condition_add_test_test : function(test){
+        //check that adding a test to a condition works
+        test.fail();
+        test.done();
+    },
     
-    
+    copyNode_test : function(test){
+        //check that a node + descendents can be copied,
+        //ancestors linked
+        test.fail();
+        test.done();
+    },
     
 };
