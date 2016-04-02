@@ -29,7 +29,7 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
         }
         relType = relType || 'child';
         recType = recType || 'parent';
-        type = type || "GraphNode";
+        type = type || "graphnode";
         
         //Get the constructor
         let ctor = getCtor(type),

@@ -46,7 +46,7 @@ define(['underscore','../utils'],function(_,util){
         //passed a name. convert it to an id
         //console.log("Cd-ing: ",target);
         let ids = _.keys(this.cwd.linkedNodes),
-            names = ids.map(d=>this.getNode(d).names),
+            names = ids.map(d=>this.getNode(d).name),
             nameIdPairs = _.zip(names,ids).reduce(function(m,v){
                 m[v[0]] = v[1];
                 return m;
