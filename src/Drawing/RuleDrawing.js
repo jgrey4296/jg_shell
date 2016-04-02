@@ -11,7 +11,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
        Main draw function for a standard rule instance of the shell
        @function
        @param globalData 
-       @param node
+       @param ruleToDraw
     */
     RuleDrawInterface.drawRule = function(globalData,ruleToDraw){
         let commonData = new DrawUtils.CommonData(globalData,null,3);
@@ -24,23 +24,24 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
         
         //condition data transform
-        let conditionData = _.keys(ruleToDraw.linkedNodes.conditions).map(function(d){
-            let node = globalData.shell.getNode(d);
-            if(node instanceof globalData.shell.getCtor('condition')){
-                return node.getDescriptionObjects();
-            }else {
-                return [node.getShortDescription()];
-            }
-        }),
-            //action data transform
-            actionData = ruleToDraw.actions ? _.keys(ruleToDraw.linkedNodes.actions).map(function(d){
-                let node = globalData.shell.getNode(d);
+        let rulePairs = _.pairs(ruleToDraw.linkedNodes),
+            conditionData = rulePairs.filter(d=>/condition/.test(d[1])).map(function(d){
+                let node = globalData.shell.getNode(d[0]);
+                if(node instanceof globalData.shell.getCtor('condition')){
+                    return node.getDescriptionObjects();
+                }else {
+                    return [node.getShortDescription()];
+                }
+            }),
+        //action data transform
+            actionData = rulePairs.filter(d=>/action/.test(d[1])).map(function(d){
+                let node = globalData.shell.getNode(d[0]);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();
                 }else{
                     return [node.getShortDescription()];
                 }
-            }) : [],
+            }),
             // BINDING EXTRACTION:
             allConditionBindings = globalData.shell.getConditionBindings(ruleToDraw),
             allActionBindings = globalData.shell.getActionBindings(ruleToDraw),

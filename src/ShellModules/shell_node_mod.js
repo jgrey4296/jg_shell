@@ -22,6 +22,72 @@ define(['underscore'],function(_){
         source.name = name;
     };
 
+
+
+        /**
+       Add a constant test to a specified condition of the current rule
+       @method 
+       @param conditionNumber The position in the condition array to add the test to
+       @param testField the wme field to test
+       @param op The operator to use in the test
+       @param value The constant value to test against
+     */
+    ShellPrototype.addTest = function(conditionId,testParams,sourceId){
+        let source = sourceId ? this.getNode(sourceId) : this.cwd;
+        console.log("Adding test:",conditionId,testParams,source.conditions);
+        //check you're in a rule
+        if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
+            throw new Error("Trying to modify a rule when not located at a rule");
+        }
+        //check the specified condition exists
+        if(source.linkedNodes[conditionId] === undefined || this.allNodes[conditionId] === undefined){
+            console.log(conditionId,source.linkedNodes);
+            throw new Error("Can't add a test to a non-existent condition");
+        }
+        if(testParams.length !== 3){
+            throw new Error("Insufficient test specification");
+        }
+        //Check the operator is a defined one
+        if(this.reteNet.ComparisonOperators[testParams[1]] === undefined){
+            throw new Error("Unrecognised operator");
+        }
+        let condition = this.allNodes[conditionId];
+        //Create the test
+        condition.setTest(undefined,testParams[0],testParams[1],testParams[2]);
+    };
+
+    /**
+       Copy a source node to be a new child of the target
+       @param sourceNodeId the id of the node to copy
+       @param targetNodeId the id of the node to copy to
+       @param deepOrNot whether to dfs the source node
+    */
+    ShellPrototype.copyNode = function(sourceNodeId,targetNodeId,deepOrNot){
+        var sourceNode = this.getNode(sourceNodeId),
+            targetNode = this.getNode(targetNodeId);
+        if(sourceNode === undefined || targetNode === undefined){
+            throw new Error("Unrecognised source or target for copy");
+        }
+        //create a dummy node for a new id
+        var graphNodeCtor = this.getCtor(),
+            dummyNode = new graphNodeCtor("dummy",undefined,"dummy",{}),
+            //get the ctor for the source node:
+            ctor = this.getCtor(sourceNode.tags.type),
+            //create the new node
+            newNode = _.create(ctor.prototype,JSON.parse(JSON.stringify(sourceNode)));
+        //set a new id:
+        newNode.id = dummyNode.id;
+
+        //add it to the allNodes list:
+        this.allNodes[newNode.id] = newNode;
+
+        //add it to the targetNode
+        targetNode.addRelation('child',newNode);
+        
+    };
+    
+
+    
     /**
        Set a key:value pair in the node[field] to value
        @method
@@ -54,34 +120,40 @@ define(['underscore'],function(_){
     /**
        Interface method to add a link to the cwd. can be reciprocal
        @method
-       @param target The field of the node to add the link to
        @param id The id of the node being linked towards
-       @param reciprocal Whether the node of id will have a link back
+       @param relationType
+       @param reciprocalType The type of return relation between the nodes. eg: 'parent','rule'
        @param sourceId
      */
-    ShellPrototype.link = function(target,id,reciprocal,sourceId){
-        let source = sourceId ? this.getNode(sourceId) : this.cwd;
+    ShellPrototype.link = function(id,relationType,reciprocalType,sourceId){
+        let source = sourceId ? this.getNode(sourceId) : this.cwd,
+            nodeToLink = this.getNode(id);
 
-        //validate:
-        if(isNaN(Number(id))) { throw new Error("id should be a global id number"); }
-        if(this.allNodes[id] === undefined){
-            throw new Error("Node for id " + id + " does not exist");
-        }
-        if(!source.linkedNodes[target]) { throw new Error("Unrecognised target"); }
-
-        //perform the link:
-        let nodeToLink = this.getNode(id);
-        this.addLink(source,target,nodeToLink.id,nodeToLink.name);
-        //this.cwd[target][nodeToLink.id] = true; //this.allNodes[id];
-        if(reciprocal){
-            //todo: invert links
-            let rTarget = 'parents';
-            if(target === 'parents') { rTarget = 'children'; }
-            this.addLink(nodeToLink,rTarget,source.id,source.name);
-            //nodeToLink[rtarget][this.cwd.id] = true; //this.cwd;
+        this.addLink(source,nodeToLink.id,relationType);
+        if(typeof reciprocalType === 'string'){
+            this.addLink(nodeToLink,source.id,reciprocalType);
         }
     };
 
+    /**
+       Add an ID number and name to a field of an object
+       @method
+       @param node the node to add the link FROM
+       @param target the field of the node to link FROM
+       @param id the id of the node to link TO
+       @param name the name of the node to link TO
+    */
+    ShellPrototype.addLink = function(node,id,linkType){
+        if(isNaN(Number(id))){
+            throw new Error("Trying to link without providing a valid id number:" + id);
+        }
+        if(node && node.linkedNodes){
+            node.linkedNodes[Number(id)] = linkType;
+        }else{
+            throw new Error("Unrecognised target");
+        }
+    };
+    
 
     /**
        Set/Add a binding pair to a condition in a rule
@@ -98,7 +170,7 @@ define(['underscore'],function(_){
         if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to modify a rule when not located at a rule or condition");
         }
-        if(source.conditions[conditionId] === undefined){
+        if(source.linkedNodes[conditionId] === undefined){
             throw new Error("Can't add binding to non=existent condition");
         }
         let condition = this.getNode(conditionId);
@@ -120,11 +192,11 @@ define(['underscore'],function(_){
     ShellPrototype.setArithmetic = function(actionId,varName,op,value,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("Setting arithmetic of:",actionId,varName,op,value);
-        console.log(_.keys(source.linkedNodes.actions));
+        console.log(_.keys(source.linkedNodes));
         if(source.tags.type !== 'rule'){
             throw new Error("Arithmetic can only be applied to actions of rules");
         }
-        if(source.linkedNodes.actions[actionId] === undefined){
+        if(source.linkedNodes[actionId] === undefined){
             throw new Error("Cannot add arithmetic to non-existent action");
         }
         let action = this.getNode(actionId);
@@ -198,7 +270,7 @@ define(['underscore'],function(_){
         if(source.tags.type !== 'rule'){
             throw new Error("Can't set action values on non-actions");
         }
-        if(source.actions[actionId] !== undefined){
+        if(source.linkedNodes[actionId] !== undefined){
             let action = this.getNode(actionId);
             action.setValue(b,'values',a);
         }else{
@@ -218,7 +290,7 @@ define(['underscore'],function(_){
         if(source.tags.type !== 'rule'){
             throw new Error("Can't set action type for non-rules");
         }
-        if(source.linkedNodes.actions[actionId] !== undefined){
+        if(source.linkedNodes[actionId] !== undefined){
             let action = this.allNodes[actionId];
             action.setValue(a,'tags','actionType');
         }else{
@@ -242,7 +314,7 @@ define(['underscore'],function(_){
         if(source.tags.type !== 'rule' && (source.tags.type !== 'condition' || source.tags.conditionType !== 'negConjCondition')){
             throw new Error("Trying to set test on a non-rule node");
         }
-        if(source.linkedNodes.conditions[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
+        if(source.linkedNodes[conditionId] === undefined || this.getNode(conditionId).constantTests[testId] === undefined){
             throw new Error("trying to set non-existent test");
         }
 

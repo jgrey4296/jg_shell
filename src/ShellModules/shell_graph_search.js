@@ -88,7 +88,7 @@ define(['underscore'],function(_){
         }
         //Add a 'Bindings' field to the drawn rule, of all conditions (and rules conditions) bindings
         //1)get initial conditions:
-        let initialList = _.keys(rule.linkedNodes.conditions).map(d=>this.getNode(d)),
+        let initialList = _.pairs(rule.linkedNodes).filter(d=>/condition|rule/.test(d[1])).map(d=>this.getNode(d[0])),
             foundSet = new Set(initialList.map(d=>d.id)),
             //split into rules and conditions:
             rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
@@ -97,7 +97,7 @@ define(['underscore'],function(_){
         //Get all conditions, even of rules
         while(rules.length > 0){
             let currRule = rules.shift(),
-                ruleConditions = _.keys(currRule.linkedNodes.conditions).map(d=>this.getNode(d));
+                ruleConditions = _.pairs(currRule.linkedNodes).filter(d=>/condition/.test(d[1])).map(d=>this.getNode(d[0]));
             //record the action has been found:
             foundSet.add(currRule.id);
             ruleConditions.forEach(function(d){
@@ -119,16 +119,17 @@ define(['underscore'],function(_){
 
     /**
        Get the bindings for all actions
+       @param rule
      */
-    ShellPrototype.getActionBindings = function(rule){
-        let initialList = _.keys(rule.linkedNodes.actions).map(d=>this.getNode(d)),
+    ShellPrototype.getActionBindings = function(inputRule){
+        let initialList = _.pairs(inputRule.linkedNodes).filter(d=>/action/.test(d[1])).map(d=>this.getNode(d[0])),
             foundSet = new Set(initialList.map(d=>d.id)),
             rules = _.filter(initialList,d=>d instanceof this.getCtor('rule')),
             actions = _.reject(initialList,d=>d instanceof this.getCtor('rule'));
 
         while(rules.length > 0){
-            let currRule = rule.shift(),
-                ruleActions = _.keys(currRule.linkedNodes.actions).map(d=>this.getNode(d));
+            let currRule = rules.shift(),
+                ruleActions = _.pairs(currRule.linkedNodes).filter(d=>/action/.test(d[1])).map(d=>this.getNode(d[0]));
             foundSet.add(currRule.id);
             ruleActions.forEach(function(d){
                 if(!foundSet.has(d.id) && d instanceof this.getCtor('action')){

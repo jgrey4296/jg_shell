@@ -26,42 +26,39 @@ define(['underscore','../utils'],function(_,util){
     ShellPrototype.cdNode = function(target){
         //update where you were previously
         this.previousLocation = this.cwd.id;
+        let pairs = _.pairs(this.cwd.linkedNodes);
         //go up to parent
         if(target === ".."){
             //console.log("cd : ..");
-            if(this.cwd._originalParent){
-                this.cdNode(this.cwd.linkedNodes._originalParent);
-            }else{
-                //if no original parent defined get the first parent in the list                
-                let randomParentKey = _.keys(this.cwd.linkedNodes.parents)[0];
-                if(randomParentKey !== undefined){
-                    this.cdNode(randomParentKey);
-                }
+            let parent = _.find(pairs,d=>/_originalParent/.test(d[1])) || _.find(pairs,d=>/parent/.test(d[1])); 
+            if(parent){
+                this.cdNode(parent[0]);
+                return;
             }
-            return;
         }
         
         //id specified
         if(!isNaN(Number(target)) && this.allNodes[Number(target)]){
-            //console.log("cd : ", Number(target));
             this.cwd = this.allNodes[Number(target)];
             return;
         }
         
         //passed a name. convert it to an id
         //console.log("Cd-ing: ",target);
-        let nameIdPairs = _.keys(this.cwd.linkedNodes.children).map(d=>this.getNode(d)).concat( _.keys(this.cwd.linkedNodes.parents).map(d=>this.getNode(d))).reduce(function(m,v){
-            m[v.name] = v.id;
-            return m;
-        },{});
-
-        //console.log("Available keys:",_.keys(nameIdPairs));
+        let ids = _.keys(this.cwd.linkedNodes),
+            names = ids.map(d=>this.getNode(d).names),
+            nameIdPairs = _.zip(names,ids).reduce(function(m,v){
+                m[v[0]] = v[1];
+                return m;
+            },{});
+            
         //if you can find the target to move to:
         if(nameIdPairs[target] !== undefined){
             this.cd(nameIdPairs[target]);
         }else{
             //cant find the target, complain
-            throw new Error("Unrecognised cd form");
+            console.log("Name Id Pairs:",nameIdPairs);
+            throw new Error("Unrecognised cd form: " + target);
         }
     };
 

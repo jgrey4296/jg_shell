@@ -48,8 +48,6 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             //new -> addNode,
             //Expand out simplifications
             var target = values[0];
-            if(target === "child") { target = "children"; }
-            if(target === "parent") { target  = "parents"; }
             //console.log("Target:",target);
             globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
         },
@@ -57,15 +55,15 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             @param globalData
             @param values
          */
-        "nc" : function(globalData,values){
+        "nc" : function(globalData,values,sourceId){
             const chars = new Map([
                 ["n" , "node"],
                 ["i" , "institution"],
             ]);
             if(chars.has(values[0])){
-                globalData.shell.addNode(values[1],'children',chars.get(values[0]),values.slice(2));
+                globalData.shell.addNode(values[1],'child','parent',chars.get(values[0]),values.slice(2),sourceId);
             }else{
-                globalData.shell.addNode(values[1],'children',values[0],values.slice(2));
+                globalData.shell.addNode(values[1],'child','parent',values[0],values.slice(2),sourceId);
             }
         },
         /** new parent 
@@ -78,9 +76,9 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
                 "i" : "institution",
             };
             if(chars[values[0]]){
-                globalData.shell.addNode(values[1],'parents',chars[values[0]],values.slice(2),sourceId);
+                globalData.shell.addNode(values[1],'parent','child',chars[values[0]],values.slice(2),sourceId);
             }else{
-                globalData.shell.addNode(values[1],'parents',values[0],values.slice(2),sourceId);
+                globalData.shell.addNode(values[1],'parent','child',values[0],values.slice(2),sourceId);
             }
         },
         /** New Child Node 
@@ -89,14 +87,14 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
          */
         "ncn" : function(globalData,values,sourceId){
             console.log("ncn:",values,sourceId);
-            globalData.shell.addNode(values[0],'children','node',undefined,sourceId);
+            globalData.shell.addNode(values[0],'child','parent','node',undefined,sourceId);
         },
         /** New Child Institution 
             @param globalData
             @param values
          */
         "nci" : function(globalData,values){
-            globalData.shell.addNode(values[0],'children','institution');
+            globalData.shell.addNode(values[0],'child','parent','institution');
         },
         /** Remove Node 
             @param globalData
@@ -155,10 +153,9 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
         */
         "link" : function(globalData,values,sourceId){
             //link -> link
-            var target = values[0];
-            if(target === 'child') { target = 'children'; }
-            if(target === 'parent') { target = 'parents'; }
-            globalData.shell.link(target,values[1],false,sourceId);
+            var target = values[0],
+                recType = /child/.test(target) ? 'parent' : /parent/.test(target) ? 'child' : undefined;
+            globalData.shell.link(values[1],target,recType,sourceId);
         },
         /** Link two nodes, reciprocally
             @param globalData
@@ -167,8 +164,6 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
          */
         "linkr" : function(globalData,values,sourceId){
             var target = values[0];
-            if(target === 'child') { target = 'children'; }
-            if(target === 'parent') { target = 'parents'; }
             globalData.shell.link(target,values[1],true,sourceId);
 
         },

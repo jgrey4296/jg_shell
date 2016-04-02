@@ -61,9 +61,9 @@ define(['underscore'],function(_){
      */
     ShellPrototype.removeNumericId = function(id,target,source){
         let removedNode = null;
-        if(source.linkedNodes[target][id] !== undefined){
+        if(source.linkedNodes[id] !== undefined){
             removedNode = this.allNodes[id];
-            delete source.linkedNodes[target][id];
+            delete source.linkedNodes[id];
         }
         return removedNode;
     };

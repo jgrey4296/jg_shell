@@ -40,14 +40,14 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 if(values.length > 0 && !isNaN(Number(values[0]))){
                     sourceId = Number(values.shift());
                 }
-                globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+                globalData.shell.addNode(null,'condition','rule->condition','condition',undefined,sourceId);
             }else if(type === "action"){
-                globalData.shell.addNode(null,'actions','action',values,sourceId);
+                globalData.shell.addNode(null,'action','rule->action','action',undefined,sourceId);
             }else if(type === "negCondition"){
-                let newNode = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+                let newNode = globalData.shell.addNode(null,'condition','rule->condition','condition',undefined,sourceId);
                 newNode.setConditionType('negative');
             }else if(type === "negConjCondition"){
-                let newNode = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+                let newNode = globalData.shell.addNode(null,'condition','rule->condition','condition',values,sourceId);
                 newNode.setConditionType('negConjCondition');
             }
         },
@@ -161,37 +161,37 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             }
         },
         /** Link a Condition/Action with a node in the graph 
+            Has two forms:
+            1) link {condition} 5    : link an existing condition/rule INTO the rule
+            2) link {condition} 5 2  : link an existing condition/rule TO a node
             @param globalData
             @param values
         */
-        "link" : function(globalData,values){
+        "link" : function(globalData,values,sourceId){
             //currently not used, but the syntax is more pleasing if included
             let targetType = values.shift(),
-            //get the condition/action being targeted
-                condOrAction = globalData.shell.getNode(values.shift()),
-            //get the node that will be 'used' by the cond or action
-                nodeToLink = globalData.shell.getNode(values.shift());
+                ruleComponentId = values.shift(),
+                targetNodeId = values.shift();
 
-            if(condOrAction === undefined){
-                throw new Error("Linking needs a value node to hold the link");
+            if(targetNodeId === undefined){
+                //type 1: use an existing rule/condition in the current rule
+                globalData.shell.link(ruleComponentId,targetType,`rule->${targetType}`,sourceId);
+            }else{
+                //type 2: set a conditions source / actions sink
+                let source = sourceId ? globalData.shell.getNode(sourceId) : globalData.shell.cwd,
+                    relType = targetType === 'condition' ? 'source' : targetType === 'action' ? 'sink' : null;
+                if(source.linkedNodes[ruleComponentId] === undefined){
+                    throw new Error("Can't link to a condition that doesnt exist");
+                }
+                if(relType === null){
+                    throw new Error("Unknown rule linking relation type");
+                }
+                globalData.shell.link(targetNodeId,relType,`${relType}->${targetType}`,ruleComponentId);
             }
-            if(condOrAction.linkedNodes.consumes === undefined && condOrAction.linkedNodes.produces === undefined){
-                throw new Error("Linking needs a valid entry to hold expectation");
-            }
-            if(nodeToLink === undefined){
-                throw new Error("Linking needs a valid node to expect");
-            }
-
-            //store the relation in linked nodes
-            if(condOrAction.tags.type === "condition"){
-                condOrAction.linkedNodes.consumes[nodeToLink.id] = nodeToLink.name;
-                nodeToLink.linkedNodes.consumedBy[condOrAction.id] = condOrAction.name;
-            }else if(condOrAction.tags.type === "action"){
-                condOrAction.linkedNodes.produces[nodeToLink.id] = nodeToLink.name;
-                nodeToLink.linkedNodes.producedBy[condOrAction.id] = condOrAction.name;
-            }
-            
         },
+        "unlink" : function(globalData,values,sourceId){
+            throw new Error("Unimplemented");
+        },        
         /** help 
             @param globalData
             @param values
