@@ -189,49 +189,9 @@ exports.ShellTests = {
     },
 
 
-    // //SEARCH TESTS:
-    // searchTest_forChildren : function(test){
-    //     var shell = makeShell();
-    //     shell.addNode("test",'children');
-    //     shell.addNode('test2','children');
-    //     shell.addNode('aewaf','children');
-    //     var foundNodes = shell.search('parents','test');
-    //     test.ok(foundNodes.length === 1,foundNodes.length);
-    //     test.ok(foundNodes[0].id === shell.cwd.id);
-    //     test.done();
-    // },
-
-    // searchTest_forParents : function(test){
-    //     var shell = makeShell();
-    //     var t1 = shell.addNode('test','children');
-    //     var t2 = shell.addNode('test2','children');
-    //     var t3 = shell.addNode('test3','parents');
-    //     var foundNodes = shell.search('children',shell.cwd.id,'id');
-    //     test.ok(foundNodes.length === 2,foundNodes.length);
-    //     test.ok(foundNodes[0].id === t1.id);
-    //     test.ok(foundNodes[1].id === t2.id);
-    //     test.done();
-    // },
-
-    // //make sure the search is across all nodes, not just the current nodes:
-    // searchTest_checkAllNodes : function(test){
-    //     var shell = makeShell();
-    //     var t1 = shell.addNode('test','children');
-    //     shell.cd(t1.id);
-    //     test.ok(shell.cwd.id === t1.id);
-    //     shell.addNode('test2','children');
-    //     shell.cd(shell.root.id);
-    //     test.ok(shell.cwd.id !== t1.id);
-    //     var foundNodes = shell.search('name','test');
-    //     test.ok(foundNodes.length === 2);
-    //     test.done();
-    // },
-
-
     importJsonTest : function(test){
         var test1Data = require('../testData/test1.json');
         var shell = makeShell();
-
         test.ok(_.keys(shell.allNodes).length === 1);
         shell.importJson(test1Data);
         test.ok(_.keys(shell.allNodes).length === 7,_.keys(shell.allNodes));
@@ -239,56 +199,4 @@ exports.ShellTests = {
         test.done();
     },
 
-    
-    //TODO:
-    //search for an id
-
-    //search for parents of a pattern
-
-    //search for parents of an id
-
-    //value search for values/tags
-
-    //key search for values/tags
-    
-
-    // checkAddConditionToRuleTest : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    // checkAddActionToRuleTest : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    // checkAddConstantTestToCondition : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    // checkAddConstantTestToSpecifiedCondition : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    // checkAddBindingToCondition : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    // checkAddBindingToSpecifiedCondition : function(test){
-    //     test.ok(false);
-    //     test.done();
-    // },
-
-    
-    //Display conversion tests
-    //check functions for converting nodes/rules etc to
-    //simple array formats for visualisation
-    
-    //without needing to be in that specific part of the institution:
-    //be able to add facts/roles/activities/rules..
-    //add new [incumbent|challenger|governed]
-    //add new activity
 };

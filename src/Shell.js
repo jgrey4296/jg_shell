@@ -33,14 +33,7 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
             @instance
         */
         this.root = new GraphNode('__root');
-        
-        /** Disconnected Nodes
-            @deprecated
-        */
-        this.disconnected = {
-            noParents : new GraphNode('disconnectedFromParents'),
-            noChildren : new GraphNode('disconnectedFromChildren'),
-        };
+
         /** 
             All Nodes
             @type {Object.<String,Node/GraphNode>}

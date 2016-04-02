@@ -37,6 +37,7 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
        @param name The name of the new node
        @param target The field of the cwd to add the new node to
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
+       @param sourceId The id to add to, otherwise cwd
        @return the newly created node
     */
     ShellPrototype.addNode = function(name,target,type,values,sourceId){
@@ -46,13 +47,13 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
             name = type || "anon";
             console.warn("making an anonymous node");
         }
+        target = target || 'children';
+        type = type || "GraphNode";
         
         //validate input:
-        if(source[target] === undefined){ 
-            //console.warn("Creating target: ",target,source);
-            source[target] = {};
+        if(source.linkedNodes[target] === undefined){ 
+            throw new Error("Unrecognised target to add to: " + target);
         }
-        type = type || "GraphNode";
 
         //Get the constructor
         let ctor = getCtor(type),

@@ -59,8 +59,6 @@ define(['underscore'],function(_){
             @type {Object.<GraphNode#id,GraphNode#name>}
          */
         //this.parents = {};
-
-        
         if(parent !== undefined){
             /** The Original Parent Id of the node
                 @type {int}
