@@ -65,9 +65,9 @@ define(['underscore','d3'],function(_,d3){
         var path = [];
         var shell = globalData.shell;
         var cwd = shell.cwd;
-        while(cwd._originalParent !== undefined && depth > 0){
+        while(cwd.linkedNodes._originalParent !== undefined && depth > 0){
             path.push(`${cwd.name}(${cwd.id})`);
-            cwd = shell.allNodes[cwd._originalParent];
+            cwd = shell.allNodes[cwd.linkedNodes._originalParent];
             depth--;
         }
         return path.reverse();

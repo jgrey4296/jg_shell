@@ -24,7 +24,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
         
         //condition data transform
-        let conditionData = _.keys(ruleToDraw.conditions).map(function(d){
+        let conditionData = _.keys(ruleToDraw.linkedNodes.conditions).map(function(d){
             let node = globalData.shell.getNode(d);
             if(node instanceof globalData.shell.getCtor('condition')){
                 return node.getDescriptionObjects();
@@ -33,7 +33,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             }
         }),
             //action data transform
-            actionData = ruleToDraw.actions ? _.keys(ruleToDraw.actions).map(function(d){
+            actionData = ruleToDraw.actions ? _.keys(ruleToDraw.linkedNodes.actions).map(function(d){
                 let node = globalData.shell.getNode(d);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();

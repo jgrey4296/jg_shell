@@ -11,8 +11,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
      */
     FSMDrawInterface.drawFSM = function(globalData,fsmNode){
         let fsmData = fsmNode.getDescriptionObjects(),
-            stateData = _.keys(fsmNode.states).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
-            eventData = _.keys(fsmNode.events).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            stateData = _.keys(fsmNode.linkedNodes.states).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
+            eventData = _.keys(fsmNode.linkedNodes.events).map(d=>[globalData.shell.getNode(d).getShortDescription()]),
             commonData = new DrawUtils.CommonData(globalData,fsmData,3);
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
@@ -53,7 +53,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //Draw the event
         let eventData = eventNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,eventData,3),
-            linkData = _.keys(eventNode.links).map(d=>d.split('->')),
+            linkData = _.keys(eventNode.linkedNodes.links).map(d=>d.split('->')),
             sourceData = linkData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
             sinkData = linkData.map(d=>[globalData.shell.getNode(d[2]).getShortDescription()]);
 
@@ -95,11 +95,11 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         let stateData = stateNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,stateData,5),
             //source side data
-            sourceData = _.keys(stateNode.inEvents).map(d=>d.split('->')),
+            sourceData = _.keys(stateNode.linkedNodes.inEvents).map(d=>d.split('->')),
             sourceStateData = sourceData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
             sourceEventData = sourceData.map(d=>[globalData.shell.getNode(d[1]).getShortDescription()]),
             //sink side data
-            sinkData = _.keys(stateNode.outEvents).map(d=>d.split('->')),
+            sinkData = _.keys(stateNode.linkedNodes.outEvents).map(d=>d.split('->')),
             sinkStateData = sinkData.map(d=>[globalData.shell.getNode(d[2]).getShortDescription()]),
             sinkEventData = sinkData.map(d=>[globalData.shell.getNode(d[1]).getShortDescription()]);
 
