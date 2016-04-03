@@ -65,20 +65,6 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 globalData.shell.addTest(newCondition.id,currentTest);
             }            
         },
-        /** Remove a node
-            @param globalData
-            @param values
-        */
-        "rm" : function(globalData,values,sourceId){
-            //remove action
-            if(values[0] === 'action'){
-                globalData.shell.removeAction(values.slice(1),sourceId);
-            }
-            //condition
-            if(values[0] === 'condition'){
-                globalData.shell.removeCondition(values.slice(1),sourceId);
-            }                
-        },
         /** Set a value of a condition/action 
             @param globalData
             @param values
@@ -201,7 +187,6 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 "cd" : ["$nodeId","Switch to node mode, and move to the specified node"],
                 "new" : ["[condition,action,negCondition,negConjCondition]","Create a new condition or action for the current rule"],
                 "if" : ["(test), (test)...","Create a new condition, automatically with the specified tests. ie: if a EQ 5, b GT 10, c LT 15"],
-                "rm" : ["[action,condition] $nodeId","Remove a condition or action from the rule"],
                 "set" : ["[condition,action] $nodeId $targetField (values)...","Set the relevant condition or actions field with the values specified."],
                 "set action $actionId type" : ["$value","Set the action's performance type"],
                 "set action $actionId data" : ["$parameter $value", "Set or delete the action.data[parameter] to $value. Value can be a $binding"],

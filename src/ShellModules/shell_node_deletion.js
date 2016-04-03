@@ -21,7 +21,7 @@ define(['underscore'],function(_){
             throw new Error("unrecognised node to delete");
         }
         //todo remove all reciprocal links
-        let nodeToDelete = this.allNodes(id);
+        let nodeToDelete = this.getNode(id);
         //cleanup all connections to the nodes
         _.keys(nodeToDelete.linkedNodes).forEach(d=>this.rm(id,undefined,d));
         //actually delete the node
@@ -42,11 +42,12 @@ define(['underscore'],function(_){
             //delete numeric id node
             removedNode = this.removeNumericIdLink(Number(nodeToDelete),source);
         }else{
+            console.log(nodeToDelete);
             throw new Error("Removing a node requires an id");
         }
 
-        if(removedNode && _.keys(removeNode.linkedNodes).length === 0){
-            this.deleteNode(removeNode.id);
+        if(removedNode && _.keys(removedNode.linkedNodes).length === 0){
+            this.deleteNode(removedNode.id);
         }
     };
 
@@ -58,9 +59,9 @@ define(['underscore'],function(_){
      */
     ShellPrototype.removeNumericIdLink = function(id,source){
         let removedNode = this.getNode(id);
-        if(source.linkedNodes[id] !== undefined && removedNode && removeNode.linkedNodes[source.id] ){
+        if(source.linkedNodes[id] !== undefined && removedNode && removedNode.linkedNodes[source.id] ){
             delete source.linkedNodes[id];
-            delete removedNode.linkedNodes(source.id);
+            delete removedNode.linkedNodes[source.id];
         }
         return removedNode;
     };
@@ -89,12 +90,11 @@ define(['underscore'],function(_){
      */
     ShellPrototype.removeAction = function(actionId,sourceId){
         var source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(source.linkedNodes.actions[actionId] === undefined){
+        if(source.linkedNodes[actionId] === undefined){
             throw new Error("Can't delete a non-existent action");
         }
         //remove from the rule
-        delete source.linkedNodes.actions[actionId];
-        //remove from allnodes
+        this.rm(actionId,undefined,source.id);
     };
 
     /**
@@ -125,7 +125,7 @@ define(['underscore'],function(_){
            this.allNodes[condId].constantTests[testId] === undefined){
             throw new Error("can't delete a non-existent test");
         }
-        let condition = this.allNodes[condId];
+        let condition = this.getNode(condId);
         if(condition.constantTests[testId] !== undefined){
             condition.constantTests.splice(testId,1);
         }
@@ -144,7 +144,7 @@ define(['underscore'],function(_){
         if(source.linkedNodes[condId] === undefined || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
-        let condition = this.allNodes[condId];
+        let condition = this.getNode(condId);
         if(condition.bindings[boundVar] !== undefined){
             delete condition.bindings[boundVar];
         }else{
