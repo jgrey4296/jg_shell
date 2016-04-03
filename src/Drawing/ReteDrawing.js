@@ -19,7 +19,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
         commonData.widthAddition = 10;
-
+        delete commonData.groupNodeTransform;
+        
         //create the main container
         let mainContainer = DrawUtils.createOrShare("mainContainer"),
         //create the proposed column
@@ -58,7 +59,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
         commonData.widthAddition = 10;
-
+        delete commonData.groupNodeTransform;
+        
         //main container
         let mainContainer = DrawUtils.createOrShare("mainContainer"),
         //create the schedule column
@@ -97,7 +99,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
         commonData.widthAddition = 10;
-
+        delete commonData.groupNodeTransform;
+        
         //main container
         let mainContainer = DrawUtils.createOrShare("mainContainer"),
         //create the log column

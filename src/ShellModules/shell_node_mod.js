@@ -63,13 +63,13 @@ define(['underscore'],function(_){
        @param deepOrNot whether to dfs the source node
     */
     ShellPrototype.copyNode = function(sourceNodeId,targetNodeId,deepOrNot){
-        var sourceNode = this.getNode(sourceNodeId),
+        let sourceNode = this.getNode(sourceNodeId),
             targetNode = this.getNode(targetNodeId);
         if(sourceNode === undefined || targetNode === undefined){
             throw new Error("Unrecognised source or target for copy");
         }
         //create a dummy node for a new id
-        var graphNodeCtor = this.getCtor(),
+        let graphNodeCtor = this.getCtor(),
             dummyNode = new graphNodeCtor("dummy",undefined,"dummy",{}),
             //get the ctor for the source node:
             ctor = this.getCtor(sourceNode.tags.type),
@@ -82,7 +82,8 @@ define(['underscore'],function(_){
         this.allNodes[newNode.id] = newNode;
 
         //add it to the targetNode
-        targetNode.addRelation('child',newNode);
+        this.link(newNode.id,'child','parent',targetNodeId);
+        //targetNode.addRelation('child',newNode);
         
     };
     

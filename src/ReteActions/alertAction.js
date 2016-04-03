@@ -10,7 +10,7 @@ define([],function(){
      */
     var AlertActionConstructor = function(context){
         var AlertAction = {
-            name : "alert",
+            name : "alert",//the name registered under
             propose : function(token,reteNet){
                 //create the data object:
                 var newWMEData = reteNet.utils.createNewWMEData(this,token);

@@ -21,6 +21,10 @@ define(['underscore'],function(_){
             throw new Error("unrecognised node to delete");
         }
         //todo remove all reciprocal links
+        let nodeToDelete = this.allNodes(id);
+        //cleanup all connections to the nodes
+        _.keys(nodeToDelete.linkedNodes).forEach(d=>this.rm(id,undefined,d));
+        //actually delete the node
         delete this.allNodes[id];
     };
 
@@ -28,27 +32,21 @@ define(['underscore'],function(_){
        Remove a node link from the cwd
        @method
        @param nodeToDelete The node object to remove from the cwd
-       @param target
+       @param target @deprecated
        @param sourceId
      */
     ShellPrototype.rm = function(nodeToDelete,target,sourceId){
-        if(target === undefined) { target = 'parents'; }
         let source = sourceId ? this.getNode(sourceId) : this.cwd,
             removedNode = null;
         if(!isNaN(Number(nodeToDelete))){
             //delete numeric id node
-            removedNode = this.removeNumericId(Number(nodeToDelete),target,source);
-            if(!removedNode){
-                removedNode = this.removeNumericId(Number(nodeToDelete),'children',source);
-            }
+            removedNode = this.removeNumericIdLink(Number(nodeToDelete),source);
         }else{
             throw new Error("Removing a node requires an id");
         }
 
-        if(removedNode){
-            //TODO
-            //this.cleanupNode(removedNode,source);
-            //delete this.allNodes[Number(nodeToDelete)];
+        if(removedNode && _.keys(removeNode.linkedNodes).length === 0){
+            this.deleteNode(removeNode.id);
         }
     };
 
@@ -56,14 +54,13 @@ define(['underscore'],function(_){
        Removes by id
        @method
        @param id
-       @param target
-       @TODO check this
+       @TODO check this: should remove an annotation of a link, when nodes can be linked multiple times in a single node?
      */
-    ShellPrototype.removeNumericId = function(id,target,source){
-        let removedNode = null;
-        if(source.linkedNodes[id] !== undefined){
-            removedNode = this.allNodes[id];
+    ShellPrototype.removeNumericIdLink = function(id,source){
+        let removedNode = this.getNode(id);
+        if(source.linkedNodes[id] !== undefined && removedNode && removeNode.linkedNodes[source.id] ){
             delete source.linkedNodes[id];
+            delete removedNode.linkedNodes(source.id);
         }
         return removedNode;
     };
@@ -144,7 +141,7 @@ define(['underscore'],function(_){
     ShellPrototype.removeBinding = function(condId,boundVar,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd;
         console.log("removing binding:",condId,boundVar);
-        if(source.linkedNodes.conditions[condId] === undefined || this.allNodes[condId] === undefined){
+        if(source.linkedNodes[condId] === undefined || this.allNodes[condId] === undefined){
             throw new Error("can't delete from a non-existing condition");
         }
         let condition = this.allNodes[condId];
