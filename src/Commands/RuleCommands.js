@@ -59,9 +59,9 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             values = values.map(function(d){
                 return d.replace(/,/,"");
             });
-            var newCondition = globalData.shell.addNode(null,'conditions','condition',values,sourceId);
+            var newCondition = globalData.shell.addNode(null,'condition','rule->condition','condition',undefined,sourceId);
             while(values.length >= 3){
-                var currentTest = values.splice(0,3);
+                let currentTest = values.splice(0,3);
                 globalData.shell.addTest(newCondition.id,currentTest);
             }            
         },

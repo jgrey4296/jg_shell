@@ -9,7 +9,7 @@ define(['underscore'],function(_){
 
     ShellPrototype.addFSMComponent = function(typename,names,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd,
-            potentialParentFSMId = _.find(_.pairs(source.linkedNodes),d=>/parentFSM/.test(d[1])),
+            potentialParentFSMId = _.find(_.pairs(source.linkedNodes),d=>/^fsm->/.test(d[1])),
             parentFSMId = source.tags.type === 'fsm' ? source.id : potentialParentFSMId,
             target = typename === 'event' ? 'event' : 'state';
 
@@ -52,7 +52,7 @@ define(['underscore'],function(_){
 
     ShellPrototype.rmFSMComponent = function(componentId){
         let component = this.getNode(componentId),
-            fsmId = _.find(_.pairs(component.linkedNodes),d=>/parentFSM/.test(d[1])) || null,
+            fsmId = _.find(_.pairs(component.linkedNodes),d=>/^fsm->/.test(d[1])) || null,
             fsm = fsmId ?  this.getNode(fsmId) : null;
         //in fsm: remove state, unlink all events from it
         if(fsm !== null){

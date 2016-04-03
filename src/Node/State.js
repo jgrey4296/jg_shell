@@ -6,7 +6,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
 
     var State = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'state',{},overRideId);
-        this.linkedNodes[parent.id] = this.linkedNodes[parent.id] + "|" + "parentFSM";
+        //this.linkedNodes[parent.id] = this.linkedNodes[parent.id] + "|" + "parentFSM";
     }
     State.prototype = Object.create(GraphNode.prototype);
     State.constructor = State;
