@@ -140,9 +140,8 @@ define(['underscore'],function(_){
        Add an ID number and name to a field of an object
        @method
        @param node the node to add the link FROM
-       @param target the field of the node to link FROM
        @param id the id of the node to link TO
-       @param name the name of the node to link TO
+       @param linkType the name characterising the relationship
     */
     ShellPrototype.addLink = function(node,id,linkType){
         if(isNaN(Number(id))){

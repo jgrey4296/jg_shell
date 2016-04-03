@@ -3,7 +3,7 @@
 
 */
 "use strict";
-var _ = require('underscore'),
+let _ = require('underscore'),
     Shell = require('../../src/Shell'),
     makeShell = function(){return new Shell();},
     globalShell = makeShell();
@@ -12,7 +12,7 @@ var _ = require('underscore'),
 exports.ShellTests = {
 
     initTest : function(test){
-        var shell = makeShell();
+        let shell = makeShell();
         test.ok(shell.root !== undefined);
         test.ok(Object.keys(shell.allNodes).length === 1);
         test.ok(shell.allRules.length === 0);
@@ -23,27 +23,27 @@ exports.ShellTests = {
 
     //create a node, check it is added into the shell correctly
     add_single_node : function(test){
-        var shell = makeShell();
+        let shell = makeShell();
         //Pre conditions:
         test.ok(_.keys(shell.allNodes).length === 1);
-        test.ok(_.keys(shell.cwd.linkedNodes.children).length === 0);
+        test.ok(_.keys(shell.cwd.linkedNodes).length === 0);
         //Action:
-        var newNode = shell.addNode("test","children","GraphNode");
+        let newNode = shell.addNode("test","child","GraphNode");
         //Post conditions:
         test.ok(_.keys(shell.allNodes).length === 2);
         test.ok(shell.allNodes[newNode.id].id === newNode.id);
         test.ok(shell.allNodes[newNode.id].name === "test");
-        test.ok(shell.cwd.linkedNodes.children[newNode.id] !== undefined);
-        test.ok(_.keys(shell.cwd.linkedNodes.children).length === 1);
-        test.ok(newNode.linkedNodes._originalParent === shell.root.id);
-        test.ok(_.keys(newNode.linkedNodes.parents).length === 1);
-        test.ok(parseInt(_.keys(newNode.linkedNodes.parents)[0]) === shell.cwd.id);
+        test.ok(shell.cwd.linkedNodes[newNode.id] !== undefined);
+        test.ok(_.keys(shell.cwd.linkedNodes).length === 1);
+        test.ok(newNode.linkedNodes[shell.root.id] = 'parent');
+        test.ok(_.keys(newNode.linkedNodes).length === 1);
+        test.ok(parseInt(_.keys(newNode.linkedNodes)[0]) === shell.cwd.id);
         test.done();
     },
 
     //create an anonymous node, one without a name
     add_anon_node : function(test){
-        let newNode = globalShell.addNode(null,"children");
+        let newNode = globalShell.addNode(null,"child");
         test.ok(newNode.name === "anon");
         test.ok(globalShell.allNodes[newNode.id].id === newNode.id);
         test.done();
@@ -51,16 +51,16 @@ exports.ShellTests = {
 
     add_unrecognised_target : function(test){
         test.ok(globalShell.cwd.blah === undefined);
-        test.throws(function(){
-            var newNode = globalShell.addNode("test","blah");
+        test.doesNotThrow(function(){
+            let newNode = globalShell.addNode("test","blah");
         });
         test.done();
     },
 
     add_as_parent : function(test){
         test.ok(_.keys(globalShell.cwd.linkedNodes.parents).length === 0);
-        var newNode = globalShell.addNode("testParent","parents");
-        test.ok(globalShell.cwd.linkedNodes.parents[newNode.id] === newNode.name);
+        let newNode = globalShell.addNode("testParent","parent");
+        test.ok(globalShell.cwd.linkedNodes[newNode.id] === 'parent');
         test.ok(globalShell.allNodes[newNode.id].id === newNode.id);
         test.done();
     },
@@ -70,18 +70,18 @@ exports.ShellTests = {
         let shell = makeShell(),
             newNode = shell.addNode("test1");
         test.ok(newNode.name === "test1");
-        test.ok(shell.root.linkedNodes.children[newNode.id] = "test1");
+        test.ok(shell.root.linkedNodes[newNode.id] = "test1");
         test.done();
     },
 
     add_node_to_specific_existing_node : function(test){
         let shell = makeShell(),
             newNode1 = shell.addNode('test1'),
-            newNode2 = shell.addNode('test2',undefined,undefined,undefined,newNode1.id);
-        test.ok(_.keys(shell.root.linkedNodes.children).length === 1);
-        test.ok(_.keys(newNode1.linkedNodes.children).length === 1);
-        test.ok(_.keys(newNode2.linkedNodes.children).length === 0);
-        test.ok(newNode1.linkedNodes.children[newNode2.id] = newNode2.name);        
+            newNode2 = shell.addNode('test2','child','parent','node',undefined,newNode1.id);
+        test.ok(_.keys(shell.root.linkedNodes).length === 1,_.keys(shell.root.linkedNodes).length);
+        test.ok(_.keys(newNode1.linkedNodes).length === 2);
+        test.ok(_.keys(newNode2.linkedNodes).length === 1);
+        test.ok(newNode1.linkedNodes[newNode2.id] === 'child');        
         test.done();
     },
     
@@ -89,9 +89,9 @@ exports.ShellTests = {
         let shell = makeShell(),
             newNode1 = shell.addNode('test1'),
             newNode2 = shell.addNode('test2');
-        test.ok(newNode1.linkedNodes.children[newNode2.id] === undefined);
-        shell.addLink(newNode1,'children',newNode2.id,newNode2.name);
-        test.ok(newNode1.linkedNodes.children[newNode2.id] === newNode2.name);
+        test.ok(newNode1.linkedNodes[newNode2.id] === undefined);
+        shell.addLink(newNode1,newNode2.id,'child');
+        test.ok(newNode1.linkedNodes[newNode2.id] === 'child');
         test.done();
     },
 
@@ -99,7 +99,7 @@ exports.ShellTests = {
         let shell = makeShell(),
             newNode1 = shell.addNode('test1');
         test.throws(function(){
-            shell.addLink(newNode1,'children','blah','awef');
+            shell.addLink(newNode1,'child','blah','awef');
         });
         test.throws(function(){
             shell.addLink(newNode,'awef',shell.root.id,'root');
