@@ -40,7 +40,11 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
      */
     GeneralDrawInterface.drawSearchResults = function(globalData,data){
         //console.log("Search Results:",data);
-        let commonData = new DrawUtils.CommonData(globalData,data);
+        let commonData = new DrawUtils.CommonData(globalData,data.map(d=>[{name:d.toString()}]));
+        commonData.nodeDataSeparator = 10;
+        commonData.groupDataSeparator = 10;
+        commonData.widthAddition = 5;
+        commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*0.5);
 
         
         //create the container, and the enclosing rectangle
@@ -55,7 +59,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
 
         //Draw the group of data, with a header title
         //GraphNode -> description...
-        DrawUtils.drawGroup(searchResults,commonData,x=>[{name:x.toString()}])
+        DrawUtils.drawGroup(searchResults,commonData)
             .then(function(){
                 var rect = searchResults.select("#EnclosingRect");
                 rect.attr("width",10);
@@ -83,7 +87,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
-        commonData.widthAddition = 10;
+        commonData.widthAddition = 5;
         commonData.groupNodeTransform = (d=>d[0][0].getBBox().width*-0.5);
         
         //Create the container

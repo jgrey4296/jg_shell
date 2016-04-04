@@ -57,7 +57,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
            @param values
         */
         "selection" : function(globalData,values){
-            var selection = globalData.currentSelection.map(d=>globalData.shell.getNode(d));
+            let selection = globalData.currentSelection.map(d=>globalData.shell.getNode(d));
             globalData.lastSetOfSearchResults = selection;
         },
         /** Add specified nodes to the current selection
@@ -67,7 +67,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         "select" : function(globalData,values){
             if(values.length === 0) { values = [globalData.shell.cwd.id]; }
             values.forEach(function(d){
-                var id = Number(d);
+                let id = Number(d);
                 if(Number.isNaN(id)) { return; }
                 //selection is not included, add it:
                 if(globalData.currentSelection.indexOf(id) === -1){
@@ -97,7 +97,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             @param values
          */
         "applyToSelection" : function(globalData,values){
-            var command = globalData.lookupOrFallBack(values.shift(),globalData);
+            let command = globalData.lookupOrFallBack(values.shift(),globalData);
             globalData.currentSelection.forEach(function(d){
                 command(globalData,values,d);                
             });
@@ -133,7 +133,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             @param values
         */
         "inspect" : function(globalData,values){
-            var nodeId = values.shift(),
+            let nodeId = values.shift(),
                 key = values.shift(),
                 node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,                
                 pairs = key === "#all" ? _.keys(node) : _.pairs(node[key]) || [];
@@ -168,11 +168,11 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             @param values
         */
         "load" : function(globalData,values){
-            var request = new XMLHttpRequest();
+            let request = new XMLHttpRequest();
             request.onreadystatechange = function(){
                 if(request.readyState===4){
                     try{
-                        var receivedJson = JSON.parse(request.responseText);
+                        let receivedJson = JSON.parse(request.responseText);
                         console.log("Received JSON:",receivedJson);
                         globalData.shell.importJson(receivedJson);
                         globalData.lookupOrFallBack("draw",globalData)(globalData,[]);
@@ -191,9 +191,9 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         */
         "import" : function(globalData,values){
             try{
-                //var reconstructedJsonString = values.join(" ");
-                var stringMinusCommand = globalData.rawCurrentLine.replace(/^import /,"");
-                var reconJson = JSON.parse(stringMinusCommand);
+                //let reconstructedJsonString = values.join(" ");
+                let stringMinusCommand = globalData.rawCurrentLine.replace(/^import /,"");
+                let reconJson = JSON.parse(stringMinusCommand);
                 globalData.shell.importJson(reconJson);
             }catch(err){
                 alert("Error Importing Json String:\n" + err.message);
@@ -206,7 +206,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
         */
         "save" : function(globalData,values){
             console.log("Saving:",values);
-            var request = new XMLHttpRequest();
+            let request = new XMLHttpRequest();
             request.onreadystatechange=function(){
                 if (request.readyState===4){
                     console.log("Finished");
@@ -221,7 +221,7 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             @param values
         */
         "json" : function(globalData,values){
-            var text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
+            let text = globalData.shell.exportJson().replace(/’/g,"'").replace(/–/g,"-");
             window.exportedJson = text;
 
             //From: http://stackoverflow.com/questions/10472927/add-content-to-a-new-open-window

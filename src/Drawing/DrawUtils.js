@@ -26,7 +26,7 @@ define(['underscore','d3'],function(_,d3){
         //The width of each column
         this.colWidth = globalData.calcWidth(globalData.usableWidth,this.numOfColumns);
         //Half of a column, to allow centring
-        this.halfCol = this.colWidth * 0.5;
+        this.halfCol = Math.floor(this.colWidth * 0.5);
         //Centre point of the screen, for offsetting relative to
         this.halfWidth = globalData.halfWidth();
         //the data that will actually be drawn
@@ -184,7 +184,7 @@ define(['underscore','d3'],function(_,d3){
                     bbox = this.getBBox(),
                     priorBbox = this.previousElementSibling.getBBox();
                 offset += i===0 ? groupData[offsetName] : priorBbox.height + groupData[offsetName];
-                g.attr("transform",`translate(0,${offset})`);
+                g.attr("transform",`translate(0,${Math.floor(offset)})`);
             });
             return boundGroup;
         }).then(function(boundGroup){
@@ -333,7 +333,7 @@ define(['underscore','d3'],function(_,d3){
                             xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
                         offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
 
-                        d.attr("transform",`translate(${xOffset},${offset})`);
+                        d.attr("transform",`translate(${Math.floor(xOffset)},${Math.floor(offset)})`);
                     }
                 });
             });
@@ -356,7 +356,7 @@ define(['underscore','d3'],function(_,d3){
         if(pathText.empty()){
             pathText = d3.select("svg").append("text").attr("id","pathText")
                 .style("fill","white")
-                .attr("transform","translate(" + (globalData.usableWidth * 0.5) + ",50)")
+                .attr("transform","translate(" + (Math.floor(globalData.usableWidth * 0.5)) + ",50)")
                 .style("text-anchor","middle");
         }
         //use the figured out path
