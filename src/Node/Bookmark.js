@@ -15,7 +15,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
        @augments module:Node/GraphNode
      */
     var Bookmark = function(name,parent,type,url,overRideId){
-        GraphNode.call(this,name.slice(0,10),parent,"bookmark",{},overRideId);
+        GraphNode.call(this,name,parent,"bookmark",{},overRideId);
         this.longName = name;
         this.url = [url];
     };

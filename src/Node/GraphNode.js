@@ -21,7 +21,7 @@ define(['underscore'],function(_){
        @constructor
        @alias GraphNode
     */
-    var GraphNode = function(name,parent,type,relationsToCreate,overRideId){
+    var GraphNode = function(name,parentId,type,relationsToCreate,overRideId){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         
         /** @type int The Id of the node */
@@ -31,9 +31,9 @@ define(['underscore'],function(_){
         }
 
         /** @type String The Name of the Node */
-        this.name = name;
+        this.name = name || 'anon';
 
-        /** Parents and children created internally, ready to be sent to the shell for registration 
+        /** descriptions of objects to create and link to this node
             @type {Array.<GraphNode>}
          */
         this.relatedObjects = [];
@@ -46,21 +46,11 @@ define(['underscore'],function(_){
         //id -> relationType. eg: child, parent, rule
         this.linkedNodes = {};
 
-        
-        /** The child Ids of the node
-            @type {Object.<GraphNode#id,GraphNode#name>}
-         */
-        //this.children = {};
-        
-        /** Parent  Ids of the node
-            @type {Object.<GraphNode#id,GraphNode#name>}
-         */
-        //this.parents = {};
-        if(parent !== undefined){
+         if(parentId !== undefined){
             /** The Original Parent Id of the node
                 @type {int}
-             */
-            this.linkedNodes[parent.id] = "parent->original";
+            */
+            this.linkedNodes[parentId] = "parent->original";
         }
 
         /** Stored Data: Values 
@@ -124,7 +114,7 @@ define(['underscore'],function(_){
         }
         //returns [{name: "", values : [] }]
         //Get all fields
-        var lists = [];
+        let lists = [];
         lists.push({
             name : this.toString(),
             background : 'title'
@@ -183,6 +173,9 @@ define(['underscore'],function(_){
        @method
      */
     GraphNode.prototype.setValue = function(value,field,parameter){
+        if(field === 'id'){
+            throw new Error("Can't modify id");
+        }
         //todo: add guards so you don't delete something important like 'id'
         if(parameter !== undefined){ //set this[field][parameter] -> value
             if(this[field] === undefined){ //create field if missing

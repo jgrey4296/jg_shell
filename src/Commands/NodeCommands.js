@@ -1,4 +1,8 @@
-define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
+if(typeof define !== 'function'){
+    var define = require('amdefine')(module);
+}
+
+define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDraw){
     "use strict";
     //All of the commands for the normal node mode of the shell
     /**
@@ -12,7 +16,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
          @param values
          */
         "draw" : function(globalData,values){
-            if(NodeDraw.dummy === undefined){
+            if(globalData.dummyDraw === undefined){
                 NodeDraw.drawNode(globalData,globalData.shell.cwd);
             }
         },
@@ -21,7 +25,7 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             @param values
          */
         "cleanup" : function(globalData, values){
-            if(NodeDraw.dummy === undefined){
+            if(globalData.dummyDraw === undefined){
                 NodeDraw.cleanup();
             }
         },
@@ -113,6 +117,8 @@ define(['utils','underscore','Drawing/NodeDrawing'],function(util,_,NodeDraw){
             //cd -> cd
             globalData.shell.cd(values[0]);
             //udpate the command mode
+            if(globalData.nodeModeLookup === undefined) { return; }
+            
             let lookupMode = globalData.nodeModeLookup[globalData.shell.cwd.tags.type];
             if(lookupMode !== undefined){
                 globalData.currentCommandMode.unshift(lookupMode);

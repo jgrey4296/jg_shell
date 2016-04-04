@@ -17,7 +17,9 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
        @method
        @param name The name of the new node
        @param relType The relation from source->newnode
+       @param recType the relation from newnode->source
        @param type The type of node the new node should be annotated as. See GraphStructureConstructors
+       @param subRelations see {@module:Node/Institution} Array of relations to create
        @param sourceId The id to add to, otherwise cwd
        @return the newly created node
     */
@@ -33,7 +35,7 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
         
         //Get the constructor
         let ctor = getCtor(type),
-            newNode = new ctor(name,source,type,subRelations);
+            newNode = new ctor(name,source.id,type,subRelations);
 
         //Store in allNodes:
         if(this.allNodes[newNode.id] !== undefined){

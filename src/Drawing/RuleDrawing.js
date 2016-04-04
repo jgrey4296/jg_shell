@@ -25,7 +25,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         
         //condition data transform
         let rulePairs = _.pairs(ruleToDraw.linkedNodes),
-            conditionData = rulePairs.filter(d=>/condition/.test(d[1])).map(function(d){
+            conditionData = rulePairs.filter(d=>/^condition/.test(d[1])).map(function(d){
                 let node = globalData.shell.getNode(d[0]);
                 if(node instanceof globalData.shell.getCtor('condition')){
                     return node.getDescriptionObjects();
@@ -34,7 +34,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
                 }
             }),
         //action data transform
-            actionData = rulePairs.filter(d=>/action/.test(d[1])).map(function(d){
+            actionData = rulePairs.filter(d=>/^action/.test(d[1])).map(function(d){
                 let node = globalData.shell.getNode(d[0]);
                 if(node instanceof globalData.shell.getCtor('action')){
                     return node.getDescriptionObjects();

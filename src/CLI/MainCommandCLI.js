@@ -40,9 +40,9 @@ define(['underscore'],function(_){
         if(skipDraw === undefined) { skipDraw = false; }
         globalData.rawCurrentLine = currentLine;
         let splitLine = parseCurrentLine(currentLine),
-            commandName = splitLine.shift();
+            commandName = splitLine.shift(),
         //lookup command
-        let commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
+            commandToExecute = globalData.lookupOrFallBack(commandName,globalData);
         
         //perform command
         if(commandToExecute && typeof commandToExecute === 'function'){
