@@ -11,16 +11,16 @@ let genericTests = require('./ShellTest'),
     json_tests = require('./shell_json_tests'),
     graph_search_tests = require('./shell_graph_search_tests');
 
-exports.allTests = {
-    "generic tests" : genericTests,
-    "ctor tests" : ctorTests,
-    "addition tests" : node_addition_tests,
-    "deletion tests" :node_deletion_tests,
-    "modification tests" :node_mod_tests,
-    "search tests" : search_tests,
-    "state change tests" : state_change_tests,
-    "string tests" : string_tests,
-    "rete tests" : rete_tests,
-    "json tests" : json_tests,
-    "graph search tests" : graph_search_tests    
-}
+exports.allTests = [
+    genericTests,
+    ctorTests,
+    node_addition_tests,
+    node_deletion_tests,
+    node_mod_tests,
+    search_tests,
+    state_change_tests,
+    string_tests,
+    rete_tests,
+    json_tests,
+    graph_search_tests    
+];

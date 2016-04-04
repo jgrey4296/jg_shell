@@ -8,7 +8,7 @@ var _ = require('underscore'),
     makeShell = function(){return new Shell();};
 
 
-exports.ShellTests = {
+exports.BroadShellTests = {
 
     initTest : function(test){
         let shell = makeShell();

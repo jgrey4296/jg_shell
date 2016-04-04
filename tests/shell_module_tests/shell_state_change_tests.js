@@ -7,7 +7,7 @@ var _ = require('underscore'),
     makeShell = function(){return new Shell();};
 
 
-exports.ShellTests = {
+exports.state_change_tests = {
 
     initTest : function(test){
         var shell = makeShell();

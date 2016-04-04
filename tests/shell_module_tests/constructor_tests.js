@@ -9,7 +9,7 @@ let _ = require('underscore'),
     globalShell = makeShell();
 
 
-exports.ShellTests = {
+exports.Ctor_tests = {
 
     initTest : function(test){
         let shell = makeShell();

@@ -10,7 +10,7 @@ let _ = require('underscore'),
     globalShell = makeShell();
 
 
-exports.ShellTests = {
+exports.node_addition_tests = {
 
     initTest : function(test){
         let shell = makeShell();
