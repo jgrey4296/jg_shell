@@ -52,14 +52,14 @@ define(['underscore'],function(_){
     };
 
     /**
-       Removes by id
+       remove a link from the provided node
        @method
        @param id
        @TODO check this: should remove an annotation of a link, when nodes can be linked multiple times in a single node?
      */
     ShellPrototype.removeNumericIdLink = function(id,source){
         let removedNode = this.getNode(id);
-        if(source.linkedNodes[id] !== undefined && removedNode && removedNode.linkedNodes[source.id] ){
+        if(source && source.linkedNodes[id] !== undefined && removedNode && removedNode.linkedNodes[source.id] ){
             delete source.linkedNodes[id];
             delete removedNode.linkedNodes[source.id];
         }
