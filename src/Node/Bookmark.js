@@ -22,5 +22,14 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
     Bookmark.prototype = Object.create(GraphNode.prototype);
     Bookmark.constructor = Bookmark;
 
+    Bookmark.prototype.getDescriptionObjects = function(){
+        let DO = this.getDescriptionObjectsBase();
+        DO.push({
+            name : "URL",
+            values : this.url,
+            background : 'link'
+        });
+    };
+    
     return Bookmark;
 });

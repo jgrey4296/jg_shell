@@ -105,7 +105,7 @@ define(['underscore'],function(_){
        @param fieldNameList
        @returns {Array.<Object>} Objects of {name: String, values: Array}
      */
-    GraphNode.prototype.getDescriptionObjects = function(fieldNameList){
+    GraphNode.prototype.getDescriptionObjectsBase = function(fieldNameList){
         if(this.minimised){
             return [{
                 name : this.toString() + "...",
@@ -152,7 +152,8 @@ define(['underscore'],function(_){
         
         return lists;
     };
-
+    GraphNode.prototype.getDescriptionObjects = GraphNode.prototype.getDescriptionObjectsBase;
+    
     /**
        Get a simple text description of the node
        @method 

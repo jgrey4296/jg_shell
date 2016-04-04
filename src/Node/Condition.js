@@ -96,7 +96,6 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
                 background : 'title'
             }];
         }
-
         //NCC version
         if(this.tags.conditionType === "negConjCondition"){
             let nccList = [];
@@ -107,7 +106,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
 
             nccList.push({
                 name : "Conditions",
-                values : _.pairs(this.linkedNodes).filter(d=>/condition/.test(d[1])).map(d=>d.join(" : ")),
+                values : _.pairs(this.linkedNodes).filter(d=>/^condition/.test(d[1])).map(d=>d.join(" : ")),
                 background : "link"
             });
 
@@ -121,7 +120,7 @@ define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
         }
 
         //Main version:
-        var lists = [];
+        let lists = [];
         lists.push({
             name: this.toString(),
             background : 'title',

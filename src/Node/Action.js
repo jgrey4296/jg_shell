@@ -106,17 +106,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
                 background : 'title'
             }];
         }
-        var lists = [];
-        lists.push({
-            name : this.toString(),
-            background : 'title'            
-        });
-
-        lists.push({
-            name : "Tags",
-            values : _.pairs(this.tags).map(d=>d.join(" : ")),
-            background : 'tags'
-        });
+        var lists = _.reject(this.getDescriptionObjectsBase(),d=>d.name==='Values');
 
         lists.push({
             name : "Data",
@@ -141,11 +131,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
             values : _.keys(this.timing).map(d=>`${d} : ${this.timing[d]}`),
             background : 'priority'
         });
-
-        // lists.push({
-        //     name : `PROTOTYPE ID: ${this.expectationNode}`,
-        //     background : 'link'            
-        // });
 
         //the sink/prototype nodes
         let sinks = _.pairs(this.linkedNodes).filter(d=>/sink/.test(d[1]));
