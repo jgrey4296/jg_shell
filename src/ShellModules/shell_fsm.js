@@ -63,5 +63,30 @@ define(['underscore'],function(_){
         }        
     };
 
+    ShellPrototype.getComponentsForCurrentFSM = function(){
+        let currentNode = this.cwd,
+            currentFSM;
+        if(currentNode.tags.type === 'fsm'){
+            currentFSM = currentNode;
+        }else{
+            let fsmLink = _.find(_.pairs(currentNode.linkedNodes),d=>/fsm->/.test(d[1]));
+            if(fsmLink !== undefined){
+                currentFSM = this.getNode(fsmLink[0]);
+            }
+        }
+
+        if(currentFSM === undefined){
+            throw new Error("Can't find a parent fsm");
+        }
+        let linkedNodes = _.pairs(currentFSM.linkedNodes),
+            states = _.filter(linkedNodes,d=>/^state/.test(d[1])).map(d=>this.getNode(d[0])),
+            events = _.filter(linkedNodes,d=>/^event/.test(d[1])).map(d=>this.getNode(d[0]).toString());
+
+        return {
+            states : states,
+            events : events
+        };
+    };
+    
     return ShellPrototype;
 });

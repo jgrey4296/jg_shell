@@ -85,6 +85,20 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
                 sink = values.shift();
             globalData.shell.removeFSMLink(source,event,sink);
         },
+        /**
+           propose: display states in the left search bar,
+           events in the right inspection bar
+        */
+        "propose" : function(globalData,values){
+            let statesAndEvents = globalData.shell.getComponentsForCurrentFSM();
+
+            //console.log("Proposing:",statesAndEvents);
+            
+            //for the left data bar
+            globalData.lastSetOfSearchResults = statesAndEvents.states;
+            globalData.lastInspectData = statesAndEvents.events;
+        },
+        
     };
 
     return FSMCommandTemplate;
