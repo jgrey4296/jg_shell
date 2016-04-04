@@ -5,6 +5,7 @@
 "use strict";
 let _ = require('underscore'),
     Shell = require('../../src/Shell'),
+    getCtor = require('../../src/Node/Constructors'),
     makeShell = function(){return new Shell();},
     globalShell = makeShell();
 
@@ -107,29 +108,6 @@ exports.ShellTests = {
         test.done();
     },
 
-    node_ctor_call_test : function(test){
-        //check different constructor calls work
-        test.fail();
-        test.done();
-    },    
-
-    condition_construction_test : function(test){
-        //create a condition to check you can
-        test.fail();
-        test.done();
-    },
-
-    condition_add_test_test : function(test){
-        //check that adding a test to a condition works
-        test.fail();
-        test.done();
-    },
-    
-    copyNode_test : function(test){
-        //check that a node + descendents can be copied,
-        //ancestors linked
-        test.fail();
-        test.done();
-    },
+    //todo: test subrelations object creation
     
 };

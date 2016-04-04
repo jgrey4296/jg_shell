@@ -2,10 +2,6 @@
    @file Tests to verify the shell
 
  */
-if(typeof define !== 'function'){
-    var define = require('amdefine')(module);
-}
-
 var _ = require('underscore'),
     Shell = require('../src/Shell'),
     makeShell = function(){return new Shell();};
