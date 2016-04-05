@@ -46,7 +46,7 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
             }else if(type === "negCondition"){
                 let newNode = globalData.shell.addNode(null,'condition','rule->condition','condition',undefined,sourceId);
                 newNode.setConditionType('negative');
-            }else if(type === "negConjCondition"){
+            }else if(type === "negConjCondition" || type === 'ncc'){
                 let newNode = globalData.shell.addNode(null,'condition','rule->condition','condition',values,sourceId);
                 newNode.setConditionType('negConjCondition');
             }
@@ -172,7 +172,7 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 if(relType === null){
                     throw new Error("Unknown rule linking relation type");
                 }
-                globalData.shell.link(targetNodeId,relType,`${relType}->${targetType}`,ruleComponentId);
+                globalData.shell.link(targetNodeId,relType,`${targetType}->${relType}`,ruleComponentId);
             }
         },
         "unlink" : function(globalData,values,sourceId){

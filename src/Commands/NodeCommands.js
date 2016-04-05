@@ -44,6 +44,7 @@ define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDr
             console.log(globalData.shell);
         },
         /** Create a new node 
+            ie: new child parent node blah
             @param globalData
             @param values
             @param sourceId
@@ -51,9 +52,8 @@ define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDr
         "new" : function(globalData,values,sourceId){
             //new -> addNode,
             //Expand out simplifications
-            var target = values[0];
             //console.log("Target:",target);
-            globalData.shell.addNode(values[2],target,values[1],values.slice(3),sourceId);
+            globalData.shell.addNode(values[3],values[0],values[1],values[2],undefined,sourceId);
         },
         /** new child utility function 
             @param globalData

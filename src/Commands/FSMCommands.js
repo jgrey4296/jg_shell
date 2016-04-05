@@ -70,7 +70,7 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
                 eventId = values.shift(),
                 sinkId = values.shift();
 
-            if(sourceId && eventId && sinkId){
+            if(sourceId && eventId){
                 globalData.shell.addFSMLink(sourceId,eventId,sinkId);
             }else{
                 throw new Error("Invalid FSM Link format");
