@@ -83,13 +83,38 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
         
         /** State for control of modes */
         modeState : {
-            "rete" : {},
-            "node" : {},
-            "rule" : {},
+            "rete" : {
+            },
+            "node" : {
+                defaultLR : [/^parent/,/^child/],
+                left: null,
+                right : null
+            },
+            "rule" : {
+                defaultLR : [/^condition/,/^action/],
+                left : null,
+                right : null,
+            },
+            "fsm" : {
+                defaultLR : [/^state/,/^event/],
+                left : null,
+                right : null,
+            },
+            "state" : {
+                defaultLR : [/^eventLink/],
+                left : null,
+            },
+            "event" : {
+                defaultLR : [/^eventLink/],
+                all : null
+            }
+            
         },
         
         /** The current command node to use initially AS A QUEUE */
         currentCommandMode : ['node'],
+
+
         
         /** The Shell the web component uses
             @type {Shell}

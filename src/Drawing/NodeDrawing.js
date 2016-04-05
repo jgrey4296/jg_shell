@@ -22,8 +22,11 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         delete commonData.groupNodeTransform;
         //Get Data from the node:
         let nodeDescriptions = nodeToDraw.getDescriptionObjects(),
-            childrenData = _.pairs(nodeToDraw.linkedNodes).filter(d=>/child/.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
-            parentsData = _.pairs(nodeToDraw.linkedNodes).filter(d=>/parent/.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]);
+            leftRegex = globalData.modeState.node.left || globalData.modeState.node.defaultLR[0],
+            rightRegex = globalData.modeState.node.right || globalData.modeState.node.defaultLR[1],
+            parentsData = _.pairs(nodeToDraw.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            childrenData = _.pairs(nodeToDraw.linkedNodes).filter(d=>rightRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]);
+
 
         //The group everything is in
         let mainContainer = DrawUtils.createOrShare('mainContainer'),

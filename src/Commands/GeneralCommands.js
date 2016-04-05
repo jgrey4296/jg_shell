@@ -52,6 +52,29 @@ define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,G
             globalData.currentCommandMode.unshift(newMode);
         },
         /**
+           specify the regex for node children/parent connections
+        */
+        "view" : function(globalData,values){
+            console.log("View values:",values);
+            let mode = values.shift(),
+                regex1 = values.shift(),
+                regex2 = values.shift();
+             
+            if(mode && globalData.modeState[mode] !== undefined){
+                if(regex1 !== undefined && regex1 !== "/"){
+                    globalData.modeState[mode].left = new RegExp(regex1);
+                }else {
+                    globalData.modeState[mode].left = null;
+                }
+                if(regex2 !== undefined && regex2 !== '/'){
+                    globalData.modeState[mode].right = new RegExp(regex2);
+                }else {
+                    globalData.modeState[mode].right = null;
+                }
+            };
+            console.log(globalData.modeState);
+        },
+        /**
            Draw the selection (by piggy backing on draw search)
            @param globalData
            @param values

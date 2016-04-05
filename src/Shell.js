@@ -51,7 +51,12 @@ define(['../libs/Rete.min','underscore','./Node/GraphNode','./Node/Constructors'
             @instance
         */
         this.allRulesByName = {};
+        /**
+           Type system:
+        */
+        this.typeNodes = {};
 
+        
         /** The Current Working Node Object 
             @type {Node/GraphNode}
             @instance

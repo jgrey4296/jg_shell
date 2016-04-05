@@ -12,8 +12,10 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
     FSMDrawInterface.drawFSM = function(globalData,fsmNode){
         let fsmData = fsmNode.getDescriptionObjects(),
             fsmPairs = _.pairs(fsmNode.linkedNodes),
-            stateData = fsmPairs.filter(d=>/state/.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
-            eventData = fsmPairs.filter(d=>/event/.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            leftRegex = globalData.modeState.fsm.left || globalData.modeState.fsm.defaultLR[0],
+            stateData = fsmPairs.filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            rightRegex = globalData.modeState.fsm.right || globalData.modeState.fsm.defaultLR[1],
+            eventData = fsmPairs.filter(d=>rightRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
             commonData = new DrawUtils.CommonData(globalData,fsmData,3);
         commonData.nodeDataSeparator = 10;
         commonData.groupDataSeparator = 10;
@@ -55,7 +57,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         let eventData = eventNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,eventData,3),
             nodePairs = _.pairs(eventNode.linkedNodes),
-            linkData = nodePairs.filter(d=>/eventLink/.test(d[1])).map(d=>d[0].split('->')),
+            leftRegex = globalData.modeState.event.left || globalData.modeState.event.defaultLR[0],
+            linkData = nodePairs.filter(d=>leftRegex.test(d[1])).map(d=>d[0].split('->')),
             sourceData = _.reject(linkData,d=>d[0] === eventNode.id).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
             sinkData = _.reject(linkData,d=>d[2] === eventNode.id).map(d=>[globalData.shell.getNode(d[2]).getShortDescription()]);
 
@@ -97,7 +100,8 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //Draw the event
         let stateData = stateNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,stateData,5),
-            linkPairs = _.pairs(stateNode.linkedNodes).filter(d=>/eventLink/.test(d[1])).map(d=>d[0].split("->")),
+            leftRegex = globalData.modeState.state.left || globalData.modeState.state.defaultLR[0],
+            linkPairs = _.pairs(stateNode.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>d[0].split("->")),
             //source side data
             sourceData = _.reject(linkPairs,d=>parseInt(d[0]) === stateNode.id),
             sourceStateData = sourceData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
