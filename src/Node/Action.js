@@ -56,7 +56,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         }
     };
     /** set or remove a regex action */
-    var regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
+    let regexSplitRegex = /\/(.+)\/(.+)\/(.*)/;
 
     /** Set Regex Action
         @param val
@@ -106,7 +106,7 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
                 background : 'title'
             }];
         }
-        var lists = _.reject(this.getDescriptionObjectsBase(),d=>d.name==='Values');
+        let lists = _.reject(this.getDescriptionObjectsBase(),d=>d.name==='Values');
 
         lists.push({
             name : "Data",

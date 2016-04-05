@@ -23,6 +23,8 @@ define(['underscore','../Node/Constructors'],function(_,getCtor){
        @param sourceId The id to add to, otherwise cwd
        @return the newly created node
     */
+    //todo replace relType and recType with type name based on the node?
+    //based on general node lookup?
     ShellPrototype.addNode = function(name,relType,recType,type,subRelations,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd;
         if(name === null || name === undefined || name === "") {

@@ -44,6 +44,10 @@ define(['underscore'],function(_){
 
         //linked Nodes
         //id -> relationType. eg: child, parent, rule
+
+        // let idSequence (id->id->id),
+        // and linkSequence = (Type->Type->Type)
+        //then linkedNodes[idSequence] = []
         
         this.linkedNodes = {};
 
@@ -233,6 +237,16 @@ define(['underscore'],function(_){
             });
         });
         return Array.from(members);
+    };
+
+    /**
+      
+       @param idSequence
+       @param typeSequences
+     */
+    GraphNode.prototype.addLink = function(idSequence,idSequences,allNodes){
+        
+        
     };
 
     
