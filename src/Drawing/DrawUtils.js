@@ -294,8 +294,8 @@ define(['underscore','d3'],function(_,d3){
             let boundNodes =  container.selectAll(".groupNode").data(commonData.data);
             boundNodes.enter().append("g").classed("groupNode",true)
                 .on("click",function(d){
-                    //console.log("click:",d);
-                    commonData.globalData.shell.cd(d.id);
+                    console.log("click:",d);
+                    commonData.globalData.shell.cd(d[0].nodeId);
                     commonData.globalData.lookupOrFallBack("draw")(commonData.globalData);
                 });
             boundNodes.exit().remove();

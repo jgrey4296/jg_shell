@@ -49,21 +49,24 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         
         //create the container, and the enclosing rectangle
         let searchResults = DrawUtils.createOrShare("searchResults",undefined,function(newG,name){
-            newG.attr("transform","translate("+ 0 +"," + (globalData.usableHeight * 0.1) + ")");
+            newG.attr("transform","translate("+ 0 +"," + (globalData.usableHeight * 0.3) + ")");
             newG.append("rect").attr("id","EnclosingRect")
                 .attr("width",10)
-                .attr("height", globalData.usableHeight * 0.8)
+                .attr("height", Math.floor(globalData.usableHeight * 0.6))
                 .style("fill",globalData.colours.greyTwo)
-                .attr("rx",5).attr("ry",5);
+                .attr("rx",5).attr("ry",5)
+                .style("opacity",0.5);
         });
 
         //Draw the group of data, with a header title
         //GraphNode -> description...
         DrawUtils.drawGroup(searchResults,commonData)
             .then(function(){
-                var rect = searchResults.select("#EnclosingRect");
-                rect.attr("width",10);
-                var bbox = searchResults[0][0].getBBox();
+                searchResults.selectAll('rect')
+                    .style("opacity",0.5);
+                let rect = searchResults.select("#EnclosingRect");
+                rect.attr("width",10);                
+                let bbox = searchResults[0][0].getBBox();
                 rect.attr("width",bbox.width);
 
             });
@@ -92,11 +95,12 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         
         //Create the container
         let inspectResults = DrawUtils.createOrShare("inspectResults",undefined,function(newG,name){
-            newG.attr("transform","translate(" + globalData.usableWidth + "," + (globalData.usableHeight * 0.1) + ")");
+            newG.attr("transform","translate(" + globalData.usableWidth + "," + Math.floor(globalData.usableHeight * 0.3) + ")");
             newG.append("rect")
                 .attr("width",10)
-                .attr("height",globalData.usableHeight*0.8)
+                .attr("height",Math.floor(globalData.usableHeight*0.6))
                 .style("fill",globalData.colours.greyTwo)
+                .style("opacity",0.5)
                 .attr("rx",5).attr("ry",5)
                 .attr("transform","translate(-10,0)");
         });
@@ -105,6 +109,9 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //value -> [{name:value}]
         DrawUtils.drawGroup(inspectResults,commonData)
             .then(function(){
+                inspectResults.selectAll("rect")
+                    .style("opacity",0.5);
+                
                 let rect = inspectResults.select("rect");
                 rect.attr("width",10).attr("transform","translate(-10,0)");
                 
