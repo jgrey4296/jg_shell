@@ -21,11 +21,25 @@ define(['underscore'],function(_){
     };
 
     ShellPrototype.addFSMLink = function(sourceStateId,eventId,sinkStateId){
-        let source = this.getNode(sourceStateId),
-            event = this.getNode(eventId),
-            sink = this.getNode(sinkStateId),
+        let source,event,sink,linkHash;
+        //if only 2 args, use cwd where appropriate
+        if(sinkStateId === undefined && this.cwd.tags.type === 'state'){
+            source = this.cwd;
+            event = this.getNode(sourceStateId);
+            sink = this.getNode(eventId);
+        }else if(sinkStateId === undefined && this.cwd.tags.type === 'event'){
+            source = this.getNode(sourceStateId);
+            event = this.cwd;
+            sink = this.getNode(eventId);
+        }else if(sinkStateId !== undefined){
+            source = this.getNode(sourceStateId);
+            event = this.getNode(eventId);
+            sink = this.getNode(sinkStateId);
+        }else{
+            throw new Error("FSM Link error");
+        }
         //simplisticly 'hash' the link (1->2->3) for key. allows multiple start,end, and/or event usage   
-            linkHash = `${sourceStateId}->${eventId}->${sinkStateId}`;
+        linkHash = `${source.id}->${event.id}->${sink.id}`;
 
         if(source.tags.type !== 'state' || event.tags.type !== 'event' || source.tags.type !== 'state'){
             throw new Error('Incorrect specification for link');

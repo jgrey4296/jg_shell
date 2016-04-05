@@ -184,7 +184,7 @@ require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'Ret
         /** The total width on the screen available for use */
         usableWidth : window.innerWidth - 30,
         /** The total height on the screen available for use */
-        usableHeight : window.innerHeight - 30,
+        usableHeight : window.innerHeight - 40,
         /** The Size of the help window */
         helpSize : 600,
 

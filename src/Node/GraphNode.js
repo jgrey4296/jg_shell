@@ -44,6 +44,7 @@ define(['underscore'],function(_){
 
         //linked Nodes
         //id -> relationType. eg: child, parent, rule
+        
         this.linkedNodes = {};
 
          if(parentId !== undefined){
@@ -140,13 +141,13 @@ define(['underscore'],function(_){
 
         lists.push({
             name : "Source For:",
-            values : _.pairs(this.linkedNodes).filter(d=>/source/.test(d[1])).map(d=>d.join(" : ")),
+            values : _.pairs(this.linkedNodes).filter(d=>/->source/.test(d[1])).map(d=>d.join(" : ")),
             background : "link",
         });
 
         lists.push({
             name : "Sink For:",
-            values : _.pairs(this.linkedNodes).filter(d=>/sink/.test(d[1])).map(d=>d.join(" : ")),
+            values : _.pairs(this.linkedNodes).filter(d=>/->sink/.test(d[1])).map(d=>d.join(" : ")),
             background : "link"
         });
         
@@ -161,7 +162,8 @@ define(['underscore'],function(_){
      */
     GraphNode.prototype.getShortDescription = function(){
         return { name :`(${this.id}) ${this.name} : ${this.tags.type}`,
-                 background : 'title'
+                 background : 'title',
+                 nodeId : this.id
                };
     };
     
