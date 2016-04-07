@@ -30,7 +30,7 @@ define(['underscore','../utils'],function(_,util){
         //go up to parent
         if(target === ".."){
             //console.log("cd : ..");
-            let parent = _.find(pairs,d=>/_originalParent/.test(d[1])) || _.find(pairs,d=>/parent/.test(d[1])); 
+            let parent = _.find(pairs,d=>/^fsm->/.test(d[1])) || _.find(pairs,d=>/^_originalParent/.test(d[1])) || _.find(pairs,d=>/^parent/.test(d[1]));
             if(parent){
                 this.cdNode(parent[0]);
                 return;
