@@ -1,0 +1,52 @@
+* Shell General Notes
+** General Usage
+*** TODO Commands
+*** TODO Modes
+** Feature Additions
+*** TODO FSM Runtime
+    Allow storage of individual:state pairs in FSMs, and performing actions in events
+
+    added core method to set fsm state, and ability to get the eventIds for a state,
+    now its a case of:
+**** TODO setting up loop of: getFSMStateForId -> selectEvent (possibly with rules?) -> enact event -> update state
+**** TODO adding logic for event enaction
+     events are still just nodes, actions can be linked, probably using the event->action description,
+     if without conditions, just fire the action (how?)
+     possibly be able to bind variables to states ('assertion'), and remove/modify them, 
+     then have actions modify those on their way to the next state?
+
+     the retenet binds the actionfunction (proposal) specified with the description,
+     then its a call with a token...
+
+**** TODO Add conditions to events, states?
+*** TODO Add Behaviour Tree Representation
+    Be able to specify Trees of nodes with conditions, and sequential/parallel annotations
+*** TODO Add Behaviour Tree Runtime
+    Load the behaviour tree specification into a runtime and execute it, linking with the rete net
+
+
+** Moise notes
+
+*** Organisational Spec
+    Description of components 
+
+Structural Spec - Roles, components etc
+Deontic/Normative Spec - link roles to permissions/obligations, 
+Functional Spec - Action/Activity descriptions
+Environment Spec - Physical interface
+
+Translation of roles -> actions as intersection of sets based on permission, environment etc
+*** Organisation Entity
+Instantiation of Spec.
+Map Agents -> Roles
+Track Agents -> Roles -> Activities
+
+
+*** Local Representation of Organisation
+
+** Refactor Update/Cleanups
+
+*** TODO Fix node::link command, its still on the old way of describing node id pairings
+
+*** TODO check tracing
+    probably needs to be updated what with the change to linkedNodes...`
