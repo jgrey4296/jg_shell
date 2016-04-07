@@ -98,6 +98,20 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
             globalData.lastSetOfSearchResults = statesAndEvents.states;
             globalData.lastInspectData = statesAndEvents.events;
         },
+
+        //for dev of fsm runtime:
+        "set" : function(globalData,values){
+            if(globalData.shell.cwd.tags.type !== 'fsm'){
+                throw new Error('not an fsm to set');
+            }
+            globalData.shell.setFSMForInd(values.shift(),values.shift(),undefined,globalData.shell.cwd.id);
+        },
+        "trigger" : function(globalData,values){
+            if(globalData.shell.cwd.tags.type !== 'fsm'){
+                throw new Error('not an fsm to trigger');
+            }
+            globalData.shell.triggerEvent(values.shift(),values.shift(),globalData.shell.cwd.id);        },
+
         
     };
 

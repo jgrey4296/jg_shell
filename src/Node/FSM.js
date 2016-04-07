@@ -4,10 +4,17 @@ if(typeof define !== 'function'){
 
 define(['underscore','./GraphNode'],function(_,GraphNode){
     "use strict";
-    
+
+    /**
+       A root FSM object. Tracks states and events,
+       stores node -> state pairings for the fsm runtime.
+       @see module:Shell_fsm
+     */
     var FSM = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'fsm',{},overRideId);
-        this.positions = {};
+        //individualId -> current stateId pairing
+        //individualId -> Rete Token?
+        this.instanceStates = {};
         
     };
     FSM.prototype = Object.create(GraphNode.prototype);
@@ -21,6 +28,6 @@ define(['underscore','./GraphNode'],function(_,GraphNode){
         });
         return descriptionObjects;
     };
-    
+
     return FSM;
 });
