@@ -9,19 +9,19 @@ define([],function(){
        @param context
      */
     var AlertActionConstructor = function(context){
-        var AlertAction = {
+        let AlertAction = {
             name : "alert",//the name registered under
             propose : function(token,reteNet){
                 //create the data object:
-                var newWMEData = reteNet.utils.createNewWMEData(this,token);
+                let newWMEData = reteNet.utils.createNewWMEData(this,token);
                 reteNet.utils.applyArithmetic(this,newWMEData);
                 reteNet.utils.applyRegex(this,newWMEData);
                 //Expand out to object structure
                 //ie: {values.a:5, tags.type: rule} -> {values:{a:5},tags:{type:rule}}
-                var complexFormData = reteNet.utils.objDescToObject(newWMEData);
+                let complexFormData = reteNet.utils.objDescToObject(newWMEData);
                 
                 //To be returned to activateActionNode
-                var proposedAction = new reteNet.ProposedAction(reteNet,"alert", complexFormData, token,
+                let proposedAction = new reteNet.ProposedAction(reteNet,"alert", complexFormData, token,
                                                                 reteNet.currentTime,
                                                                 this.timing,
                                                                 this.priority
