@@ -1,15 +1,124 @@
 * Shell General Notes
 ** General Usage
-*** TODO Commands
+*** Underlying model
+The underlying model of the shell is an object of id->node pairings
+Everything is based off of this. Nodes reference each other by id,
+rather than using actual references to the objects, allowing easy conversion to json.
+Nodes have a a 'relatedObjects' field, which stores all the id->relation types.
 *** TODO Modes
-** Feature Additions
-*** TODO FSM Runtime
-    Allow storage of individual:state pairs in FSMs, and performing actions in events
+**** Node 
+The Node mode is the default mode for movement and visualisation.
+***** Commands
+****** new / nc / np / ncn / nci
+Creates a new node. The link is reciprocal, and there are shortcuts for regularly
+used relations. Can take a subRelations object that will create children in a particular format
+eg: new child parent node  blah
+    nc node blah
+    np node blah
+******* TODO document subRelation format
+****** cd
+Change the cwd of the shell to the specified id. IF a name is specified, it uses assumes a local relation
+Can move to the default parent / fsm 
+eg: cd 5
+    cd ..
+    cd blah
+****** rm
+Remove a node, deleting if it becomes disconnected from everything
+eg : rm 5
+****** set / sv / st
+set a value in the node, can be anything other than id. Shortcuts for setting values and tags
+typically adds key/value pair to an object in the node
+eg : set values a 5
+     sv a 5
+     st type graph
+****** link
+Create a link between between two nodes. specifying the forward and reciprocal link types
+eg : link 5 parent child
+****** rename
+renames the cwd
+eg : rename newName
+****** cp
+shallow copy the node to be a child of the specified second node
+eg : cp 5 2
+****** min
+minimise or unminimise the view of the specified node
+eg : min 5
 
+**** Rule
+The default for types of nodes that have conditions and actions specified.
+Mainly that means rules, actions, and conditions.
+***** Commands
+****** new
+link the node modes new, but allows for easy creation of conditions and actions
+eg : new condition
+     new action blah
+     new negCondition
+     new negConjCondtion
+     new ncc
+****** if
+a faster way to create a condition and put some tests in it. subtests separated by commas
+eg : if values.a EQ 5, tags.type EQ blah
+****** set
+Set an action or conditions values of some sort. can reset values as well, such as a test 
+already in a condition.
+eg : set condition 5 test a EQ 5
+     set condition 5 test 0 a EQ 5
+     set condition 5 binding a values.a
+     set condition 5 binding a values.a NE b
+     set action 2 type assert
+****** link
+link an existing node into the rule as a condition or action
+eg : link condition 5
+     link action 2
+**** FSM
+Instead of viewing parents and children of a node, or conditions/actions,
+FSM mode shows states/events.
+***** Commands
+****** new
+Adds a state or event to the FSM. If cwd is an event or state of an FSM, adds to the parent FSM
+eg : new event blah
+     new state blah
+****** link
+Creates an state->event->state chain
+eg : link 5 2 3
+****** unlink
+removes a state->event->state chain
+eg : unlink 5 2 3
+****** propose
+Lists the available states and events of the fsm, for easier linking 
+while in a state or event, without having to return to the fsm root
+****** set
+Sets the fsm state for a given id. The fsm can act as multiple instances of the fsm this way
+eg : set 2 3 (for 'character '2', the state is 3)
+****** trigger
+Triggers, for a current fsm instance, the given event. complains if the event is not a valid event for the 
+current state the instance is in
+eg : trigger 2 5 (for character '2', trigger event '5')
+****** rm
+remove a state or event from the fsm, cleaning up all state->event->state chains that it is part of
+**** TODO Trace
+The Trace mode treats a node,its values, and its children as a tracery style grammar
+***** Commands
+**** TODO General
+General commands of the shell.
+***** Commands
+**** TODO Bookmark
+A Mode for treating nodes as bookmarks (which can be imported from firefox),
+and can also open new windows of the url contained in the node
+***** Commands
+**** TODO Rete
+Can compile rules, assert facts, schedule events and step the rete net forwards
+***** Commands
+**** TODO Simulation
+
+***** Commands
+** Feature Additions
+*** TODO FSM
+    Allow storage of individual:state pairs in FSMs, and performing actions in events
     added core method to set fsm state, and ability to get the eventIds for a state,
     now its a case of:
-**** TODO setting up loop of: getFSMStateForId -> selectEvent (possibly with rules?) -> enact event -> update state
-**** TODO adding logic for event enaction
+**** TODO loop of: getFSMStateForId -> selectEvent (possibly with rules?) -> enact event -> update state
+**** TODO adding logic for event action proposal/performace
      events are still just nodes, actions can be linked, probably using the event->action description,
      if without conditions, just fire the action (how?)
      possibly be able to bind variables to states ('assertion'), and remove/modify them, 
@@ -19,16 +128,23 @@
      then its a call with a token...
 
 **** TODO Add conditions to events, states?
-*** TODO Add Behaviour Tree Representation
+*** TODO Behaviour Tree
     Be able to specify Trees of nodes with conditions, and sequential/parallel annotations
-*** TODO Add Behaviour Tree Runtime
-    Load the behaviour tree specification into a runtime and execute it, linking with the rete net
+**** TODO Add Behaviour Tree Runtime
+     Load the behaviour tree specification into a runtime and execute it, linking with the rete net
 
+** Refactor Update/Cleanups
 
-** Moise notes
+*** DONE Fix node::link command, its still on the old way of describing node id pairings
+
+*** TODO check tracing
+    probably needs to be updated what with the change to linkedNodes...`
+
+    
+* Moise notes
 
 *** Organisational Spec
-    Description of components 
+Description of components 
 
 Structural Spec - Roles, components etc
 Deontic/Normative Spec - link roles to permissions/obligations, 
@@ -41,12 +157,5 @@ Instantiation of Spec.
 Map Agents -> Roles
 Track Agents -> Roles -> Activities
 
-
 *** Local Representation of Organisation
 
-** Refactor Update/Cleanups
-
-*** TODO Fix node::link command, its still on the old way of describing node id pairings
-
-*** TODO check tracing
-    probably needs to be updated what with the change to linkedNodes...`
