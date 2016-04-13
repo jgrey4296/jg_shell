@@ -175,9 +175,6 @@ define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],f
                 globalData.shell.link(targetNodeId,relType,`${targetType}->${relType}`,ruleComponentId);
             }
         },
-        "unlink" : function(globalData,values,sourceId){
-            throw new Error("Unimplemented");
-        },        
         /** help 
             @param globalData
             @param values

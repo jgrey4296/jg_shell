@@ -98,7 +98,6 @@ define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
             globalData.lastSetOfSearchResults = statesAndEvents.states;
             globalData.lastInspectData = statesAndEvents.events;
         },
-
         //for dev of fsm runtime:
         "set" : function(globalData,values){
             if(globalData.shell.cwd.tags.type !== 'fsm'){

@@ -159,19 +159,7 @@ define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDr
         */
         "link" : function(globalData,values,sourceId){
             //link -> link
-            var target = values[0],
-                recType = /child/.test(target) ? 'parent' : /parent/.test(target) ? 'child' : undefined;
-            globalData.shell.link(values[1],target,recType,sourceId);
-        },
-        /** Link two nodes, reciprocally
-            @param globalData
-            @param values
-            @param sourceId
-         */
-        "linkr" : function(globalData,values,sourceId){
-            var target = values[0];
-            globalData.shell.link(target,values[1],true,sourceId);
-
+            globalData.shell.link(values[0],values[1],valuies[2],sourceId);
         },
         /** Rename the node 
             @param globalData
@@ -223,7 +211,6 @@ define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDr
                 "sv" : ["$parameter $value","Synonym for set values"],
                 "st" : ["$parameter $value","Synonym for set tags"],
                 "link" : ["$target $nodeId","Link an existing node as a $target of the current node"],
-                "linkr" : ["$target $nodeId","link reciprocally"],
                 "rename" : ["$name","Change the name of the current node"],
                 "cp" : ["$sourceId $targetId $deep","Copy an existing node to be a child of the targetId, todo: deep copy"],
                 "min" : ["$nodeId", "Minimise a node representation"]
