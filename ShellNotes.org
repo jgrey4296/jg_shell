@@ -96,9 +96,20 @@ current state the instance is in
 eg : trigger 2 5 (for character '2', trigger event '5')
 ****** rm
 remove a state or event from the fsm, cleaning up all state->event->state chains that it is part of
-**** TODO Trace
+**** Trace
 The Trace mode treats a node,its values, and its children as a tracery style grammar
+Each node can have a value.message (eg: "this is ${a} ${test}"), which
+can be expanded with *varsToChildren*, and then compiled to a grammar
+and expanded using *trace*. 
+***** TODO Convert trace to return the grammar
 ***** Commands
+****** varsToChildren
+Will convert any ${identifiers} to children of the node
+****** trace
+Can take a number, specifying the number of times the expansion should
+be run.
+Internally, trace compiles a grammar object and passes it to the
+*Parse* module.
 **** TODO General
 General commands of the shell.
 ***** Commands
@@ -137,10 +148,11 @@ Can compile rules, assert facts, schedule events and step the rete net forwards
 
 *** DONE Fix node::link command, its still on the old way of describing node id pairings
 
-*** TODO check tracing
-    probably needs to be updated what with the change to linkedNodes...`
-
-    
+*** DONE check tracing
+Author: John Grey Tue May 10 15:48:45 PDT 2016
+Tracing was modified to use the linkedNodes format, searching
+specifically for children of a node, and adapted to use the standard
+${id} format instead of the old style $id format.
 * Moise notes
 
 *** Organisational Spec
