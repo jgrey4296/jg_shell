@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../../libs/Parse'],function(_,Parse){
+define(['lodash','Parse'],function(_,Parse){
     "use strict";
     /**
        Defines Shell prototype methods relating to string modification. mainly utilities
@@ -52,43 +52,46 @@ define(['underscore','../../libs/Parse'],function(_,Parse){
     ShellPrototype.traceNode = function(node){
         //create the grammar object:
         //first get relevant descendant rules
-        let descendents = this.dfs(node.id).map(function(d){
-            return this.getNode(d);
-        },this),
-            //fold into a single grammar object, using id's as rule keys:
+        let shellRef = this,
+            descendents = this.dfs(node.id).map(function(d){
+                return this.getNode(d);
+            },this),
+            //fold into a single grammar object
             grammar = descendents.reduce(function(m,v){
                 if(m[v.id] === undefined){
                     m[v.id] = [];
                 }
                 if(v.values.message !== undefined){
-                    //convert the message to use id numbers instead of var names
-                    let invertedChildren = _.invert(v.linkedNodes.children),
+                    //deprecated: convert the message to use id numbers instead of var names
+                    let children = _.toPairs(v.linkedNodes).filter(d=>/^child/.test(d[1])).map(d=>shellRef.getNode(d[0])),
+                        invertedChildren = children.reduce((m,v)=>{
+                            m[v.name] = v.id;
+                            return m;
+                        },{}),
                         message = v.values.message,
-                        vars = message.match(/\$\w+/g);
+                        regex = /\$(\d)?{(\w+)}/g,
+                        matchResult = regex.exec(message);
                     //no substrings to expand:
-                    if(vars === null){
+                    if(matchResult === null){
                         m[v.id] = [message];
                     }else{
-                        //todo: filter vars that are defined in values, use them in preference to descendents
-                      
-                        //substring conversion:
-                       let ids = vars.map(function(d){
-                            return invertedChildren[d.slice(1)];
-                        }),
-                            //pair with strings to replace
-                            zipped = _.zip(vars,ids),
-                            //convert vars to ids
-                            convertedMessage = zipped.reduce(function(m,v){
-                                return m.replace(v[0],"$"+v[1]);
-                            },message);
-                        m[v.id].push(convertedMessage);
+                        //todo: filter vars that are defined in values,
+                        //use them in preference to descendents
+                        while(matchResult !== null){
+                            let id = invertedChildren[matchResult[2]] || match[2],
+                                replacement = matchResult[1] === undefined ? `\${${id}}` : `\$${matchResult[1]}{${id}}`;
+                            message = message.replace(matchResult[0],replacement)
+                            matchResult = regex.exec(message);
+                        }
+                        m[v.id].push(message);
                     }
                 }else{
                     //turn each child into a rule
                     //m[v.id] = _.values(v.children).length > 0 ? m[v.id].concat(_.keys(v.children).map(function(d){
                     //turn each child into a rule, or use the name of the node
-                    m[v.id] = _.values(v.linkedNodeschildren).length > 0 ? m[v.id].concat(_.keys(v.linkedNodes.children).map(function(d){
-                        return "$"+d;
+                    let children = _.toPairs(v.linkedNodes).filter(d=>d[1].match(/^child/));
+                    m[v.id] = children.length > 0 ? m[v.id].concat(children.map(function(d){
+                        return "${"+d[0] + "}";
                     })) : m[v.id].concat([v.name]);
                }                
                 return m;
@@ -98,7 +101,7 @@ define(['underscore','../../libs/Parse'],function(_,Parse){
         
         var retString;
         try{
-            retString = Parse(grammar,node.id);
+            retString = Parse([grammar],node.id);
         }catch(e){
             console.log("Trace error:",e);
         }finally{

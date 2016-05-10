@@ -1,5 +1,5 @@
 
-define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
+define(['lodash','Drawing/TraceDrawing'],function(_,TraceDrawing){
     "use strict";
 
     /**
@@ -44,17 +44,18 @@ define(['underscore','Drawing/TraceDrawing'],function(_,TraceDrawing){
             @param values
         */
         "varsToChildren" : function(globalData,values){
-            var curNode = globalData.shell.cwd,
+            let curNode = globalData.shell.cwd,
                 message = curNode.values.message || curNode.name,
-                vars = message.match(/\$\w+/g);
+                varRegex = /\${(\w+)}/g,
+                matchResult = varRegex.exec(message),
+                children = new Set(_.toPairs(curNode.linkedNodes).filter(d=>d[1].match(/^child/)).map(d=>this.getNode(d[1]).name));
 
-            vars.forEach(function(d){
-                var varName = d.slice(1);
-                if(!_.contains(_.values(curNode.children),varName)){
-                    globalData.shell.addNode(varName,"children");
-                }                
-            });
-            
+            while(matchResult !== null){
+                if(!children.has(matchResult[1])){
+                    globalData.shell.addNode(matchResult[1],"child");
+                }
+                matchResult = varRegex.exec(message);
+            }            
         },
     };
     return TraceCommands;
