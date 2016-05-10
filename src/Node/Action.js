@@ -110,7 +110,7 @@ define(['lodash','./GraphNode'],function(_,GraphNode){
 
         lists.push({
             name : "Data",
-            values : _.pairs(this.values).map(d=>d.join(" : ")),
+            values : _.toPairs(this.values).map(d=>d.join(" : ")),
             background : 'data'
         });
         
@@ -133,7 +133,7 @@ define(['lodash','./GraphNode'],function(_,GraphNode){
         });
 
         //the sink/prototype nodes
-        let sinks = _.pairs(this.linkedNodes).filter(d=>/sink/.test(d[1]));
+        let sinks = _.toPairs(this.linkedNodes).filter(d=>/sink/.test(d[1]));
         if(sinks.length === 0){
             lists.push({
                 name : "SINK ID: NULL",

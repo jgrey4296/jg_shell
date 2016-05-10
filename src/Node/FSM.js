@@ -24,7 +24,7 @@ define(['lodash','./GraphNode'],function(_,GraphNode){
         let descriptionObjects = this.getDescriptionObjectsBase();
         descriptionObjects.push({
             name : "Currently Utilized By:",
-            values : _.pairs(this.positions).map(d=>d.join(" : "))
+            values : _.toPairs(this.positions).map(d=>d.join(" : "))
         });
         return descriptionObjects;
     };

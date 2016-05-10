@@ -106,13 +106,13 @@ define(['lodash','./GraphNode','../utils'],function(_,GraphNode,util){
 
             nccList.push({
                 name : "Conditions",
-                values : _.pairs(this.linkedNodes).filter(d=>/^condition/.test(d[1])).map(d=>d.join(" : ")),
+                values : _.toPairs(this.linkedNodes).filter(d=>/^condition/.test(d[1])).map(d=>d.join(" : ")),
                 background : "link"
             });
 
             nccList.push({
                 name : "Tags",
-                values : _.pairs(this.tags).map(d=>d.join(" : ")),
+                values : _.toPairs(this.tags).map(d=>d.join(" : ")),
                 background : "tags"
             });
 
@@ -148,7 +148,7 @@ define(['lodash','./GraphNode','../utils'],function(_,GraphNode,util){
         });
 
         //the source node
-        let sources = _.pairs(this.linkedNodes).filter(d=>/source/.test(d[1]));
+        let sources = _.toPairs(this.linkedNodes).filter(d=>/source/.test(d[1]));
         if(sources.length === 0){
             lists.push({
                 name : "SOURCE ID: NULL",

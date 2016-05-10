@@ -159,7 +159,7 @@ define(['lodash','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,Gener
             let nodeId = values.shift(),
                 key = values.shift(),
                 node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,                
-                pairs = key === "#all" ? _.keys(node) : _.pairs(node[key]) || [];
+                pairs = key === "#all" ? _.keys(node) : _.toPairs(node[key]) || [];
 
             globalData.lastInspection = "(" + node.id + ")." + key;
             globalData.lastInspectData = pairs;
