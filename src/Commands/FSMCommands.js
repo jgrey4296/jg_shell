@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['underscore','Drawing/FSMDrawing'],function(_,FSMDrawing){
+define(['lodash','Drawing/FSMDrawing'],function(_,FSMDrawing){
     "use strict";
     /**
      The interface for FSM modification

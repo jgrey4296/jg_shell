@@ -1,4 +1,4 @@
-define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
+define(['lodash','d3','./DrawUtils'],function(_,d3,DrawUtils){
     "use strict";
     /**
      The General Drawing interface

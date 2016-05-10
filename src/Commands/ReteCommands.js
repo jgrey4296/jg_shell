@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','Drawing/ReteDrawing'],function(_,ReteDraw){
+define(['lodash','Drawing/ReteDrawing'],function(_,ReteDraw){
     "use strict";
     /**
      To define the actions a user can perform regarding the retenet

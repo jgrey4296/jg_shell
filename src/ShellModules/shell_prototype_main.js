@@ -1,8 +1,9 @@
+/* jshint esversion : 6 */
 if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','./shell_json','./shell_node_addition','./shell_node_deletion','./shell_node_mod','./shell_rete','./shell_search','./shell_string','./shell_graph_search','./shell_state_change','./shell_simulation','./shell_fsm'],function(_,shellJson,shellAddition,shellDeletion,shellMod,shellRete,shellSearch,shellString,shellGraphSearch,shellStateChange,shellSimulation,shellFSM){
+define(['lodash','./shell_json','./shell_node_addition','./shell_node_deletion','./shell_node_mod','./shell_rete','./shell_search','./shell_string','./shell_graph_search','./shell_state_change','./shell_simulation','./shell_fsm'],function(_,shellJson,shellAddition,shellDeletion,shellMod,shellRete,shellSearch,shellString,shellGraphSearch,shellStateChange,shellSimulation,shellFSM){
     "use strict";
     /**
        Aggregates different components of the shell into one prototype
@@ -19,7 +20,7 @@ define(['underscore','./shell_json','./shell_node_addition','./shell_node_deleti
        @requires module:ShellModules/shell_simulation
        @requires module:ShellModules/shell_fsm
      */
-    var shellPrototype = _.extend({},
+    let shellPrototype = _.extend({},
                                   shellJson, shellAddition, shellDeletion,
                                   shellMod, shellRete, shellSearch, shellString,
                                   shellGraphSearch, shellStateChange,shellSimulation,

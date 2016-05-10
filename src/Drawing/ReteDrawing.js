@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
+define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
     /** The interface for drawing elements from the retenet
         @exports Drawing/ReteDrawing
@@ -35,7 +35,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             //else:
             return [{
                 name : `(${d.id}): ${d.actionType}`,
-                values : _.pairs(d.payload).map(function(d){
+                values : _.toPairs(d.payload).map(function(d){
                     if(d[0] === 'bindings'){
                         return d[0] + JSON.stringify(d[1]).replace(",",", ");
                     }
@@ -75,7 +75,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
             //else
             return [{
                 name : `(${d.id}): ${d.actionType}`,
-                values : _.pairs(d.payload).map(function(d){
+                values : _.toPairs(d.payload).map(function(d){
                     if(d[0] === 'bindings'){
                         return d[0] + JSON.stringify(d[1]);
                     }

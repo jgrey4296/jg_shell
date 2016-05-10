@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
    Rule description to interface with ReteNEt
    @module Node/Rule
  */
-define(['underscore','./GraphNode'],function(_,GraphNode){
+define(['lodash','./GraphNode'],function(_,GraphNode){
     "use strict";
     /**
        @constructor

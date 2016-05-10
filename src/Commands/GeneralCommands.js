@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,GeneralDrawing){
+define(['lodash','d3','utils','Drawing/GeneralDrawing'],function(_,d3,util,GeneralDrawing){
     "use strict";
 
     /**

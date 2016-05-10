@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
+define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     "use strict";
     /**
        The interface for drawing a rule
@@ -24,7 +24,7 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
         
         //condition data transform
-        let rulePairs = _.pairs(ruleToDraw.linkedNodes),
+        let rulePairs = _.toPairs(ruleToDraw.linkedNodes),
             leftRegex = globalData.modeState.rule.left || globalData.modeState.rule.defaultLR[0],
             conditionData = rulePairs.filter(d=>leftRegex.test(d[1])).map(function(d){
                 let node = globalData.shell.getNode(d[0]);

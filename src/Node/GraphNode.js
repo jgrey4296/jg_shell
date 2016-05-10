@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
    @module Node/GraphNode
    @see GraphNode
 */
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     var nextId = 0,
         //for a field name 'a' lookup a colour in global data called 'b'
@@ -127,31 +127,31 @@ define(['underscore'],function(_){
 
         lists.push({
             name : "Tags",
-            values : _.pairs(this.tags).map(d=>d.join(" : ")),
+            values : _.toPairs(this.tags).map(d=>d.join(" : ")),
             background : 'tags'
         });
 
         lists.push({
             name : "Values",
-            values : _.pairs(this.values).map(d=>d.join(" : ")),
+            values : _.toPairs(this.values).map(d=>d.join(" : ")),
             background : 'data'
         });
 
         lists.push({
             name : "Annotations",
-            values : _.pairs(this.annotations).map(d=>d.join(" : ")),
+            values : _.toPairs(this.annotations).map(d=>d.join(" : ")),
             background : "lightBlue"
         });
 
         lists.push({
             name : "Source For:",
-            values : _.pairs(this.linkedNodes).filter(d=>/->source/.test(d[1])).map(d=>d.join(" : ")),
+            values : _.toPairs(this.linkedNodes).filter(d=>/->source/.test(d[1])).map(d=>d.join(" : ")),
             background : "link",
         });
 
         lists.push({
             name : "Sink For:",
-            values : _.pairs(this.linkedNodes).filter(d=>/->sink/.test(d[1])).map(d=>d.join(" : ")),
+            values : _.toPairs(this.linkedNodes).filter(d=>/->sink/.test(d[1])).map(d=>d.join(" : ")),
             background : "link"
         });
         
@@ -221,7 +221,8 @@ define(['underscore'],function(_){
     GraphNode.prototype.getActiveLinks = function(relationTypes){
         if(relationTypes == undefined || (relationTypes instanceof Array && relationTypes.length === 0)){
             //return everything this node is connected to
-            return _.keys(this.linkedNodes);
+            let members = new Set(_.keys(this.linkedNodes));
+            return Array.from(members);
         }
         if(!(relationTypes instanceof Array)){
             relationTypes = [relationTypes];
@@ -229,7 +230,7 @@ define(['underscore'],function(_){
         
         //take a keylist, return an array of all ids with matching relationtypes
         let members = new Set();
-        _.pairs(this.linkedNodes).forEach(function(linkPair){
+        _.toPairs(this.linkedNodes).forEach(function(linkPair){
             relationTypes.forEach(function(regex){
                 if(regex.test(linkPair[1])){
                     members.add(linkPair(1));

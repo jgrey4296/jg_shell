@@ -5,7 +5,7 @@ if(typeof define !== 'function'){
    Describes a node that can behave as a ReteNet Action
    @module Node/Action
  */
-define(['underscore','./GraphNode'],function(_,GraphNode){
+define(['lodash','./GraphNode'],function(_,GraphNode){
     "use strict";
     /**
        @constructor Action

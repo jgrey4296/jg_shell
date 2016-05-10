@@ -7,7 +7,7 @@ if(typeof define !== 'function'){
    @module Node/Bookmark
    @see Node/Bookmark
  */
-define(['underscore','./GraphNode'],function(_,GraphNode){
+define(['lodash','./GraphNode'],function(_,GraphNode){
     "use strict";
     /**
        @constructor

@@ -9,7 +9,7 @@ require.config({
         //uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
         d3 : "/libs/d3.min",
-        Parse : "/libs/Parse",
+        Parse : "Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
         //Commands:
@@ -25,6 +25,7 @@ require.config({
         ReteAlert : "ReteActions/alertAction",
         //Simulation:
         //Simulation : "Simulation/Simulation"
+        lodash : "/libs/lodash.min"
     },
     shim:{
         'underscore' :{

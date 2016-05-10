@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../utils','underscore','../Drawing/NodeDrawing'],function(util,_,NodeDraw){
+define(['../utils','lodash','../Drawing/NodeDrawing'],function(util,_,NodeDraw){
     "use strict";
     //All of the commands for the normal node mode of the shell
     /**

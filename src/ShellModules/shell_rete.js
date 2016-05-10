@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     /**
        Define prototype methods relating to shell <-> rete interaction

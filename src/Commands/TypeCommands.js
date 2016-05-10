@@ -2,7 +2,7 @@ if(typeof defien !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['../utils','underscore'],function(util,_){
+define(['../utils','lodash'],function(util,_){
     "use strict";
 
     var TypeCommands = {

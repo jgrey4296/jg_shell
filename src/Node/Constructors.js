@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
     Aggregates the constructors toget
     @module Node/Constructors
  */
-define(['underscore','./GraphNode','./Rule','./Condition','./Action','./Institution','./Bookmark','./State','./FSM','./Event'],function(_,GraphNode,Rule,Condition,Action,Institution,Bookmark,State,FSM,Event){
+define(['lodash','./GraphNode','./Rule','./Condition','./Action','./Institution','./Bookmark','./State','./FSM','./Event'],function(_,GraphNode,Rule,Condition,Action,Institution,Bookmark,State,FSM,Event){
     "use strict";
     const ctors = new Map([
         ["graphnode" , GraphNode],

@@ -6,7 +6,7 @@ if(typeof define !== 'function'){
    @module Node/Condition
    @see {@link Node/Condition}
  */
-define(['underscore','./GraphNode','../utils'],function(_,GraphNode,util){
+define(['lodash','./GraphNode','../utils'],function(_,GraphNode,util){
     "use strict";
 
         var allowableConditionTypes = [

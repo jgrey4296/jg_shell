@@ -2,7 +2,7 @@
    Takes text, executes relevant commands on the shell
    @module CLI/MainCommandCLI
 */
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
 
     /**

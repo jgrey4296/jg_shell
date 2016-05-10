@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['d3','utils','underscore','Drawing/RuleDrawing','Drawing/NodeDrawing'],function(d3,util,_,RuleDrawing,NodeDrawing){
+define(['d3','utils','lodash','Drawing/RuleDrawing','Drawing/NodeDrawing'],function(d3,util,_,RuleDrawing,NodeDrawing){
     "use strict";
 
     /**

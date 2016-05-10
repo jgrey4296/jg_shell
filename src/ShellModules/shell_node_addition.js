@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore','../Node/Constructors'],function(_,getCtor){
+define(['lodash','../Node/Constructors'],function(_,getCtor){
     "use strict";
     /**
        Defines prototype methods for shell node creation

@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     var ShellPrototype = {};
 
@@ -15,7 +15,7 @@ define(['underscore'],function(_){
      */
     ShellPrototype.addFSMComponent = function(typename,names,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd,
-            potentialParentFSMId = _.find(_.pairs(source.linkedNodes),d=>/^fsm->/.test(d[1])),
+            potentialParentFSMId = _.find(_.toPairs(source.linkedNodes),d=>/^fsm->/.test(d[1])),
             parentFSMId = source.tags.type === 'fsm' ? source.id : potentialParentFSMId,
             target = typename === 'event' ? 'event' : 'state';
 
@@ -87,7 +87,7 @@ define(['underscore'],function(_){
      */
     ShellPrototype.rmFSMComponent = function(componentId){
         let component = this.getNode(componentId),
-            fsmId = _.find(_.pairs(component.linkedNodes),d=>/^fsm->/.test(d[1])) || null,
+            fsmId = _.find(_.toPairs(component.linkedNodes),d=>/^fsm->/.test(d[1])) || null,
             fsm = fsmId ?  this.getNode(fsmId) : null;
         //in fsm: remove state, unlink all events from it
         if(fsm !== null){
@@ -108,7 +108,7 @@ define(['underscore'],function(_){
         if(currentNode.tags.type === 'fsm'){
             currentFSM = currentNode;
         }else{
-            let fsmLink = _.find(_.pairs(currentNode.linkedNodes),d=>/fsm->/.test(d[1]));
+            let fsmLink = _.find(_.toPairs(currentNode.linkedNodes),d=>/fsm->/.test(d[1]));
             if(fsmLink !== undefined){
                 currentFSM = this.getNode(fsmLink[0]);
             }
@@ -117,7 +117,7 @@ define(['underscore'],function(_){
         if(currentFSM === undefined){
             throw new Error("Can't find a parent fsm");
         }
-        let linkedNodes = _.pairs(currentFSM.linkedNodes),
+        let linkedNodes = _.toPairs(currentFSM.linkedNodes),
             states = _.filter(linkedNodes,d=>/^state/.test(d[1])).map(d=>this.getNode(d[0])),
             events = _.filter(linkedNodes,d=>/^event/.test(d[1])).map(d=>this.getNode(d[0]).toString());
 
@@ -177,7 +177,7 @@ define(['underscore'],function(_){
             stateId = fsm.instanceStates[indId],
             state = this.getNode(stateId),
             //events for the state
-            stateEvents = _.pairs(state.linkedNodes).map(d=>[d[0].split(/->/),d[1]]).filter(d=>d[0][0] === stateId),
+            stateEvents = _.toPairs(state.linkedNodes).map(d=>[d[0].split(/->/),d[1]]).filter(d=>d[0][0] === stateId),
             randEvent = _.sample(stateEvents),
             event = eventId !== undefined ? this.getNode(eventId) : this.getNode(randEvent[0][1]);
         //update the id to be used:
@@ -197,7 +197,7 @@ define(['underscore'],function(_){
         
         //set the fsm instance state for the ind to the resulting state
         let sequenceRegex = new RegExp(`^${stateId}->${eventId}`),
-            potentialSequences = _.pairs(event.linkedNodes).filter(d=>/^eventLink/.test(d[1]) && sequenceRegex.test(d[0])),
+            potentialSequences = _.toPairs(event.linkedNodes).filter(d=>/^eventLink/.test(d[1]) && sequenceRegex.test(d[0])),
             selectedTargetState = _.sample(potentialSequences)[0].split('->')[2];
 
         fsm.instanceStates[indId] = selectedTargetState;

@@ -11,7 +11,7 @@ if(typeof define !== 'function'){
 }
 
 
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     /**
        @exports ShellModules/shell_search

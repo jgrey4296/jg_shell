@@ -1,9 +1,9 @@
 
-define(['underscore','d3'],function(_,d3){
+define(['lodash','d3'],function(_,d3){
     "use strict";
     /**
        Utilities to Assist with Drawing to do
-       @requires underscore
+       @requires lodash
        @requires d3
        @exports Drawing/DrawUtils
      */
@@ -67,7 +67,7 @@ define(['underscore','d3'],function(_,d3){
         var cwd = shell.cwd;
         while(cwd !== undefined && _.keys(cwd.linkedNodes).length > 0  && depth > 0){
             path.push(`${cwd.name}(${cwd.id})`);
-            let parent = _.find(_.pairs(cwd.linkedNodes),d=>/parent/.test(d[1])) || [];
+            let parent = _.find(_.toPairs(cwd.linkedNodes),d=>/parent/.test(d[1])) || [];
             cwd = shell.allNodes[parent[0]];
             depth--;
         }

@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','./GraphNode'],function(_,GraphNode){
+define(['lodash','./GraphNode'],function(_,GraphNode){
 
     var State = function(name,parent,type,relations,overRideId){
         GraphNode.call(this,name,parent,'state',{},overRideId);

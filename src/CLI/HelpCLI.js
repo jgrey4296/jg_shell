@@ -2,7 +2,7 @@
    The CLI module that deals with help requests
    @module CLI/HelpCLI
  */
-define(['underscore','d3'],function(_,d3){
+define(['lodash','d3'],function(_,d3){
     "use strict";
     /**
        @function HelpCLI

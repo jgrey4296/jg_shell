@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
+define(['lodash','d3','./DrawUtils'],function(_,d3,DrawUtils){
     "use strict";
     /**
        A Template drawing module
@@ -11,7 +11,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
      */
     FSMDrawInterface.drawFSM = function(globalData,fsmNode){
         let fsmData = fsmNode.getDescriptionObjects(),
-            fsmPairs = _.pairs(fsmNode.linkedNodes),
+            fsmPairs = _.toPairs(fsmNode.linkedNodes),
             leftRegex = globalData.modeState.fsm.left || globalData.modeState.fsm.defaultLR[0],
             stateData = fsmPairs.filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
             rightRegex = globalData.modeState.fsm.right || globalData.modeState.fsm.defaultLR[1],
@@ -56,7 +56,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         //Draw the event
         let eventData = eventNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,eventData,3),
-            nodePairs = _.pairs(eventNode.linkedNodes),
+            nodePairs = _.toPairs(eventNode.linkedNodes),
             leftRegex = globalData.modeState.event.left || globalData.modeState.event.defaultLR[0],
             linkData = nodePairs.filter(d=>leftRegex.test(d[1])).map(d=>d[0].split('->')),
             sourceData = _.reject(linkData,d=>d[0] === eventNode.id).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
@@ -101,7 +101,7 @@ define(['underscore','d3','./DrawUtils'],function(_,d3,DrawUtils){
         let stateData = stateNode.getDescriptionObjects(),
             commonData = new DrawUtils.CommonData(globalData,stateData,5),
             leftRegex = globalData.modeState.state.left || globalData.modeState.state.defaultLR[0],
-            linkPairs = _.pairs(stateNode.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>d[0].split("->")),
+            linkPairs = _.toPairs(stateNode.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>d[0].split("->")),
             //source side data
             sourceData = _.reject(linkPairs,d=>parseInt(d[0]) === stateNode.id),
             sourceStateData = sourceData.map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),

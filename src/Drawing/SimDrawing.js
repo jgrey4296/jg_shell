@@ -1,4 +1,4 @@
-define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
+define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
 
     /** The interface for drawing elements from the retenet
         @exports Drawing/SimDrawing

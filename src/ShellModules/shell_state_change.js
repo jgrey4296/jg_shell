@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','../utils'],function(_,util){
+define(['lodash','../utils'],function(_,util){
     "use strict";
     /**
      @exports ShellModules/shell_state_change
@@ -26,7 +26,7 @@ define(['underscore','../utils'],function(_,util){
     ShellPrototype.cdNode = function(target){
         //update where you were previously
         this.previousLocation = this.cwd.id;
-        let pairs = _.pairs(this.cwd.linkedNodes);
+        let pairs = _.toPairs(this.cwd.linkedNodes);
         //go up to parent
         if(target === ".."){
             //console.log("cd : ..");

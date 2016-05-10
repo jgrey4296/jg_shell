@@ -1,4 +1,4 @@
-define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
+define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
     "use strict";
     /**
      The interface to draw Nodes
@@ -24,8 +24,8 @@ define(['underscore','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         let nodeDescriptions = nodeToDraw.getDescriptionObjects(),
             leftRegex = globalData.modeState.node.left || globalData.modeState.node.defaultLR[0],
             rightRegex = globalData.modeState.node.right || globalData.modeState.node.defaultLR[1],
-            parentsData = _.pairs(nodeToDraw.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
-            childrenData = _.pairs(nodeToDraw.linkedNodes).filter(d=>rightRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]);
+            parentsData = _.toPairs(nodeToDraw.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),
+            childrenData = _.toPairs(nodeToDraw.linkedNodes).filter(d=>rightRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]);
 0
 
         //The group everything is in
