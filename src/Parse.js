@@ -32,28 +32,32 @@ define(['underscore'],function(_){
 
         //perform instructions:
         //console.log(start);
-        if(start.match(/^#push$/)){
-            grammarStack.push({});
-            return "";
-        }else if(start.match(/^#pop$/)){
-            grammarStack.pop();
-            return "";
-        }else if(start.match(/^#=/)){
-            let pair = /^#=([\w\s]+):([\w\s]+)$/.exec(start);
-            if(pair !== null){
-                _.last(grammarStack)[pair[1]] = ParseObject(grammarStack,pair[2],depth+1);
+        if(typeof start === 'string'){
+            if(start.match(/^#push$/)){
+                grammarStack.push({});
                 return "";
+            }else if(start.match(/^#pop$/)){
+                grammarStack.pop();
+                return "";
+            }else if(start.match(/^#=/)){
+                let pair = /^#=([\w\s]+):([\w\s]+)$/.exec(start);
+                if(pair !== null){
+                    _.last(grammarStack)[pair[1]] = ParseObject(grammarStack,pair[2],depth+1);
+                    return "";
+                }
             }
         }
         
         //Get the rule's string
         let currentString = start,
-            i = grammarStack.length;
+            i = grammarStack.length,
+            found = false;
+            
 
-        while(--i >= 0){
+        while(!found && --i >= 0){
             if(grammarStack[i][start] !== undefined){
                 currentString = grammarStack[i][start];
-                i = -1; //break out;
+                found = true; //break out;
             }
         }
 
