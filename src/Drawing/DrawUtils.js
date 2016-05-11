@@ -1,4 +1,20 @@
-
+/*jshint esversion : 6 */
+/**
+ * WARNING: PROMISES AHEAD
+ * The Drawing code below is partial a learning experience to understand promises.
+ * drawGroup,drawSingleNode,drawIndividualData, AND wrapText ALL USE PROMISES
+ * The promises are to sequence dom element addition, followed by adaptive resizing.
+ * This is not the best way to do it, but forced me to learn promises.
+ *
+ * Essentially: A Group starts a draw, which waits while a node is drawn, then resizes to 
+ * encompass that node. A Single node draw does the same for indvidual data, which does the same 
+ * for wrapping text.
+ * So drawGroup is actually resizing over a collection of nodes that have resized over 
+ * individual data elements that have wrapped themselves.
+ *
+ * This is, I believe, better than a callback hell as the chain of occurences can be followed fairly straight
+ * forwardly
+ */
 define(['lodash','d3'],function(_,d3){
     "use strict";
     /**
@@ -6,7 +22,7 @@ define(['lodash','d3'],function(_,d3){
        @requires lodash
        @requires d3
        @exports Drawing/DrawUtils
-     */
+    */
     var DrawUtils = {};
 
     /**
@@ -105,7 +121,7 @@ define(['lodash','d3'],function(_,d3){
     */
     DrawUtils.wrapText = function(textSelection,width){
         //console.log("wrap text on :",textSelection);
-        var wrapPromise = Promise.resolve();
+        let wrapPromise = Promise.resolve();
         //console.log("Wrapping selection:",textSelection);
         //TODO: check that the selection IS of texts?
         textSelection.each(function(){
@@ -150,7 +166,7 @@ define(['lodash','d3'],function(_,d3){
     */
     DrawUtils.drawSingleNode = function(container,nodeData,groupData,offsetName="nodeDataSeparator"){
         //The initial promise
-        var drawPromise = new Promise(function(resolve,reject){
+        let drawPromise = new Promise(function(resolve,reject){
             //create the rectangle if it doesnt exist
             if(container.select("#EnclosingRect").empty()){
                 container.append("rect").attr("id","EnclosingRect")
@@ -162,7 +178,7 @@ define(['lodash','d3'],function(_,d3){
                     .attr("transform",`translate(${-(groupData.halfCol+groupData.widthAddition)},0)`);
             }
             //console.log("draw detail: ",container, nodeData);
-            var bound = container.selectAll(".nodeData").data(nodeData);
+            let bound = container.selectAll(".nodeData").data(nodeData);
             bound.enter().append("g").classed("nodeData",true);
             bound.exit().remove();
             //console.log("bound:",bound);
@@ -171,16 +187,17 @@ define(['lodash','d3'],function(_,d3){
         });
 
         //Wait on initial drawing before drawing individual data
-        return drawPromise.then(function(boundGroup){
-            return DrawUtils.drawIndividualData(boundGroup,groupData)
+        let updatedDrawPromise = drawPromise.then(function(boundGroup){
+            //upon completion of drawing the ind data, step the promise:
+            let indDataPromise = DrawUtils.drawIndividualData(boundGroup,groupData)
                 .then(function(){ return boundGroup;});
+            return indDataPromise;
         }).then(function(boundGroup){
             //tidy up the group
-            //console.log("selection:",boundGroup);
             //After all drawing, tidy
-            var offset = 0;
+            let offset = 0;
             boundGroup.each(function(d,i){
-                var g = d3.select(this),
+                let g = d3.select(this),
                     bbox = this.getBBox(),
                     priorBbox = this.previousElementSibling.getBBox();
                 offset += i===0 ? groupData[offsetName] : priorBbox.height + groupData[offsetName];
@@ -190,13 +207,14 @@ define(['lodash','d3'],function(_,d3){
         }).then(function(boundGroup){
             //expand enclosing rectangle when everything is in place
             container.select("#EnclosingRect").attr("height",0);
-            var tempHeight = container[0][0].getBBox().height + 2*groupData[offsetName];
+            let tempHeight = container[0][0].getBBox().height + 2*groupData[offsetName];
             container.select("#EnclosingRect").attr("height",tempHeight);
             //console.log("Draw single node completing:",nodeData);
             return container;
         }).catch(function(e){
             console.warn("Single Node Error:",e);
         });
+        return updatedDrawPromise;
     };
     
 
@@ -205,53 +223,56 @@ define(['lodash','d3'],function(_,d3){
        @function
        @param containerSelection Where each datum =name: String, values : []
        @param groupData The CommonData
-     */
+    */
     DrawUtils.drawIndividualData = function(containerSelection,groupData){
         //console.log("Draw individual data:",containerSelection);
-        var promiseArray = [];
-
         //Sequence on the promise for each element in the selection
-        containerSelection.each(function(d){
-            var cur = d3.select(this);
-            //add another step to the array of promises:
-            promiseArray.push((new Promise(function(resolve,reject){
-                //add the heightless rectangle if necessary
-                if(cur.select("rect").empty()){
-                    cur.append("rect");
-                }
-                var colour = d.background && groupData.globalData.colours[d.background] ? groupData.globalData.colours[d.background] : groupData.globalData.colours.lightBlue;
-                var rect = cur.select("rect")
-                    .attr("transform",`translate(${-groupData.halfCol},-5)`)
-                    .attr("width",groupData.colWidth)
-                    .style("fill",colour)
-                    .attr("height",0)
-                    .attr("rx",10)
-                    .attr("ry",10);
-                
-                var textArray;
-                if(d.values !== undefined){
-                    textArray = [`| ${d.name} |`].concat(_.values(d.values));
-                }else{
-                    textArray = [d.name];
-                }
-                //console.log("Text Array:",textArray);
-                var boundTexts = cur.selectAll("text").data(textArray);
-                boundTexts.exit().remove();
-                boundTexts.enter().append("text")
-                    .style("text-anchor","middle");
-                boundTexts.text(e=>e);
+        let promiseArray = [];
 
-                //again, animation will hold the resolve
-                resolve(boundTexts);
-            })).then(function(boundTexts){
+        //using d3.selection.each rather than Array.map to preserve d3.select(this): 
+        containerSelection.each(function(d){
+            let cur = d3.select(this),
+                newPromise = new Promise(function(resolve,reject){
+                    //add the heightless rectangle if necessary
+                    if(cur.select("rect").empty()){
+                        cur.append("rect");
+                    }
+                    let colour = d.background && groupData.globalData.colours[d.background] ? groupData.globalData.colours[d.background] : groupData.globalData.colours.lightBlue;
+                    
+                    let rect = cur.select("rect")
+                        .attr("transform",`translate(${-groupData.halfCol},-5)`)
+                        .attr("width",groupData.colWidth)
+                        .style("fill",colour)
+                        .attr("height",0)
+                        .attr("rx",10)
+                        .attr("ry",10);
+                    
+                    let textArray;
+                    if(d.values !== undefined){
+                        textArray = [`| ${d.name} |`].concat(_.values(d.values));
+                    }else{
+                        textArray = [d.name];
+                    }
+                    //console.log("Text Array:",textArray);
+                    let boundTexts = cur.selectAll("text").data(textArray);
+                    boundTexts.exit().remove();
+                    boundTexts.enter().append("text")
+                        .style("text-anchor","middle");
+                    boundTexts.text(e=>e);
+                    
+                    //again, animation will hold the resolve
+                    resolve(boundTexts);
+                });
+            
+            let updatedPromise = newPromise.then(function(boundTexts){
                 return DrawUtils.wrapText(boundTexts,groupData.colWidth)
                     .then(function(){ return boundTexts;});
             }).then(function(boundTexts){
                 //offset the texts
-                var offset = 0;
+                let offset = 0;
                 boundTexts.each(function(e,i){
                     if(this.previousElementSibling !== undefined && this.previousElementSibling !== null){
-                        var text = d3.select(this),
+                        let text = d3.select(this),
                             bbox = this.previousElementSibling.getBBox();
                         offset += i===0 ? groupData.nodeDataSeparator : bbox.height + groupData.nodeDataSeparator;                    
                         text.attr('transform',`translate(0,${offset})`);
@@ -259,19 +280,28 @@ define(['lodash','d3'],function(_,d3){
                 });
             }).catch(function(e){
                 console.warn("Ind Group Error:",e);
-            }));
-        });
-
-        //After all text is written
-        return Promise.all(promiseArray).then(function(){
-            //expand rects
-            containerSelection.each(function(e,i){
-                var g = d3.select(this),
-                    tempHeight = this.getBBox().height+5;
-                //expand rectangle of the group
-                g.select("rect").attr("height",tempHeight);                
             });
-        }).then(function(){ return containerSelection; })
+
+            promiseArray.push(updatedPromise);
+        });
+        //---------- end of containerSelection.each
+
+        
+        //After all text is written
+        return Promise.all(promiseArray)
+            .then(function(){
+                //expand rects
+                containerSelection.each(function(e,i){
+                    console.log(this);
+                    let g = d3.select(this);
+                    g.select("rect").attr("height",0);
+                    let tempHeight = Math.floor(this.getBBox().height)+5;//todo: why 5
+                    console.log(tempHeight);
+                    //expand rectangle of the group
+                    g.select("rect").attr("height",tempHeight);
+                });
+            })
+            .then(function(){ return containerSelection; })
             .catch(function(e){
                 console.warn("AllPromise Ind Group Error:",e);
             });
@@ -286,7 +316,7 @@ define(['lodash','d3'],function(_,d3){
        @param {Array.<Object>} data 
        @param commonData The settings object
        @param descriptionFunc d=>[ |name : String, values : []| ]
-     */
+    */
     DrawUtils.drawGroup = function(container,commonData,descriptionFunction){
         //console.log("Group draw:",container,data);
         let groupPromise = new Promise(function(resolve,reject){
@@ -303,26 +333,22 @@ define(['lodash','d3'],function(_,d3){
             resolve(boundNodes);
         });
 
-
         //When nodes have been created
-        return groupPromise.then(function(boundNodes){
-            let promiseArray = [];
+        let updatedGroupPromise = groupPromise.then(function(boundNodes){
             //console.log("Post initial group promise:",boundNodes);
-            //draw each individual node
+            //draw each individual node in a promise
+            let promiseArray = [];
             boundNodes.each(function(d,i){
                 let cur = d3.select(this),
                     describedData = descriptionFunction !== undefined ? descriptionFunction(d) : d instanceof Array ? d : [{name:d}];
                 
-                promiseArray.push(DrawUtils.drawSingleNode(cur,describedData,commonData)
-                                  .then(function(){
-                                      //console.log("Adding:",cur,"To promise array");
-                                      return cur;
-                                  }));
+                let singleNodePromise =  DrawUtils.drawSingleNode(cur,describedData,commonData);
+                promiseArray.push(singleNodePromise);
             });
             return promiseArray;
         }).then(function(promiseArray){
             //Wait on all the nodes to be drawn
-            return Promise.all(promiseArray).then(function(eachElement){
+            let allPromises = Promise.all(promiseArray).then(function(eachElement){
                 //console.log("All promises fulfilled:",eachElement);
                 //Then offset them
                 let offset = 0;
@@ -332,15 +358,20 @@ define(['lodash','d3'],function(_,d3){
                         let bbox = d[0][0].previousElementSibling.getBBox(),
                             xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
                         offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
-
+                        
                         d.attr("transform",`translate(${Math.floor(xOffset)},${Math.floor(offset)})`);
                     }
                 });
+                return eachElement;
             });
-        }).catch(function(e){
-            console.warn("Group Data:",commonData.data);
-            console.warn("Group Error:",e);
-        });
+            return allPromises;
+        })
+            .catch(function(e){
+                console.warn("Group Data:",commonData.data);
+                console.warn("Group Error:",e);
+            });
+
+        return updatedGroupPromise;
     };
     
 
@@ -348,7 +379,7 @@ define(['lodash','d3'],function(_,d3){
        Extracts then draws the path of the cwd
        @function 
        @param globalData
-     */
+    */
     DrawUtils.drawPath = function(globalData){
         //figure out parent path:
         let path = DrawUtils.pathExtraction(globalData,10).join(" --> "),
@@ -363,6 +394,5 @@ define(['lodash','d3'],function(_,d3){
         pathText.text(path);
     };
 
-    
     return DrawUtils;
 });
