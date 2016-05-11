@@ -159,7 +159,7 @@ define(['../utils','lodash','../Drawing/NodeDrawing'],function(util,_,NodeDraw){
         */
         "link" : function(globalData,values,sourceId){
             //link -> link
-            globalData.shell.link(values[0],values[1],valuies[2],sourceId);
+            globalData.shell.link(values[0],values[1],values[2],sourceId);
         },
         /** Rename the node 
             @param globalData
