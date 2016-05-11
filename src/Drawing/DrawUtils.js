@@ -258,6 +258,7 @@ define(['lodash','d3'],function(_,d3){
                     //console.log("Text Array:",textArray);
                     let boundTexts = cur.selectAll("text").data(textArray);
                     boundTexts.exit().remove();
+                    
                     boundTexts.enter().append("text")
                         .style("text-anchor","middle");
                     boundTexts.text(e=>e);
@@ -330,9 +331,7 @@ define(['lodash','d3'],function(_,d3){
                     commonData.globalData.shell.cd(d[0].nodeId);
                     commonData.globalData.lookupOrFallBack("draw")(commonData.globalData);
                 });
-            boundNodes.exit().transition().each(function(){
-                d3.select(this).selectAll('rect').transition().duration(250).style('fill','red');
-            }).remove();
+            boundNodes.exit().remove();
             //console.log("Bound nodes:",boundNodes);
             resolve(boundNodes);
         });
