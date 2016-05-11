@@ -21,7 +21,7 @@ define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
         commonData.widthAddition = 10;
         delete commonData.groupNodeTransform;
         //Get Data from the node:
-        let nodeDescriptions = nodeToDraw.getDescriptionObjects(),
+        let nodeDescriptions = nodeToDraw.getDescriptionObjects('node'),
             leftRegex = globalData.modeState.node.left || globalData.modeState.node.defaultLR[0],
             rightRegex = globalData.modeState.node.right || globalData.modeState.node.defaultLR[1],
             parentsData = _.toPairs(nodeToDraw.linkedNodes).filter(d=>leftRegex.test(d[1])).map(d=>[globalData.shell.getNode(d[0]).getShortDescription()]),

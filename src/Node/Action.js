@@ -99,14 +99,15 @@ define(['lodash','./GraphNode'],function(_,GraphNode){
     /** Convert the Action to a usable description
         @returns {Array}
      */
-    Action.prototype.getDescriptionObjects = function(){
+    Action.prototype.getDescriptionObjects = function(mode){
         if(this.minimised){
             return [{
                 name : this.toString() + "...",
                 background : 'title'
             }];
         }
-        let lists = _.reject(this.getDescriptionObjectsBase(),d=>d.name==='Values');
+        let rejectList = mode !== undefined ? [] : ['Values','Source For:','Sink For:'];
+        let lists = _.reject(this.getDescriptionObjectsBase(),d=>rejectList.indexOf(d.name) !== -1);
 
         lists.push({
             name : "Data",
