@@ -294,11 +294,11 @@ define(['lodash','d3'],function(_,d3){
             .then(function(){
                 //expand rects
                 containerSelection.each(function(e,i){
-                    console.log(this);
+                    //console.log(this);
                     let g = d3.select(this);
                     g.select("rect").attr("height",0);
                     let tempHeight = Math.floor(this.getBBox().height)+5;//todo: why 5
-                    console.log(tempHeight);
+                    //console.log(tempHeight);
                     //expand rectangle of the group
                     g.select("rect").attr("height",tempHeight);
                 });
@@ -330,7 +330,9 @@ define(['lodash','d3'],function(_,d3){
                     commonData.globalData.shell.cd(d[0].nodeId);
                     commonData.globalData.lookupOrFallBack("draw")(commonData.globalData);
                 });
-            boundNodes.exit().remove();
+            boundNodes.exit().transition().each(function(){
+                d3.select(this).selectAll('rect').transition().duration(250).style('fill','red');
+            }).remove();
             //console.log("Bound nodes:",boundNodes);
             resolve(boundNodes);
         });
@@ -360,11 +362,10 @@ define(['lodash','d3'],function(_,d3){
                         let bbox = d[0][0].previousElementSibling.getBBox(),
                             xOffset = commonData.groupNodeTransform !== undefined ? commonData.groupNodeTransform(d) : 0;                        
                         offset += i === 0 ? commonData.groupDataSeparator : bbox.height + commonData.groupDataSeparator;
-                        
-                        d.attr("transform",`translate(${Math.floor(xOffset)},${Math.floor(offset)})`);
+                        //transition point:
+                        d.transition().duration(500).attr("transform",`translate(${Math.floor(xOffset)},${Math.floor(offset)})`);
                     }
                 });
-                return eachElement;
             });
             return allPromises;
         })
