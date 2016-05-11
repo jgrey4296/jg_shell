@@ -126,7 +126,8 @@ define(['lodash','d3'],function(_,d3){
         //TODO: check that the selection IS of texts?
         textSelection.each(function(){
             var text = d3.select(this);
-            wrapPromise.then(function(){
+            //chain the wrap promise
+            wrapPromise = wrapPromise.then(function(){
                 var words = text.text().split(/\s+/),
                     word,//current word
                     line = [],//current line
@@ -214,6 +215,7 @@ define(['lodash','d3'],function(_,d3){
         }).catch(function(e){
             console.warn("Single Node Error:",e);
         });
+        
         return updatedDrawPromise;
     };
     
