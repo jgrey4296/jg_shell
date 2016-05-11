@@ -47,7 +47,7 @@ define(['lodash'],function(_){
         //perform command
         if(commandToExecute && typeof commandToExecute === 'function'){
             try{
-                    commandToExecute(globalData,splitLine);
+                commandToExecute(globalData,splitLine);
             }catch(e){
                 console.error("Command Error:",e);
                 alert(e);
