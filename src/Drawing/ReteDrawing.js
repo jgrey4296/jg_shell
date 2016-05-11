@@ -13,7 +13,7 @@ define(['lodash','d3','utils','./DrawUtils'],function(_,d3,util,DrawUtils){
      */
     ReteDrawInterface.drawProposed = function(globalData,data){
         //Add the title:
-        data = [{title:"Proposed"}].concat(data);
+        data = [{title:"Proposed"}].concat(_.reject(data,d=>d===undefined));
         //Standard details:
         let commonData = new DrawUtils.CommonData(globalData,data,2);
         commonData.nodeDataSeparator = 10;
