@@ -16,7 +16,7 @@ define(['lodash'],function(_){
     ShellPrototype.addFSMComponent = function(typename,names,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd,
             potentialParentFSMId = _.find(_.toPairs(source.linkedNodes),d=>/^fsm->/.test(d[1])),
-            parentFSMId = source.tags.type === 'fsm' ? source.id : potentialParentFSMId,
+            parentFSMId = source.tags.type === 'fsm' ? source.id : potentialParentFSMId[0],
             target = typename === 'event' ? 'event' : 'state';
 
         //update the parent FSM if its defined
