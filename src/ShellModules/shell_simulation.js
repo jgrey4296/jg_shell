@@ -2,7 +2,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['lodash','../Simulation/Simulation'],function(_,Simulation){
+define(['lodash','../Simulation'],function(_,Simulation){
 
     var ShellPrototype = {};
 

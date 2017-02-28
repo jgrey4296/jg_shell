@@ -1,6 +1,6 @@
 "use strict";
 let GraphNode = require('../../src/Node/GraphNode'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 exports.GraphNodeTests = {
 

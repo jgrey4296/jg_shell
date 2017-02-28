@@ -5,10 +5,10 @@ require.config({
     baseUrl: "/src",
     paths:{
         //General Utils
-        underscore : "/libs/underscore-min",
+        //underscore : "/libs/underscore-min",
+        lodash: "/libs/lodash.min",
         //uContrib : "/libs/underscore-contrib.min",
         utils : "utils",
-        d3 : "/libs/d3.min",
         Parse : "Parse",
         //Nodes:
         GraphNode : "Node/GraphNode",
@@ -28,9 +28,9 @@ require.config({
         lodash : "/libs/lodash.min"
     },
     shim:{
-        'underscore' :{
-            exports:'_'
-        },
+        // 'underscore' :{
+        //     exports:'_'
+        // },
     }
 });
 
@@ -38,7 +38,7 @@ require.config({
    The main web program. Creates a shell, visualises it, and listens for user input
    @module Browser/WebMain
    @requires d3
-   @requires underscore
+   @requires lodash
    @requires module:Shell
    @requires module:Commands/NodeCommands
    @requires module:Commands/RuleCommands
@@ -46,7 +46,7 @@ require.config({
    @requires module:utils
    @see module:globalData
 */
-require(['d3','Shell','underscore',"HelpCLI","MainCommandCLI","AllCommands",'ReteAlert'],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands,ReteAlert){
+require(['d3','Shell','lodash',"HelpCLI","MainCommandCLI","AllCommands",'ReteAlert'],function(d3,Shell,_,HelpCLI,MainCommandCLI,AllCommands,ReteAlert){
     "use strict";
 
     /**

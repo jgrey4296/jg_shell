@@ -2,7 +2,7 @@
    @file Tests to verify the shell
 
  */
-var _ = require('underscore'),
+var _ = require('lodash'),
     Shell = require('../../src/Shell'),
     makeShell = function(){return new Shell();};
 

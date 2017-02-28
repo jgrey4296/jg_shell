@@ -3,7 +3,7 @@
 
 */
 "use strict";
-let _ = require('underscore'),
+let _ = require('lodash'),
     Shell = require('../../src/Shell'),
     getCtor = require('../../src/Node/Constructors'),
     makeShell = function(){return new Shell();},

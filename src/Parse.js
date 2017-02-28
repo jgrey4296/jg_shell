@@ -11,7 +11,7 @@ if(typeof define !== 'function'){
    assignment with ${#=key:val}
    @module Parse
 */
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     
     /**
