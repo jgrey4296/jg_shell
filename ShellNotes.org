@@ -1,4 +1,4 @@
-* Shell General Notes
+* Shell General Notes                                                           :design:architecture:shellAuthoring:
 ** General Usage
 *** Underlying model
 The underlying model of the shell is an object of id->node pairings
@@ -153,7 +153,7 @@ Author: John Grey Tue May 10 15:48:45 PDT 2016
 Tracing was modified to use the linkedNodes format, searching
 specifically for children of a node, and adapted to use the standard
 ${id} format instead of the old style $id format.
-* Moise notes
+* Moise notes                                                                   :norMAS:moise:architecture:
 
 *** Organisational Spec
 Description of components 

@@ -88,7 +88,7 @@ define(['lodash'],function(_){
     ShellPrototype.rmFSMComponent = function(componentId){
         let component = this.getNode(componentId),
             fsmId = _.find(_.toPairs(component.linkedNodes),d=>/^fsm->/.test(d[1])) || null,
-            fsm = fsmId ?  this.getNode(fsmId) : null;
+            fsm = fsmId ?  this.getNode(fsmId[0]) : null;
         //in fsm: remove state, unlink all events from it
         if(fsm !== null){
             //remove the specified component
@@ -108,7 +108,7 @@ define(['lodash'],function(_){
         if(currentNode.tags.type === 'fsm'){
             currentFSM = currentNode;
         }else{
-            let fsmLink = _.find(_.toPairs(currentNode.linkedNodes),d=>/fsm->/.test(d[1]));
+            let fsmLink = _.find(_.toPairs(currentNode.linkedNodes),d=>/fsm->/.test(d[1]))[0];
             if(fsmLink !== undefined){
                 currentFSM = this.getNode(fsmLink[0]);
             }
