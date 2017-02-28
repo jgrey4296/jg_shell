@@ -24,13 +24,17 @@ define(['lodash'],function(_){
     var GraphNode = function(name,parentId,type,relationsToCreate,overRideId){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         
-        /** @type int The Id of the node */
+        /** The Id of the node
+            @type {int}  
+        */
         this.id = overRideId || nextId++;
         if(overRideId && overRideId > nextId){
             nextId = overRideId + 1;
         }
 
-        /** @type String The Name of the Node */
+        /**  The Name of the Node
+             @type String 
+        */
         this.name = name || 'anon';
 
         /** descriptions of objects to create and link to this node
