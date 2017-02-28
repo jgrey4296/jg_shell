@@ -3,9 +3,10 @@
     baseUrl: "./src",
     paths : {
         requireLib : "../node_modules/requirejs/require",
-        underscore : "../libs/underscore-min",
+        lodash : "../libs/lodash.min",
+        //underscore : "../libs/underscore-min",
         d3 : "../libs/d3.min",
-        Parse : "Parse/Parse",
+        Parse : "Parse",
         GraphNode : "Node/GraphNode",
         //CLI
         HelpCLI : "CLI/HelpCLI",
@@ -18,11 +19,11 @@
         Simulation : "Simulation/Simulation"
     },
     shim: {
-        underscore : {
-            exports : "_"
-        }
+        //underscore : {
+        //    exports : "_"
+        //}
     },
-    exclude : ['underscore'],
+    exclude : ['lodash'],
     //keepAmdefine : true,
     include : ['../node_modules/almond/almond','Shell'],
     //cjsTranslate : true,
@@ -32,6 +33,6 @@
     optimize: "none",
     wrap : {
         startFile : "startWrap.js",
-        end : "define('underscore',function() { return _; }); return require('Shell'); }));"
+        end : "define('lodash',function() { return _; }); return require('Shell'); }));"
     },
 });
