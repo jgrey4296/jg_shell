@@ -22,12 +22,7 @@ module.exports = {
             amd: "lodash",
             root: "_",
         },
-        // "rete": {
-        //     commonjs: "rete",
-        //     commonjs2: "rete",
-        //     amd: "rete",
-        //     root: "rete"
-        // }
+        "ReteNet": "rete.ReteNet"
     },
 
     resolve:{
