@@ -5,7 +5,7 @@
         requireLib : "../node_modules/requirejs/require",
         lodash : "../libs/lodash.min",
         //underscore : "../libs/underscore-min",
-        d3 : "../libs/d3.min",
+        //d3 : "../libs/d3.min",
         Parse : "Parse",
         GraphNode : "Node/GraphNode",
         //CLI
@@ -23,7 +23,7 @@
         //    exports : "_"
         //}
     },
-    exclude : ['lodash'],
+    exclude : ['lodash','Rete'],
     //keepAmdefine : true,
     include : ['../node_modules/almond/almond','Shell'],
     //cjsTranslate : true,
