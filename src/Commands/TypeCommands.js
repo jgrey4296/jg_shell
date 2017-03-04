@@ -1,23 +1,18 @@
-if(typeof defien !== 'function'){
-    var define = require('amdefine')(module);
-}
+import _ from 'lodash';
+import { util } from '../utils';
 
-define(['../utils','lodash'],function(util,_){
-    "use strict";
+let TypeCommands = {
+    "help" : function(globalData,values){
 
-    var TypeCommands = {
-        "help" : function(globalData,values){
+    },
+    "draw" : function(globalData, values){
 
-        },
-        "draw" : function(globalData, values){
-
-        },
-        //define a Link Type or a Relation Type
-        "define" : function(globalData,values){
-            //type / relation
-        },
-        
-    };
+    },
+    //define a Link Type or a Relation Type
+    "define" : function(globalData,values){
+        //type / relation
+    },
     
-    return TypeCommands;
-});
+};
+return { TypeCommands };
+

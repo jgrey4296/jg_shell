@@ -1,12 +1,11 @@
+import _ from 'lodash';
 
-define(['lodash'],function(_){
-    "use strict";
-    var nextId = 1;
+    let nextId = 1;
     /**
        Commands to be able to import a json file exported from firefox, into an initial graph form
        @exports Commands/BookMarkCommands
     */
-    var CommandTemplate = {
+    let CommandTemplate = {
         /** Draw Command 
             @param globalData
             @param values
@@ -26,15 +25,15 @@ define(['lodash'],function(_){
             @param values
          */
         "goto" : function(globalData,values){
-            var bookmark = globalData.shell.cwd;
-            if(values.length > 0){
+            let bookmark = globalData.shell.cwd;
+            if (values.length > 0){
                 bookmark = globalData.shell.getNode(values[0]);
             }
             
-            if(bookmark.tags.type === "bookmark" && bookmark.url !== undefined){
-                if(bookmark.url instanceof Array){
+            if (bookmark.tags.type === "bookmark" && bookmark.url !== undefined){
+                if (bookmark.url instanceof Array){
                     window.open(bookmark.url[0],bookmark.name);
-                }else{
+                } else {
                     window.open(bookmark.url,bookmark.name);
                 }
             }
@@ -45,7 +44,7 @@ define(['lodash'],function(_){
         */
         "firefoxImport" : function(globalData,values){
             try{
-                var stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
+                let stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
                     reconJson = JSON.parse(stringMinusCommand),
                     extractedLinks = extractLinks(reconJson),
                     nodeSpecs = groupLinks(extractedLinks);
@@ -61,11 +60,11 @@ define(['lodash'],function(_){
             @param values
         */
         "firefoxLoad" : function(globalData,values){
-            var request = new XMLHttpRequest();
+            let request = new XMLHttpRequest();
             request.onreadystatechange=function(){
-                if(request.readyState===4){
+                if (request.readyState===4){
                     try{
-                        var receivedJson = JSON.parse(request.responseText),
+                        let receivedJson = JSON.parse(request.responseText),
                             extractedLinks = extractLinks(receivedJson),
                             nodeSpecs = groupLinks(extractedLinks);
                         console.log("Received JSON:",receivedJson);
@@ -101,14 +100,14 @@ define(['lodash'],function(_){
        @param data JSON bookmark data 
        @function extractLinks
      */
-    var extractLinks = function(data){
-        var childData = [];
-        if(data.children !== undefined){
+    let extractLinks = function(data){
+        let childData = [];
+        if (data.children !== undefined){
             childData = _.flatten(data.children.map(function(d){
                 return extractLinks(d);
             }));
         }
-        if(data.title !== undefined && data.uri !== undefined){
+        if (data.title !== undefined && data.uri !== undefined){
             childData.push({
                 id: nextId++,
                 name : data.title,//.slice(0,10),
@@ -127,11 +126,11 @@ define(['lodash'],function(_){
     get groups of 15 bookmarks, and then make nodes of each of those groups
     @function groupLinks
     */
-    var groupLinks = function(data){
-        var NUM_IN_GROUP = 9;
+    let groupLinks = function(data){
+        let NUM_IN_GROUP = 9;
         //be able to lookup the data by id
-        var lookupObject = data.reduce(function(m,v){
-                if(m[v.id] === undefined){
+        let lookupObject = data.reduce(function(m,v){
+                if (m[v.id] === undefined){
                     m[v.id] = v;
                 }
                 return m;
@@ -142,7 +141,7 @@ define(['lodash'],function(_){
             }),
             //group in 15's
             groupedIds = ids.reduce(function(m,v){
-                if(_.last(m).length > NUM_IN_GROUP){
+                if (_.last(m).length > NUM_IN_GROUP){
                     m.push([]);
                 }
                 _.last(m).push(v);
@@ -151,7 +150,7 @@ define(['lodash'],function(_){
             //turn the groups into objects to slot in as child object specs ({id:name})
             groupObjects = groupedIds.map(function(d){
                 return d.reduce(function(m,v){
-                    if(m[v] === undefined){
+                    if (m[v] === undefined){
                         m[v] = lookupObject[v].name;
                     }
                     return m;
@@ -159,7 +158,7 @@ define(['lodash'],function(_){
             }),
             //create the group nodes
             groupNodes = groupObjects.map(function(d,i){
-                var newGroup = {
+                let newGroup = {
                     id : nextId++,
                     name : "Group_" + i,
                     tags : {type : "BookmarkGroup"},
@@ -175,14 +174,14 @@ define(['lodash'],function(_){
                 return newGroup;
             }),
             groupChildrenObject = groupNodes.reduce(function(m,v){
-                if(m[v.id] === undefined){
+                if (m[v.id] === undefined){
                     m[v.id] = v.name;
                 }
                 return m;
             },{});
 
         //create the end list:
-        var endList = [];
+        let endList = [];
         endList.push({
             id : 0,
             name : "Bookmark Root",
@@ -198,5 +197,5 @@ define(['lodash'],function(_){
 
     };
 
-    return CommandTemplate;
-});
+export { CommandTemplate };
+

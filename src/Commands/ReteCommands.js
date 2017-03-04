@@ -1,44 +1,40 @@
-if(typeof define !== 'function'){
-    var define = require('amdefine')(module);
-}
+import _ from 'lodash';
 
-define(['lodash','Drawing/ReteDrawing'],function(_,ReteDraw){
-    "use strict";
     /**
      To define the actions a user can perform regarding the retenet
      @exports Commands/ReteCommands
      @implements module:Commands/CommandTemplate
      */
-    var reteCommands = {
+    let reteCommands = {
         /** Draw rete results 
             @param globalData
             @param values
         */
         "draw" : function(globalData,values){
-            if(ReteDraw.dummy === undefined){
-                if(globalData.modeState.rete.log){
-                    //TODO: wrap in nodes to allow minimisation
+            // if (ReteDraw.dummy === undefined){
+            //     if (globalData.modeState.rete.log){
+            //         //TODO: wrap in nodes to allow minimisation
                     
-                    //Draw output
-                    ReteDraw.drawLog(globalData,globalData.shell.reteOutput);
-                }else{
-                    //Draw Proposed Actions
-                    ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));
-                    //Draw the scheduled actions for the next timestep
-                    var actionsForTimePoint = _.reject(_.flatten(_.values(globalData.shell.reteNet.schedule).map(d=>d[globalData.shell.reteNet.currentTime])),d=>d===undefined);
+            //         //Draw output
+            //         ReteDraw.drawLog(globalData,globalData.shell.reteOutput);
+            //     } else {
+            //         //Draw Proposed Actions
+            //         ReteDraw.drawProposed(globalData,_.values(globalData.shell.reteNet.proposedActions));
+            //         //Draw the scheduled actions for the next timestep
+            //         let actionsForTimePoint = _.reject(_.flatten(_.values(globalData.shell.reteNet.schedule).map(d=>d[globalData.shell.reteNet.currentTime])),d=>d===undefined);
                     
-                    ReteDraw.drawSchedule(globalData,actionsForTimePoint);
-                }
-            }
+            //         ReteDraw.drawSchedule(globalData,actionsForTimePoint);
+            //     }
+            // }
         },
         /** cleanup 
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
-            if(ReteDraw.dummy === undefined){
-                ReteDraw.cleanup();
-            }
+            // if (ReteDraw.dummy === undefined){
+            //     ReteDraw.cleanup();
+            // }
         },
         /**
            Draw the output log of the retenet
@@ -47,10 +43,10 @@ define(['lodash','Drawing/ReteDrawing'],function(_,ReteDraw){
            @param values
         */
         "reteLog" : function(globalData,values){
-            if(globalData.modeState.rete.log === undefined){
+            if (globalData.modeState.rete.log === undefined){
                 globalData.modeState.rete.log = 1;
                 reteCommands.cleanup();
-            }else{
+            } else {
                 reteCommands.cleanup();
                 delete globalData.modeState.rete.log;
             }
@@ -78,7 +74,7 @@ define(['lodash','Drawing/ReteDrawing'],function(_,ReteDraw){
             @param values
         */
         "schedule" : function(globalData,values){
-            if(globalData.shell.reteNet.proposedActions[values[0]] !== undefined){
+            if (globalData.shell.reteNet.proposedActions[values[0]] !== undefined){
                 globalData.shell.reteNet.scheduleAction(values[0]);
             }
         },
@@ -129,5 +125,4 @@ define(['lodash','Drawing/ReteDrawing'],function(_,ReteDraw){
             };
         },
     };
-    return reteCommands;
-});
+export { reteCommands };

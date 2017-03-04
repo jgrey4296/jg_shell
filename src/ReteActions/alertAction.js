@@ -1,14 +1,13 @@
 /**
    A test action that interfaces between the shell and retenet
  */
-define([],function(){
 
     /**
        Creates the AlertAction proposal and performance functions, but with access to the passed in context object
        @constructor
        @param context
      */
-    var AlertActionConstructor = function(context){
+    let AlertActionConstructor = function(context){
         let AlertAction = {
             name : "alert",//the name registered under
             propose : function(token,reteNet){
@@ -38,6 +37,6 @@ define([],function(){
         return AlertAction;
     };
 
-    return AlertActionConstructor;
+export { AlertActionConstructor };
 
-});
+

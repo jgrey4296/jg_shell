@@ -1,35 +1,33 @@
-
-define(['lodash','Drawing/TraceDrawing'],function(_,TraceDrawing){
-    "use strict";
+import _ from 'lodash';
 
     /**
      Triggering tracery style grammar expansions
      @exports Commands/TraceCommands
      @implements module:Commands/CommandTemplate
      */
-    var TraceCommands = {
+    let TraceCommands = {
         /** draw 
             @param globalData
             @param values
         */
         "draw" : function(globalData,values){
-            if(TraceDrawing.dummy === undefined){
-                TraceDrawing.drawTraces(globalData,globalData.lastTraces);
-            }
+            // if (TraceDrawing.dummy === undefined){
+            //     TraceDrawing.drawTraces(globalData,globalData.lastTraces);
+            // }
         },
         /** cleanup 
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
-            TraceDrawing.cleanup();
+            ////TraceDrawing.cleanup();
         },
         /** Expand a trace of a node 
             @param globalData
             @param {Array} values of [amt,nodeId]
         */
         "trace" : function(globalData,values){
-            var amt = !isNaN(parseInt(values[0])) ? Array(parseInt(values.shift())).fill(0) : [0],
+            let amt = !isNaN(parseInt(values[0])) ? Array(parseInt(values.shift())).fill(0) : [0],
                 curNode = values[0] !== undefined ? globalData.shell.getNode(values[0]) : globalData.shell.cwd,
                 returnVals = amt.map(()=>globalData.shell.traceNode(curNode));
             console.log("Trace Result:",returnVals);
@@ -50,13 +48,13 @@ define(['lodash','Drawing/TraceDrawing'],function(_,TraceDrawing){
                 matchResult = varRegex.exec(message),
                 children = new Set(_.toPairs(curNode.linkedNodes).filter(d=>d[1].match(/^child/)).map(d=>this.getNode(d[1]).name));
 
-            while(matchResult !== null){
-                if(!children.has(matchResult[1])){
+            while (matchResult !== null){
+                if (!children.has(matchResult[1])){
                     globalData.shell.addNode(matchResult[1],"child");
                 }
                 matchResult = varRegex.exec(message);
             }            
         },
     };
-    return TraceCommands;
-});
+export { TraceCommands };
+

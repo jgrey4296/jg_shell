@@ -1,3 +1,11 @@
+import * as bkmkC from './BookMarkCommands';
+import * as genC from './GeneralCommmands';
+import * as nodeC from './NodeCommands';
+import * as reteC from './ReteCommands';
+import * as ruleC from './RuleCommands';
+import * as simC from './SimulationCommands';
+import * as traceC from './TraceCommands';
+import * as FSMC from './FSMCommands';
 /**
    Aggregate all Commands together
    @see module:Commands/CommandTemplate
@@ -11,18 +19,17 @@
    @requires module:Commands/TraceCommands
    @requires module:Commands/FSMCommands
  */
-define(['Commands/BookMarkCommands','Commands/GeneralCommands','Commands/NodeCommands','Commands/ReteCommands','Commands/RuleCommands','Commands/SimulationCommands','Commands/TraceCommands','Commands/FSMCommands'],function(bkmkC,genC,nodeC,reteC,ruleC,simC,traceC,FSMC){
 
-    /** @alias module:Commands/Command_Aggregate */
-    return {
-        "node" : nodeC,
-        "rule" : ruleC,
-        "rete" : reteC,
-        "general" : genC,
-        "sim"  : simC,
-        "bookmark" : bkmkC,
-        "trace" : traceC,
-        "fsm" : FSMC
-    };
-});
+/** @alias module:Commands/Command_Aggregate */
+let module_interface = {
+    "node" : nodeC,
+    "rule" : ruleC,
+    "rete" : reteC,
+    "general" : genC,
+    "sim"  : simC,
+    "bookmark" : bkmkC,
+    "trace" : traceC,
+    "fsm" : FSMC
+};
 
+export { module_interface };

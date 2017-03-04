@@ -53,7 +53,7 @@ require(['d3','Shell','lodash',"HelpCLI","MainCommandCLI","AllCommands",'ReteAle
        The Data Passed around for global purposes
        @exports globalData
     */
-    var globalData = {
+    let globalData = {
         /** The maximum allowed number of nodes in a column before grouping. */
         maxNumberOfNodesInAColumn : 10,
         /** The maximum number of children to display at one time */
@@ -244,21 +244,21 @@ require(['d3','Shell','lodash',"HelpCLI","MainCommandCLI","AllCommands",'ReteAle
            @param globalData
          */
         lookupOrFallBack : function(commandName,globalData,mode){
-            if(globalData === undefined) { globalData = this; }
+            if (globalData === undefined) { globalData = this; }
             mode = mode || globalData.currentCommandMode[0];
             let commandToExecute;
 
             //Check the current command mode:
-            if(mode && globalData.commands[mode] && globalData.commands[mode][commandName]){
+            if (mode && globalData.commands[mode] && globalData.commands[mode][commandName]){
                 //console.log("Command Search: Found");
                 commandToExecute = globalData.commands[mode][commandName];
-            }else{        
+            } else {        
                 //command not found, fallback
                 //console.log("Command Search: Fallback");
                 let fallBacks = _.clone(globalData.commandFallBackOrder);
-                while(fallBacks.length > 0){
+                while (fallBacks.length > 0){
                     let currentFallback = fallBacks.shift();
-                    if(globalData.commands[currentFallback][commandName] !== undefined){
+                    if (globalData.commands[currentFallback][commandName] !== undefined){
                         commandToExecute = globalData.commands[currentFallback][commandName];
                         break;
                     }
@@ -278,14 +278,14 @@ require(['d3','Shell','lodash',"HelpCLI","MainCommandCLI","AllCommands",'ReteAle
     //Set up CLI:
     d3.select("#shellInput").on("keydown",function(err){
         try{
-            var currentLine = d3.select(this).node().value;
-            if(currentLine.length === 0) { return; }
+            let currentLine = d3.select(this).node().value;
+            if (currentLine.length === 0) { return; }
             
-            if(d3.event.keyCode === 13){ //ENTER
+            if (d3.event.keyCode === 13){ //ENTER
                 //clear the input:
                 d3.select(this).node().value = "";
                 MainCommandCLI(currentLine,globalData);
-            }else{//Not enter, still typing:
+            } else {//Not enter, still typing:
                 HelpCLI(currentLine + d3.event.key,globalData);
             }
         }catch(e){

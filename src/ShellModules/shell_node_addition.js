@@ -1,15 +1,11 @@
-if(typeof define !== 'function'){
-    var define = require('amdefine')(module);
-}
+import _ from 'lodash';
+import { getCtor } from '../Node/Constructors';
 
-
-define(['lodash','../Node/Constructors'],function(_,getCtor){
-    "use strict";
     /**
        Defines prototype methods for shell node creation
        @exports ShellModules/shell_node_addition
      */
-    var ShellPrototype = {};
+    let ShellPrototype = {};
 
 
     /**
@@ -27,7 +23,7 @@ define(['lodash','../Node/Constructors'],function(_,getCtor){
     //based on general node lookup?
     ShellPrototype.addNode = function(name,relType,recType,type,subRelations,sourceId){
         let source = sourceId ? this.getNode(sourceId) : this.cwd;
-        if(name === null || name === undefined || name === "") {
+        if (name === null || name === undefined || name === "") {
             name = type || "anon";
             console.warn("making an anonymous node");
         }
@@ -40,7 +36,7 @@ define(['lodash','../Node/Constructors'],function(_,getCtor){
             newNode = new ctor(name,source.id,type,subRelations);
 
         //Store in allNodes:
-        if(this.allNodes[newNode.id] !== undefined){
+        if (this.allNodes[newNode.id] !== undefined){
             console.warn("Assigning to existing node:",newNode,this.allNodes[newNode.id]);
         }
         this.allNodes[newNode.id] = newNode;
@@ -59,9 +55,9 @@ define(['lodash','../Node/Constructors'],function(_,getCtor){
                 subNodeSubRelations = rel.subRelations || [];
             this.addNode(subNodeName,subNodeRelType,subNodeRecType,subNodeType,subNodeSubRelations,newNode.id);
         },this);
-        return newNode;        
+        return newNode;
     };
 
 
-    return ShellPrototype;
-});
+export { ShellPrototype as shellAddition };
+
