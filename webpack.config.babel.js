@@ -41,8 +41,8 @@ module.exports = {
 
     plugins: [
         new FlowBabelWebpackPlugin(),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     sourceMap: true
-        // })
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true
+        })
     ],
 };
