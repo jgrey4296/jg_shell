@@ -24,87 +24,89 @@ import { shellPrototype } from './ShellModules/shell_prototype_main';
    @constructor
    @param {Array} ReteActionsToRegister
 */
-let Shell = function(ReteActionsToRegister){
-    this.nextId = 0;
-    this.tags = {};
-    this.tags.type = 'Shell';
-    /** The Root Node
-        @type {Node/GraphNode}
-        @instance
-    */
-    this.root = new GraphNode('__root');
+class Shell {
+    constructor(ReteActionsToRegister){
+        this.nextId = 0;
+        this.tags = {};
+        this.tags.type = 'Shell';
+        /** The Root Node
+            @type {Node/GraphNode}
+            @instance
+        */
+        this.root = new GraphNode('__root');
 
-    /**
-        All Nodes
-        @type {Object.<String,Node/GraphNode>}
-        @instance
-    */
-    this.allNodes = {};
-    this.allNodes[this.root.id] = this.root;
-    /** All Rules
-        @type  {Array.<Node/Rule>}
-        @instance
-    */
-    this.allRules = [];
-    /** All Rules By Name
-        @type {Object.<String,Node/Rule>}
-        @instance
-    */
-    this.allRulesByName = {};
-    /**
-       Type system:
-    */
-    this.typeNodes = {};
+        /**
+           All Nodes
+           @type {Object.<String,Node/GraphNode>}
+           @instance
+        */
+        this.allNodes = {};
+        this.allNodes[this.root.id] = this.root;
+        /** All Rules
+            @type  {Array.<Node/Rule>}
+            @instance
+        */
+        this.allRules = [];
+        /** All Rules By Name
+            @type {Object.<String,Node/Rule>}
+            @instance
+        */
+        this.allRulesByName = {};
+        /**
+           Type system:
+        */
+        this.typeNodes = {};
 
-    
-    /** The Current Working Node Object
-        @type {Node/GraphNode}
-        @instance
-    */
-    this.cwd = this.root;
+        
+        /** The Current Working Node Object
+            @type {Node/GraphNode}
+            @instance
+        */
+        this.cwd = this.root;
 
-    /** Stashed Node Objects
-        @type {Array.<Node/GraphNode>}
-        @instance
-    */
-    this._nodeStash = [];
-    /** The previous node id
-        @type {int}
-        @instance
-    */
-    this.previousLocation = 0;
+        /** Stashed Node Objects
+            @type {Array.<Node/GraphNode>}
+            @instance
+        */
+        this._nodeStash = [];
+        /** The previous node id
+            @type {int}
+            @instance
+        */
+        this.previousLocation = 0;
 
-    /** Search Results
-        @type {Array.<Node/GraphNode>}
-        @instance
-    */
-    this.lastSearchResults = [];
+        /** Search Results
+            @type {Array.<Node/GraphNode>}
+            @instance
+        */
+        this.lastSearchResults = [];
 
-    /** Internal Rete Net
-        @type {ReteNet}
-        @instance
-    */
-    this.reteNet = new ReteNet(ReteActionsToRegister);
+        /** Internal Rete Net
+            @type {ReteNet}
+            @instance
+        */
+        this.reteNet = new ReteNet(ReteActionsToRegister);
 
-    /**
-       Backup of rete actions, for when resetting the retenet
-       @type {Array}
-    */
-    this._reteNetBackupActions = ReteActionsToRegister;
+        /**
+           Backup of rete actions, for when resetting the retenet
+           @type {Array}
+        */
+        this._reteNetBackupActions = ReteActionsToRegister;
 
-    /**
-       The current simulation:
-       @type { Simulation }
-    */
-    this.simulation = null;
+        /**
+           The current simulation:
+           @type { Simulation }
+        */
+        this.simulation = null;
 
-    /**
-       Rete Logged output
-       @type {Array.<String>}
-    */
-    this.reteOutput = [];
+        /**
+           Rete Logged output
+           @type {Array.<String>}
+        */
+        this.reteOutput = [];
 
-};
+    }
+}
 
 /*** @borrows module:shellPrototype_main as shellPrototype */
 Shell.prototype = Object.create(shellPrototype);
