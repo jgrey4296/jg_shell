@@ -50,7 +50,8 @@ class GraphNode{
         // let idSequence (id->id->id),
         // and linkSequence = (Type->Type->Type)
         //then linkedNodes[idSequence] = []
-        
+
+        //ie: Edges
         this.linkedNodes = {};
 
         if (parentId !== undefined){
@@ -250,6 +251,11 @@ GraphNode.prototype.getActiveLinks = function(relationTypes){
 GraphNode.prototype.addLink = function(idSequence,idSequences,allNodes){
     
 };
+
+GraphNode.prototype.numOfEdges = function(){
+    return _.keys(this.linkedNodes).length();
+};
+
 
 export { GraphNode };
 

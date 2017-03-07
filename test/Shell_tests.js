@@ -60,10 +60,32 @@ describe("Shell Interface:", function() {
     });
 
     describe.skip("Addition:", function(){
-        it('Should be able to add a child to the root');
-        it('Should be able to add multiple children to the root');
-        it('Should be able to add mutliple children in one call to the root');
-        it('Should be able to add a parent to a node');
+        it('Should be able to add a child to the root',function(){
+            this.shell.length().should.equal(1);
+            this.shell.root.numOfEdges().should.equal(0);
+            let newNode = this.shell.addNode('test','child');
+            this.shell.length().should.equal(2);
+            this.shell.root.numEdges().should.equal(1);
+            this.shell.root.linkedNodes.should.contain(newNode.id);
+            newNode.name.should.equal('test');
+        });
+        it('Should be able to add multiple children to the root',function(){
+            this.shell.length().should.equal(1);
+            this.shell.root.numOfEdges().should.equal(0);
+            let newNode1 = this.shell.addNode('test','child'),
+                newNode2 = this.shell.addNode('other_test','child');
+            this.shell.length().should.equal(3);
+            this.shell.root.numOfEdges().should.equal(2);
+            
+        });
+        it('Should be able to add a parent to a node',function(){
+            this.shell.length().should.equal(1);
+            this.shell.root.numEdges().should.equal(0);
+            let newNode = this.shell.addNode('test','parent');
+            this.shell.length().should.equal(2);
+            this.shell.root.linkedNodes.should.contain(newNode.id);
+            
+        });
         it('Should be able to add multiple parents to a node');
         it('Should be able to add nodes of different types');
         it('Should be able to add nodes with sub structure');

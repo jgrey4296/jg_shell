@@ -115,4 +115,10 @@ Shell.prototype.constructor = Shell;
 /** Get A Node Constructor by name. @see Node/Constructors */
 Shell.prototype.getCtor = getCtor;
 
+Shell.prototype.length = function(){
+    return _.keys(this.allNodes);
+}
+
+
+
 export { Shell };
