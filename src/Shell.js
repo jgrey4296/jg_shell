@@ -73,7 +73,7 @@ class Shell {
             @type {int}
             @instance
         */
-        this.previousLocation = 0;
+        this.previousLocation = this.root.id;
 
         /** Search Results
             @type {Array.<Node/GraphNode>}
