@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ReteNet } from 'rete';
+import { ReteNet } from '../libs/rete';
 import { GraphNode } from './Node/GraphNode';
 import { getCtor } from './Node/Constructors';
 import { util } from './utils';
