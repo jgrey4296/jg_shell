@@ -18,82 +18,84 @@ let nextId = 0,
    @constructor
    @alias GraphNode
 */
-let GraphNode = function(name,parentId,type,relationsToCreate,overRideId){
-    //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
-    
-    /** The Id of the node
-        @type {int}
-    */
-    this.id = overRideId || nextId++;
-    if (overRideId && overRideId > nextId){
-        nextId = overRideId + 1;
-    }
-
-    /**  The Name of the Node
-         @type String
-    */
-    this.name = name || 'anon';
-
-    /** descriptions of objects to create and link to this node
-        @type {Array.<GraphNode>}
-    */
-    this.relatedObjects = [];
-    //parents and children for links
-    //storing by ID
-    //Note: converted to *only* store id's, and not the objects
-    //therefore no cycles, therefore json export
-
-    //linked Nodes
-    //id -> relationType. eg: child, parent, rule
-
-    // let idSequence (id->id->id),
-    // and linkSequence = (Type->Type->Type)
-    //then linkedNodes[idSequence] = []
-    
-    this.linkedNodes = {};
-
-    if (parentId !== undefined){
-        /** The Original Parent Id of the node
+class GraphNode{
+    constructor(name,parentId,type,relationsToCreate,overRideId){
+        //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
+        
+        /** The Id of the node
             @type {int}
         */
-        this.linkedNodes[parentId] = "parent->original";
+        this.id = overRideId || nextId++;
+        if (overRideId && overRideId > nextId){
+            nextId = overRideId + 1;
+        }
+
+        /**  The Name of the Node
+             @type String
+        */
+        this.name = name || 'anon';
+
+        /** descriptions of objects to create and link to this node
+            @type {Array.<GraphNode>}
+        */
+        this.relatedObjects = [];
+        //parents and children for links
+        //storing by ID
+        //Note: converted to *only* store id's, and not the objects
+        //therefore no cycles, therefore json export
+
+        //linked Nodes
+        //id -> relationType. eg: child, parent, rule
+
+        // let idSequence (id->id->id),
+        // and linkSequence = (Type->Type->Type)
+        //then linkedNodes[idSequence] = []
+        
+        this.linkedNodes = {};
+
+        if (parentId !== undefined){
+            /** The Original Parent Id of the node
+                @type {int}
+            */
+            this.linkedNodes[parentId] = "parent->original";
+        }
+
+        /** Stored Data: Values
+            @type {Object.<String,String>}
+        */
+        this.values = {};
+        
+        /** Stored Data : Tags
+            @type {Object.<String,String>}
+        */
+        this.tags = {};
+        
+        /** Stored Data : Annotations
+            @type {Object.<String,String>}
+        */
+        this.annotations = {};
+
+        /** Used to update the prototype on json-imported data */
+        this.tags.type = type || 'graphnode';
+
+        /**
+           Track whether the node is minimised or not
+           @type {Boolean}
+        */
+        this.minimised = false;
+
+        //Create the relations passed in:
+        /*
+          r = [
+          {name, type, relType,recType, subRelations : [<r>]}
+          ]
+        */
+        if (relationsToCreate !== undefined && relationsToCreate instanceof Array){
+            this.relatedObjects = relationsToCreate;
+        }
+        
     }
-
-    /** Stored Data: Values
-        @type {Object.<String,String>}
-    */
-    this.values = {};
-    
-    /** Stored Data : Tags
-        @type {Object.<String,String>}
-    */
-    this.tags = {};
-    
-    /** Stored Data : Annotations
-        @type {Object.<String,String>}
-    */
-    this.annotations = {};
-
-    /** Used to update the prototype on json-imported data */
-    this.tags.type = type || 'graphnode';
-
-    /**
-       Track whether the node is minimised or not
-       @type {Boolean}
-    */
-    this.minimised = false;
-
-    //Create the relations passed in:
-    /*
-      r = [
-      {name, type, relType,recType, subRelations : [<r>]}
-      ]
-    */
-    if (relationsToCreate !== undefined && relationsToCreate instanceof Array){
-        this.relatedObjects = relationsToCreate;
-    }
-    
-};
+}
 GraphNode.constructor = GraphNode;
 
 /**
