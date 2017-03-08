@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { shellJson } from './shell_json';
-import { shellAddition } from './shell_node_addition';
 import { shellDeletion } from './shell_node_deletion';
 import { shellMod } from './shell_node_mod';
 import { shellRete } from './shell_rete';

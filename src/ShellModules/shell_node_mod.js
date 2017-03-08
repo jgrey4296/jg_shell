@@ -3,6 +3,8 @@ import _ from 'lodash';
    Defines shell prototype methods for changing a node
    @exports ShellModules/shell_node_mod
 */
+import { GraphNode } from '../Node/GraphNode';
+
 
 let ShellPrototype = {};
 

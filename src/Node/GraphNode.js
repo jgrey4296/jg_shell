@@ -4,6 +4,7 @@
    @see GraphNode
 */
 import _ from 'lodash';
+import { util } from '../utils';
 
 let nextId = 0,
     //for a field name 'a' lookup a colour in global data called 'b'
