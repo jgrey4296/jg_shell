@@ -153,7 +153,12 @@ describe("Shell Interface:", function() {
     });
     
     describe.skip("Modification:", function(){
-        it('Should be able to change the name of a node');
+        it('Should be able to change the name of a node',function(){
+            let newNodeId = this.shell.addNode();
+            this.shell.get(newNodeId).name().should.equal('anon');
+            this.shell.get(newNodeId).setName('test');
+            this.shell.get(newNodeId).name().should.equal('test');
+        });
         it('Should be able to add values to the node');
         it('Should be able to change values of a node');
         it('Should be able to remove values from a node');
