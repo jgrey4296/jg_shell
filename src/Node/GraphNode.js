@@ -34,33 +34,26 @@ class GraphNode{
         /**  The Name of the Node
              @type String
         */
-        this.name = name || 'anon';
+        this._name = name || 'anon';
 
         /** descriptions of objects to create and link to this node
             @type {Array.<GraphNode>}
         */
         this.relatedObjects = [];
+        
         //parents and children for links
         //storing by ID
         //Note: converted to *only* store id's, and not the objects
         //therefore no cycles, therefore json export
 
-        //linked Nodes
         //id -> relationType. eg: child, parent, rule
 
         // let idSequence (id->id->id),
         // and linkSequence = (Type->Type->Type)
-        //then linkedNodes[idSequence] = []
+        //then edges[idSequence] = []
 
         //ie: Edges
-        this.linkedNodes = {};
-
-        if (parentId !== undefined){
-            /** The Original Parent Id of the node
-                @type {int}
-            */
-            this.linkedNodes[parentId] = "parent->original";
-        }
+        this._edges = new Map();
 
         /** Stored Data: Values
             @type {Object.<String,String>}
@@ -150,13 +143,13 @@ GraphNode.prototype.getDescriptionObjectsBase = function(fieldNameList){
 
     lists.push({
         name : "Source For:",
-        values : _.toPairs(this.linkedNodes).filter(d=>/->source/.test(d[1])).map(d=>d.join(" : ")),
+        values : _.toPairs(this.edges).filter(d=>/->source/.test(d[1])).map(d=>d.join(" : ")),
         background : "link"
     });
 
     lists.push({
         name : "Sink For:",
-        values : _.toPairs(this.linkedNodes).filter(d=>/->sink/.test(d[1])).map(d=>d.join(" : ")),
+        values : _.toPairs(this.edges).filter(d=>/->sink/.test(d[1])).map(d=>d.join(" : ")),
         background : "link"
     });
     
@@ -219,13 +212,13 @@ GraphNode.prototype.pullRelationObjects = function(){
 };
 
 /**
-   Search through the linkedNodes member for the specific relationtype
+   Search through the edges member for the specific relationtype
    @param {Array.<RegExp>} relationTypes
 */
-GraphNode.prototype.getActiveLinks = function(relationTypes){
+GraphNode.prototype.getActiveEdges = function(relationTypes){
     if (relationTypes === undefined || (relationTypes instanceof Array && relationTypes.length === 0)){
         //return everything this node is connected to
-        let members = new Set(_.keys(this.linkedNodes));
+        let members = new Set(_.keys(this.edges));
         return Array.from(members);
     }
     if (!(relationTypes instanceof Array)){
@@ -234,7 +227,7 @@ GraphNode.prototype.getActiveLinks = function(relationTypes){
     
     //take a keylist, return an array of all ids with matching relationtypes
     let members = new Set();
-    _.toPairs(this.linkedNodes).forEach((linkPair) => {
+    _.toPairs(this.edges).forEach((linkPair) => {
         relationTypes.forEach((regex) => {
             if (regex.test(linkPair[1])){
                 members.add(linkPair(1));
