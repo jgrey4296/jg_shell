@@ -26,7 +26,7 @@ import { shellFSM } from './shell_fsm';
    @requires module:ShellModules/shell_fsm
 */
 let shellPrototype = _.extend({},
-                              shellJson, shellAddition, shellDeletion,
+                              shellJson, shellDeletion,
                               shellMod, shellRete, shellSearch, shellString,
                               shellGraphSearch, shellStateChange,shellSimulation,
                               shellFSM);
