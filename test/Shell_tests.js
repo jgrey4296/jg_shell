@@ -28,80 +28,124 @@ describe("Shell Interface:", function() {
         });
 
         it("Should have an initial root node",function(){
-            _.keys(this.shell.allNodes).should.have.length(1);
-            this.shell.root.should.be.an.instanceof(GraphNode);
-            this.shell.root.name.should.equal('__root');
-            this.shell.allNodes[this.shell.root.id].should.deep.equal(this.shell.root);
+            this.shell.length().should.equal(1);
+            this.shell.root().should.be.an.instanceof(GraphNode);
+            this.shell.root().name().should.equal('_root');
+            expect(() => { this.shell.get(this.shell.root().id) }).to.not.throw(Error);
+            this.shell.get(this.shell.root().id).should.equal(this.shell.root());
         });
         
         it("Should have no rules",function(){
-            this.shell.allRules.should.have.length(0);
+            this.shell.numRules().should.equal(0);
         });
-        
-        it("Should have a default retent",function(){
-            expect(this.shell.reteNet).to.exist;
-            this.shell.reteNet.should.be.an.instanceof(ReteNet);
-        });
+ 
         it("Should have a cwd of the root node",function(){
-            this.shell.cwd.should.deep.equal(this.shell.root);
+            this.shell.cwd().should.deep.equal(this.shell.root());
         });
         it("Should have nothing in the node stash",function(){
-            this.shell._nodeStash.should.have.length(0);
+            this.shell.stash().should.have.length(0);
         });
         it("Should have a previous location of the root node",function(){
-            this.shell.previousLocation.should.equal(this.shell.root.id);
+            this.shell.prior().should.equal(this.shell.root().id);
         });
         it("Should have no previous search results",function(){
-            this.shell.lastSearchResults.should.have.length(0);
+            this.shell.searchResults().should.have.length(0);
         });
         it("Should have no rete output to start",function(){
-            this.shell.reteOutput.should.have.length(0);
+            this.shell.reteOutput().should.have.length(0);
         });        
     });
 
-    describe.skip("Addition:", function(){
+    describe("Addition:", function(){
         it('Should be able to add a child to the root',function(){
             this.shell.length().should.equal(1);
-            this.shell.root.numOfEdges().should.equal(0);
-            let newNode = this.shell.addNode('test','child');
+            this.shell.root().numOfEdges().should.equal(0);
+            let newNodeId = this.shell.addNode('test','child');
             this.shell.length().should.equal(2);
-            this.shell.root.numEdges().should.equal(1);
-            this.shell.root.linkedNodes.should.contain(newNode.id);
-            newNode.name.should.equal('test');
+            this.shell.root().numOfEdges().should.equal(1);
+            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
+            this.shell.get(newNodeId).name().should.equal('test');
+            this.shell.root().getEdgeTo(newNodeId).should.equal('child');
         });
         it('Should be able to add multiple children to the root',function(){
             this.shell.length().should.equal(1);
-            this.shell.root.numOfEdges().should.equal(0);
-            let newNode1 = this.shell.addNode('test','child'),
-                newNode2 = this.shell.addNode('other_test','child');
+            this.shell.root().numOfEdges().should.equal(0);
+            let newNodeId1 = this.shell.addNode('test','child'),
+                newNodeId2 = this.shell.addNode('other_test','child');
             this.shell.length().should.equal(3);
-            this.shell.root.numOfEdges().should.equal(2);
+            this.shell.root().numOfEdges().should.equal(2);
+            this.shell.root().hasEdgeTo(newNodeId1).should.be.true;
+            this.shell.root().hasEdgeTo(newNodeId2).should.be.true;
             
         });
         it('Should be able to add a parent to a node',function(){
             this.shell.length().should.equal(1);
-            this.shell.root.numEdges().should.equal(0);
-            let newNode = this.shell.addNode('test','parent');
+            this.shell.root().numOfEdges().should.equal(0);
+            let newNodeId = this.shell.addNode('test','parent');
             this.shell.length().should.equal(2);
-            this.shell.root.linkedNodes.should.contain(newNode.id);
+            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
             
         });
-        it('Should be able to add multiple parents to a node');
+
+        it("Should make reciprocal edges",function(){
+            let newNodeId = this.shell.addNode('test','child');
+            this.shell.get(newNodeId).hasEdgeTo(this.shell.root().id).should.be.true;
+            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
+        });
+        
+        it('Should be able to add multiple parents to a node',function(){
+            let newParentId = this.shell.addNode('test1','parent'),
+                newParentId2 = this.shell.addNode('test2','parent');
+            this.shell.get(newParentId).hasEdgeTo(this.shell.root().id).should.be.true;
+            this.shell.get(newParentId2).hasEdgeTo(this.shell.root().id).should.be.true;
+            this.shell.root().hasEdgeTo(newParentId).should.be.true;
+            this.shell.root().hasEdgeTo(newParentId2).should.be.true;
+        });
+        
         it('Should be able to add nodes of different types');
         it('Should be able to add nodes with sub structure');
         it('Should be able to add rules with substructure');
-        it('Should be able to add an anonymous node');
+        
+        it('Should be able to add an anonymous node',function(){
+            let newNodeId = this.shell.addNode(),
+                node = this.shell.get(newNodeId);
+            node.name().should.equal('anon');
+            
+        });
+        
         it('Should be able to create a node as a child of defined parent');
         it('Should complain on non-existent parent target');
         it('Should complain on trying to create an unconnected node'); 
         
     });
 
-    describe.skip("Deletion:", function(){
-        it('Should be able to remove a node');
+    describe("Deletion:", function(){
+        it('Should be able to remove a node',function(){
+            this.shell.cwd().numOfEdges().should.equal(0);
+            let newNodeId = this.shell.addNode();
+            
+            this.shell.cwd().numOfEdges().should.equal(1);
+            this.shell.cwd().hasEdgeTo(newNodeId);
+            this.shell.get(newNodeId).hasEdgeTo(this.shell.cwd().id);
+            this.shell.get(newNodeId).numOfEdges().should.equal(1);
+            this.shell.length().should.equal(2);
+            
+            this.shell.deleteNode(newNodeId);
+            
+            this.shell.length().should.equal(1);
+            this.shell.cwd().id.should.not.equal(newNodeId);
+            this.shell.cwd().numOfEdges().should.equal(0);
+        });
         it('Should be able to clean up links of nodes that are connected');
-        it('Should complain on trying to delete a non-existent node');
-        it('Should be able to remove a node by name');
+        it('Should complain on trying to delete a non-existent node',function(){
+            expect(()=>{ this.shell.deleteNode(5); }).to.throw(Error);
+        });
+        xit('Should be able to remove a local node by name',function(){
+            let newNodeId = this.shell.addNode('test');
+            this.shell.length().should.equal(2);
+            this.shell.deleteNode('test');
+            this.shell.length().should.equal(1);
+        });
         it('Should be able to remove a node by id');
         it('Should be able to remove a specific edge of a circular relation')
         
