@@ -11,40 +11,37 @@ let ShellPrototype = {};
    @method
    @param id The id of the node to remove
 */
-ShellPrototype.deleteNode = function(id){
-    if (this.allNodes[id] === undefined){
-        throw new Error("unrecognised node to delete");
-    }
-    //todo remove all reciprocal links
-    let nodeToDelete = this.getNode(id);
-    //cleanup all connections to the nodes
-    _.keys(nodeToDelete.linkedNodes).forEach(d=>this.rm(id,undefined,d));
-    //actually delete the node
-    delete this.allNodes[id];
-};
+// ShellPrototype.deleteNode = function(id){
+//     //todo remove all reciprocal links
+//     let nodeToDelete = this.get(id);
+//     //cleanup all connections to the nodes
+//     _.keys(nodeToDelete.linkedNodes).forEach(d=>this.rm(id,undefined,d));
+//     //actually delete the node
+//     this.rm(id);
+// };
 
 /**
    Remove a node link from the cwd
    @method
    @param nodeToDelete The node object to remove from the cwd
-   @param target @deprecated
-   @param sourceId
-*/
-ShellPrototype.rm = function(nodeToDelete,target,sourceId){
-    let source = sourceId ? this.getNode(sourceId) : this.cwd,
-        removedNode = null;
-    if (!isNaN(Number(nodeToDelete))){
-        //delete numeric id node
-        removedNode = this.removeNumericIdLink(Number(nodeToDelete),source);
-    } else {
-        console.log(nodeToDelete);
-        throw new Error("Removing a node requires an id");
-    }
+    @param target @deprecated
+    @param sourceId
+ */
+// ShellPrototype.rm = function(nodeToDelete,target,sourceId){
+//     let source = sourceId ? this.getNode(sourceId) : this.cwd,
+//         removedNode = null;
+//     if (!isNaN(Number(nodeToDelete))){
+//         //delete numeric id node
+//         removedNode = this.removeNumericIdLink(Number(nodeToDelete),source);
+//     } else {
+//         console.log(nodeToDelete);
+//         throw new Error("Removing a node requires an id");
+//     }
 
-    if (removedNode && _.keys(removedNode.linkedNodes).length === 0){
-        this.deleteNode(removedNode.id);
-    }
-};
+//     if (removedNode && _.keys(removedNode.linkedNodes).length === 0){
+//         this.deleteNode(removedNode.id);
+//     }
+// };
 
 /**
    remove a link from the provided node

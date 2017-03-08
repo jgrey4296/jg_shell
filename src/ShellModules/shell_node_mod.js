@@ -116,43 +116,6 @@ ShellPrototype.setParameter = function(field,parameter,value,sourceId){
 
 
 /**
-   Interface method to add a link to the cwd. can be reciprocal
-   @method
-   @param id The id of the node being linked towards
-   @param relationType
-   @param reciprocalType The type of return relation between the nodes. eg: 'parent','rule'
-   @param sourceId
-*/
-ShellPrototype.link = function(id,relationType,reciprocalType,sourceId){
-    let source = sourceId ? this.getNode(sourceId) : this.cwd,
-        nodeToLink = this.getNode(id);
-
-    this.addLink(source,nodeToLink.id,relationType);
-    if (typeof reciprocalType === 'string'){
-        this.addLink(nodeToLink,source.id,reciprocalType);
-    }
-};
-
-/**
-   Add an ID number and name to a field of an object
-   @method
-   @param node the node to add the link FROM
-   @param id the id of the node to link TO
-   @param linkType the name characterising the relationship
-*/
-ShellPrototype.addLink = function(node,id,linkType){
-    if (isNaN(Number(id))){
-        throw new Error("Trying to link without providing a valid id number:" + id);
-    }
-    if (node && node.linkedNodes){
-        node.linkedNodes[Number(id)] = linkType;
-    } else {
-        throw new Error("Unrecognised target");
-    }
-};
-
-
-/**
    Set/Add a binding pair to a condition in a rule
    @method
    @param conditionNum The condition to add the binding to

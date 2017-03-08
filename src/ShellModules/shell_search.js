@@ -79,20 +79,5 @@ ShellPrototype.searchComparatively = function(values,nodeSelection){
     //TODO
 };
 
-
-/**
-   Get a node by its id, utility method
-   @method
-   @param nodeId
-*/
-ShellPrototype.getNode = function(nodeId){
-    nodeId = Number(nodeId);
-    if (this.allNodes[nodeId]){
-        return this.allNodes[nodeId];
-    }
-    throw new Error("Unknown node specified: " + nodeId);
-};
-
-
 export { ShellPrototype as shellSearch };
 
