@@ -8,8 +8,77 @@ let should = chai.should(),
 
 describe ("General Node Tests :", function() {
 
-    describe.skip("GraphNode:", function(){
+    describe("GraphNode:", function(){
+        it("Should be able to be constructed", function(){
+            let node = new GraphNode();
+            expect(node).to.exist;
+            node.name().should.equal('anon');
+            node.numOfEdges().should.equal(0);
+        });
 
+        it("Should be nameable", function(){
+            let node = new GraphNode('test');
+            node.name().should.equal('test');
+        });
+
+        it("Should be able to set edges", function(){
+            let node = new GraphNode();
+            node.setEdge(1,'child');
+            node.numOfEdges().should.equal(1);
+        });
+
+        it("Should be able to set edges based on node, not id", function(){
+            let node1 = new GraphNode(),
+                node2 = new GraphNode();
+            node1.setEdge(node2,'child');
+            node1.numOfEdges().should.equal(1);
+        });
+        
+        it("Should complain on lacking an edge type", function(){
+            let node = new GraphNode();
+            expect(()=>{ node.setEdge(1); }).to.throw(Error);
+        });
+
+        it("Should be able to check a node has an edge", function(){
+            let node = new GraphNode();
+            node.setEdge(1,'child');
+            node.hasEdgeTo(1).should.equal.true;
+        });
+
+        it("Should be able to check a node does not have an edge ", function(){
+            let node = new GraphNode();
+            node.hasEdgeTo(1).should.equal.false;
+        });
+        
+        it("Should be able to check a node based on the node itself, not id", function(){
+            let node1 = new GraphNode(),
+                node2 = new GraphNode();
+            node1.setEdge(node2.id,'child');
+            node1.hasEdgeTo(node2).should.equal.true;
+        });
+        
+        it("Should be able to get an edge out of a node", function(){
+            let node = new GraphNode();
+            node.setEdge(1,'child');
+            node.numOfEdges().should.equal(1);
+            let edge = node.getEdgeTo(1);
+            edge.should.equal('child');
+        });
+
+        it("Should complain if a retrieved edge doesn't exist", function(){
+            let node = new GraphNode();
+            expect(()=>{ node.getEdgeTo(1); }).to.throw(Error);
+        });
+
+        it("Should be able to get the edge based on node, not id",function(){
+            let node1 = new GraphNode(),
+                node2 = new GraphNode();
+            node1.setEdge(node2,'child');
+            let edge = node1.getEdgeTo(node2);
+            edge.should.equal('child');
+            
+        });
+        
     });
 
     describe.skip("Action Note:", function(){
