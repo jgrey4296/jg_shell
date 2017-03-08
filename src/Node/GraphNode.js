@@ -242,14 +242,58 @@ GraphNode.prototype.getActiveEdges = function(relationTypes){
    @param idSequence
    @param typeSequences
 */
-GraphNode.prototype.addLink = function(idSequence,idSequences,allNodes){
-    
+GraphNode.prototype.setEdge = function(id,edgeType){
+    if (id instanceof GraphNode){
+        id = id.id;
+    }
+    if(edgeType === undefined){
+        throw new Error('Edgetype undefined');
+    }
+    this._edges.set(id,edgeType);
 };
+
+GraphNode.prototype.getEdgeTo = function(id){
+    if (id instanceof GraphNode){
+        id = id.id;
+    }
+    if ( !this.hasEdgeTo(id)){
+        throw new Error('Node does not have specified edge');
+    }
+    return this._edges.get(id);
+}
+
+GraphNode.prototype.removeEdge = function(id){
+    if ( id instanceof GraphNode){
+        id = id.id;
+    }
+    if ( ! this.hasEdgeTo(id)){
+        throw new Error("Can't remove an edge that doesn't exist");
+    }
+    this._edges.delete(id);
+}
 
 GraphNode.prototype.numOfEdges = function(){
-    return _.keys(this.linkedNodes).length();
+    return this._edges.size;
 };
 
+
+GraphNode.prototype.hasEdgeTo = function(id){
+    if (id instanceof GraphNode){
+        id = id.id;
+    }
+    if (this._edges.has(id)){
+        return true;
+    }
+    return false;
+}
+
+GraphNode.prototype.name = function(){
+    return this._name;
+}
+
+GraphNode.prototype.setName = function(newName){
+    this._name = newName;
+}
 
 export { GraphNode };
 
