@@ -3,7 +3,8 @@
 import * as chai from 'chai';
 import { GraphNode} from '../src/Node/GraphNode';
 
-let should = chai.should();
+let should = chai.should(),
+    expect = chai.expect;
 
 describe ("General Node Tests :", function() {
 
