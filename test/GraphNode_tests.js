@@ -10,7 +10,7 @@ describe ("GraphNode", function() {
         let aNode = new GraphNode();
         should.exist(aNode);
         aNode.should.have.property('id').equals(0);
-        aNode.should.have.property('name').equals('anon');
+        aNode.should.have.property('_name').equals('anon');
     });
     
 });
