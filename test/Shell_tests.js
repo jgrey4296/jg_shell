@@ -43,7 +43,7 @@ describe("Shell Interface:", function() {
             this.shell.cwd().should.deep.equal(this.shell.root());
         });
         it("Should have nothing in the node stash",function(){
-            this.shell.stash().should.have.length(0);
+            this.shell._nodeStash.should.have.length(0);
         });
         it("Should have a previous location of the root node",function(){
             this.shell.prior().should.equal(this.shell.root().id);
@@ -67,6 +67,18 @@ describe("Shell Interface:", function() {
             this.shell.get(newNodeId).name().should.equal('test');
             this.shell.root().getEdgeTo(newNodeId).should.equal('child');
         });
+
+        it("Should be able to add children to other nodes than the root", function(){
+            let node1 = this.shell.addNode('test','child','parent','graphnode',[],this.shell.cwd().id),
+                node2 = this.shell.addNode('second','child','paretn','graphnode',[],node1);
+            this.shell.get(node1).hasEdgeTo(node2).should.be.true;
+            this.shell.get(node2).hasEdgeTo(node1).should.be.true;
+            this.shell.cwd().hasEdgeTo(node1).should.be.true;
+            this.shell.cwd().hasEdgeTo(node2).should.be.false;
+            this.shell.get(node2).hasEdgeTo(this.shell.cwd().id).should.be.false;
+
+        });
+        
         it('Should be able to add multiple children to the root',function(){
             this.shell.length().should.equal(1);
             this.shell.root().numOfEdges().should.equal(0);
@@ -113,10 +125,21 @@ describe("Shell Interface:", function() {
             
         });
         
-        it('Should be able to create a node as a child of defined parent');
-        it('Should complain on non-existent parent target');
-        it('Should complain on trying to create an unconnected node'); 
+        it('Should be able to create a node as a child of defined parent',function(){
+            let newNodeId = this.shell.addNode('blah'),
+                childNodeId = this.shell.addNode('test','child','parent',
+                                                 'graphnode',undefined, newNodeId),
+                parentNode = this.shell.get(newNodeId);
+            parentNode.hasEdgeTo(childNodeId).should.be.true;
+            
+        });
         
+        it('Should complain on non-existent parent target',function(){
+            let newNodeId = this.shell.addNode('blah');
+            expect(()=>{
+                this.shell.addNode('test','child','parent','graphnode',undefined, newNodeId+5);
+            }).to.throw(Error);
+        });
     });
 
     describe("Deletion:", function(){
@@ -140,46 +163,152 @@ describe("Shell Interface:", function() {
         it('Should complain on trying to delete a non-existent node',function(){
             expect(()=>{ this.shell.deleteNode(5); }).to.throw(Error);
         });
-        xit('Should be able to remove a local node by name',function(){
-            let newNodeId = this.shell.addNode('test');
-            this.shell.length().should.equal(2);
-            this.shell.deleteNode('test');
-            this.shell.length().should.equal(1);
+        it('Should be able to remove a node by id',function(){
+            let newNodeId = this.shell.addNode();
+            this.shell.cd_by_id(newNodeId);
+            let anotherNodeId = this.shell.addNode();
+            this.shell.cd_by_id(this.shell.cwd().id);
+            this.shell.deleteNode(anotherNodeId);
+            let node = this.shell.get(newNodeId);
+            node.hasEdgeTo(anotherNodeId).should.be.false;
         });
-        it('Should be able to remove a node by id');
         it('Should be able to remove a specific edge of a circular relation')
         
         
     });
     
-    describe.skip("Modification:", function(){
+    describe("Modification:", function(){
         it('Should be able to change the name of a node',function(){
             let newNodeId = this.shell.addNode();
             this.shell.get(newNodeId).name().should.equal('anon');
             this.shell.get(newNodeId).setName('test');
             this.shell.get(newNodeId).name().should.equal('test');
         });
-        it('Should be able to add values to the node');
-        it('Should be able to change values of a node');
-        it('Should be able to remove values from a node');
-        it('Should be able to add tags to a node');
-        it('Should be able to remove tags to a node');
-        it('Should be able to link two existing nodes together');
-        it('Should complain on trying to link a node to a non-existent node');
+        it('Should be able to add values to the node',function(){
+            this.shell.cwd().values().length.should.equal(0);
+            this.shell.cwd().setValue('blah','test');
+            this.shell.cwd().values().length.should.equal(1);
+            this.shell.cwd().values().should.deep.equal(['blah']);
+            this.shell.cwd().getValue('blah').should.equal('test');
+            
+        });
+        it('Should be able to change values of a node',function(){
+            this.shell.cwd().setValue('blah','test');
+            this.shell.cwd().getValue('blah').should.equal('test');
+            this.shell.cwd().setValue('blah','other');
+            this.shell.cwd().getValue('blah').should.equal('other');
+        });
+        it('Should be able to remove values from a node',function(){
+            this.shell.cwd().setValue('blah','test');
+            this.shell.cwd().getValue('blah').should.equal('test');
+            this.shell.cwd().setValue('blah');
+            this.shell.cwd().values().length.should.equal(0);
+        });
+        
+        it('Should be able to add tags to a node',function(){
+            let cwd = this.shell.cwd();
+            cwd.tags().length.should.equal(1);
+            cwd.hasTag('graphnode');
+            cwd.tag('blah')
+            cwd.hasTag('graphnode');
+            cwd.hasTag('blah');
+            cwd.tags().length.should.equal(2);
+        });
+        it('Should be able to remove tags to a node',function(){
+            let cwd = this.shell.cwd();
+            cwd.tags().length.should.equal(1);
+            cwd.untag('graphnode');
+            cwd.tags().length.should.equal(0);
+        });
+        it("Should be able to get a list of tags",function(){
+            let cwd = this.shell.cwd();
+            cwd.tag('blah').tag('bloo').tag('blee');
+            _.isEqual(cwd.tags(),['graphnode','blah','bloo','blee']).should.be.true;
+        });
+        it("Should be able to check a node has a particular tag",function(){
+            let cwd = this.shell.cwd();
+            cwd.tag('blah').tag('bloo').tag('blee');
+            cwd.hasTag('blah').should.be.true;
+            cwd.hasTag('bloo').should.be.true;
+            cwd.hasTag('blee').should.be.true;
+            cwd.hasTag('awef').should.be.false;
+        });
+        
+        it('Should be able to link two existing nodes together',function(){
+            let newNodeId1 = this.shell.addNode('test1'),
+                newNodeId2 = this.shell.addNode('test2'),
+                node1 = this.shell.get(newNodeId1),
+                node2 = this.shell.get(newNodeId2);
+            node1.hasEdgeTo(newNodeId2).should.be.false;
+            node2.hasEdgeTo(newNodeId1).should.be.false;
+            this.shell.link(newNodeId1,'child','parent',newNodeId2);
+            node1.hasEdgeTo(newNodeId2).should.be.true;
+            node2.hasEdgeTo(newNodeId1).should.be.true;
+        });
+        it('Should complain on trying to link a node to a non-existent node',function(){
+            let newNodeId1 = this.shell.addNode('test1');
+            expect(()=>{
+                this.shell.link(newNodeId1,'child','parent',newNodeId1+5);
+            }).to.throw(Error);
+        });
     });
 
-    describe.skip("State Change:", function(){
-        it('Should be able to change the cwd by id');
-        it('Should be able to change the cwd by name');
-        it('Should be able to change the cwd to a non-child node');
-        it('Should be able to change the cwd to a parent');
-        it('Should be able to go back to a previous node');
-        it('Should be able to add nodes to the stack');
-        it('Should be able to pop nodes off the stack');
-        it('Should be able to change the cwd to a renamed node');
+    describe("State Change:", function(){
+        it('Should be able to change the cwd by id',function(){
+            let newNodeId = this.shell.addNode('test');
+            this.shell.cwd().id.should.not.equal(newNodeId);
+            this.shell.cd_by_id(newNodeId);
+            this.shell.cwd().id.should.equal(newNodeId);
+        });
+        
+        it('Should be able to change the cwd to a non-child node',function(){
+            let node1 = this.shell.addNode('test','child','parent','graphnode',[], this.shell.cwd().id),
+                node2 = this.shell.addNode('second','child','parent','graphnode',[],node1);
+            this.shell.cwd().id.should.not.equal(node1);
+            this.shell.cwd().id.should.not.equal(node2);
+            this.shell.cd_by_id(node2);
+            this.shell.cwd().id.should.equal(node2);
+        });
+        
+        it('Should be able to change the cwd to a parent',function(){
+            let node1Id = this.shell.addNode('test');
+            this.shell.cd_by_id(node1Id);
+            this.shell.cwd().id.should.equal(node1Id);
+            this.shell.cd_by_string('..');
+            this.shell.cwd().id.should.equal(this.shell.root().id);
+        });
+        
+        it('Should be able to go back to a previous node',function(){
+            let newNode = this.shell.addNode('test');
+            this.shell.cd_by_id(newNode);
+            this.shell.prior().should.equal(this.shell._root.id);
+
+        });
+        it('Should be able to add/remove nodes to the stack/stash',function(){
+            this.shell._nodeStash.length.should.equal(0);
+            this.shell.stash()
+            this.shell._nodeStash.length.should.equal(1);
+            this.shell._nodeStash[0].should.equal(this.shell.cwd().id);
+            let anotherNode = this.shell.addNode('test');
+            this.shell.cd_by_id(anotherNode);
+            this.shell.stash();
+            this.shell._nodeStash.length.should.equal(2);
+            this.shell._nodeStash[1].should.equal(this.shell.cwd().id);
+            this.shell._nodeStash[0].should.not.equal(this.shell._nodeStash[1]);
+        });
+
+        it('Should be able to pop nodes off the stack',function(){
+            this.shell._nodeStash.length.should.equal(0);
+            this.shell.stash();
+            this.shell._nodeStash.length.should.equal(1);
+            let result = this.shell.unstash();
+            result.should.equal(this.shell.cwd().id);
+            this.shell._nodeStash.length.should.equal(0);
+        });
+        
     });
     
-    describe.skip("Node Searching:", function(){
+    describe("Node Searching:", function(){
         it('Should be able to search for a node by id');
         it('Should be able to search for a node by name');
         it('Should be able to search for a node by regex');
@@ -194,7 +323,7 @@ describe("Shell Interface:", function() {
                 
     });
 
-    describe.skip("FSM:", function(){
+    describe("FSM:", function(){
         it('Should be able to create an FSM node');
         it('Should be able to add states to the FSM');
         it('Should be able to add transitions to the FSM');
@@ -204,32 +333,32 @@ describe("Shell Interface:", function() {
         
     });
 
-    describe.skip("String Utilities:", function(){
+    describe("String Utilities:", function(){
         it('Should be able to convert nodes to concise strings');
         it('Should be able to convert a subtree to a grammar');
     });
 
-    describe.skip("Graph Search:", function(){
+    describe("Graph Search:", function(){
         it('Should be able to do a dfs on a node');
         it('Should be able to do a bfs on a node');
         it('Should be able to detect strongly connected components');
         it('Should be able to detect islands');
     });
 
-    describe.skip("JSON:", function(){
+    describe("JSON:", function(){
 
-        describe.skip("Import:", function(){
+        describe("Import:", function(){
             it('Should be able to create a shell instance from saved json data');
         });
 
-        describe.skip("Export", function(){
+        describe("Export", function(){
             it('Should be able to export a shell instance as json data');
             
         });
         
     });
 
-    describe.skip("Rete:", function(){
+    describe("Rete:", function(){
         it('Should be able to define rules');
         it('Should be able to assert nodes as facts');
         it('Should be able to link a node with its retenet wme');
@@ -238,9 +367,23 @@ describe("Shell Interface:", function() {
         it('Should be able to add nodes based on fired rules');
     });
 
-    describe.skip("Simulation", function(){
-
+    describe("Simulation", function(){
+        it("Should be able to instantiate and run a sim");
     });
     
+    describe("UI Interface methods",function(){
+
+        it("Should be able to return parents in a simple DS");
+        it("Should be able to return the current node in a simple DS");
+        it("Should be able to return the children in a simple DS");
+        it("Should be able to return FSM details");
+        it("Should be able to return Rule details");
+        
+    });
+
+    describe("Parsing",function(){
+        //test all the commands, separately from the UI        
+    });
+
     
 });
