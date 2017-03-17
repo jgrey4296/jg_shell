@@ -37,6 +37,7 @@
     "jsdoc": "^3.4.3",
     "mocha": "^3.2.0",
     "mocha-pending": "^1.0.0",
+    "parsimmon": "^1.2.0",
     "webpack": "^2.2.1"
   }
 }
