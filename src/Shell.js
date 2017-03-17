@@ -159,8 +159,8 @@ Shell.prototype.rm = function(id){
     if (! this.has(id)){
         throw new Error("Can't remove a node that doesn't exist");
     }
-    for (let entry of this.get(id)._edges){
-        this.get(entry[0]).removeEdge(id);
+    for (let entry of this.get(id)._edges.keys()){
+        this.get(entry).removeEdge(id);
     }
     this._nodes.delete(id);
 }
@@ -306,24 +306,33 @@ Shell.prototype.import = function(text){
 
 //Search
 Shell.prototype.search = function(type,variable,value){
-    
+    //go through all nodes, filtering by the tag/varName/varName+varValue
+
+    //store the results
     this._searchResults = [];
 };
 
 Shell.prototype.refine = function(type,variable,value){
+    //same as search, but operating on _searchResults instead of all nodes
 
+    
     this._searchResults = [];
 };
 
 //Graph search
+Shell.prototype.dfs = function(){
+    throw new Error('Unimplemented: DFS');
+};
+
+Shell.prototype.bfs = function(){
+    throw new Error('Unimplemented: BFS');
+};
+
 
 
 //Help:
 Shell.prototype.help = function(){
-
-    return {
-        "Commands:":"todo"
-    };
+    throw new Error('Unimplemented: Help');
 };
 
 
