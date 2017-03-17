@@ -20,7 +20,7 @@ ShellPrototype.cd = function(target){
    @method
    @param target
 */
-ShellPrototype.cdNode = function(target){
+ShellPrototype.cdNodeBy_Id = function(target){
     //update where you were previously
     this.previousLocation = this.cwd.id;
     let pairs = _.toPairs(this.cwd.linkedNodes);
