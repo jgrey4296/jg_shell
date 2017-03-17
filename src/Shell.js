@@ -16,9 +16,6 @@ import * as CStructs from './Commands/CommandStructures';
 */
 class Shell {
     constructor(ReteActionsToRegister){
-        this.nextId = 0;
-
-        
         this._root = new GraphNode('_root');
         this._nodes = new Map();
         this.set(this._root);
@@ -191,8 +188,28 @@ Shell.prototype.reteOutput = function(){
 Shell.prototype.link = function(id, relationType, reciprocalType, sourceId){
     let source = sourceId ? this.get(sourceId) : this.cwd(),
         nodeToLinkTo = this.get(id);
-    source.setEdge(nodeToLinkTo,relationType);
-    nodeToLinkTo.setEdge(source,reciprocalType);    
+    source.setEdge(nodeToLinkTo.id,
+                   {
+                       id: nodeToLinkTo.id,
+                       relation: relationType
+                   },
+                   {},
+                   {
+                       id: source.id,
+                       relation: reciprocalType
+                   }
+                  );
+    nodeToLinkTo.setEdge(source.id,
+                         {
+                             id: source.id,
+                             relation: reciprocalType
+                         },
+                         {},
+                         {
+                             id: nodeToLinkTo.id,
+                             relation : relationType
+                         }
+                        );    
 }
 
 
@@ -209,24 +226,13 @@ Shell.prototype.addNode = function(name,relType,recType,type,subRelations,source
     
     //Get the constructor for the type of node
     let ctor = getCtor(type),
-        newNode = new ctor(name,source.id,type,subRelations);
+        newNode = new ctor(name,source.id);
 
     //Store the new node
     this.set(newNode);
     //add to cwd/target
     this.link(newNode.id, relType, recType ,source.id);
-    
-    //get all subrelation objects:
-    // let relationDescriptions = newNode.pullRelationObjects();
-    // relationDescriptions.forEach(function(rel){
-    //     let subNodeName = rel.name,
-    //         subNodeType = rel.type || 'node',
-    //         subNodeRelType = rel.relType || 'child',
-    //         subNodeRecType = rel.recType || 'parent',
-    //         subNodeSubRelations = rel.subRelations || [];
-    //     this.addNode(subNodeName,subNodeRelType,subNodeRecType,subNodeType,subNodeSubRelations,newNode.id);
-    // },this);
-    return newNode.id;
+     return newNode.id;
 };
 
 Shell.prototype.deleteNode = function(id){
@@ -272,12 +278,26 @@ Shell.prototype.unstash = function(){
 //TODO:
 //exportJson
 Shell.prototype.export = function(){
-    
-    return "";
+    let nodes = [];
+    for (var node in this._nodes.values()){
+        nodes.append(node.toJSONCompatibleObj());
+    }
+    return JSON.stringify({
+        nodes: nodes,
+        root : this._root.id
+    });
 };
+
 //importJson
 Shell.prototype.import = function(text){
-
+    let loadedObj = JSON.parse(text);
+    this._nodes = new Map();
+    for (var nodeRep in loadedObj.nodes){
+        let newNode = GraphNode.fromJSON(nodeRep);
+        this.set(newNode);
+    }
+    this._root = this._nodes.get(loadedObj.root);
+    this._cwd = this._root;
 };
 
 //Rete
