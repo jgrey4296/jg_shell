@@ -3,7 +3,9 @@ import { ReteNet } from '../libs/rete';
 import { GraphNode } from './Node/GraphNode';
 import { getCtor } from './Node/Constructors';
 import { util } from './utils';
-import { shellPrototype } from './ShellModules/shell_prototype_main';
+import { parser } from './PParse';
+import * as CStructs from './Commands/CommandStructures';
+//import { shellPrototype } from './ShellModules/shell_prototype_main';
 
 /**
    The Main Shell Class. Provides interaction with the Graph, and the ReteNet.
@@ -25,7 +27,7 @@ class Shell {
         //State:
         this._cwd = this._root;
         this._nodeStash = [];
-        this._previousLocation = this._root.id;
+        this._previousLocation = [this._root.id];
 
         //Search Results
         this._searchResults = [];
@@ -37,12 +39,85 @@ class Shell {
 
         //Simulation
         this._simulation = null;
+
+        //The parser:
+        this._parser = parser;
     }
 }
 
-/*** @borrows module:shellPrototype_main as shellPrototype */
-Shell.prototype = Object.create(shellPrototype);
-Shell.prototype.constructor = Shell;
+//Parsing function:
+Shell.prototype.parse = function(string){
+    let result = this._parser.parse(string).value;
+    switch(result.constructor){
+        case CStructs.Cd:
+            this.cd_by_string(result.id);
+            break;
+        case CStructs.Rm:
+            result.ids.forEach((d)=>{
+                this.rm(d);
+            });
+            break;
+        case CStructs.Mk:
+            result.names.forEach((name)=>{
+                this.addNode(name);
+            });
+            break;
+        case CStructs.Link:
+            this.link(result.sourceId,'child','parent',result.destId);
+            break;
+        case CStructs.SetTag:
+            this.cwd().tagToggle(result.tagName);
+            break;
+        case CStructs.SetValue:
+            this.cwd().setValue(result.valName,result.value);
+            break;
+        case CStructs.Search:
+            this.search(result.type,result.variable,result.value);
+            break;
+        case CStructs.Refine:
+            this.refine(result.type,result.variable,result.value);
+            break;
+        case CStructs.Apply:
+            throw new Error('Unimplemented: Apply');
+            break;
+        case CStructs.Unparameterised:
+            return this.processUnparameterisedCommand(result);
+            break;
+        default:
+            throw new Error('Unrecognised command parsed');
+    }
+};
+
+//Deal with unparameterised commands
+Shell.prototype.processUnparameterisedCommand = function(command){
+    console.log(`Received command: ${command.name}`);
+    switch(command.name){
+        case 'export':
+            return this.export();
+            break;
+        case 'stash':
+            this.stash();
+            break;
+        case 'unstash':
+            this.unstash();
+            break;
+        case 'root':
+            this.cd_by_id(this._root.id);
+            break;
+        case 'cwd':
+            return this.printState();
+            break;
+        case 'help':
+            return this.help()
+            break;
+        case 'prior':
+            this.cd_by_id(this.prior());
+        default:
+            throw new Error(`Unrecognised Unparameterised Command: ${command.name}`);
+    }
+    return null;
+}
+
 
 /** Get A Node Constructor by name. @see Node/Constructors */
 Shell.prototype.getCtor = getCtor;
@@ -101,12 +176,8 @@ Shell.prototype.cwd = function(){
     return this._cwd;
 }
 
-Shell.prototype.stash = function(){
-    return Array.from(this._nodeStash);
-}
-
 Shell.prototype.prior = function(){
-    return this._previousLocation;
+    return _.last(this._previousLocation);
 }
 
 Shell.prototype.searchResults = function(){
@@ -131,7 +202,6 @@ Shell.prototype.addNode = function(name,relType,recType,type,subRelations,source
     //Configure defaults if necessary:
     if (name === null || name === undefined || name === "") {
         name = type || "anon";
-        console.warn("making an anonymous node");
     }
     relType = relType || 'child';
     recType = recType || 'parent';
@@ -145,16 +215,17 @@ Shell.prototype.addNode = function(name,relType,recType,type,subRelations,source
     this.set(newNode);
     //add to cwd/target
     this.link(newNode.id, relType, recType ,source.id);
+    
     //get all subrelation objects:
-    let relationDescriptions = newNode.pullRelationObjects();
-    relationDescriptions.forEach(function(rel){
-        let subNodeName = rel.name,
-            subNodeType = rel.type || 'node',
-            subNodeRelType = rel.relType || 'child',
-            subNodeRecType = rel.recType || 'parent',
-            subNodeSubRelations = rel.subRelations || [];
-        this.addNode(subNodeName,subNodeRelType,subNodeRecType,subNodeType,subNodeSubRelations,newNode.id);
-    },this);
+    // let relationDescriptions = newNode.pullRelationObjects();
+    // relationDescriptions.forEach(function(rel){
+    //     let subNodeName = rel.name,
+    //         subNodeType = rel.type || 'node',
+    //         subNodeRelType = rel.relType || 'child',
+    //         subNodeRecType = rel.recType || 'parent',
+    //         subNodeSubRelations = rel.subRelations || [];
+    //     this.addNode(subNodeName,subNodeRelType,subNodeRecType,subNodeType,subNodeSubRelations,newNode.id);
+    // },this);
     return newNode.id;
 };
 
@@ -162,5 +233,93 @@ Shell.prototype.deleteNode = function(id){
     this.rm(id);
 };
 
+Shell.prototype.cd_by_string = function(str){
+    if(!Number.isNaN(Number(str))){
+        this.cd_by_id(Number(str));
+        return;
+    }
+    if(str.match(/\.\./) !== null){
+        this.cd_by_id(this.cwd().parentId);
+    }else{
+        //Is a String. Find a local node of the correct name to move to
+        throw new Error(`Unimplemented: ${str}`);
+    }    
+}
+
+
+Shell.prototype.cd_by_id = function(id){
+    if(typeof(id) !== 'number'){
+        throw new Error(`Cd'ing needs an id, instead got ${typeof(id)}`);
+    }
+    if (!this.has(id)){
+        throw new Error("Can't cd to a non-existent node");
+    }
+    this._previousLocation.push(this.cwd().id);
+    this._cwd = this.get(id);    
+}
+
+
+Shell.prototype.stash = function(){
+    this._nodeStash.push(this.cwd().id);
+}
+
+Shell.prototype.unstash = function(){
+    return this._nodeStash.pop();
+}
+
+
+
+//TODO:
+//exportJson
+Shell.prototype.export = function(){
+    
+    return "";
+};
+//importJson
+Shell.prototype.import = function(text){
+
+};
+
+//Rete
+
+//Sim
+
+//Search
+Shell.prototype.search = function(type,variable,value){
+    
+    this._searchResults = [];
+};
+
+Shell.prototype.refine = function(type,variable,value){
+
+    this._searchResults = [];
+};
+
+//Graph search
+
+
+//Help:
+Shell.prototype.help = function(){
+
+    return {
+        "Commands:":"todo"
+    };
+};
+
+
+//Output:
+Shell.prototype.printState = function(){
+    let node = this.cwd(),
+        inputs = [],
+        outputs = [],
+        prevSearches = this._searchResults;
+    
+    return {
+        inputs: inputs,
+        node : node,
+        outputs : outputs,
+        searchResults : prevSearches
+    };
+};
 
 export { Shell };
