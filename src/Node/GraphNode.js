@@ -5,6 +5,7 @@
 */
 import _ from 'lodash';
 import { util } from '../utils';
+import { Edge } from '../Edge';
 
 let nextId = 0;
 
@@ -18,7 +19,7 @@ let nextId = 0;
    @alias GraphNode
 */
 class GraphNode{
-    constructor(name,parentId,type,relationsToCreate,overRideId){
+    constructor(name,parentId,overRideId=null){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         
         this.id = overRideId || nextId++;
@@ -26,45 +27,78 @@ class GraphNode{
             nextId = overRideId + 1;
         }
         this._name = name || 'anon';
-        this.relatedObjects = [];
-        //Map<id,edge[]>
+        //Map<id,Edge[]>
         this._edges = new Map();
-        //Map<str,id>
-        this._edges_by_name = new Map();
-        this.parentId = parentId
+        //todo: place into _edges with correct properties
+        this.parentId = parentId;
+        //Map<id,string|number>
         this._values = new Map();
-        this._annotations = new Map();
+        //Set<string>
         this._tags = new Set();
         this.minimised = false;
-
         
-        this._tags.add(type || 'graphnode');
+        this._tags.add('graphnode');
 
-        /*
-          r = [
-          {name, type, relType,recType, subRelations : [<r>]}
-          ]
-        */
-        if (relationsToCreate !== undefined && relationsToCreate instanceof Array){
-            this.relatedObjects = relationsToCreate;
-        }
-        
     }
 }
-GraphNode.constructor = GraphNode;
+
+GraphNode.fromJSON = function(obj){
+    let newNode = new GraphNode(obj.name,
+                                obj.parent,
+                                obj.id
+                               );
+    
+    for (var [id,edge] of obj.edges){
+        let newEdge = Edge.fromJSON(edge),
+            target = null;
+        if (newEdge.source.id === obj.id){
+            target = edge.dest.id;
+        }else{
+            target = edge.source.id;
+        }
+        newNode._edges.set(target, newEdge);
+    }
+    newNode._values = new Map(obj.values);
+    newNode._tags = new Set(obj.tags);
+    return newNode;
+};
+
+GraphNode.prototype.toJSONCompatibleObj = function(){
+    let returnObj = {
+        id : this.id,
+        name: this._name,
+        parent: this.parentId,
+        edges : Array.from(this._edges),
+        values : Array.from(this._values),
+        tags : Array.from(this._tags),
+    };
+    return returnObj;
+};
+
 
 GraphNode.prototype.toString = function(){
     return `(${this.id}) : ${this.name._slice(0,10)}`;
 };
 
-GraphNode.prototype.setEdge = function(id,edgeType){
+GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
+    //todo: use Edge Data type
     if (id instanceof GraphNode){
         id = id.id;
     }
-    if(edgeType === undefined){
-        throw new Error('Edgetype undefined');
+    if (sourceData.id === null){
+        sourceData.id = this.id;
+    }else if(destData.id === null){
+        destData.id = this.id;
     }
-    this._edges.set(id,edgeType);
+    if(id !== sourceData.id && id !== destData.id){
+        throw new Error('Specified an id for an edge that is inconsistent');
+    }
+    if(this.id !== sourceData.id && this.id !== destData.id){
+        throw new Error('Specified an edge unconnected to the targeted node');
+    }
+    
+    let newEdge = new Edge(sourceData,edgeData,destData);
+    this._edges.set(id,newEdge);
     return this;
 };
 
@@ -72,7 +106,7 @@ GraphNode.prototype.getEdgeTo = function(id){
     if (id instanceof GraphNode){
         id = id.id;
     }
-    if ( !this.hasEdgeTo(id)){
+    if ( !this.hasEdgeWith(id)){
         throw new Error('Node does not have specified edge');
     }
     return this._edges.get(id);
@@ -82,7 +116,7 @@ GraphNode.prototype.removeEdge = function(id){
     if ( id instanceof GraphNode){
         id = id.id;
     }
-    if ( ! this.hasEdgeTo(id)){
+    if ( ! this.hasEdgeWith(id)){
         throw new Error("Can't remove an edge that doesn't exist");
     }
     this._edges.delete(id);
@@ -94,7 +128,7 @@ GraphNode.prototype.numOfEdges = function(){
 };
 
 
-GraphNode.prototype.hasEdgeTo = function(id){
+GraphNode.prototype.hasEdgeWith = function(id){
     if (id instanceof GraphNode){
         id = id.id;
     }
@@ -132,7 +166,7 @@ GraphNode.prototype.getValue = function(key){
 }
 
 GraphNode.prototype.values = function(){
-    return Array.from(this._values.keys());
+    return Array.from(this._values);
 }
 
 //set annotations
