@@ -63,19 +63,19 @@ describe("Shell Interface:", function() {
             let newNodeId = this.shell.addNode('test','child');
             this.shell.length().should.equal(2);
             this.shell.root().numOfEdges().should.equal(1);
-            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
+            this.shell.root().hasEdgeWith(newNodeId).should.be.true;
             this.shell.get(newNodeId).name().should.equal('test');
-            this.shell.root().getEdgeTo(newNodeId).should.equal('child');
+            expect(this.shell.root().getEdgeTo(newNodeId)).should.exist;
         });
 
         it("Should be able to add children to other nodes than the root", function(){
             let node1 = this.shell.addNode('test','child','parent','graphnode',[],this.shell.cwd().id),
                 node2 = this.shell.addNode('second','child','paretn','graphnode',[],node1);
-            this.shell.get(node1).hasEdgeTo(node2).should.be.true;
-            this.shell.get(node2).hasEdgeTo(node1).should.be.true;
-            this.shell.cwd().hasEdgeTo(node1).should.be.true;
-            this.shell.cwd().hasEdgeTo(node2).should.be.false;
-            this.shell.get(node2).hasEdgeTo(this.shell.cwd().id).should.be.false;
+            this.shell.get(node1).hasEdgeWith(node2).should.be.true;
+            this.shell.get(node2).hasEdgeWith(node1).should.be.true;
+            this.shell.cwd().hasEdgeWith(node1).should.be.true;
+            this.shell.cwd().hasEdgeWith(node2).should.be.false;
+            this.shell.get(node2).hasEdgeWith(this.shell.cwd().id).should.be.false;
 
         });
         
@@ -86,8 +86,8 @@ describe("Shell Interface:", function() {
                 newNodeId2 = this.shell.addNode('other_test','child');
             this.shell.length().should.equal(3);
             this.shell.root().numOfEdges().should.equal(2);
-            this.shell.root().hasEdgeTo(newNodeId1).should.be.true;
-            this.shell.root().hasEdgeTo(newNodeId2).should.be.true;
+            this.shell.root().hasEdgeWith(newNodeId1).should.be.true;
+            this.shell.root().hasEdgeWith(newNodeId2).should.be.true;
             
         });
         it('Should be able to add a parent to a node',function(){
@@ -95,23 +95,23 @@ describe("Shell Interface:", function() {
             this.shell.root().numOfEdges().should.equal(0);
             let newNodeId = this.shell.addNode('test','parent');
             this.shell.length().should.equal(2);
-            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
+            this.shell.root().hasEdgeWith(newNodeId).should.be.true;
             
         });
 
         it("Should make reciprocal edges",function(){
             let newNodeId = this.shell.addNode('test','child');
-            this.shell.get(newNodeId).hasEdgeTo(this.shell.root().id).should.be.true;
-            this.shell.root().hasEdgeTo(newNodeId).should.be.true;
+            this.shell.get(newNodeId).hasEdgeWith(this.shell.root().id).should.be.true;
+            this.shell.root().hasEdgeWith(newNodeId).should.be.true;
         });
         
         it('Should be able to add multiple parents to a node',function(){
             let newParentId = this.shell.addNode('test1','parent'),
                 newParentId2 = this.shell.addNode('test2','parent');
-            this.shell.get(newParentId).hasEdgeTo(this.shell.root().id).should.be.true;
-            this.shell.get(newParentId2).hasEdgeTo(this.shell.root().id).should.be.true;
-            this.shell.root().hasEdgeTo(newParentId).should.be.true;
-            this.shell.root().hasEdgeTo(newParentId2).should.be.true;
+            this.shell.get(newParentId).hasEdgeWith(this.shell.root().id).should.be.true;
+            this.shell.get(newParentId2).hasEdgeWith(this.shell.root().id).should.be.true;
+            this.shell.root().hasEdgeWith(newParentId).should.be.true;
+            this.shell.root().hasEdgeWith(newParentId2).should.be.true;
         });
         
         it('Should be able to add nodes of different types');
@@ -130,7 +130,7 @@ describe("Shell Interface:", function() {
                 childNodeId = this.shell.addNode('test','child','parent',
                                                  'graphnode',undefined, newNodeId),
                 parentNode = this.shell.get(newNodeId);
-            parentNode.hasEdgeTo(childNodeId).should.be.true;
+            parentNode.hasEdgeWith(childNodeId).should.be.true;
             
         });
         
@@ -148,8 +148,8 @@ describe("Shell Interface:", function() {
             let newNodeId = this.shell.addNode();
             
             this.shell.cwd().numOfEdges().should.equal(1);
-            this.shell.cwd().hasEdgeTo(newNodeId);
-            this.shell.get(newNodeId).hasEdgeTo(this.shell.cwd().id);
+            this.shell.cwd().hasEdgeWith(newNodeId);
+            this.shell.get(newNodeId).hasEdgeWith(this.shell.cwd().id);
             this.shell.get(newNodeId).numOfEdges().should.equal(1);
             this.shell.length().should.equal(2);
             
@@ -170,7 +170,7 @@ describe("Shell Interface:", function() {
             this.shell.cd_by_id(this.shell.cwd().id);
             this.shell.deleteNode(anotherNodeId);
             let node = this.shell.get(newNodeId);
-            node.hasEdgeTo(anotherNodeId).should.be.false;
+            node.hasEdgeWith(anotherNodeId).should.be.false;
         });
         it('Should be able to remove a specific edge of a circular relation')
         
@@ -188,7 +188,7 @@ describe("Shell Interface:", function() {
             this.shell.cwd().values().length.should.equal(0);
             this.shell.cwd().setValue('blah','test');
             this.shell.cwd().values().length.should.equal(1);
-            this.shell.cwd().values().should.deep.equal(['blah']);
+            this.shell.cwd().values().should.deep.equal([['blah','test']]);
             this.shell.cwd().getValue('blah').should.equal('test');
             
         });
@@ -239,11 +239,11 @@ describe("Shell Interface:", function() {
                 newNodeId2 = this.shell.addNode('test2'),
                 node1 = this.shell.get(newNodeId1),
                 node2 = this.shell.get(newNodeId2);
-            node1.hasEdgeTo(newNodeId2).should.be.false;
-            node2.hasEdgeTo(newNodeId1).should.be.false;
+            node1.hasEdgeWith(newNodeId2).should.be.false;
+            node2.hasEdgeWith(newNodeId1).should.be.false;
             this.shell.link(newNodeId1,'child','parent',newNodeId2);
-            node1.hasEdgeTo(newNodeId2).should.be.true;
-            node2.hasEdgeTo(newNodeId1).should.be.true;
+            node1.hasEdgeWith(newNodeId2).should.be.true;
+            node2.hasEdgeWith(newNodeId1).should.be.true;
         });
         it('Should complain on trying to link a node to a non-existent node',function(){
             let newNodeId1 = this.shell.addNode('test1');
@@ -378,6 +378,8 @@ describe("Shell Interface:", function() {
         it("Should be able to return the children in a simple DS");
         it("Should be able to return FSM details");
         it("Should be able to return Rule details");
+        it("Should be able to return a help object");
+        
         
     });
 
