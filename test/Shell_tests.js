@@ -113,7 +113,7 @@ describe("Shell Interface:", function() {
             this.shell.root().hasEdgeWith(newParentId).should.be.true;
             this.shell.root().hasEdgeWith(newParentId2).should.be.true;
         });
-        
+
         it('Should be able to add nodes of different types');
         it('Should be able to add nodes with sub structure');
         it('Should be able to add rules with substructure');
@@ -159,10 +159,15 @@ describe("Shell Interface:", function() {
             this.shell.cwd().id.should.not.equal(newNodeId);
             this.shell.cwd().numOfEdges().should.equal(0);
         });
+
+        //todo
         it('Should be able to clean up links of nodes that are connected');
+
+        
         it('Should complain on trying to delete a non-existent node',function(){
             expect(()=>{ this.shell.deleteNode(5); }).to.throw(Error);
         });
+        
         it('Should be able to remove a node by id',function(){
             let newNodeId = this.shell.addNode();
             this.shell.cd_by_id(newNodeId);
@@ -172,6 +177,7 @@ describe("Shell Interface:", function() {
             let node = this.shell.get(newNodeId);
             node.hasEdgeWith(anotherNodeId).should.be.false;
         });
+        
         it('Should be able to remove a specific edge of a circular relation')
         
         
@@ -351,7 +357,7 @@ describe("Shell Interface:", function() {
             it('Should be able to create a shell instance from saved json data');
         });
 
-        describe("Export", function(){
+        describe("Export:", function(){
             it('Should be able to export a shell instance as json data');
             
         });
