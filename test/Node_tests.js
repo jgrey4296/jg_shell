@@ -2,6 +2,7 @@
 //Import * as aModule from '../src/aModule';
 import * as chai from 'chai';
 import { GraphNode} from '../src/Node/GraphNode';
+import { Edge } from '../src/Edge';
 
 let should = chai.should(),
     expect = chai.expect;
@@ -23,46 +24,40 @@ describe ("General Node Tests :", function() {
 
         it("Should be able to set edges", function(){
             let node = new GraphNode();
-            node.setEdge(1,'child');
+            node.setEdge(1,{ id: 1 }, {}, {id: null});
             node.numOfEdges().should.equal(1);
         });
 
-        it("Should be able to set edges based on node, not id", function(){
-            let node1 = new GraphNode(),
-                node2 = new GraphNode();
-            node1.setEdge(node2,'child');
-            node1.numOfEdges().should.equal(1);
-        });
-        
-        it("Should complain on lacking an edge type", function(){
+        it("Should complain on lacking edge data", function(){
             let node = new GraphNode();
             expect(()=>{ node.setEdge(1); }).to.throw(Error);
         });
 
         it("Should be able to check a node has an edge", function(){
             let node = new GraphNode();
-            node.setEdge(1,'child');
-            node.hasEdgeTo(1).should.equal.true;
+            node.setEdge(1,{id:1},{}, {id:null});
+            node.hasEdgeWith(1).should.equal.true;
         });
 
         it("Should be able to check a node does not have an edge ", function(){
             let node = new GraphNode();
-            node.hasEdgeTo(1).should.equal.false;
+            node.hasEdgeWith(1).should.equal.false;
         });
         
         it("Should be able to check a node based on the node itself, not id", function(){
             let node1 = new GraphNode(),
                 node2 = new GraphNode();
-            node1.setEdge(node2.id,'child');
-            node1.hasEdgeTo(node2).should.equal.true;
+            node1.setEdge(node2.id,{id: node2.id}, {}, {id:null});
+            node1.hasEdgeWith(node2).should.equal.true;
         });
         
         it("Should be able to get an edge out of a node", function(){
             let node = new GraphNode();
-            node.setEdge(1,'child');
+            node.setEdge(1,{id: 1}, {}, {id: null});
             node.numOfEdges().should.equal(1);
             let edge = node.getEdgeTo(1);
-            edge.should.equal('child');
+            expect(edge).to.exist;
+            edge.should.be.an.instanceof(Edge);
         });
 
         it("Should complain if a retrieved edge doesn't exist", function(){
@@ -73,9 +68,9 @@ describe ("General Node Tests :", function() {
         it("Should be able to get the edge based on node, not id",function(){
             let node1 = new GraphNode(),
                 node2 = new GraphNode();
-            node1.setEdge(node2,'child');
+            node1.setEdge(node2.id,{id: node2.id}, {}, {id: null});
             let edge = node1.getEdgeTo(node2);
-            edge.should.equal('child');
+            expect(edge).to.exist;
             
         });
         
