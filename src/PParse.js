@@ -12,7 +12,7 @@ let OWS = ( parser ) => { return P.optWhitespace.then(parser).skip(P.optWhitespa
     WPW = ( parser ) => { return P.whitespace.then(parser).skip(P.whitespace); };
 
 //Simple unparameterised parsing:
-let unparameterisedCmnds = "unstash stash root cwd help export import prior",
+let unparameterisedCmnds = "unstash stash root cwd help export prior",
     unParParsers = P.alt(...unparameterisedCmnds.split(' ').map(d=>P.string(d))),
     UPP_Results = unParParsers.map((r)=>new CStructs.Unparameterised(r));
 
