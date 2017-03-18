@@ -17,6 +17,7 @@ import * as CStructs from './Commands/CommandStructures';
 class Shell {
     constructor(ReteActionsToRegister){
         this._root = new GraphNode('_root');
+        this._root.parentId = this._root.id;
         this._nodes = new Map();
         this.set(this._root);
         this._ruleIds = [];
@@ -44,7 +45,11 @@ class Shell {
 
 //Parsing function:
 Shell.prototype.parse = function(string){
-    let result = this._parser.parse(string).value;
+    let result = this._parser.parse(string);
+    if (result.status === false){
+        return null;
+    }
+    result = result.value;
     switch(result.constructor){
         case CStructs.Cd:
             this.cd_by_string(result.id);
@@ -60,7 +65,7 @@ Shell.prototype.parse = function(string){
             });
             break;
         case CStructs.Link:
-            this.link(result.sourceId,'child','parent',result.destId);
+            this.link(result.destId,'child','parent',result.sourceId);
             break;
         case CStructs.SetTag:
             this.cwd().tagToggle(result.tagName);
@@ -87,7 +92,7 @@ Shell.prototype.parse = function(string){
 
 //Deal with unparameterised commands
 Shell.prototype.processUnparameterisedCommand = function(command){
-    console.log(`Received command: ${command.name}`);
+    //console.log(`Received command: ${command.name}`);
     switch(command.name){
         case 'export':
             return this.export();
@@ -185,53 +190,53 @@ Shell.prototype.reteOutput = function(){
     return Array.from(this._reteOutput);
 }
 
-Shell.prototype.link = function(id, relationType, reciprocalType, sourceId){
+Shell.prototype.link = function(id, destType, sourceType, sourceId){
     let source = sourceId ? this.get(sourceId) : this.cwd(),
         nodeToLinkTo = this.get(id);
     source.setEdge(nodeToLinkTo.id,
                    {
-                       id: nodeToLinkTo.id,
-                       relation: relationType
+                       id: source.id,
+                       relation: sourceType
                    },
                    {},
                    {
-                       id: source.id,
-                       relation: reciprocalType
+                       id: nodeToLinkTo.id,
+                       relation: destType
                    }
                   );
     nodeToLinkTo.setEdge(source.id,
                          {
                              id: source.id,
-                             relation: reciprocalType
+                             relation: sourceType
                          },
                          {},
                          {
                              id: nodeToLinkTo.id,
-                             relation : relationType
+                             relation : destType
                          }
                         );    
 }
 
 
-Shell.prototype.addNode = function(name,relType,recType,type,subRelations,sourceId){
+Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelations,sourceId){
     //get the node to link to
     let source = sourceId ? this.get(sourceId) : this.cwd();
     //Configure defaults if necessary:
     if (name === null || name === undefined || name === "") {
         name = type || "anon";
     }
-    relType = relType || 'child';
-    recType = recType || 'parent';
-    type = type || "graphnode";
+    sourceType = sourceType || 'parent';
+    destType = destType || 'child';
+    nodeType = nodeType || "graphnode";
     
     //Get the constructor for the type of node
-    let ctor = getCtor(type),
+    let ctor = getCtor(nodeType),
         newNode = new ctor(name,source.id);
 
     //Store the new node
     this.set(newNode);
     //add to cwd/target
-    this.link(newNode.id, relType, recType ,source.id);
+    this.link(newNode.id, destType, sourceType ,source.id);
      return newNode.id;
 };
 
@@ -339,8 +344,8 @@ Shell.prototype.help = function(){
 //Output:
 Shell.prototype.printState = function(){
     let node = this.cwd(),
-        inputs = [],
-        outputs = [],
+        inputs = node.getParents(),
+        outputs = node.getChildren(),
         prevSearches = this._searchResults;
     
     return {
