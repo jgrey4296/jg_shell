@@ -48,12 +48,12 @@ GraphNode.fromJSON = function(obj){
                                 obj.id
                                );
     
-    for (var [id,edge] of obj.edges){
+    for (let [id,edge] of obj.edges){
         let newEdge = Edge.fromJSON(edge),
             target = null;
         if (newEdge.source.id === obj.id){
             target = edge.dest.id;
-        }else{
+        } else {
             target = edge.source.id;
         }
         newNode._edges.set(target, newEdge);
@@ -66,12 +66,12 @@ GraphNode.fromJSON = function(obj){
 GraphNode.prototype.getParents = function(){
     let parents = _.filter(Array.from(this._edges.values()),(d)=>d.dest.id===this.id);
     return parents;
-}
+};
 
 GraphNode.prototype.getChildren = function(){
     let children = _.filter(Array.from(this._edges.values()),(d)=>d.source.id===this.id);
     return children;
-}
+};
 
 GraphNode.prototype.toJSONCompatibleObj = function(){
     let returnObj = {
@@ -80,7 +80,7 @@ GraphNode.prototype.toJSONCompatibleObj = function(){
         parent: this.parentId,
         edges : Array.from(this._edges),
         values : Array.from(this._values),
-        tags : Array.from(this._tags),
+        tags : Array.from(this._tags)
     };
     return returnObj;
 };
@@ -97,13 +97,13 @@ GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
     }
     if (sourceData.id === null){
         sourceData.id = this.id;
-    }else if(destData.id === null){
+    } else if (destData.id === null){
         destData.id = this.id;
     }
-    if(id !== sourceData.id && id !== destData.id){
+    if (id !== sourceData.id && id !== destData.id){
         throw new Error('Specified an id for an edge that is inconsistent');
     }
-    if(this.id !== sourceData.id && this.id !== destData.id){
+    if (this.id !== sourceData.id && this.id !== destData.id){
         throw new Error('Specified an edge unconnected to the targeted node');
     }
     
@@ -120,7 +120,7 @@ GraphNode.prototype.getEdgeTo = function(id){
         throw new Error('Node does not have specified edge');
     }
     return this._edges.get(id);
-}
+};
 
 GraphNode.prototype.removeEdge = function(id){
     if ( id instanceof GraphNode){
@@ -131,7 +131,7 @@ GraphNode.prototype.removeEdge = function(id){
     }
     this._edges.delete(id);
     return this;
-}
+};
 
 GraphNode.prototype.numOfEdges = function(){
     return this._edges.size;
@@ -146,67 +146,67 @@ GraphNode.prototype.hasEdgeWith = function(id){
         return true;
     }
     return false;
-}
+};
 
 GraphNode.prototype.name = function(){
     return this._name;
-}
+};
 
 GraphNode.prototype.setName = function(newName){
     this._name = newName;
     return this;
-}
+};
 
 //TODO:
 //set values
 GraphNode.prototype.setValue = function(key,value){
     if (value !== undefined ){
         this._values.set(key,value);
-    }else{
+    } else {
         this._values.delete(key);
     }
     return this;
-}
+};
 
 GraphNode.prototype.getValue = function(key){
-    if(!this._values.has(key)){
+    if (!this._values.has(key)){
         throw new Error("Can't get a value for a non-existent key");
     }
     return this._values.get(key);
-}
+};
 
 GraphNode.prototype.values = function(){
     return Array.from(this._values);
-}
+};
 
 //set annotations
 //set tags
 GraphNode.prototype.tags = function(){
     return Array.from(this._tags);
-}
+};
 
 GraphNode.prototype.hasTag = function(tag){
     return this._tags.has(tag);
-}
+};
 
 GraphNode.prototype.tag = function(tag){
     this._tags.add(tag);
     return this;
-}
+};
 
 GraphNode.prototype.tagToggle = function(tag){
     if (this.hasTag(tag)){
         this.untag(tag);
-    }else{
+    } else {
         this._tags.add(tag);
     }
     return this;
-}
+};
 
 GraphNode.prototype.untag = function(tag){
     this._tags.delete(tag);
     return this;
-}
+};
 
 //minimise/uniminimise
 

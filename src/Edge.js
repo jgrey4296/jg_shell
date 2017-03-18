@@ -12,8 +12,8 @@ class Edge {
         this.dest   = destDetails;
 
         if (!('id' in this.source) || !('id' in this.dest)){
-            throw new Error(`Edges must have ids`);  
-        }        
+            throw new Error(`Edges must have ids`);
+        }
     }
 }
 
@@ -26,4 +26,4 @@ Edge.prototype.connectedTo = function(id){
 };
 
 
-export { Edge }
+export { Edge };

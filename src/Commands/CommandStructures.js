@@ -1,11 +1,11 @@
 /**
-   Data structures for intercommunication between parser and shell 
+   Data structures for intercommunication between parser and shell
 */
 
 class Cd {
     //Change the directory to the specified node id
     constructor(id){
-        this.id = id
+        this.id = id;
     }
 }
 
@@ -88,4 +88,4 @@ class Unparameterised{
     }
 }
 
-export { Cd, Rm, Mk, Link, SetTag, SetValue, Search, Refine, Apply, Unparameterised };
+export { Cd, Rm, Mk, Link, SetTag, SetValue, Search, Refine, Apply, Unparameterised, Import };

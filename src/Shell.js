@@ -50,9 +50,9 @@ Shell.prototype.parse = function(string){
         return null;
     }
     result = result.value;
-    switch(result.constructor){
+    switch (result.constructor){
         case CStructs.Cd:
-            this.cd_by_string(result.id);
+            this.cdByString(result.id);
             break;
         case CStructs.Rm:
             result.ids.forEach((d)=>{
@@ -81,10 +81,10 @@ Shell.prototype.parse = function(string){
             break;
         case CStructs.Apply:
             throw new Error('Unimplemented: Apply');
-            break;
+            //break;
         case CStructs.Unparameterised:
             return this.processUnparameterisedCommand(result);
-            break;
+            //break;
         default:
             throw new Error('Unrecognised command parsed');
     }
@@ -93,10 +93,10 @@ Shell.prototype.parse = function(string){
 //Deal with unparameterised commands
 Shell.prototype.processUnparameterisedCommand = function(command){
     //console.log(`Received command: ${command.name}`);
-    switch(command.name){
+    switch (command.name){
         case 'export':
             return this.export();
-            break;
+            //break;
         case 'stash':
             this.stash();
             break;
@@ -104,21 +104,22 @@ Shell.prototype.processUnparameterisedCommand = function(command){
             this.unstash();
             break;
         case 'root':
-            this.cd_by_id(this._root.id);
+            this.cdById(this._root.id);
             break;
         case 'cwd':
             return this.printState();
-            break;
+            //break;
         case 'help':
-            return this.help()
-            break;
+            return this.help();
+            //break;
         case 'prior':
-            this.cd_by_id(this.prior());
+            this.cdById(this.prior());
+            break;
         default:
             throw new Error(`Unrecognised Unparameterised Command: ${command.name}`);
     }
     return null;
-}
+};
 
 
 /** Get A Node Constructor by name. @see Node/Constructors */
@@ -127,38 +128,38 @@ Shell.prototype.getCtor = getCtor;
 //Utilities
 Shell.prototype.length = function(){
     return this._nodes.size;
-}
+};
 
 Shell.prototype.numRules = function(){
     return this._ruleIds.length;
-}
+};
 
 Shell.prototype.has = function(id){
     if ( id instanceof GraphNode ){
         id = id.id;
     }
     return this._nodes.has(id);
-}
+};
 
 Shell.prototype.get = function(id){
     if ( this.has(Number(id)) ){
         return this._nodes.get(Number(id));
     }
     throw new Error(`Node ${id} does not exist`);
-}
+};
 
 Shell.prototype.set = function(node){
     if (! (node instanceof GraphNode)){
-        throw new Error('Cannot add a non-GraphNode'); 
+        throw new Error('Cannot add a non-GraphNode');
     }
-    if( this.has(node.id)){
+    if (this.has(node.id)){
         throw new Error('Cannot replace already existing nodes');
     }
     this._nodes.set(node.id,node);
-}
+};
 
 Shell.prototype.rm = function(id){
-    if(id instanceof GraphNode){
+    if (id instanceof GraphNode){
         id = id.id;
     }
     if (! this.has(id)){
@@ -168,27 +169,27 @@ Shell.prototype.rm = function(id){
         this.get(entry).removeEdge(id);
     }
     this._nodes.delete(id);
-}
+};
 
 Shell.prototype.root = function(){
     return this._root;
-}
+};
 
 Shell.prototype.cwd = function(){
     return this._cwd;
-}
+};
 
 Shell.prototype.prior = function(){
     return _.last(this._previousLocation);
-}
+};
 
 Shell.prototype.searchResults = function(){
     return Array.from(this._searchResults);
-}
+};
 
 Shell.prototype.reteOutput = function(){
     return Array.from(this._reteOutput);
-}
+};
 
 Shell.prototype.link = function(id, destType, sourceType, sourceId){
     let source = sourceId ? this.get(sourceId) : this.cwd(),
@@ -214,8 +215,8 @@ Shell.prototype.link = function(id, destType, sourceType, sourceId){
                              id: nodeToLinkTo.id,
                              relation : destType
                          }
-                        );    
-}
+                        );
+};
 
 
 Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelations,sourceId){
@@ -223,7 +224,7 @@ Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelation
     let source = sourceId ? this.get(sourceId) : this.cwd();
     //Configure defaults if necessary:
     if (name === null || name === undefined || name === "") {
-        name = type || "anon";
+        name = sourceType || "anon";
     }
     sourceType = sourceType || 'parent';
     destType = destType || 'child';
@@ -244,39 +245,39 @@ Shell.prototype.deleteNode = function(id){
     this.rm(id);
 };
 
-Shell.prototype.cd_by_string = function(str){
-    if(!Number.isNaN(Number(str))){
-        this.cd_by_id(Number(str));
+Shell.prototype.cdByString = function(str){
+    if (!Number.isNaN(Number(str))){
+        this.cdById(Number(str));
         return;
     }
-    if(str.match(/\.\./) !== null){
-        this.cd_by_id(this.cwd().parentId);
-    }else{
+    if (str.match(/\.\./) !== null){
+        this.cdById(this.cwd().parentId);
+    } else {
         //Is a String. Find a local node of the correct name to move to
         throw new Error(`Unimplemented: ${str}`);
-    }    
-}
+    }
+};
 
 
-Shell.prototype.cd_by_id = function(id){
-    if(typeof(id) !== 'number'){
+Shell.prototype.cdById = function(id){
+    if (typeof(id) !== 'number'){
         throw new Error(`Cd'ing needs an id, instead got ${typeof(id)}`);
     }
     if (!this.has(id)){
         throw new Error("Can't cd to a non-existent node");
     }
     this._previousLocation.push(this.cwd().id);
-    this._cwd = this.get(id);    
-}
+    this._cwd = this.get(id);
+};
 
 
 Shell.prototype.stash = function(){
     this._nodeStash.push(this.cwd().id);
-}
+};
 
 Shell.prototype.unstash = function(){
     return this._nodeStash.pop();
-}
+};
 
 
 
@@ -284,7 +285,7 @@ Shell.prototype.unstash = function(){
 //exportJson
 Shell.prototype.export = function(){
     let nodes = [];
-    for (var node in this._nodes.values()){
+    for (let node of this._nodes.values()){
         nodes.append(node.toJSONCompatibleObj());
     }
     return JSON.stringify({
@@ -297,7 +298,7 @@ Shell.prototype.export = function(){
 Shell.prototype.import = function(text){
     let loadedObj = JSON.parse(text);
     this._nodes = new Map();
-    for (var nodeRep in loadedObj.nodes){
+    for (let nodeRep of loadedObj.nodes){
         let newNode = GraphNode.fromJSON(nodeRep);
         this.set(newNode);
     }

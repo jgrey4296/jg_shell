@@ -170,9 +170,9 @@ describe("Shell Interface:", function() {
         
         it('Should be able to remove a node by id',function(){
             let newNodeId = this.shell.addNode();
-            this.shell.cd_by_id(newNodeId);
+            this.shell.cdById(newNodeId);
             let anotherNodeId = this.shell.addNode();
-            this.shell.cd_by_id(this.shell.cwd().id);
+            this.shell.cdById(this.shell.cwd().id);
             this.shell.deleteNode(anotherNodeId);
             let node = this.shell.get(newNodeId);
             node.hasEdgeWith(anotherNodeId).should.be.false;
@@ -263,7 +263,7 @@ describe("Shell Interface:", function() {
         it('Should be able to change the cwd by id',function(){
             let newNodeId = this.shell.addNode('test');
             this.shell.cwd().id.should.not.equal(newNodeId);
-            this.shell.cd_by_id(newNodeId);
+            this.shell.cdById(newNodeId);
             this.shell.cwd().id.should.equal(newNodeId);
         });
         
@@ -272,21 +272,21 @@ describe("Shell Interface:", function() {
                 node2 = this.shell.addNode('second','child','parent','graphnode',[],node1);
             this.shell.cwd().id.should.not.equal(node1);
             this.shell.cwd().id.should.not.equal(node2);
-            this.shell.cd_by_id(node2);
+            this.shell.cdById(node2);
             this.shell.cwd().id.should.equal(node2);
         });
         
         it('Should be able to change the cwd to a parent',function(){
             let node1Id = this.shell.addNode('test');
-            this.shell.cd_by_id(node1Id);
+            this.shell.cdById(node1Id);
             this.shell.cwd().id.should.equal(node1Id);
-            this.shell.cd_by_string('..');
+            this.shell.cdByString('..');
             this.shell.cwd().id.should.equal(this.shell.root().id);
         });
         
         it('Should be able to go back to a previous node',function(){
             let newNode = this.shell.addNode('test');
-            this.shell.cd_by_id(newNode);
+            this.shell.cdById(newNode);
             this.shell.prior().should.equal(this.shell._root.id);
 
         });
@@ -296,7 +296,7 @@ describe("Shell Interface:", function() {
             this.shell._nodeStash.length.should.equal(1);
             this.shell._nodeStash[0].should.equal(this.shell.cwd().id);
             let anotherNode = this.shell.addNode('test');
-            this.shell.cd_by_id(anotherNode);
+            this.shell.cdById(anotherNode);
             this.shell.stash();
             this.shell._nodeStash.length.should.equal(2);
             this.shell._nodeStash[1].should.equal(this.shell.cwd().id);

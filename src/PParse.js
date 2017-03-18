@@ -6,9 +6,9 @@ import * as CStructs from './Commands/CommandStructures';
 
 //Utility
 //Optional whitespace wrapper:
-let OWS = ( parser ) => { return P.optWhitespace.then(parser).skip(P.optWhitespace) },
+let OWS = ( parser ) => { return P.optWhitespace.then(parser).skip(P.optWhitespace); },
     //non-optional whitespace sequence
-    PWS = ( parser ) => { return parser.skip(P.whitespace) },
+    PWS = ( parser ) => { return parser.skip(P.whitespace); },
     WPW = ( parser ) => { return P.whitespace.then(parser).skip(P.whitespace); };
 
 //Simple unparameterised parsing:
