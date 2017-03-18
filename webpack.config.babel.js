@@ -23,8 +23,8 @@ module.exports = {
             root: "_",
         },
         "../libs/rete" : {
-            commonjs: "../libs/rete",
-            commonjs2: "../libs/rete",
+            commonjs: "rete",
+            commonjs2: "rete",
             amd: "rete",
             root: "rete"
         }
