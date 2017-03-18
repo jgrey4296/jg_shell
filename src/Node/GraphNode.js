@@ -63,6 +63,16 @@ GraphNode.fromJSON = function(obj){
     return newNode;
 };
 
+GraphNode.prototype.getParents = function(){
+    let parents = _.filter(Array.from(this._edges.values()),(d)=>d.dest.id===this.id);
+    return parents;
+}
+
+GraphNode.prototype.getChildren = function(){
+    let children = _.filter(Array.from(this._edges.values()),(d)=>d.source.id===this.id);
+    return children;
+}
+
 GraphNode.prototype.toJSONCompatibleObj = function(){
     let returnObj = {
         id : this.id,
