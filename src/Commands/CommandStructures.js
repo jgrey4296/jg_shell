@@ -76,7 +76,7 @@ class Apply {
 class Import {
     //Import a given json string into the shell
     constructor(text){
-        this.command = text;
+        this.text = text;
     }
 }
 
