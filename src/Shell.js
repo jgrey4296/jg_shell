@@ -43,7 +43,7 @@ class Shell {
     }
 }
 
-//Parsing function:
+//Parsing function: returns nullable
 Shell.prototype.parse = function(string){
     let result = this._parser.parse(string);
     if (result.status === false){
@@ -82,12 +82,16 @@ Shell.prototype.parse = function(string){
         case CStructs.Apply:
             throw new Error('Unimplemented: Apply');
             //break;
+        case CStructs.Import:
+            this.import(result.text);
+            break;
         case CStructs.Unparameterised:
             return this.processUnparameterisedCommand(result);
             //break;
         default:
             throw new Error('Unrecognised command parsed');
     }
+    return null;
 };
 
 //Deal with unparameterised commands
@@ -279,6 +283,9 @@ Shell.prototype.unstash = function(){
     return this._nodeStash.pop();
 };
 
+Shell.prototype.getStash = function(){
+    return _.clone(this._nodeStash);
+};
 
 
 //TODO:
@@ -341,19 +348,33 @@ Shell.prototype.help = function(){
     throw new Error('Unimplemented: Help');
 };
 
+Shell.prototype.getPath = function(){
+    let path : Array<[string, number]> = [],
+        current = this.cwd();
+    while (current.id !== this._root.id && current.parentId !== current.id){
+        path.unshift([current.name(), current.id]);
+        current = this.get(current.parentId);
+    }
+    path.unshift([this._root.name(), this._root.id]);
+    return path;
+};
 
 //Output:
 Shell.prototype.printState = function(){
     let node = this.cwd(),
         inputs = node.getParents(),
         outputs = node.getChildren(),
-        prevSearches = this._searchResults;
-    
+        prevSearches = this._searchResults,
+        currPath = this.getPath(),
+        stash = this.getStash();
+        
     return {
         inputs: inputs,
         node : node,
         outputs : outputs,
-        searchResults : prevSearches
+        searchResults : prevSearches,
+        currentPath : currPath,
+        stash : stash
     };
 };
 
