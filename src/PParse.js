@@ -59,9 +59,11 @@ let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     search_cmd_long = SEARCH.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Search(v,r,r2))),
     refine_cmd_short = REFINE.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Refine(v,r))),
     refine_cmd_long = REFINE.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Refine(v,r,r2))),
-    import_cmd = IMPORT.then(P.regex(/.*/)).map((t)=>new CStructs.Import(t));
+    import_cmd = IMPORT.then(P.all()).map((t)=>new CStructs.Import(t));
 
-    
+
+//TODO: Shortened versions of the commands
+
 
 let cmd_list = P.alt(mk_cmd,
                      link_cmd,
