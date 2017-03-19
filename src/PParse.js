@@ -32,7 +32,7 @@ let CD = PWS(P.string('cd')),
 
 
 //Values
-let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]+/)),
+let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
     str_lit = P.string('"').then(P.regex(/[a-zA-Z0-9\- '$%{}&;:.]+/)).skip(P.string('"')),
     id = OWS(P.regex(/[0-9]+/).map(Number)),
     parent = OWS(P.string('..')),
