@@ -8,7 +8,7 @@ import { util } from '../utils';
    @exports Commands/NodeCommands
 */
 let nodeCommands = {
-    /** Draw a Node and its parents+children 
+    /** Draw a Node and its parents+children
         @param globalData
         @param values
     */
@@ -26,21 +26,21 @@ let nodeCommands = {
             ////NodeDraw.cleanup();
         }
     },
-    /** Print a Node to Console 
+    /** Print a Node to Console
         @param globalData
         @param values
     */
     "printNode" : function(globalData,values){
         console.log(globalData.shell.cwd);
     },
-    /** Print the shell to console 
+    /** Print the shell to console
         @param globalData
         @param values
     */
     "printShell" : function(globalData,values){
         console.log(globalData.shell);
     },
-    /** Create a new node 
+    /** Create a new node
         ie: new child parent node blah
         @param globalData
         @param values
@@ -52,14 +52,14 @@ let nodeCommands = {
         //console.log("Target:",target);
         globalData.shell.addNode(values[3],values[0],values[1],values[2],undefined,sourceId);
     },
-    /** new child utility function 
+    /** new child utility function
         @param globalData
         @param values
     */
     "nc" : function(globalData,values,sourceId){
         const chars = new Map([
             ["n" , "node"],
-            ["i" , "institution"],
+            ["i" , "institution"]
         ]);
         if (chars.has(values[0])){
             globalData.shell.addNode(values[1],'child','parent',chars.get(values[0]),values.slice(2),sourceId);
@@ -67,14 +67,14 @@ let nodeCommands = {
             globalData.shell.addNode(values[1],'child','parent',values[0],values.slice(2),sourceId);
         }
     },
-    /** new parent 
+    /** new parent
         @param globalData
         @param values
     */
     "np" : function(globalData,values,sourceId){
         let chars = {
             "n" : "node",
-            "i" : "institution",
+            "i" : "institution"
         };
         if (chars[values[0]]){
             globalData.shell.addNode(values[1],'parent','child',chars[values[0]],values.slice(2),sourceId);
@@ -82,7 +82,7 @@ let nodeCommands = {
             globalData.shell.addNode(values[1],'parent','child',values[0],values.slice(2),sourceId);
         }
     },
-    /** New Child Node 
+    /** New Child Node
         @param globalData
         @param values
     */
@@ -90,14 +90,14 @@ let nodeCommands = {
         console.log("ncn:",values,sourceId);
         globalData.shell.addNode(values[0],'child','parent','node',undefined,sourceId);
     },
-    /** New Child Institution 
+    /** New Child Institution
         @param globalData
         @param values
     */
     "nci" : function(globalData,values){
         globalData.shell.addNode(values[0],'child','parent','institution');
     },
-    /** Remove Node 
+    /** Remove Node
         @param globalData
         @param values
         @param sourceId
@@ -106,7 +106,7 @@ let nodeCommands = {
         //rm -> removeNode,
         globalData.shell.rm(values[0],values[1],values[2],sourceId);
     },
-    /** Change Working node 
+    /** Change Working node
         @param globalData
         @param values
     */
@@ -122,7 +122,7 @@ let nodeCommands = {
         }
         
     },
-    /** Set 
+    /** Set
         @param globalData
         @param values
         @param sourceId
@@ -148,7 +148,7 @@ let nodeCommands = {
     */
     "st" : function(globalData,values,sourceId){
         globalData.shell.setParameter("tags",values[0],values[1],sourceId);
-    },        
+    },
     /** link a node to another one
         @param globalData
         @param values
@@ -158,7 +158,7 @@ let nodeCommands = {
         //link -> link
         globalData.shell.link(values[0],values[1],values[2],sourceId);
     },
-    /** Rename the node 
+    /** Rename the node
         @param globalData
         @param values
     */
@@ -169,7 +169,7 @@ let nodeCommands = {
     /**
        Copy a node to be a child of a different node
        @param globalData
-       @param values Comprised of 
+       @param values Comprised of
        @param nodeToCopy the source node to copy
        @param target the target to copy to
        @param deepOrNot whether to dfs the copy, or do it shallowly
@@ -188,8 +188,8 @@ let nodeCommands = {
         if (node){
             node.minimised = ! node.minimised;
         }
-    },        
-    /** help 
+    },
+    /** help
         @param globalData
         @param values
     */
@@ -215,4 +215,4 @@ let nodeCommands = {
     }
 };
 
-export { nodeCommands }
+export { nodeCommands };

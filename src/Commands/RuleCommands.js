@@ -7,7 +7,7 @@ import { util } from '../utils';
      @implements module:Commands/CommandTemplate
      */
     let ruleCommands = {
-        /** draw 
+        /** draw
             @param globalData
             @param values
         */
@@ -22,14 +22,14 @@ import { util } from '../utils';
             //     //NodeDrawing.drawNode(globalData,globalData.shell.cwd);
             // }
         },
-        /** cleanup 
+        /** cleanup
             @param globalData
             @param values
         */
         "cleanup" : function(globalData, values){
             ////RuleDrawing.cleanup();
         },
-        /** new -> addCondition/test/action 
+        /** new -> addCondition/test/action
             @param globalData
             @param values
         */
@@ -50,21 +50,21 @@ import { util } from '../utils';
                 newNode.setConditionType('negConjCondition');
             }
         },
-        /** if - a short way to define conditions 
+        /** if - a short way to define conditions
             @param globalData
             @param values
         */
         "if" : function(globalData, values,sourceId){
-            values = values.map(function(d){
+            values = values.map((d) => {
                 return d.replace(/,/,"");
             });
             let newCondition = globalData.shell.addNode(null,'condition','rule->condition','condition',undefined,sourceId);
             while (values.length >= 3){
                 let currentTest = values.splice(0,3);
                 globalData.shell.addTest(newCondition.id,currentTest);
-            }            
+            }
         },
-        /** Set a value of a condition/action 
+        /** Set a value of a condition/action
             @param globalData
             @param values
         */
@@ -123,7 +123,7 @@ import { util } from '../utils';
                     while (values.length > 0){
                         let a = values.shift(),
                             b = values.shift();
-                        bindingTests.push([a,b]);                        
+                        bindingTests.push([a,b]);
                     }
                     
                     globalData.shell.setBinding(Number(targetId),boundName,dataName,bindingTests,sourceId);
@@ -145,7 +145,7 @@ import { util } from '../utils';
                 }
             }
         },
-        /** Link a Condition/Action with a node in the graph 
+        /** Link a Condition/Action with a node in the graph
             Has two forms:
             1) link {condition} 5    : link an existing condition/rule INTO the rule
             2) link {condition} 5 2  : link an existing condition/rule TO a node
@@ -174,7 +174,7 @@ import { util } from '../utils';
                 globalData.shell.link(targetNodeId,relType,`${targetType}->${relType}`,ruleComponentId);
             }
         },
-        /** help 
+        /** help
             @param globalData
             @param values
         */
@@ -193,9 +193,9 @@ import { util } from '../utils';
                 "set condition $conditionId test" : ["$testId? $field $operator $value","Set,create,or remove a condition's test."],
                 "set condition $conditionId binding" : ["$bindVar $sourceParam $test $test $test","Set or delete a conditions binding for a variable name, with optional tests to apply to the binding"],
                 "rename" : ["$name","Rename the rule"],
-                "link" : ["[condition/action] $id $targetId","Specify the target that a condition consumes, or action produces"],
+                "link" : ["[condition/action] $id $targetId","Specify the target that a condition consumes, or action produces"]
             };
-        },
+        }
     };
 
     //--------------------

@@ -6,21 +6,21 @@ import _ from 'lodash';
    @exports Commands/CommandTemplate
 */
 let CommandTemplate = {
-    /** A simple command 
+    /** A simple command
         @param {module:globalData} globalData
         @param values
     */
     "someCommand" : function(globalData,values){
 
     },
-    /** draw 
+    /** draw
         @param {module:globalData} globalData
         @param values
     */
     "draw" : function(globalData,values){
 
     },
-    /** cleanup 
+    /** cleanup
         @param {module:globalData} globalData
         @param values
     */

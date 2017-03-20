@@ -6,7 +6,7 @@ import _ from 'lodash';
    @implements module:Commands/CommandTemplate
 */
 let SimulationCommands = {
-    /** draw 
+    /** draw
         @param globalData
         @param values
     */
@@ -15,14 +15,14 @@ let SimulationCommands = {
 
         //draw list of performed actions
     },
-    /** cleanup 
+    /** cleanup
         @param globalData
         @param values
     */
     "cleanup" : function(globalData,values){
 
     },
-    /** Setup the simulation 
+    /** Setup the simulation
         @param globalData
         @param values
     */
@@ -48,7 +48,7 @@ let SimulationCommands = {
     "runSim" : function(globalData,values){
         globalData.shell.runSimulation();
     },
-    /** Depth First Search 
+    /** Depth First Search
         @param globalData
         @param values
     */
@@ -56,16 +56,16 @@ let SimulationCommands = {
         if (values.length === 0) { values = [globalData.shell.cwd.id]; }
         console.log(globalData.shell.dfs(values[0]));
     },
-    /** Help 
+    /** Help
         @param globalData
         @param values
     */
     "help" : function(globalData,values){
         return {
             "setupSim" : ["$sourceId?","Initialise the retenet for simulation"],
-            "runSim" : ["", "Run the simulation to completion"],
+            "runSim" : ["", "Run the simulation to completion"]
         };
-    },
+    }
 };
 
 export { SimulationCommands };

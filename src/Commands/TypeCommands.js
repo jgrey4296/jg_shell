@@ -11,7 +11,7 @@ let TypeCommands = {
     //define a Link Type or a Relation Type
     "define" : function(globalData,values){
         //type / relation
-    },
+    }
     
 };
 return { TypeCommands };

@@ -15,7 +15,7 @@ let parseCurrentLine = function(currentLine){
 
     let inString = false;
     //Reconstruct strings from inputs
-    let combined = splitLine.reduce(function(m,v){
+    let combined = splitLine.reduce((m,v) => {
         if (!inString){
             m.push(v.replace(/"/,""));
         } else {
@@ -45,9 +45,9 @@ let MainCommandCLI = function(currentLine,globalData,skipDraw){
     
     //perform command
     if (commandToExecute && typeof commandToExecute === 'function'){
-        try{
+        try {
             commandToExecute(globalData,splitLine);
-        }catch(e){
+        } catch (e){
             console.error("Command Error:",e);
             alert(e);
         }
@@ -69,9 +69,9 @@ let MainCommandCLI = function(currentLine,globalData,skipDraw){
     //call the mode specific draw command
     let drawCommand = globalData.lookupOrFallBack("draw",globalData);
     if (drawCommand && typeof drawCommand === 'function'){
-        try{
+        try {
             drawCommand(globalData);
-        }catch(e){
+        } catch (e){
             console.error("Draw Error:",e);
         }
     } else {

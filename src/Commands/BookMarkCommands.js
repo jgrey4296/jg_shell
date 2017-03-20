@@ -6,21 +6,21 @@ import _ from 'lodash';
        @exports Commands/BookMarkCommands
     */
     let CommandTemplate = {
-        /** Draw Command 
+        /** Draw Command
             @param globalData
             @param values
          */
         "draw" : function(globalData,values){
 
         },
-        /** Cleanup Command 
+        /** Cleanup Command
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
 
         },
-        /** open a new window of the bookmark's url: 
+        /** open a new window of the bookmark's url:
             @param globalData
             @param values
          */
@@ -37,13 +37,13 @@ import _ from 'lodash';
                     window.open(bookmark.url,bookmark.name);
                 }
             }
-        },        
-        /** Firefox Import 
+        },
+        /** Firefox Import
             @param globalData
             @param values
         */
         "firefoxImport" : function(globalData,values){
-            try{
+            try {
                 let stringMinusCommand = globalData.rawCurrentLine.replace(/^firefoxImport /,""),
                     reconJson = JSON.parse(stringMinusCommand),
                     extractedLinks = extractLinks(reconJson),
@@ -51,11 +51,11 @@ import _ from 'lodash';
 
                 globalData.shell.importJson(nodeSpecs);
                         
-            }catch(err){
+            } catch (err){
                 console.log("Firefox import Error:",err);
-            }            
+            }
         },
-        /** Firefox Load 
+        /** Firefox Load
             @param globalData
             @param values
         */
@@ -63,14 +63,14 @@ import _ from 'lodash';
             let request = new XMLHttpRequest();
             request.onreadystatechange=function(){
                 if (request.readyState===4){
-                    try{
+                    try {
                         let receivedJson = JSON.parse(request.responseText),
                             extractedLinks = extractLinks(receivedJson),
                             nodeSpecs = groupLinks(extractedLinks);
                         console.log("Received JSON:",receivedJson);
                         globalData.shell.importJson(nodeSpecs);
                         globalData.lookupOrFallBack("draw",globalData)(globalData,[]);
-                    }catch(err){
+                    } catch (err){
                         alert("Error loading data: \n" + err.message);
                         console.log("Error loading data:",err);
                     }
@@ -88,7 +88,7 @@ import _ from 'lodash';
                 "firefoxImport" : ["$rawJSON","Import a raw json string of exported bookmarks from firefox"],
                 "firefoxLoad" : ["$fileName","Request and load a firefox bookmarks json from the server"]
             };
-        }        
+        }
     };
     
     //----------------------------------------
@@ -97,13 +97,13 @@ import _ from 'lodash';
     
     /**
        Turn bookmarks into objects
-       @param data JSON bookmark data 
+       @param data JSON bookmark data
        @function extractLinks
      */
     let extractLinks = function(data){
         let childData = [];
         if (data.children !== undefined){
-            childData = _.flatten(data.children.map(function(d){
+            childData = _.flatten(data.children.map((d) => {
                 return extractLinks(d);
             }));
         }
@@ -115,7 +115,7 @@ import _ from 'lodash';
                 url : [data.uri],
                 tags : {type : "bookmark"},
                 children : {},
-                parents : {},
+                parents : {}
             });
         }
         return childData;
@@ -129,18 +129,18 @@ import _ from 'lodash';
     let groupLinks = function(data){
         let NUM_IN_GROUP = 9;
         //be able to lookup the data by id
-        let lookupObject = data.reduce(function(m,v){
+        let lookupObject = data.reduce((m,v) => {
                 if (m[v.id] === undefined){
                     m[v.id] = v;
                 }
                 return m;
         },{}),
             //group the ids
-            ids = data.map(function(d){
+            ids = data.map((d) => {
                 return d.id;
             }),
             //group in 15's
-            groupedIds = ids.reduce(function(m,v){
+            groupedIds = ids.reduce((m,v) => {
                 if (_.last(m).length > NUM_IN_GROUP){
                     m.push([]);
                 }
@@ -148,8 +148,8 @@ import _ from 'lodash';
                 return m;
             },[[]]),
             //turn the groups into objects to slot in as child object specs ({id:name})
-            groupObjects = groupedIds.map(function(d){
-                return d.reduce(function(m,v){
+            groupObjects = groupedIds.map((d) => {
+                return d.reduce((m,v) => {
                     if (m[v] === undefined){
                         m[v] = lookupObject[v].name;
                     }
@@ -157,7 +157,7 @@ import _ from 'lodash';
                 },{});
             }),
             //create the group nodes
-            groupNodes = groupObjects.map(function(d,i){
+            groupNodes = groupObjects.map((d,i) => {
                 let newGroup = {
                     id : nextId++,
                     name : "Group_" + i,
@@ -167,13 +167,13 @@ import _ from 'lodash';
                     _originalParent : 0
                 };
                 //update the children to have the correct parent
-                _.keys(newGroup.children).forEach(function(d){
-                    lookupObject[d]._originalParent = newGroup.id;
-                    lookupObject[d].parents[newGroup.id] = newGroup.name;
+                _.keys(newGroup.children).forEach((f) => {
+                    lookupObject[f]._originalParent = newGroup.id;
+                    lookupObject[f].parents[newGroup.id] = newGroup.name;
                 });
                 return newGroup;
             }),
-            groupChildrenObject = groupNodes.reduce(function(m,v){
+            groupChildrenObject = groupNodes.reduce((m,v) => {
                 if (m[v.id] === undefined){
                     m[v.id] = v.name;
                 }
@@ -187,9 +187,9 @@ import _ from 'lodash';
             name : "Bookmark Root",
             tags : {type : "Group" },
             children : groupChildrenObject,
-            parents : {},
+            parents : {}
         });
-        endList = endList.concat(groupNodes,data).sort(function(a,b){
+        endList = endList.concat(groupNodes,data).sort((a,b) => {
             return a.id - b.id;
         });
 

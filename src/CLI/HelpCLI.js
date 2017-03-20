@@ -8,6 +8,7 @@ import _ from 'lodash';
    @param currentLine
    @param globalData
 */
+let d3 = {};
 let HelpCLI = function(currentLine,globalData){
     let textArray = currentLine.split(" "),
         //Get the last thing typed, and split it
@@ -27,7 +28,7 @@ let HelpCLI = function(currentLine,globalData){
         if (helpObject){
             drawHelp(helpObject,globalData);
         }
-    } 
+    }
 };
 
 //----------------------------------------
@@ -69,10 +70,10 @@ let drawHelp = function(helpObject,globalData){
         .style("text-anchor","start")
         .style("fill",globalData.colours.textBlue);
     
-    boundSelection.attr("transform",function(d,i){
+    boundSelection.attr("transform",(d,i) => {
         return "translate("+ (globalData.usableWidth * 0.02) + "," + (30 + i * 20) +")";
     })
-        .text(function(d){
+        .text((d) => {
             return d;
         })
         .style("white-space","pre");
@@ -82,14 +83,14 @@ let drawHelp = function(helpObject,globalData){
 
 
 let alignArrows = function(textArray){
-    let furthestArrow = textArray.reduce(function(m,v){
+    let furthestArrow = textArray.reduce((m,v) => {
         let currOffset = v.search(/ ---> /);
         if (currOffset > m){
             return currOffset;
         }
         return m;
     },0),
-        offsetTexts = textArray.map(function(d){
+        offsetTexts = textArray.map((d) => {
             let amtToOffset = furthestArrow - d.search(/ ---> /);
             return d.replace(/ ---> /,(Array(amtToOffset + 2).join(" ") + " ---> "));
         });

@@ -8,14 +8,14 @@ import { util } from '../utils';
    @exports Commands/GeneralCommands
 */
 let GeneralCommands = {
-    /** Store the current working node on a stack 
+    /** Store the current working node on a stack
         @param globalData
         @param values
     */
     "stash" : function(globalData,values){
         globalData.shell.stash();
     },
-    /** Pop off the stack and go to that node 
+    /** Pop off the stack and go to that node
         @param globalData
         @param values
     */
@@ -29,7 +29,7 @@ let GeneralCommands = {
     "top" : function(globalData,values){
         globalData.shell.top();
     },
-    /** Go To the last node prior to the current node 
+    /** Go To the last node prior to the current node
         @param globalData
         @param values
     */
@@ -67,7 +67,7 @@ let GeneralCommands = {
             } else {
                 globalData.modeState[mode].right = null;
             }
-        };
+        }
         console.log(globalData.modeState);
     },
     /**
@@ -85,7 +85,7 @@ let GeneralCommands = {
     */
     "select" : function(globalData,values){
         if (values.length === 0) { values = [globalData.shell.cwd.id]; }
-        values.forEach(function(d){
+        values.forEach((d) => {
             let id = Number(d);
             if (Number.isNaN(id)) { return; }
             //selection is not included, add it:
@@ -102,7 +102,7 @@ let GeneralCommands = {
     "selectSearch" : function(globalData,values){
         globalData.shell.lastSearchResults.forEach(d=>globalData.currentSelection.push(d.id));
     },
-    /** Clear the current selection 
+    /** Clear the current selection
         @param globalData
         @param values
     */
@@ -117,25 +117,25 @@ let GeneralCommands = {
     */
     "applyToSelection" : function(globalData,values){
         let command = globalData.lookupOrFallBack(values.shift(),globalData);
-        globalData.currentSelection.forEach(function(d){
-            command(globalData,values,d);                
+        globalData.currentSelection.forEach((d) => {
+            command(globalData,values,d);
         });
     },
     "apply" : function(globalData,values){
         GeneralCommands.applyToSelection(globalData,values);
     },
-    /** print the current selection to console 
+    /** print the current selection to console
         @param globalData
         @param values
     */
     "printSelection" : function(globalData,values){
         console.log("Current Selection:",globalData.currentSelection);
 
-    },        
-    /** Search all nodes for the specified constraints 
+    },
+    /** Search all nodes for the specified constraints
         @param globalData
         @param values
-    */ 
+    */
     "search" : function(globalData,values){
         globalData.lastSearch = "(?)."+values.join(".");
         globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values);
@@ -147,14 +147,14 @@ let GeneralCommands = {
     "refine" : function(globalData,values){
         globalData.lastSetOfSearchResults = globalData.shell.searchForFieldTagValue(values,globalData.lastSetOfSearchResults);
     },
-    /** Inspect the values of a node 
+    /** Inspect the values of a node
         @param globalData
         @param values
     */
     "inspect" : function(globalData,values){
         let nodeId = values.shift(),
             key = values.shift(),
-            node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,                
+            node = globalData.shell.allNodes[nodeId] !== undefined ? globalData.shell.allNodes[nodeId] : globalData.shell.cwd,
             pairs = key === "#all" ? _.keys(node) : _.toPairs(node[key]) || [];
 
         globalData.lastInspection = "(" + node.id + ")." + key;
@@ -182,7 +182,7 @@ let GeneralCommands = {
         ////GeneralDrawing.drawSelection(globalData,globalData.currentSelection);
 
     },
-    /** Load a file from the server 
+    /** Load a file from the server
         @param globalData
         @param values
     */
@@ -190,12 +190,12 @@ let GeneralCommands = {
         let request = new XMLHttpRequest();
         request.onreadystatechange = function(){
             if (request.readyState===4){
-                try{
+                try {
                     let receivedJson = JSON.parse(request.responseText);
                     console.log("Received JSON:",receivedJson);
                     globalData.shell.importJson(receivedJson);
                     globalData.lookupOrFallBack("draw",globalData)(globalData,[]);
-                }catch(err){
+                } catch (err){
                     alert("Error loading data: \n" + err.message);
                     console.log("Error loading data:",err);
                 }
@@ -209,17 +209,17 @@ let GeneralCommands = {
         @param values
     */
     "import" : function(globalData,values){
-        try{
+        try {
             //let reconstructedJsonString = values.join(" ");
             let stringMinusCommand = globalData.rawCurrentLine.replace(/^import /,"");
             let reconJson = JSON.parse(stringMinusCommand);
             globalData.shell.importJson(reconJson);
-        }catch(err){
+        } catch (err){
             alert("Error Importing Json String:\n" + err.message);
             console.log("Error Importing Json Data: ",err);
-        }            
+        }
     },
-    /** Save the current graph to the server 
+    /** Save the current graph to the server
         @param globalData
         @param values
     */
@@ -235,7 +235,7 @@ let GeneralCommands = {
         request.open("POST","saveData="+values[0],true);
         request.send(globalData.shell.exportJson());
     },
-    /** Open a new page of the exported json of the graph 
+    /** Open a new page of the exported json of the graph
         @param globalData
         @param values
     */
@@ -258,8 +258,8 @@ let GeneralCommands = {
     */
     "printGlobal" : function(globalData,values){
         console.log(globalData);
-    },        
-    /** Print the help menu for general commands 
+    },
+    /** Print the help menu for general commands
         @param globalData
         @param values
     */
@@ -293,21 +293,21 @@ let GeneralCommands = {
         @param values
     */
     "printConditions" : function(globalData,values){
-        let allConditions = _.values(globalData.shell.allNodes).filter(function(node){
+        let allConditions = _.values(globalData.shell.allNodes).filter((node) => {
             if (node.tags.type === "condition"){
                 return true;
-            } else {
-                return false;
             }
+                return false;
+            
         });
         console.log("Conditions:",allConditions);
 
         //for each condition, aggregate the fields of its tests
-        let aggregateObjects = allConditions.map(function(condition){
-            let tests = _.keys(condition.constantTests).map(function(testId){
+        let aggregateObjects = allConditions.map((condition) => {
+            let tests = _.keys(condition.constantTests).map((testId) => {
                 return globalData.shell.allNodes[testId];
             });
-            let aggregateFields = tests.reduce(function(m,test){
+            let aggregateFields = tests.reduce((m,test) => {
                 m[test.values.field] = 1;
                 return m;
             },{});
@@ -316,7 +316,7 @@ let GeneralCommands = {
 
         console.log("Prototypes:",aggregateObjects);
     },
-    /** Print all available modes 
+    /** Print all available modes
         @param globalData
         @param values
     */
@@ -330,7 +330,7 @@ let GeneralCommands = {
     "printDisconnected" : function(globalData,values){
         //from the root, dfs for ['children','parents','conditions','actions','events','states',
         //and expectation nodes etc, statepairs,
-        let allNodes = _.keys(globalData.shell.allNodes).map(d=>parseInt(d)),
+        let allNodes = _.keys(globalData.shell.allNodes).map(d=>parseInt(d,10)),
             foundNodes = globalData.shell.dfs('0'),
             unconnected = _.difference(allNodes,foundNodes);
 

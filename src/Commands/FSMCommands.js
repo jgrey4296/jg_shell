@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+let FSMDrawing = {};
+
 /**
    The interface for FSM modification
    @see module:globalData
@@ -7,7 +9,7 @@ import _ from 'lodash';
    @exports Commands/FSMCommandTemplate
 */
 let FSMCommandTemplate = {
-    /** draw 
+    /** draw
         @param {module:globalData} globalData
         @param values
     */
@@ -24,7 +26,7 @@ let FSMCommandTemplate = {
             throw new Error("FSM Draw: Unrecognised FSM node type");
         }
     },
-    /** cleanup 
+    /** cleanup
         @param {module:globalData} globalData
         @param values
     */
@@ -42,7 +44,7 @@ let FSMCommandTemplate = {
             "new" : ["state|event $name"," Create a new component of the fsm"],
             "rm" : ["$id", "Remove the specified state or event from the fsm, cleaning up associated links"],
             "link" : ["$sourceId $eventId $sinkId", "Plug a state to another state via an event"],
-            "unlink" : ["$sourceId $eventId $sinkId", "Remove a state to state linkage via the specified event"],
+            "unlink" : ["$sourceId $eventId $sinkId", "Remove a state to state linkage via the specified event"]
         };
     },
     /**
@@ -108,7 +110,7 @@ let FSMCommandTemplate = {
         if (globalData.shell.cwd.tags.type !== 'fsm'){
             throw new Error('not an fsm to trigger');
         }
-        globalData.shell.triggerEvent(values.shift(),values.shift(),globalData.shell.cwd.id);        },
+        globalData.shell.triggerEvent(values.shift(),values.shift(),globalData.shell.cwd.id);        }
 
     
 };

@@ -6,7 +6,7 @@ import _ from 'lodash';
      @implements module:Commands/CommandTemplate
      */
     let TraceCommands = {
-        /** draw 
+        /** draw
             @param globalData
             @param values
         */
@@ -15,19 +15,19 @@ import _ from 'lodash';
             //     TraceDrawing.drawTraces(globalData,globalData.lastTraces);
             // }
         },
-        /** cleanup 
+        /** cleanup
             @param globalData
             @param values
         */
         "cleanup" : function(globalData,values){
             ////TraceDrawing.cleanup();
         },
-        /** Expand a trace of a node 
+        /** Expand a trace of a node
             @param globalData
             @param {Array} values of [amt,nodeId]
         */
         "trace" : function(globalData,values){
-            let amt = !isNaN(parseInt(values[0])) ? Array(parseInt(values.shift())).fill(0) : [0],
+            let amt = !isNaN(parseInt(values[0], 10)) ? Array(parseInt(values.shift(), 10)).fill(0) : [0],
                 curNode = values[0] !== undefined ? globalData.shell.getNode(values[0]) : globalData.shell.cwd,
                 returnVals = amt.map(()=>globalData.shell.traceNode(curNode));
             console.log("Trace Result:",returnVals);
@@ -37,7 +37,7 @@ import _ from 'lodash';
                 values : returnVals
             };
         },
-        /** Convert trace variables to children 
+        /** Convert trace variables to children
             @param globalData
             @param values
         */
@@ -53,8 +53,8 @@ import _ from 'lodash';
                     globalData.shell.addNode(matchResult[1],"child");
                 }
                 matchResult = varRegex.exec(message);
-            }            
-        },
+            }
+        }
     };
 export { TraceCommands };
 

@@ -6,7 +6,7 @@ import _ from 'lodash';
      @implements module:Commands/CommandTemplate
      */
     let reteCommands = {
-        /** Draw rete results 
+        /** Draw rete results
             @param globalData
             @param values
         */
@@ -27,7 +27,7 @@ import _ from 'lodash';
             //     }
             // }
         },
-        /** cleanup 
+        /** cleanup
             @param globalData
             @param values
         */
@@ -51,7 +51,7 @@ import _ from 'lodash';
                 delete globalData.modeState.rete.log;
             }
             
-        },        
+        },
         /** Compile All Rules in the Graph into the ReteNet
             @param globalData
             @param values
@@ -78,7 +78,7 @@ import _ from 'lodash';
                 globalData.shell.reteNet.scheduleAction(values[0]);
             }
         },
-        /** Retract wmes from the retenet 
+        /** Retract wmes from the retenet
             @param globalData
             @param values
         */
@@ -86,7 +86,7 @@ import _ from 'lodash';
             console.log("Retracting rete:",values);
             globalData.shell.retractWMEs(values);
         },
-        /** Step the retenet forwards 
+        /** Step the retenet forwards
             @param globalData
             @param values
         */
@@ -96,7 +96,7 @@ import _ from 'lodash';
             //todo: draw the actions being performed this step
 
         },
-        /** Clear the retenet 
+        /** Clear the retenet
             @param globalData
             @param values
         */
@@ -104,14 +104,14 @@ import _ from 'lodash';
             globalData.shell.clearRete();
 
         },
-        /** print Rete 
+        /** print Rete
             @param globalData
             @param values
         */
         "printRete" : function(globalData,values){
             console.log(globalData.shell.reteNet);
         },
-        /** help 
+        /** help
             @param globalData
             @param values
         */
@@ -123,6 +123,6 @@ import _ from 'lodash';
                 "printRete" : ["", "Print to console the retenet object for debugging"],
                 "clearRete" : ["","Reset the rete net, removing wmeId's from any asserted nodes"]
             };
-        },
+        }
     };
 export { reteCommands };
