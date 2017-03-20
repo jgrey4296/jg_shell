@@ -78,7 +78,6 @@ GraphNode.prototype.getChildren = function(){
 GraphNode.prototype.toJSONCompatibleObj = function(){
     let returnObj = {
         id : this.id,
-        name: this._name,
         parent: this.parentId,
         edges : Array.from(this._edges),
         values : Array.from(this._values),
@@ -151,11 +150,11 @@ GraphNode.prototype.hasEdgeWith = function(id){
 };
 
 GraphNode.prototype.name = function(){
-    return this._name;
+    return this.getValue('name');
 };
 
 GraphNode.prototype.setName = function(newName){
-    this._name = newName;
+    this.setValue('name',newName);
     return this;
 };
 
