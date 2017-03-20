@@ -421,7 +421,7 @@ Shell.prototype.printState = function(){
     let node = this.cwd(),
         inputs = node.getParents(),
         outputs = node.getChildren(),
-        prevSearches = this._searchResults,
+        prevSearches = _.clone(this._searchResults),
         currPath = this.getPath(),
         stash = this.getStash();
         
