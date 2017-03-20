@@ -25,5 +25,21 @@ Edge.prototype.connectedTo = function(id){
     return this.source.id === id || this.dest.id === id;
 };
 
+Edge.prototype.idMatches = function(id, type){
+    if (/dest/.test(type)){
+        return this.idMatchesDestination(id);
+    } else if (/source/.test(type)){
+        return this.idMatchesSource(id);
+    }
+    throw new Error(`IdMatches was passed an unexpected edge type: ${type}`);
+};
+
+Edge.prototype.idMatchesSource = function(id){
+    return this.source.id === id;
+};
+
+Edge.prototype.idMatchesDestination = function(id){
+    return this.dest.id === id;
+};
 
 export { Edge };
