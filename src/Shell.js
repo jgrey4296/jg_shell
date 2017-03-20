@@ -173,7 +173,6 @@ Shell.prototype.get = function(id){
     if ( this.has(Number(id)) ){
         return this._nodes.get(Number(id));
     }
-    console.log(this);
     throw new Error(`Node ${id} does not exist`);
 };
 
@@ -221,7 +220,7 @@ Shell.prototype.reteOutput = function(){
     return Array.from(this._reteOutput);
 };
 
-Shell.prototype.link = function(id, destType, sourceType, sourceId){
+Shell.prototype.link = function(id, destType, sourceType, sourceId=undefined){
     let source = sourceId ? this.get(sourceId) : this.cwd(),
         nodeToLinkTo = this.get(id);
     source.setEdge(nodeToLinkTo.id,
@@ -249,7 +248,7 @@ Shell.prototype.link = function(id, destType, sourceType, sourceId){
 };
 
 
-Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelations,sourceId){
+Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelations,sourceId=undefined){
     //get the node to link to
     let source = sourceId ? this.get(sourceId) : this.cwd();
     //Configure defaults if necessary:
