@@ -255,6 +255,7 @@ describe("Shell Interface:", function() {
             node1.hasEdgeWith(newNodeId2).should.be.true;
             node2.hasEdgeWith(newNodeId1).should.be.true;
         });
+        
         it('Should complain on trying to link a node to a non-existent node',function(){
             let newNodeId1 = this.shell.addNode('test1');
             expect(()=>{

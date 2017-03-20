@@ -14,7 +14,7 @@ describe ("General Node Tests :", function() {
             let node = new GraphNode();
             expect(node).to.exist;
             node.name().should.equal('anon');
-            node.numOfEdges().should.equal(1);
+            node.numOfEdges().should.equal(0);
         });
 
         it("Should be nameable", function(){
@@ -25,7 +25,7 @@ describe ("General Node Tests :", function() {
         it("Should be able to set edges", function(){
             let node = new GraphNode();
             node.setEdge(1,{ id: 1 }, {}, {id: null});
-            node.numOfEdges().should.equal(2);
+            node.numOfEdges().should.equal(1);
         });
 
         it("Should complain on lacking edge data", function(){
@@ -54,7 +54,7 @@ describe ("General Node Tests :", function() {
         it("Should be able to get an edge out of a node", function(){
             let node = new GraphNode();
             node.setEdge(1,{id: 1}, {}, {id: null});
-            node.numOfEdges().should.equal(2);
+            node.numOfEdges().should.equal(1);
             let edge = node.getEdgeTo(1);
             expect(edge).to.exist;
             edge.should.be.an.instanceof(Edge);

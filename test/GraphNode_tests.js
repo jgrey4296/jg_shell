@@ -11,7 +11,7 @@ describe ("GraphNode", function() {
     it("exists", function() {
         let aNode = new GraphNode();
         should.exist(aNode);
-        aNode.should.have.property('id').equals(0);
+        aNode.should.have.property('id').equals(1);
     });
 
     it("Should be creatable from an overridden id",function(){
@@ -26,7 +26,9 @@ describe ("GraphNode", function() {
             converted = aNode.toJSONCompatibleObj();
         expect(converted).to.exist;
         converted.should.have.property('id');
-        converted.should.have.property('parent');
+        converted.should.have.property('edges');
+        converted.should.have.property('values');
+        converted.should.have.property('tags');
         converted.id.should.equal(aNode.id);
     });
 
@@ -53,7 +55,6 @@ describe ("GraphNode", function() {
         aNode.setValue('bloo','something');
         let values = aNode.values();
         values.should.deep.equal([['name','test'],
-                                  ['_parentId',aNode.id],
                                   ['blah',10],
                                   ['bloo','something']]);
                                   
