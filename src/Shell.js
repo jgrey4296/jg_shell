@@ -16,8 +16,7 @@ import * as CStructs from './Commands/CommandStructures';
 */
 class Shell {
     constructor(ReteActionsToRegister){
-        this._root = new GraphNode('_root');
-        this._root.parentId = this._root.id;
+        this._root = new GraphNode('_root', -1);
         this._nodes = new Map();
         this.set(this._root);
         this._ruleIds = [];
@@ -50,51 +49,72 @@ Shell.prototype.parse = function(string){
         console.log('Bad Parse:',result);
         return null;
     }
-    console.log('Parsed: ',result);
     result = result.value;
-    switch (result.constructor){
+    return this.actOnParse(result);
+};
+
+Shell.prototype.actOnParse = function(action){
+    switch (action.constructor){
         case CStructs.Cd:
-            this.cdByString(result.id);
+            this.cdByString(action.id);
             break;
         case CStructs.Rm:
-            result.ids.forEach((d)=>{
+            action.ids.forEach((d)=>{
                 this.rm(d);
             });
             break;
         case CStructs.Mk:
-            result.names.forEach((name)=>{
+            action.names.forEach((name)=>{
                 this.addNode(name);
             });
             break;
         case CStructs.Link:
-            this.link(result.destId,'child','parent',result.sourceId);
+            this.link(action.destId,'child','parent',action.sourceId);
             break;
         case CStructs.SetTag:
-            this.cwd().tagToggle(result.tagName);
+            this.cwd().tagToggle(action.tagName);
             break;
         case CStructs.SetValue:
-            this.cwd().setValue(result.valName,result.value);
+            this.cwd().setValue(action.valName,action.value);
             break;
         case CStructs.Search:
-            this.search(result.type,result.variable,result.value);
+            this.search(action.type,action.variable,action.value);
             break;
         case CStructs.Refine:
-            this.refine(result.type,result.variable,result.value);
+            this.refine(action.type,action.variable,action.value);
             break;
         case CStructs.Apply:
-            throw new Error('Unimplemented: Apply');
-            //break;
+            this.actOnSearchResults(action);
+            break;
         case CStructs.Import:
-            this.import(result.text);
+            this.import(action.text);
             break;
         case CStructs.Unparameterised:
-            return this.processUnparameterisedCommand(result);
+            return this.processUnparameterisedCommand(action);
             //break;
         default:
             throw new Error('Unrecognised command parsed');
     }
     return null;
 };
+
+Shell.prototype.actOnSearchResults = function(action){
+    let searchResults = this.searchResults(),
+        cwdRecall = this.cwd().id;
+    if (!(action instanceof CStructs.Apply)){
+        throw new Error('Instructed to apply, without passing a CStructs.Apply');
+    }
+    
+    if ( searchResults.length === 0){
+        throw new Error('Instructed to act on empty search results');
+    }
+    searchResults.forEach((d)=>{
+        this.cdById(d);
+        this.actOnParse(action.command);
+    });
+    this.cdById(cwdRecall);
+};
+
 
 //Deal with unparameterised commands
 Shell.prototype.processUnparameterisedCommand = function(command){
@@ -153,6 +173,7 @@ Shell.prototype.get = function(id){
     if ( this.has(Number(id)) ){
         return this._nodes.get(Number(id));
     }
+    console.log(this);
     throw new Error(`Node ${id} does not exist`);
 };
 
@@ -161,7 +182,8 @@ Shell.prototype.set = function(node){
         throw new Error('Cannot add a non-GraphNode');
     }
     if (this.has(node.id)){
-        throw new Error('Cannot replace already existing nodes');
+        console.log(this._nodes);
+        throw new Error(`Cannot replace already existing nodes: ${node.id}`);
     }
     this._nodes.set(node.id,node);
 };
@@ -313,7 +335,8 @@ Shell.prototype.export = function(){
 //importJson
 Shell.prototype.import = function(text){
     let loadedObj = JSON.parse(text);
-    this._nodes = new Map();
+    console.log('Loading data:',loadedObj);
+    this._nodes.clear();
     for (let nodeRep of loadedObj.nodes){
         let newNode = GraphNode.fromJSON(nodeRep);
         this.set(newNode);
@@ -408,9 +431,9 @@ Shell.prototype.help = function(){
 Shell.prototype.getPath = function(){
     let path : Array<[string, number]> = [],
         current = this.cwd();
-    while (current.id !== this._root.id && current.parentId !== current.id){
+    while (current.id !== this._root.id && current.getValue('_parentId') !== current.id){
         path.unshift([current.name(), current.id]);
-        current = this.get(current.parentId);
+        current = this.get(current.getValue('_parentId'));
     }
     path.unshift([this._root.name(), this._root.id]);
     return path;
