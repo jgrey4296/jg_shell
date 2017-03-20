@@ -295,12 +295,17 @@ Shell.prototype.getStash = function(){
 Shell.prototype.export = function(){
     let nodes = [];
     for (let node of this._nodes.values()){
-        nodes.append(node.toJSONCompatibleObj());
+        nodes.push(node.toJSONCompatibleObj());
     }
-    return JSON.stringify({
+    let jsonString = JSON.stringify({
         nodes: nodes,
         root : this._root.id
     });
+
+    return {
+        description: 'json',
+        text : jsonString
+    };
 };
 
 //importJson
@@ -347,6 +352,10 @@ Shell.prototype.bfs = function(){
 
 //Help:
 Shell.prototype.help = function(){
+    let data = {
+        description: "help"
+    };
+    
     throw new Error('Unimplemented: Help');
 };
 
@@ -371,6 +380,7 @@ Shell.prototype.printState = function(){
         stash = this.getStash();
         
     return {
+        description: 'stateDescription',
         inputs: inputs,
         node : node,
         outputs : outputs,
