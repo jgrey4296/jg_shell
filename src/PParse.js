@@ -19,17 +19,26 @@ let unparameterisedCmnds = "unstash stash root cwd help export prior clear",
 
 
 //Parameterised Command Literals
-let CD = PWS(P.string('cd')),
+//Short Command literals:
+let SHORT_TAG = P.string('#'),
+    SHORT_VAL = P.string('$'),
+    COLON = PWS(P.string(':')),
+    SHORT_LINK = P.string('>'),
+    SHORT_CD = P.string('@'),
+    SHORT_PRIOR = P.string('<'),
+    //long command literals
+    CD = PWS(P.alt(P.string('cd'),SHORT_CD)),
     MK = PWS(P.string('mk')),
     LINK = PWS(P.string('link')),
     RM = PWS(P.string('rm')),
     SET = PWS(P.string('set')),
-    TAG = PWS(P.string('tag')),
-    VALUE = PWS(P.string('value')),
+    TAG = PWS(P.alt(P.string('tag'),SHORT_TAG)),
+    VALUE = PWS(P.alt(P.string('value'),SHORT_VAL)),
     SEARCH = PWS(P.string('search')),
     REFINE = PWS(P.string('refine')),
     APPLY = PWS(P.string('apply')),
-    IMPORT = PWS(P.string('import'));
+    IMPORT = PWS(P.string('import')),
+    SELECT = PWS(P.string('select'));
 
 
 //Values
@@ -49,32 +58,35 @@ let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
                                      (r,f)=>RegExp(r,f))).skip(P.optWhitespace);
 
 //Actual commands:
-
 let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     mk_cmd = MK.then(str_val.many()).map((rs)=>new CStructs.Mk(...rs)),
     link_cmd = LINK.then(P.seqMap(id,id,(src,tgt)=>new CStructs.Link(src,tgt))),
     rm_cmd = RM.then(id.many()).map((ids)=>new CStructs.Rm(...ids)),
-    set_tag_cmd = SET.then(TAG).then(str_val).map((r)=>new CStructs.SetTag(r)),
+    set_tag_cmd = SET.then(TAG).then(str_val.many()).map((r)=>new CStructs.SetTag(r)),
     set_val_cmd = SET.then(VALUE).then(P.seqMap(str_val,com_vals,(a,b)=>new CStructs.SetValue(a,b))),
     import_cmd = IMPORT.then(P.all).map((t)=>new CStructs.Import(t)),
-    //Searching:
-    search_cmd_short = SEARCH.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Search(v,r))),
+    //Short commands
+    short_tag_cmd = SHORT_TAG.then(str_val).map((r)=>new CStructs.SetTag([r])),
+    short_val_cmd = SHORT_VAL.then(P.seqMap(str_val.skip(COLON),
+                                            com_vals,
+                                            (a,b)=>new CStructs.SetValue(a,b))),
+    short_link_cmd = P.seqMap(id.skip(SHORT_LINK),
+                              id,
+                              (src,tgt)=>new CStructs.Link(src,tgt)),
+    short_cd_cmd = SHORT_CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
+    short_prior_cmd = SHORT_PRIOR.then(P.eof).map(()=>new CStructs.Unparameterised('prior'));
+
+//Searching and Refining:
+//Searching:
+let search_cmd_short = SEARCH.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Search(v,r))),
     search_cmd_long = SEARCH.then(P.seqMap(str_val,P.alt(str_val,regex),P.alt(id,regex),(v,r,r2)=>new CStructs.Search(v,r,r2))),
     //Refining:
     refine_cmd_short = REFINE.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Refine(v,r))),
     refine_cmd_long = REFINE.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Refine(v,r,r2)));
 
+    
 
-
-//TODO: Shortened versions of the commands
-//set tag => #tag
-//set var val => $var = val
-//search tag => search #
-//search value => search $
-
-
-
-
+//Aggregates
 let cmd_list = P.alt(mk_cmd,
                      link_cmd,
                      rm_cmd,
@@ -86,9 +98,18 @@ let cmd_list = P.alt(mk_cmd,
                      refine_cmd_short
                     );
 
-let apply_cmd = APPLY.then(cmd_list).map((cmd)=>new CStructs.Apply(cmd));
+let short_cmd_list = P.alt(short_tag_cmd,
+                           short_val_cmd,
+                           short_link_cmd,
+                           short_cd_cmd,
+                           short_prior_cmd);
 
-let ROOT = P.alt(apply_cmd, cd_cmd, import_cmd, UPP_Results, cmd_list);
+
+
+
+let apply_cmd = APPLY.then(P.alt(short_cmd_list,cmd_list)).map((cmd)=>new CStructs.Apply(cmd));
+
+let ROOT = P.alt(apply_cmd, short_cmd_list, cd_cmd, import_cmd, UPP_Results, cmd_list);
 
 export { ROOT as parser };
 
