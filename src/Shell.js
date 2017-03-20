@@ -324,19 +324,63 @@ Shell.prototype.import = function(text){
 
 //Sim
 
-//Search
-Shell.prototype.search = function(type,variable,value){
+//Search, value is nullable, returns nothing, side effect: this._searchResults
+Shell.prototype.search = function(type,variable,value,refine=false){
+    let searchBase = [];
+    if (!refine){
+        searchBase = Array.from(this._nodes.values());
+    } else {
+        searchBase = this._searchResults.map((d)=>this.get(d));
+    }
     //go through all nodes, filtering by the tag/varName/varName+varValue
+    switch (type) {
+        case 'name': { //'name', regex, null
+            if (value !== null || !(variable instanceof RegExp) ){
+                throw new Error('Incorrect Name Search');
+            }
+            let nodes = searchBase.filter((d)=>variable.test(d.name()));
+            this._searchResults = nodes.map((d)=>d.id);
+        }
+            break;
+        case 'tag': { //'tag', regex, null
+            if (value !== null || !(variable instanceof RegExp)){
+                throw new Error('Incorrect Tag Search');
+            }
+            console.log('Searching for a tag:');
+            let nodeTagPairs = searchBase.map((d)=>[d.id,d.tags()]),
+                filteredPairs = nodeTagPairs.filter(([id,tags])=>_.some(tags,(x)=>variable.test(x))),
+                finalIds = filteredPairs.map(([id,tags])=>id);
+            this._searchResults = finalIds;
+        }
+            break;
+        case 'value': { //'value', regex, regex
+            if (value === null || !(variable instanceof RegExp) || !(value instanceof RegExp)){
+                throw new Error('Incorrect Value Search');
+            }
+            //get all nodes with passing value names
+            let variableMatches = searchBase.filter((d)=>{
+                return _.some(d.values(),([vi,va])=>variable.test(vi) && value.test(va));
+            });
+            this._searchResults = variableMatches.map((d)=>d.id);
+        }
+            break;
+        case 'edge': { //'edge', 'dest'/'source', id
+            if (value === null || !(/dest|source/.test(variable))){
+                throw new Error('Incorrect Edge Search');
+            }
+            //filter all nodes by their edges, with the id in the dest/source slot
+            let linkedNodes = searchBase.filter((d)=>d.hasEdgeWith(value) && d.getEdgeTo(value).idMatches(value,variable));
+            this._searchResults = linkedNodes.map((d)=>d.id);
+        }
+            break;
+        default:
+            throw new Error('Incorrect Search Specified');
+    }
 
-    //store the results
-    this._searchResults = [];
 };
 
 Shell.prototype.refine = function(type,variable,value){
-    //same as search, but operating on _searchResults instead of all nodes
-
-    
-    this._searchResults = [];
+    return this.search(type,variable,value,true);
 };
 
 //Graph search
