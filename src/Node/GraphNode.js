@@ -19,7 +19,7 @@ let nextId = 1;
    @alias GraphNode
 */
 class GraphNode{
-    constructor(name,parentId,overRideId=null){
+    constructor(name=null,parentId=null,overRideId=null){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         name = name || "anon";
         this.id = overRideId || nextId++;
@@ -102,10 +102,11 @@ GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
         destData.id = this.id;
     }
     if (id !== sourceData.id && id !== destData.id){
-        console.log(sourceData,destData);
+        console.log("Inconsistent Edge data:",sourceData,destData);
         throw new Error('Specified an id for an edge that is inconsistent');
     }
     if (this.id !== sourceData.id && this.id !== destData.id){
+        console.log('Unconnected Target node:'.sourceData,destData); 
         throw new Error('Specified an edge unconnected to the targeted node');
     }
     
