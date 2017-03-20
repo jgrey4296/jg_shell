@@ -47,8 +47,10 @@ class Shell {
 Shell.prototype.parse = function(string){
     let result = this._parser.parse(string);
     if (result.status === false){
+        console.log('Bad Parse:',result);
         return null;
     }
+    console.log('Parsed: ',result);
     result = result.value;
     switch (result.constructor){
         case CStructs.Cd:
