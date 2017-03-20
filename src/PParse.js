@@ -12,7 +12,7 @@ let OWS = ( parser ) => { return P.optWhitespace.then(parser).skip(P.optWhitespa
     WPW = ( parser ) => { return P.whitespace.then(parser).skip(P.whitespace); };
 
 //Simple unparameterised parsing:
-let unparameterisedCmnds = "unstash stash root cwd help export prior",
+let unparameterisedCmnds = "unstash stash root cwd help export prior clear",
     unParParsers = P.alt(...unparameterisedCmnds.split(' ').map(d=>P.string(d))),
     UPP_Results = unParParsers.map((r)=>new CStructs.Unparameterised(r));
 
@@ -41,7 +41,7 @@ let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
     com_vals = P.alt(str_val,str_lit,num).skip(P.optWhitespace),
     //Regular expression... regex:
     regex_term = P.string('/'),
-    regex_core = P.regex(/[ a-zA-Z'"0-9-+=_!@#$%^&*()\[\]]+/),
+    regex_core = P.regex(/[ .a-zA-Z'"0-9-+=_!@#$%^&*()\[\]|]+/),
     regex_flags = P.regex(/[gimuy]*/),
     regex = regex_term.then(P.seqMap(regex_core.skip(regex_term),
                                      regex_flags.skip(regex_term),
@@ -55,14 +55,23 @@ let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     rm_cmd = RM.then(id.many()).map((ids)=>new CStructs.Rm(...ids)),
     set_tag_cmd = SET.then(TAG).then(str_val).map((r)=>new CStructs.SetTag(r)),
     set_val_cmd = SET.then(VALUE).then(P.seqMap(str_val,com_vals,(a,b)=>new CStructs.SetValue(a,b))),
+    import_cmd = IMPORT.then(P.all).map((t)=>new CStructs.Import(t)),
+    //Searching:
     search_cmd_short = SEARCH.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Search(v,r))),
-    search_cmd_long = SEARCH.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Search(v,r,r2))),
+    search_cmd_long = SEARCH.then(P.seqMap(str_val,P.alt(str_val,regex),P.alt(id,regex),(v,r,r2)=>new CStructs.Search(v,r,r2))),
+    //Refining:
     refine_cmd_short = REFINE.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Refine(v,r))),
-    refine_cmd_long = REFINE.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Refine(v,r,r2))),
-    import_cmd = IMPORT.then(P.all()).map((t)=>new CStructs.Import(t));
+    refine_cmd_long = REFINE.then(P.seqMap(str_val,regex,regex,(v,r,r2)=>new CStructs.Refine(v,r,r2)));
+
 
 
 //TODO: Shortened versions of the commands
+//set tag => #tag
+//set var val => $var = val
+//search tag => search #
+//search value => search $
+
+
 
 
 let cmd_list = P.alt(mk_cmd,
