@@ -34,7 +34,7 @@ class Link{
 class SetTag {
     //set the tag of a node
     constructor(tagName){
-        this.tagName = tagName;
+        this.tagNames = tagName;
     }
 }
 
@@ -82,7 +82,7 @@ class Import {
 
 
 class Unparameterised{
-    //stash/unstash/root/cwd/help/export
+    //stash/unstash/root/cwd/help/export/prior/clear/select
     constructor(name){
         this.name = name;
     }
