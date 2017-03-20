@@ -13,7 +13,7 @@ let OWS = ( parser ) => { return P.optWhitespace.then(parser).skip(P.optWhitespa
     WPW = ( parser ) => { return P.whitespace.then(parser).skip(P.whitespace); };
 
 //Simple unparameterised parsing:
-let unparameterisedCmnds = "unstash stash root cwd help export prior clear",
+let unparameterisedCmnds = "unstash stash root cwd help export prior clear select",
     unParParsers = P.alt(...unparameterisedCmnds.split(' ').map(d=>P.string(d))),
     UPP_Results = unParParsers.map((r)=>new CStructs.Unparameterised(r));
 
@@ -37,8 +37,8 @@ let SHORT_TAG = P.string('#'),
     SEARCH = PWS(P.string('search')),
     REFINE = PWS(P.string('refine')),
     APPLY = PWS(P.string('apply')),
-    IMPORT = PWS(P.string('import')),
-    SELECT = PWS(P.string('select'));
+    IMPORT = PWS(P.string('import'));
+
 
 
 //Values
