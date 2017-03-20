@@ -21,24 +21,26 @@ let nextId = 0;
 class GraphNode{
     constructor(name,parentId,overRideId=null){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
-        
+        name = name || "anon";
         this.id = overRideId || nextId++;
         if (overRideId && overRideId > nextId){
             nextId = overRideId + 1;
         }
-        this._name = name || 'anon';
         //Map<id,Edge[]>
         this._edges = new Map();
-        //todo: place into _edges with correct properties
-        this.parentId = parentId;
         //Map<id,string|number>
         this._values = new Map();
         //Set<string>
         this._tags = new Set();
         this.minimised = false;
-        
-        this._tags.add('graphnode');
-
+      
+        this.tag('graphnode');
+        this.setValue('name',name);
+        if(parentId == undefined){
+            parentId = this.id;
+        }
+        this.setEdge(parentId,{ id: parentId }, {}, { id: this.id });
+        this.setValue('_parentId',parentId);
     }
 }
 
