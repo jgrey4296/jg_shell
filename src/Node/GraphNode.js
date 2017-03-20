@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { util } from '../utils';
 import { Edge } from '../Edge';
 
-let nextId = 0;
+let nextId = 1;
 
 //TODO: create an edge data structure.
 //of form start->edgeData->end
@@ -33,22 +33,23 @@ class GraphNode{
         //Set<string>
         this._tags = new Set();
         this.minimised = false;
-      
+        
         this.tag('graphnode');
         this.setValue('name',name);
-        if(parentId == undefined){
+        if (parentId === -1){
             parentId = this.id;
         }
-        this.setEdge(parentId,{ id: parentId }, {}, { id: this.id });
-        this.setValue('_parentId',parentId);
+        if (parentId !== undefined && parentId !== null){
+            this.setEdge(parentId,{ id: parentId }, {}, { id: this.id });
+            this.setValue('_parentId',parentId);
+        }
     }
 }
 
 GraphNode.fromJSON = function(obj){
     let newNode = new GraphNode(null,
-                                obj.parent,
-                                obj.id
-                               );
+                                null,
+                                obj.id);
     
     for (let [id,edge] of obj.edges){
         let newEdge = Edge.fromJSON(edge),
@@ -78,7 +79,6 @@ GraphNode.prototype.getChildren = function(){
 GraphNode.prototype.toJSONCompatibleObj = function(){
     let returnObj = {
         id : this.id,
-        parent: this.parentId,
         edges : Array.from(this._edges),
         values : Array.from(this._values),
         tags : Array.from(this._tags)
@@ -102,6 +102,7 @@ GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
         destData.id = this.id;
     }
     if (id !== sourceData.id && id !== destData.id){
+        console.log(sourceData,destData);
         throw new Error('Specified an id for an edge that is inconsistent');
     }
     if (this.id !== sourceData.id && this.id !== destData.id){
