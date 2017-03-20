@@ -26,7 +26,7 @@
                                                                 this.priority
                                                                );
                 
-                return proposedAction;        
+                return proposedAction;
                 
             },
             perform : function(proposedAction,reteNet){
