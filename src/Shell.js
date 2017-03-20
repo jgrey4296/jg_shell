@@ -96,7 +96,6 @@ Shell.prototype.parse = function(string){
 
 //Deal with unparameterised commands
 Shell.prototype.processUnparameterisedCommand = function(command){
-    //console.log(`Received command: ${command.name}`);
     switch (command.name){
         case 'export':
             return this.export();
