@@ -118,6 +118,9 @@ Shell.prototype.processUnparameterisedCommand = function(command){
         case 'prior':
             this.cdById(this.prior());
             break;
+        case 'clear':
+            this._searchResults = [];
+            break;
         default:
             throw new Error(`Unrecognised Unparameterised Command: ${command.name}`);
     }
