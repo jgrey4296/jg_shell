@@ -12,16 +12,22 @@ describe ("GraphNode", function() {
         let aNode = new GraphNode();
         should.exist(aNode);
         aNode.should.have.property('id').equals(0);
-        aNode.should.have.property('_name').equals('anon');
     });
 
+    it("Should be creatable from an overridden id",function(){
+        let anotherNode = new GraphNode('blah',0,15),
+            postNode = new GraphNode('bloo');
+        anotherNode.id.should.equal(15);
+        postNode.id.should.equal(16);            
+    });
+    
     it("should be convertable to json",function(){
         let aNode = new GraphNode('test'),
             converted = aNode.toJSONCompatibleObj();
         expect(converted).to.exist;
         converted.should.have.property('id');
+        converted.should.have.property('parent');
         converted.id.should.equal(aNode.id);
-        converted.name.should.equal(aNode.name());
     });
 
     it("Should be able to create edges",function(){
