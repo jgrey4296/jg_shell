@@ -72,7 +72,7 @@ Shell.prototype.actOnParse = function(action){
             this.link(action.destId,'child','parent',action.sourceId);
             break;
         case CStructs.SetTag:
-            this.cwd().tagToggle(action.tagName);
+            action.tagNames.forEach((t)=>this.cwd().tagToggle(t));
             break;
         case CStructs.SetValue:
             this.cwd().setValue(action.valName,action.value);
@@ -142,6 +142,9 @@ Shell.prototype.processUnparameterisedCommand = function(command){
             break;
         case 'clear':
             this._searchResults = [];
+            break;
+        case 'select':
+            this._searchResults.push(this.cwd().id);
             break;
         default:
             throw new Error(`Unrecognised Unparameterised Command: ${command.name}`);
