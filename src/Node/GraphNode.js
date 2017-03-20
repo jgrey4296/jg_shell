@@ -45,7 +45,7 @@ class GraphNode{
 }
 
 GraphNode.fromJSON = function(obj){
-    let newNode = new GraphNode(obj.name,
+    let newNode = new GraphNode(null,
                                 obj.parent,
                                 obj.id
                                );
