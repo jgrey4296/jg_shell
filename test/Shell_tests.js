@@ -59,10 +59,10 @@ describe("Shell Interface:", function() {
     describe("Addition:", function(){
         it('Should be able to add a child to the root',function(){
             this.shell.length().should.equal(1);
-            this.shell.root().numOfEdges().should.equal(0);
+            this.shell.root().numOfEdges().should.equal(1);
             let newNodeId = this.shell.addNode('test','child');
             this.shell.length().should.equal(2);
-            this.shell.root().numOfEdges().should.equal(1);
+            this.shell.root().numOfEdges().should.equal(2);
             this.shell.root().hasEdgeWith(newNodeId).should.be.true;
             this.shell.get(newNodeId).name().should.equal('test');
             expect(this.shell.root().getEdgeTo(newNodeId)).should.exist;
@@ -81,18 +81,18 @@ describe("Shell Interface:", function() {
         
         it('Should be able to add multiple children to the root',function(){
             this.shell.length().should.equal(1);
-            this.shell.root().numOfEdges().should.equal(0);
+            this.shell.root().numOfEdges().should.equal(1);
             let newNodeId1 = this.shell.addNode('test','child'),
                 newNodeId2 = this.shell.addNode('other_test','child');
             this.shell.length().should.equal(3);
-            this.shell.root().numOfEdges().should.equal(2);
+            this.shell.root().numOfEdges().should.equal(3);
             this.shell.root().hasEdgeWith(newNodeId1).should.be.true;
             this.shell.root().hasEdgeWith(newNodeId2).should.be.true;
             
         });
         it('Should be able to add a parent to a node',function(){
             this.shell.length().should.equal(1);
-            this.shell.root().numOfEdges().should.equal(0);
+            this.shell.root().numOfEdges().should.equal(1);
             let newNodeId = this.shell.addNode('test','parent');
             this.shell.length().should.equal(2);
             this.shell.root().hasEdgeWith(newNodeId).should.be.true;
@@ -144,10 +144,10 @@ describe("Shell Interface:", function() {
 
     describe("Deletion:", function(){
         it('Should be able to remove a node',function(){
-            this.shell.cwd().numOfEdges().should.equal(0);
+            this.shell.cwd().numOfEdges().should.equal(1);
             let newNodeId = this.shell.addNode();
             
-            this.shell.cwd().numOfEdges().should.equal(1);
+            this.shell.cwd().numOfEdges().should.equal(2);
             this.shell.cwd().hasEdgeWith(newNodeId);
             this.shell.get(newNodeId).hasEdgeWith(this.shell.cwd().id);
             this.shell.get(newNodeId).numOfEdges().should.equal(1);
@@ -157,7 +157,7 @@ describe("Shell Interface:", function() {
             
             this.shell.length().should.equal(1);
             this.shell.cwd().id.should.not.equal(newNodeId);
-            this.shell.cwd().numOfEdges().should.equal(0);
+            this.shell.cwd().numOfEdges().should.equal(1);
         });
 
         //todo
@@ -191,10 +191,12 @@ describe("Shell Interface:", function() {
             this.shell.get(newNodeId).name().should.equal('test');
         });
         it('Should be able to add values to the node',function(){
-            this.shell.cwd().values().length.should.equal(0);
+            this.shell.cwd().values().length.should.equal(2);
             this.shell.cwd().setValue('blah','test');
-            this.shell.cwd().values().length.should.equal(1);
-            this.shell.cwd().values().should.deep.equal([['blah','test']]);
+            this.shell.cwd().values().length.should.equal(3);
+            this.shell.cwd().values().should.deep.equal([['name','_root'],
+                                                         ['_parentId',this.shell.cwd().id],
+                                                         ['blah','test']]);
             this.shell.cwd().getValue('blah').should.equal('test');
             
         });
@@ -205,10 +207,12 @@ describe("Shell Interface:", function() {
             this.shell.cwd().getValue('blah').should.equal('other');
         });
         it('Should be able to remove values from a node',function(){
+            this.shell.cwd().values().length.should.equal(2);
             this.shell.cwd().setValue('blah','test');
+            this.shell.cwd().values().length.should.equal(3);
             this.shell.cwd().getValue('blah').should.equal('test');
             this.shell.cwd().setValue('blah');
-            this.shell.cwd().values().length.should.equal(0);
+            this.shell.cwd().values().length.should.equal(2);
         });
         
         it('Should be able to add tags to a node',function(){

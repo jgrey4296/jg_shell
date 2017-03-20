@@ -259,7 +259,7 @@ Shell.prototype.cdByString = function(str){
         return;
     }
     if (str.match(/\.\./) !== null){
-        this.cdById(this.cwd().parentId);
+        this.cdById(this.cwd().getValue('_parentId'));
     } else {
         //Is a String. Find a local node of the correct name to move to
         throw new Error(`Unimplemented: ${str}`);

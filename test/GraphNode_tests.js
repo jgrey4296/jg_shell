@@ -46,7 +46,11 @@ describe ("GraphNode", function() {
         aNode.getValue('blah').should.equal(10);
         aNode.setValue('bloo','something');
         let values = aNode.values();
-        values.should.deep.equal([['blah',10],['bloo','something']]);
+        values.should.deep.equal([['name','test'],
+                                  ['_parentId',aNode.id],
+                                  ['blah',10],
+                                  ['bloo','something']]);
+                                  
         
     });
 
