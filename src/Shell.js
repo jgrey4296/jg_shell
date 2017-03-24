@@ -5,7 +5,6 @@ import { getCtor } from './Node/Constructors';
 import { util } from './utils';
 import { parser } from './PParse';
 import * as CStructs from './Commands/CommandStructures';
-//import { shellPrototype } from './ShellModules/shell_prototype_main';
 
 /**
    The Main Shell Class. Provides interaction with the Graph, and the ReteNet.
@@ -347,12 +346,21 @@ Shell.prototype.import = function(text){
     this._cwd = this._root;
 };
 
+//Include without overwriting
+Shell.prototype.extend = function(text){
+    //parse json,
+    //create nodes, without overriding the id,
+    //create a map of oldId => newId
+    //go through and modify all edges
+    //link root of new data to root()
+}
+
 //Rete
 
 //Sim
 
 //Search, value is nullable, returns nothing, side effect: this._searchResults
-Shell.prototype.search = function(type,variable,value,refine=false){
+Shell.prototype.search = function(type,variable,value=null,refine=false){
     let searchBase = [];
     if (!refine){
         searchBase = Array.from(this._nodes.values());
@@ -373,7 +381,6 @@ Shell.prototype.search = function(type,variable,value,refine=false){
             if (value !== null || !(variable instanceof RegExp)){
                 throw new Error('Incorrect Tag Search');
             }
-            console.log('Searching for a tag:');
             let nodeTagPairs = searchBase.map((d)=>[d.id,d.tags()]),
                 filteredPairs = nodeTagPairs.filter(([id,tags])=>_.some(tags,(x)=>variable.test(x))),
                 finalIds = filteredPairs.map(([id,tags])=>id);
@@ -381,17 +388,31 @@ Shell.prototype.search = function(type,variable,value,refine=false){
         }
             break;
         case 'value': { //'value', regex, regex
-            if (value === null || !(variable instanceof RegExp) || !(value instanceof RegExp)){
-                throw new Error('Incorrect Value Search');
+            if (variable instanceof RegExp && value !== null && value instanceof RegExp){
+                //get all nodes with passing value names
+                let variableMatches = searchBase.filter((d)=>{
+                    return _.some(d.values(),([vi,va])=>variable.test(vi) && value.test(va));
+                });
+                this._searchResults = variableMatches.map((d)=>d.id);
+            } else if ( variable instanceof RegExp && value == null){
+                let variableMatches = searchBase.filter((d)=>{
+                    return _.some(d.values(),([k,v])=>variable.test(k));
+                });
+                this._searchResults = variableMatches.map((d)=>d.id);
+                //TODO: add logic for value being an EXPRESSION
+            } else if (! (variable instanceof RegExp) && value == null){
+                let hasVariable = searchBase.filter((d)=>d.hasValue(variable));
+                this._searchResults = hasVariable.map((d)=>d.id);
+            } else if (! (variable instanceof RegExp) && value !== null && ! (value instanceof RegExp)){
+                let hasExactVariable = searchBase.filter((d)=>d.hasValue(variable) && d.getValue(variable) === value);
+                this._searchResults = hasExactVariable.map((d)=>d.id);
+            } else {
+                throw new Error("Unrecognised search attempt");
             }
-            //get all nodes with passing value names
-            let variableMatches = searchBase.filter((d)=>{
-                return _.some(d.values(),([vi,va])=>variable.test(vi) && value.test(va));
-            });
-            this._searchResults = variableMatches.map((d)=>d.id);
         }
             break;
         case 'edge': { //'edge', 'dest'/'source', id
+            //TODO: enable more edge types
             if (value === null || !(/dest|source/.test(variable))){
                 throw new Error('Incorrect Edge Search');
             }
@@ -446,7 +467,7 @@ Shell.prototype.printState = function(){
     let node = this.cwd(),
         inputs = node.getParents(),
         outputs = node.getChildren(),
-        prevSearches = _.clone(this._searchResults),
+        prevSearches = this.searchResults(),
         currPath = this.getPath(),
         stash = this.getStash();
         
