@@ -78,6 +78,7 @@ let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
 
 //Searching and Refining:
 //Searching:
+//TODO: add eval function for value searching, edge type specification
 let search_cmd_short = SEARCH.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Search(v,r))),
     search_cmd_long = SEARCH.then(P.seqMap(str_val,P.alt(str_val,regex),P.alt(id,regex),(v,r,r2)=>new CStructs.Search(v,r,r2))),
     //Refining:
