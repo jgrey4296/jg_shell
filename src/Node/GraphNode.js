@@ -171,6 +171,10 @@ GraphNode.prototype.setValue = function(key,value){
     return this;
 };
 
+GraphNode.prototype.hasValue = function(key){
+    return this._values.has(key);
+}
+
 GraphNode.prototype.getValue = function(key){
     if (!this._values.has(key)){
         throw new Error("Can't get a value for a non-existent key");
