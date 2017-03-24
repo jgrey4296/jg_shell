@@ -180,7 +180,8 @@ describe("Shell Interface:", function() {
         
         it('Should be able to remove a specific edge of a circular relation')
         
-        
+        it("Should be able to have multiple categories of edge");
+        it("Should be able to remove specify edge types"); 
     });
     
     describe("Modification:", function(){
@@ -320,18 +321,73 @@ describe("Shell Interface:", function() {
     });
     
     describe("Node Searching:", function(){
-        it('Should be able to search for a node by id');
-        it('Should be able to search for a node by name');
-        it('Should be able to search for a node by regex');
-        it('Should be able to search for a node by parameter name');
-        it('Should be able to search for a node by parameter value');
-        it('Should be able to search for a node by tag');
+        it('By Name,Regex,Null on trivial flat nodes ',function(){
+            this.shell.addNode("blah");
+            this.shell.addNode("bloo");
+            this.shell.addNode("awef");
+            this.shell.searchResults().should.be.empty;
+            this.shell.search('name',/^bl/);
+            this.shell.searchResults().length.should.equal(2);
+        });
+
+        it("By Name, Regex, Null with children", function(){
+            let blah = this.shell.addNode('blah'),
+                bloo = this.shell.addNode('bloo');
+            this.shell.cdById(blah);
+            this.shell.addNode('blab');
+            this.shell.cdById(bloo);
+            this.shell.addNode('blooob')
+            this.shell.addNode('awef');
+            this.shell.searchResults().should.be.empty;
+            this.shell.search('name',/^bl/);
+            this.shell.searchResults().length.should.equal(4);
+        });
+        it('By Tag, Regex, Null',function(){
+            let blah = this.shell.addNode('blah'),
+                bloo = this.shell.addNode('bloo');
+            this.shell.get(blah).tag('qwop');
+            this.shell.get(bloo).tag('awef');
+            this.shell.searchResults().should.be.empty;
+            this.shell.search('tag',/qw/);
+            this.shell.searchResults().length.should.equal(1);
+        });
+
+        it("By Value, Regex, Null", function(){
+            let blah = this.shell.addNode('blah'),
+                bloo = this.shell.addNode('bloo');
+            this.shell.get(blah).setValue('qwop',5);
+            this.shell.get(bloo).setValue('qwap',5);
+            this.shell.searchResults().should.be.empty;
+            this.shell.search('value',/qwo/);
+            this.shell.searchResults().length.should.equal(1);
+        });
+        
+        it('By Value, String, ExactVal',function(){
+            let blah = this.shell.addNode('blah'),
+                bloo = this.shell.addNode('bloo');
+            this.shell.get(blah).setValue('qwop',5);
+            this.shell.get(bloo).setValue('qwop',10);
+            this.shell.searchResults().should.be.empty;
+            this.shell.search('value','qwop',5);
+            this.shell.searchResults().length.should.equal(1);
+        });
+
+        it("By Value, regex, ExactVal");
+        it("By Value, String, Null");
+        it("By Value, String, EvalFunc");
+        it("By Value, RegExp, EvalFun");
+        it('By Tag, String, Null');
+        
         it('Searching should be able to retrieve multiple matching nodes');
         it('Should be able to search by parent nodes');
         it('Should be able to search by child nodes');
-        it('Should be able to search by generalised links');
-        it('Should be able to refine search results');
-                
+        it("Should be able to search by other specific edge types");
+        it('Should be able to search by edge regex');
+
+        describe("Should be able to refine by all the search methods above",function(){
+            
+        });
+        
     });
 
     describe("FSM:", function(){
@@ -358,15 +414,21 @@ describe("Shell Interface:", function() {
 
     describe("JSON:", function(){
 
-        describe("Import:", function(){
-            it('Should be able to create a shell instance from saved json data');
+        describe("Export and Import:", function(){
+            it('Should be able to export a trivial shell instance as json data',function(){
+                let root = this.shell.root();
+                root.hasValue('aValue').should.be.false;
+                root.setValue('aValue',"blah");
+                root.hasValue('aValue').should.be.true;
+                let exported = this.shell.export();
+                let aNewShell = new Shell();
+                aNewShell.root().hasValue('aValue').should.be.false;
+                aNewShell.import(exported.text);
+                aNewShell.root().hasValue('aValue').should.be.true;
+            });
+
         });
 
-        describe("Export:", function(){
-            it('Should be able to export a shell instance as json data');
-            
-        });
-        
     });
 
     describe("Rete:", function(){
