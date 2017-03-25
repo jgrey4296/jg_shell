@@ -1,4 +1,45 @@
 * Shell General Notes                                                           :design:architecture:shellAuthoring:
+** Redesign
+Moise uses Structural/Behavioural/Normative/Functional/Environmental Specifications
+Tracery uses expansion edges
+Expressionist uses expansion edges and tagging
+Versu uses EL spec of attributes, and fsm like structures?
+
+Rete uses rules of conditions and actions
+FSMs use 
+
+------------------------------
+Structural:
+Parents -> GraphNode -> Children
+
+FSM:
+States -> Event -> States
+Events -> State -> Events
+
+Rete:
+Conditions -> Rule -> Actions
+
+*its all edges, no need for a specific node type variation*
+
+
+------------------------------
+Edges:
+
+{id:5} -> {} -> {id:10}  :=: Node 10 :=: {id:10} -> {} -> {id:2}
+
+{id: 5, type: parent} -> {} -> {id:10 type:child} :=: node 10 ...
+{id: null, type: call, text:'capitalize'} -> {} -> {id: 10} :=: node 10 ...
+{id: 5, type:state} -> {id:12, type: event} -> {id: 10, type: state} :=: node 10 ...
+{id: 5, type: state} -> {} -> {id: 12, type:event} :=: node 12 ...
+{id: 2, type: instChain, instId: #235 } -> {} -> {id: 12, type: instChain, instId: #123} ...
+
+{id: 7, type: condition} -> {type: positive (/negated) } -> {id: 10} :=: node 10
+alt:
+{id: 7, type: instance} -> {id: 1, type:condition, tests: [], bindings:[]} -> {id: 10}
+
+{id: 10} -> {type: assert (/retract/modify) -> {id:14, type: action} :=: node 14
+
+
 ** General Usage
 *** Underlying model
 The underlying model of the shell is an object of id->node pairings
@@ -153,21 +194,6 @@ Author: John Grey Tue May 10 15:48:45 PDT 2016
 Tracing was modified to use the linkedNodes format, searching
 specifically for children of a node, and adapted to use the standard
 ${id} format instead of the old style $id format.
-* Moise notes                                                                   :norMAS:moise:architecture:
 
-*** Organisational Spec
-Description of components 
 
-Structural Spec - Roles, components etc
-Deontic/Normative Spec - link roles to permissions/obligations, 
-Functional Spec - Action/Activity descriptions
-Environment Spec - Physical interface
-
-Translation of roles -> actions as intersection of sets based on permission, environment etc
-*** Organisation Entity
-Instantiation of Spec.
-Map Agents -> Roles
-Track Agents -> Roles -> Activities
-
-*** Local Representation of Organisation
 
