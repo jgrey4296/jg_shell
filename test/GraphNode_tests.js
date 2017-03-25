@@ -2,7 +2,7 @@
 //Import * as aModule from '../src/aModule';
 import * as chai from 'chai';
 import _ from 'lodash';
-import { GraphNode} from '../src/Node/GraphNode';
+import GraphNode from '../src/Node/GraphNode';
 
 let should = chai.should(),
     expect = chai.expect;

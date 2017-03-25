@@ -2,9 +2,9 @@
 //Import * as aModule from '../src/aModule';
 import _ from 'lodash';
 import * as chai from 'chai';
-import { Shell } from '../src/Shell';
-import { GraphNode } from '../src/Node/GraphNode';
-import { ReteNet } from '../libs/rete';
+import Shell from '../src/Shell';
+import GraphNode from '../src/Node/GraphNode';
+import ReteNet from '../libs/rete';
 
 let should = chai.should(),
     expect = chai.expect;
