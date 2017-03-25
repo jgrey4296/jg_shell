@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { GraphNode } from './GraphNode';
+import GraphNode from './GraphNode';
 /**
     Aggregates the constructors toget
     @module Node/Constructors
@@ -21,5 +21,5 @@ let getCtor = function(name){
     return ctors.get("graphnode");
 };
 
-export { getCtor };
+export default getCtor;
 

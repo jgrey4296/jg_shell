@@ -8,6 +8,7 @@ import _ from 'lodash';
    @alias module:utils
 */
 let util = {};
+export default util;
 
 /**
    convert a string representation of an operator to its normal form
@@ -107,4 +108,3 @@ util.truncateDrawnText = function(d){
     }
 };
 
-export { util };

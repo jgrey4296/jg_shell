@@ -112,7 +112,7 @@ let apply_cmd = APPLY.then(P.alt(short_cmd_list,cmd_list)).map((cmd)=>new CStruc
 
 let ROOT = P.alt(apply_cmd, short_cmd_list, cd_cmd, import_cmd, UPP_Results, cmd_list);
 
-export { ROOT as parser };
+export default ROOT;
 
 
 /*

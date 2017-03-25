@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import { ReteNet } from '../libs/rete';
-import { GraphNode } from './Node/GraphNode';
-import { getCtor } from './Node/Constructors';
-import { util } from './utils';
-import { parser } from './PParse';
+import ReteNet from '../libs/rete';
+import GraphNode from './Node/GraphNode';
+import getCtor from './Node/Constructors';
+import util from './utils';
+import parser from './PParse';
 import * as CStructs from './Commands/CommandStructures';
 
 /**
@@ -13,7 +13,7 @@ import * as CStructs from './Commands/CommandStructures';
    @constructor
    @param {Array} ReteActionsToRegister
 */
-class Shell {
+export default class Shell {
     constructor(ReteActionsToRegister){
         this._root = new GraphNode('_root', -1);
         this._nodes = new Map();
@@ -260,7 +260,7 @@ Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelation
     sourceType = sourceType || 'parent';
     destType = destType || 'child';
     nodeType = nodeType || "graphnode";
-    
+
     //Get the constructor for the type of node
     let ctor = getCtor(nodeType),
         newNode = new ctor(name,source.id);
@@ -482,4 +482,3 @@ Shell.prototype.printState = function(){
     };
 };
 
-export { Shell };

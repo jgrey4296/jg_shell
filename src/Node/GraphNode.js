@@ -4,8 +4,8 @@
    @see GraphNode
 */
 import _ from 'lodash';
-import { util } from '../utils';
-import { Edge } from '../Edge';
+import  util from '../utils';
+import  Edge from '../Edge';
 
 let nextId = 1;
 
@@ -18,7 +18,7 @@ let nextId = 1;
    @constructor
    @alias GraphNode
 */
-class GraphNode{
+export default class GraphNode{
     constructor(name=null,parentId=null,overRideId=null){
         //Note: relationstoCreate = { children: [{name,children,parents}], parents : [{}] }
         name = name || "anon";
@@ -216,6 +216,3 @@ GraphNode.prototype.untag = function(tag){
 };
 
 //minimise/uniminimise
-
-export { GraphNode };
-
