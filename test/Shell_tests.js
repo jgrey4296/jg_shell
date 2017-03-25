@@ -114,7 +114,10 @@ describe("Shell Interface:", function() {
             this.shell.root().hasEdgeWith(newParentId2).should.be.true;
         });
 
-        it('Should be able to add nodes of different types');
+        it('Should be able to add nodes of different types',function(){
+
+            
+        });
         it('Should be able to add nodes with sub structure');
         it('Should be able to add rules with substructure');
         
