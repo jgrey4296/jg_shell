@@ -40,6 +40,22 @@ alt:
 {id: 10} -> {type: assert (/retract/modify) -> {id:14, type: action} :=: node 14
 
 
+
+(2)->()->(10)
+(2,state)->(5,event)->(10,state)
+
+2:state->5:event->10:state
+
+2:state > 10:state
+
+2:par > 3:child
+
+2>>3
+2>something>3
+2<3<4
+
+
+
 ** General Usage
 *** Underlying model
 The underlying model of the shell is an object of id->node pairings
