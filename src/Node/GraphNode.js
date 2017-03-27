@@ -6,6 +6,7 @@
 import _ from 'lodash';
 import  util from '../utils';
 import  Edge from '../Edge';
+import { EdgeData } from '../Commands/CommandStructures';
 
 let nextId = 1;
 
@@ -36,30 +37,47 @@ export default class GraphNode{
         
         this.tag('graphnode');
         this.setValue('name',name);
+        //for root connecting to itself
         if (parentId === -1){
             parentId = this.id;
         }
         if (parentId !== undefined && parentId !== null){
-            this.setEdge(parentId,{ id: parentId }, {}, { id: this.id });
+            this.setEdge(parentId,new EdgeData(parentId,
+                                               new Set(),
+                                               new Map()),
+                         new EdgeData(),
+                         new EdgeData(this.id,
+                                      new Set(),
+                                      new Map()));
             this.setValue('_parentId',parentId);
         }
     }
 }
+
+GraphNode.prototype.toJSONCompatibleObj = function(){
+    let returnObj = {
+        id : this.id,
+        edges : Array.from(this._edges.values()).map(e=>e.toJSONCompatibleObj()),
+        values : Array.from(this._values),
+        tags : Array.from(this._tags)
+    };
+    return returnObj;
+};
 
 GraphNode.fromJSON = function(obj){
     let newNode = new GraphNode(null,
                                 null,
                                 obj.id);
     
-    for (let [id,edge] of obj.edges){
-        let newEdge = Edge.fromJSON(edge),
+    for (let edge of obj.edges){
+        let newEdgeData = Edge.fromJSON(edge),
             target = null;
-        if (newEdge.source.id === obj.id){
-            target = edge.dest.id;
+        if (newEdgeData[0].id === obj.id){
+            target = newEdgeData[2].id;
         } else {
-            target = edge.source.id;
+            target = newEdgeData[0].id;
         }
-        newNode._edges.set(target, newEdge);
+        newNode.setEdge(target,...newEdgeData);
     }
     newNode._values = new Map(obj.values);
     newNode._tags = new Set(obj.tags);
@@ -76,16 +94,6 @@ GraphNode.prototype.getChildren = function(){
     return children;
 };
 
-GraphNode.prototype.toJSONCompatibleObj = function(){
-    let returnObj = {
-        id : this.id,
-        edges : Array.from(this._edges),
-        values : Array.from(this._values),
-        tags : Array.from(this._tags)
-    };
-    return returnObj;
-};
-
 
 GraphNode.prototype.toString = function(){
     return `(${this.id}) : ${this.name._slice(0,10)}`;
@@ -93,9 +101,6 @@ GraphNode.prototype.toString = function(){
 
 GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
     //todo: use Edge Data type
-    if (id instanceof GraphNode){
-        id = id.id;
-    }
     if (sourceData.id === null){
         sourceData.id = this.id;
     } else if (destData.id === null){
@@ -106,7 +111,7 @@ GraphNode.prototype.setEdge = function(id,sourceData,edgeData,destData){
         throw new Error('Specified an id for an edge that is inconsistent');
     }
     if (this.id !== sourceData.id && this.id !== destData.id){
-        console.log('Unconnected Target node:'.sourceData,destData); 
+        console.log('Unconnected Target node:'.sourceData,destData);
         throw new Error('Specified an edge unconnected to the targeted node');
     }
     
@@ -173,7 +178,7 @@ GraphNode.prototype.setValue = function(key,value){
 
 GraphNode.prototype.hasValue = function(key){
     return this._values.has(key);
-}
+};
 
 GraphNode.prototype.getValue = function(key){
     if (!this._values.has(key)){
