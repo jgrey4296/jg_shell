@@ -23,11 +23,36 @@ class Mk {
     }
 }
 
-class Link{
+
+class EdgeData {
+    constructor(id=null,data=[]){
+        this.id = id;
+        this.tags = new Set();
+        this.vals = new Map();
+
+        if ( data instanceof Array){
+            for (let val of data){
+                if (val instanceof SetTag){
+                    val.tagNames.forEach((d)=>this.tags.add(d));
+                } else if (val instanceof SetValue){
+                    this.vals.set(val.valName,val.value);
+                } else {
+                    throw new Error('Unrecognised val list member');
+                }
+            }
+        } else if (data.tags !== null && data.vals !== null){
+            this.tags = new Set(data.tags);
+            this.vals = new Map(data.vals);
+        }
+    }
+}
+
+class Link {
     //Create an edge between two nodes
-    constructor(sourceId,destId){
-        this.sourceId = sourceId;
-        this.destId = destId;
+    constructor(sourceData,edgeData, destData){
+        this.sourceData = sourceData;
+        this.edgeData = edgeData;
+        this.destData = destData;
     }
 }
 
@@ -88,4 +113,4 @@ class Unparameterised{
     }
 }
 
-export { Cd, Rm, Mk, Link, SetTag, SetValue, Search, Refine, Apply, Unparameterised, Import };
+export { Cd, Rm, Mk, Link, SetTag, SetValue, Search, Refine, Apply, Unparameterised, Import, EdgeData };
