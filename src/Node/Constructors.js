@@ -6,7 +6,7 @@ import GraphNode from './GraphNode';
 */
 
 const ctors = new Map([
-    ["graphnode" , GraphNode],
+    ["graphnode" , GraphNode]
 ]);
 
 /**
