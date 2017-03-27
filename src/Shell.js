@@ -68,7 +68,7 @@ Shell.prototype.actOnParse = function(action){
             });
             break;
         case CStructs.Link:
-            this.link(action.destId,'child','parent',action.sourceId);
+            this.link(action.sourceData,action.edgeData,action.destData);
             break;
         case CStructs.SetTag:
             action.tagNames.forEach((t)=>this.cwd().tagToggle(t));
@@ -222,31 +222,13 @@ Shell.prototype.reteOutput = function(){
     return Array.from(this._reteOutput);
 };
 
-Shell.prototype.link = function(id, destType, sourceType, sourceId=undefined){
-    let source = sourceId ? this.get(sourceId) : this.cwd(),
-        nodeToLinkTo = this.get(id);
-    source.setEdge(nodeToLinkTo.id,
-                   {
-                       id: source.id,
-                       relation: sourceType
-                   },
-                   {},
-                   {
-                       id: nodeToLinkTo.id,
-                       relation: destType
-                   }
-                  );
-    nodeToLinkTo.setEdge(source.id,
-                         {
-                             id: source.id,
-                             relation: sourceType
-                         },
-                         {},
-                         {
-                             id: nodeToLinkTo.id,
-                             relation : destType
-                         }
-                        );
+Shell.prototype.link = function(sourceData, edgeData, destData){
+    let source = this.get(sourceData.id),
+        dest = this.get(destData.id),
+        edge = edgeData.id ? this.get(edgeData.id) : null;
+
+    source.setEdge(destData.id,sourceData,edgeData,destData);
+    dest.setEdge(sourceData.id,sourceData,edgeData,destData);
 };
 
 
@@ -268,7 +250,9 @@ Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelation
     //Store the new node
     this.set(newNode);
     //add to cwd/target
-    this.link(newNode.id, destType, sourceType ,source.id);
+    this.link(new CStructs.EdgeData(source.id, {tags: [sourceType], vals: []}),
+              new CStructs.EdgeData(null, {tags: [], vals: [] }),
+              new CStructs.EdgeData(newNode.id, { tags: [destType], vals: []}));
      return newNode.id;
 };
 
@@ -353,7 +337,7 @@ Shell.prototype.extend = function(text){
     //create a map of oldId => newId
     //go through and modify all edges
     //link root of new data to root()
-}
+};
 
 //Rete
 
@@ -394,13 +378,13 @@ Shell.prototype.search = function(type,variable,value=null,refine=false){
                     return _.some(d.values(),([vi,va])=>variable.test(vi) && value.test(va));
                 });
                 this._searchResults = variableMatches.map((d)=>d.id);
-            } else if ( variable instanceof RegExp && value == null){
+            } else if ( variable instanceof RegExp && value === null){
                 let variableMatches = searchBase.filter((d)=>{
                     return _.some(d.values(),([k,v])=>variable.test(k));
                 });
                 this._searchResults = variableMatches.map((d)=>d.id);
                 //TODO: add logic for value being an EXPRESSION
-            } else if (! (variable instanceof RegExp) && value == null){
+            } else if (! (variable instanceof RegExp) && value === null){
                 let hasVariable = searchBase.filter((d)=>d.hasValue(variable));
                 this._searchResults = hasVariable.map((d)=>d.id);
             } else if (! (variable instanceof RegExp) && value !== null && ! (value instanceof RegExp)){
