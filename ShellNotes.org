@@ -1,4 +1,16 @@
 * Shell General Notes                                                           :design:architecture:shellAuthoring:
+** TODO:
+   Parser:
+   Get edge declarations parsing, into a rewritten link command,
+   Runtime:
+   update commands to accept updated link command,
+   needs to create edge nodes if necessary?
+   Edge:
+   No changes needed
+   GraphNode:
+   needs to store the edges,
+   needs to be able to store instance data for edges?
+
 ** Redesign
 Moise uses Structural/Behavioural/Normative/Functional/Environmental Specifications
 Tracery uses expansion edges
