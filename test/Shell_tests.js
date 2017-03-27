@@ -5,6 +5,7 @@ import * as chai from 'chai';
 import Shell from '../src/Shell';
 import GraphNode from '../src/Node/GraphNode';
 import ReteNet from '../libs/rete';
+import { EdgeData } from '../src/Commands/CommandStructures';
 
 let should = chai.should(),
     expect = chai.expect;
@@ -255,7 +256,9 @@ describe("Shell Interface:", function() {
                 node2 = this.shell.get(newNodeId2);
             node1.hasEdgeWith(newNodeId2).should.be.false;
             node2.hasEdgeWith(newNodeId1).should.be.false;
-            this.shell.link(newNodeId1,'child','parent',newNodeId2);
+            this.shell.link(new EdgeData(newNodeId1, { tags: ['parent'], vals: [] }),
+                            new EdgeData(),
+                            new EdgeData(newNodeId2, { tags: ['child'], vals: [] }));
             node1.hasEdgeWith(newNodeId2).should.be.true;
             node2.hasEdgeWith(newNodeId1).should.be.true;
         });

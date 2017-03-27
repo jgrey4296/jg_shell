@@ -3,6 +3,7 @@
 import * as chai from 'chai';
 import GraphNode from '../src/Node/GraphNode';
 import Edge from '../src/Edge';
+import { EdgeData } from '../src/Commands/CommandStructures';
 
 let should = chai.should(),
     expect = chai.expect;
@@ -24,7 +25,7 @@ describe ("General Node Tests :", function() {
 
         it("Should be able to set edges", function(){
             let node = new GraphNode();
-            node.setEdge(1,{ id: 1 }, {}, {id: null});
+            node.setEdge(1, new EdgeData(1), new EdgeData(), new EdgeData());
             node.numOfEdges().should.equal(1);
         });
 
@@ -35,7 +36,7 @@ describe ("General Node Tests :", function() {
 
         it("Should be able to check a node has an edge", function(){
             let node = new GraphNode();
-            node.setEdge(1,{id:1},{}, {id:null});
+            node.setEdge(1, new EdgeData(1), new EdgeData(), new EdgeData());
             node.hasEdgeWith(1).should.equal.true;
         });
 
@@ -47,13 +48,14 @@ describe ("General Node Tests :", function() {
         it("Should be able to check a node based on the node itself, not id", function(){
             let node1 = new GraphNode(),
                 node2 = new GraphNode();
-            node1.setEdge(node2.id,{id: node2.id}, {}, {id:null});
+            node1.setEdge(node2.id, new EdgeData(node2.id),
+                          new EdgeData(), new EdgeData());
             node1.hasEdgeWith(node2).should.equal.true;
         });
         
         it("Should be able to get an edge out of a node", function(){
             let node = new GraphNode();
-            node.setEdge(1,{id: 1}, {}, {id: null});
+            node.setEdge(1, new EdgeData(1), new EdgeData(), new EdgeData());
             node.numOfEdges().should.equal(1);
             let edge = node.getEdgeTo(1);
             expect(edge).to.exist;
@@ -68,7 +70,8 @@ describe ("General Node Tests :", function() {
         it("Should be able to get the edge based on node, not id",function(){
             let node1 = new GraphNode(),
                 node2 = new GraphNode();
-            node1.setEdge(node2.id,{id: node2.id}, {}, {id: null});
+            node1.setEdge(node2.id, new EdgeData(node2.id),
+                          new EdgeData(), new EdgeData());
             let edge = node1.getEdgeTo(node2);
             expect(edge).to.exist;
             

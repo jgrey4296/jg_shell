@@ -3,6 +3,7 @@
 import * as chai from 'chai';
 import _ from 'lodash';
 import GraphNode from '../src/Node/GraphNode';
+import { EdgeData } from '../src/Commands/CommandStructures';
 
 let should = chai.should(),
     expect = chai.expect;
@@ -34,13 +35,13 @@ describe ("GraphNode", function() {
 
     it("Should be able to create edges",function(){
         let aNode = new GraphNode('test');
-        aNode.setEdge(5,{ id: 5 }, {}, { id: null });
+        aNode.setEdge(5,new EdgeData(5), new EdgeData(), new EdgeData());
         aNode.hasEdgeWith(5).should.be.true;
     });
 
     it("Should be able to remove edges",function(){
         let aNode = new GraphNode('test');
-        aNode.setEdge(5, {id : 5 }, {}, { id: null });
+        aNode.setEdge(5, new EdgeData(5), new EdgeData(), new EdgeData());
         aNode.hasEdgeWith(5).should.be.true;
         aNode.removeEdge(5);
         aNode.hasEdgeWith(5).should.be.false;
@@ -74,8 +75,8 @@ describe ("GraphNode", function() {
         let aNode = new GraphNode('test');
         aNode.tagToggle('blah').tagToggle('bloo');
         aNode.setValue('aTest',5).setValue('another',"awef");
-        aNode.setEdge(5,{id: 5}, {}, {id: null});
-        aNode.setEdge(10,{id: null}, {}, {id: 10});
+        aNode.setEdge(5,new EdgeData(5), new EdgeData(), new EdgeData());
+        aNode.setEdge(10,new EdgeData(null), new EdgeData(), new EdgeData(10));
         let objDesc = aNode.toJSONCompatibleObj(),
             objString = JSON.stringify(objDesc),
             convertedBack = GraphNode.fromJSON(JSON.parse(objString));
