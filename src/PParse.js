@@ -60,20 +60,30 @@ let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
 //Actual commands:
 let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     mk_cmd = MK.then(str_val.many()).map((rs)=>new CStructs.Mk(...rs)),
-    link_cmd = LINK.then(P.seqMap(id,id,(src,tgt)=>new CStructs.Link(src,tgt))),
     rm_cmd = RM.then(id.many()).map((ids)=>new CStructs.Rm(...ids)),
     set_tag_cmd = SET.then(TAG).then(str_val.many()).map((r)=>new CStructs.SetTag(r)),
     set_val_cmd = SET.then(VALUE).then(P.seqMap(str_val,com_vals,(a,b)=>new CStructs.SetValue(a,b))),
     import_cmd = IMPORT.then(P.all).map((t)=>new CStructs.Import(t)),
     //Short commands
     short_tag_cmd = SHORT_TAG.then(str_val).map((r)=>new CStructs.SetTag([r])),
-    short_val_cmd = SHORT_VAL.then(P.seqMap(str_val.skip(COLON),
+    short_val_cmd = SHORT_VAL.then(P.seqMap(str_val.skip(OWS(COLON)),
                                             com_vals,
-                                            (a,b)=>new CStructs.SetValue(a,b))),
-    short_link_cmd = P.seqMap(id.skip(SHORT_LINK),
-                              id,
-                              (src,tgt)=>new CStructs.Link(src,tgt)),
-    short_cd_cmd = SHORT_CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
+                                            (a,b)=>new CStructs.SetValue(a,b)));
+
+//4($blah:bloo) > 2() > 8(#blah, $awef:aweji)
+let paramsList = P.string('(').then(P.sepBy(P.alt(short_tag_cmd,short_val_cmd),OWS(P.string(',')))).skip(P.string(')')),
+    idValList = P.seqMap(id,paramsList.or(P.alt(P.optWhitespace,P.string('()')).result([])),
+                         (i,vs)=>new CStructs.EdgeData(i,vs));
+
+//*must* have a source and dest, *may* have an edge id
+let new_link_cmd = P.seqMap(idValList.skip(OWS(SHORT_LINK)),
+                            idValList.or(P.alt(P.optWhitespace,P.string('()')).result(new CStructs.EdgeData())).skip(OWS(SHORT_LINK)),
+                            idValList,
+                            (s,e,d)=>new CStructs.Link(s,e,d));
+                            
+
+    
+let short_cd_cmd = SHORT_CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     short_prior_cmd = SHORT_PRIOR.then(P.eof).map(()=>new CStructs.Unparameterised('prior'));
 
 //Searching and Refining:
@@ -89,7 +99,6 @@ let search_cmd_short = SEARCH.then(P.seqMap(str_val,regex,(v,r)=>new CStructs.Se
 
 //Aggregates
 let cmd_list = P.alt(mk_cmd,
-                     link_cmd,
                      rm_cmd,
                      set_tag_cmd,
                      set_val_cmd,
@@ -101,9 +110,9 @@ let cmd_list = P.alt(mk_cmd,
 
 let short_cmd_list = P.alt(short_tag_cmd,
                            short_val_cmd,
-                           short_link_cmd,
                            short_cd_cmd,
-                           short_prior_cmd);
+                           short_prior_cmd,
+                           new_link_cmd);
 
 
 
@@ -113,7 +122,6 @@ let apply_cmd = APPLY.then(P.alt(short_cmd_list,cmd_list)).map((cmd)=>new CStruc
 let ROOT = P.alt(apply_cmd, short_cmd_list, cd_cmd, import_cmd, UPP_Results, cmd_list);
 
 export default ROOT;
-
 
 /*
   search id {number}
