@@ -168,7 +168,7 @@ GraphNode.prototype.setName = function(newName){
 //TODO:
 //set values
 GraphNode.prototype.setValue = function(key,value){
-    if (value !== undefined ){
+    if (value !== undefined && value !== null ){
         this._values.set(key,value);
     } else {
         this._values.delete(key);

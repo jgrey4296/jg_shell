@@ -1,0 +1,172 @@
+{
+  "nodes": [
+    {
+      "id": 1,
+      "edges": [
+        {
+          "sourceData": {
+            "id": 1,
+            "tags": [],
+            "vals": []
+          },
+          "edgeData": {
+            "id": null,
+            "tags": [],
+            "vals": []
+          },
+          "destData": {
+            "id": 1,
+            "tags": [],
+            "vals": []
+          }
+        },
+        {
+          "sourceData": {
+            "id": 1,
+            "tags": [
+              "parent"
+            ],
+            "vals": []
+          },
+          "edgeData": {
+            "id": null,
+            "tags": [],
+            "vals": []
+          },
+          "destData": {
+            "id": 2,
+            "tags": [
+              "child"
+            ],
+            "vals": []
+          }
+        }
+      ],
+      "values": [
+        [
+          "name",
+          "root"
+        ],
+        [
+          "_parentId",
+          1
+        ],
+        [
+          "output",
+          "This is a [[test]]"
+        ]
+      ],
+      "tags": [
+        "graphnode"
+      ]
+    },
+    {
+      "id": 2,
+      "edges": [
+        {
+          "sourceData": {
+            "id": 1,
+            "tags": [
+              "parent"
+            ],
+            "vals": []
+          },
+          "edgeData": {
+            "id": null,
+            "tags": [],
+            "vals": []
+          },
+          "destData": {
+            "id": 2,
+            "tags": [
+              "child"
+            ],
+            "vals": []
+          }
+        },
+        {
+          "sourceData": {
+            "id": 2,
+            "tags": [
+              "parent"
+            ],
+            "vals": []
+          },
+          "edgeData": {
+            "id": null,
+            "tags": [],
+            "vals": []
+          },
+          "destData": {
+            "id": 3,
+            "tags": [
+              "child"
+            ],
+            "vals": []
+          }
+        }
+      ],
+      "values": [
+        [
+          "name",
+          "test"
+        ],
+        [
+          "_parentId",
+          1
+        ],
+        [
+          "output",
+          "This return back to [[root]]. This goes on to [[three]]"
+        ]
+      ],
+      "tags": [
+        "graphnode"
+      ]
+    },
+    {
+      "id": 3,
+      "edges": [
+        {
+          "sourceData": {
+            "id": 2,
+            "tags": [
+              "parent"
+            ],
+            "vals": []
+          },
+          "edgeData": {
+            "id": null,
+            "tags": [],
+            "vals": []
+          },
+          "destData": {
+            "id": 3,
+            "tags": [
+              "child"
+            ],
+            "vals": []
+          }
+        }
+      ],
+      "values": [
+        [
+          "name",
+          "three"
+        ],
+        [
+          "_parentId",
+          2
+        ],
+        [
+          "output",
+          "This is three going back to the [[root]]"
+        ]
+      ],
+      "tags": [
+        "graphnode"
+      ]
+    }
+  ],
+  "root": 1
+}

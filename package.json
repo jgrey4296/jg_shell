@@ -4,11 +4,12 @@
   "description": "A Shell simulation / graph structure authoring program",
   "main": "server/serverMain, browser/shell.html",
   "scripts": {
-    "start": "node_modules/.bin/webpack --config webpack.config.babel.js",
-    "flow": "node_modules/.bin/flow",
-    "test": "node_modules/.bin/mocha --check-leaks -c --prof --log-timer-events --require babel-polyfill --compilers js:babel-register",
-    "pending": "node_modules/.bin/mocha --require babel-polyfill --compilers js:babel-register -R mocha-pending -c",
-    "clean": "rm -r dist; rm -r docs;  exit 0",
+      "start": "node_modules/.bin/webpack --config webpack.config.babel.js",
+      "flow": "node_modules/.bin/flow",
+      "testfull": "node_modules/.bin/mocha --check-leaks -c --prof --log-timer-events --require babel-polyfill --compilers js:babel-register",
+      "test" : "node_modules/.bin/mocha -c --require babel-polyfill --compilers js:babel-register",
+      "pending": "node_modules/.bin/mocha --require babel-polyfill --compilers js:babel-register -R mocha-pending -c",
+      "clean": "rm -r dist; rm -r docs;  exit 0",
       "doc": "node_modules/.bin/jsdoc ./src -r -d ./docs",
       "lint" : "eslint --fix ./src"
   },

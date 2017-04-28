@@ -43,7 +43,7 @@ let SHORT_TAG = P.string('#'),
 
 //Values
 let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
-    str_lit = P.string('"').then(P.regex(/[a-zA-Z0-9\- '$%{}&;:.]+/)).skip(P.string('"')),
+    str_lit = P.string('"').then(P.regex(/[a-zA-Z0-9\- '$%{}&;:.\[\]\(\)]+/)).skip(P.string('"')),
     id = OWS(P.regex(/[0-9]+/).map(Number)),
     parent = OWS(P.string('..')),
     num = P.regex(/-?[0-9]+(\.[0-9]+)?/).map(Number), //todo: convert to number
@@ -67,7 +67,7 @@ let cd_cmd = CD.then(P.alt(id,parent,str_val)).map((r)=>new CStructs.Cd(r)),
     //Short commands
     short_tag_cmd = SHORT_TAG.then(str_val).map((r)=>new CStructs.SetTag([r])),
     short_val_cmd = SHORT_VAL.then(P.seqMap(str_val.skip(OWS(COLON)),
-                                            com_vals,
+                                            P.alt(com_vals, P.succeed(null)),
                                             (a,b)=>new CStructs.SetValue(a,b)));
 
 //4($blah:bloo) > 2() > 8(#blah, $awef:aweji)

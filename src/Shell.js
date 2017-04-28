@@ -46,6 +46,7 @@ Shell.prototype.parse = function(string){
     let result = this._parser.parse(string);
     if (result.status === false){
         console.log('Bad Parse:',result);
+        //todo: draw to screen 
         return null;
     }
     result = result.value;
@@ -164,6 +165,8 @@ Shell.prototype.numRules = function(){
     return this._ruleIds.length;
 };
 
+
+//Check a node/id exists
 Shell.prototype.has = function(id){
     if ( id instanceof GraphNode ){
         id = id.id;
@@ -171,6 +174,7 @@ Shell.prototype.has = function(id){
     return this._nodes.has(id);
 };
 
+//Retrieve a specific node
 Shell.prototype.get = function(id){
     if ( this.has(Number(id)) ){
         return this._nodes.get(Number(id));
@@ -178,6 +182,7 @@ Shell.prototype.get = function(id){
     throw new Error(`Node ${id} does not exist`);
 };
 
+//Add a newly created node to the shell
 Shell.prototype.set = function(node){
     if (! (node instanceof GraphNode)){
         throw new Error('Cannot add a non-GraphNode');
@@ -189,6 +194,7 @@ Shell.prototype.set = function(node){
     this._nodes.set(node.id,node);
 };
 
+//Delete a node, including all its edges
 Shell.prototype.rm = function(id){
     if (id instanceof GraphNode){
         id = id.id;
@@ -202,26 +208,37 @@ Shell.prototype.rm = function(id){
     this._nodes.delete(id);
 };
 
+//Alias for rm
+Shell.prototype.deleteNode = function(id){
+    this.rm(id);
+};
+
+//Get the root node of the shell
 Shell.prototype.root = function(){
     return this._root;
 };
 
+//Get the current working node
 Shell.prototype.cwd = function(){
     return this._cwd;
 };
 
+//get the node that was the cwd before the current one
 Shell.prototype.prior = function(){
     return _.last(this._previousLocation);
 };
 
+//Get the saved search results
 Shell.prototype.searchResults = function(){
     return Array.from(this._searchResults);
 };
 
+//Get the stored results of a rete firing
 Shell.prototype.reteOutput = function(){
     return Array.from(this._reteOutput);
 };
 
+//Connect two nodes by an edge
 Shell.prototype.link = function(sourceData, edgeData, destData){
     let source = this.get(sourceData.id),
         dest = this.get(destData.id),
@@ -231,7 +248,7 @@ Shell.prototype.link = function(sourceData, edgeData, destData){
     dest.setEdge(sourceData.id,sourceData,edgeData,destData);
 };
 
-
+//Create a new node
 Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelations,sourceId=undefined){
     //get the node to link to
     let source = sourceId ? this.get(sourceId) : this.cwd();
@@ -256,10 +273,7 @@ Shell.prototype.addNode = function(name,destType,sourceType,nodeType,subRelation
      return newNode.id;
 };
 
-Shell.prototype.deleteNode = function(id){
-    this.rm(id);
-};
-
+//Enable cd'ing to a parent with 'cd ..'
 Shell.prototype.cdByString = function(str){
     if (!Number.isNaN(Number(str))){
         this.cdById(Number(str));
@@ -273,7 +287,7 @@ Shell.prototype.cdByString = function(str){
     }
 };
 
-
+//The typical way of cd'ing, using the id of the node 
 Shell.prototype.cdById = function(id){
     if (typeof(id) !== 'number'){
         throw new Error(`Cd'ing needs an id, instead got ${typeof(id)}`);
@@ -286,21 +300,22 @@ Shell.prototype.cdById = function(id){
 };
 
 
+//Storing the current node to return to later
 Shell.prototype.stash = function(){
     this._nodeStash.push(this.cwd().id);
 };
 
+//getting rid of a stored node
 Shell.prototype.unstash = function(){
     return this._nodeStash.pop();
 };
 
+//Get the entire stash
 Shell.prototype.getStash = function(){
     return _.clone(this._nodeStash);
 };
 
-
-//TODO:
-//exportJson
+//convert the shell nodes to a json representation
 Shell.prototype.export = function(){
     let nodes = [];
     for (let node of this._nodes.values()){
@@ -317,7 +332,10 @@ Shell.prototype.export = function(){
     };
 };
 
-//importJson
+//TODO: TWINE EXPORT
+
+
+//given json text, parse it and create new nodes and links from it
 Shell.prototype.import = function(text){
     let loadedObj = JSON.parse(text);
     console.log('Loading data:',loadedObj);
@@ -339,11 +357,12 @@ Shell.prototype.extend = function(text){
     //link root of new data to root()
 };
 
-//Rete
+//tod: Rete. Run rule, enact...
 
-//Sim
+//todo: Sim
 
 //Search, value is nullable, returns nothing, side effect: this._searchResults
+//TODO: sub-method these
 Shell.prototype.search = function(type,variable,value=null,refine=false){
     let searchBase = [];
     if (!refine){
@@ -411,11 +430,12 @@ Shell.prototype.search = function(type,variable,value=null,refine=false){
 
 };
 
+//Apply a search to search results instead of the main shell
 Shell.prototype.refine = function(type,variable,value){
     return this.search(type,variable,value,true);
 };
 
-//Graph search
+//TODO: Graph search
 Shell.prototype.dfs = function(){
     throw new Error('Unimplemented: DFS');
 };
@@ -426,7 +446,7 @@ Shell.prototype.bfs = function(){
 
 
 
-//Help:
+//TODO: Help:
 Shell.prototype.help = function(){
     let data = {
         description: "help"
@@ -435,6 +455,7 @@ Shell.prototype.help = function(){
     throw new Error('Unimplemented: Help');
 };
 
+//Utility to get the path from the root to the current directory
 Shell.prototype.getPath = function(){
     let path : Array<[string, number]> = [],
         current = this.cwd();
@@ -446,7 +467,7 @@ Shell.prototype.getPath = function(){
     return path;
 };
 
-//Output:
+//Output information about the current state in a way for the preactShell to visualise
 Shell.prototype.printState = function(){
     let node = this.cwd(),
         inputs = node.getParents(),
