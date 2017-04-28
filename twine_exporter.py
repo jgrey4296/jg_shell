@@ -4,7 +4,7 @@
 # Setup root_logger:
 import logging as root_logger
 LOGLEVEL = root_logger.DEBUG
-LOG_FILE_NAME = ".log"
+LOG_FILE_NAME = "log.twine_exporter"
 root_logger.basicConfig(filename=LOG_FILE_NAME, level=LOGLEVEL, filemode='w')
 
 console = root_logger.StreamHandler()
