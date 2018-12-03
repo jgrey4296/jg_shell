@@ -1,10 +1,8 @@
-import webpack from 'webpack';
-import path from 'path';
-import FlowBabelWebpackPlugin from 'flow-babel-webpack-plugin';
-
+const path = require('path');
 const ENV = process.env.NODE_ENV || 'development';
 
 module.exports = {
+    mode : ENV,
     context: path.resolve(__dirname,'src'),
     entry: './Shell.js',
     
@@ -45,9 +43,10 @@ module.exports = {
     },
 
     plugins: [
-        new FlowBabelWebpackPlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true
-        })
+        //new FlowBabelWebpackPlugin(),
     ],
+
+    optimization: {
+        minimize: true
+    }
 };
