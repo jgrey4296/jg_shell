@@ -43,7 +43,7 @@ let SHORT_TAG = P.string('#'),
 
 //Values
 let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
-    str_lit = P.string('"').then(P.regex(/[a-zA-Z0-9\- '$%{}&;:.\[\]\(\)]+/)).skip(P.string('"')),
+    str_lit = P.string('"').then(P.regex(/[a-zA-Z0-9\- '$%{}&;:.[]()]+/)).skip(P.string('"')),
     id = OWS(P.regex(/[0-9]+/).map(Number)),
     parent = OWS(P.string('..')),
     num = P.regex(/-?[0-9]+(\.[0-9]+)?/).map(Number), //todo: convert to number
@@ -51,7 +51,7 @@ let str_val = OWS(P.regex(/[a-zA-Z][a-zA-Z0-9_$]*/)),
     com_vals = P.alt(str_val,str_lit,num).skip(P.optWhitespace),
     //Regular expression... regex:
     regex_term = P.string('/'),
-    regex_core = P.regex(/[ .a-zA-Z'"0-9-+=_!@#$%^&*()\[\]|]+/),
+    regex_core = P.regex(/[ .a-zA-Z'"0-9-+=_!@#$%^&*()[]|]+/),
     regex_flags = P.regex(/[gimuy]*/),
     regex = regex_term.then(P.seqMap(regex_core.skip(regex_term),
                                      regex_flags.skip(regex_term),

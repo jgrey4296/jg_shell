@@ -46,7 +46,7 @@ Shell.prototype.parse = function(string){
     let result = this._parser.parse(string);
     if (result.status === false){
         console.log('Bad Parse:',result);
-        //todo: draw to screen 
+        //todo: draw to screen
         return null;
     }
     result = result.value;
@@ -287,7 +287,7 @@ Shell.prototype.cdByString = function(str){
     }
 };
 
-//The typical way of cd'ing, using the id of the node 
+//The typical way of cd'ing, using the id of the node
 Shell.prototype.cdById = function(id){
     if (typeof(id) !== 'number'){
         throw new Error(`Cd'ing needs an id, instead got ${typeof(id)}`);

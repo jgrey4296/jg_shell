@@ -37,12 +37,12 @@ describe ("General Node Tests :", function() {
         it("Should be able to check a node has an edge", function(){
             let node = new GraphNode();
             node.setEdge(1, new EdgeData(1), new EdgeData(), new EdgeData());
-            node.hasEdgeWith(1).should.equal.true;
+            node.hasEdgeWith(1).should.equal(true);
         });
 
         it("Should be able to check a node does not have an edge ", function(){
             let node = new GraphNode();
-            node.hasEdgeWith(1).should.equal.false;
+            node.hasEdgeWith(1).should.equal(false);
         });
         
         it("Should be able to check a node based on the node itself, not id", function(){
@@ -50,7 +50,7 @@ describe ("General Node Tests :", function() {
                 node2 = new GraphNode();
             node1.setEdge(node2.id, new EdgeData(node2.id),
                           new EdgeData(), new EdgeData());
-            node1.hasEdgeWith(node2).should.equal.true;
+            node1.hasEdgeWith(node2).should.equal(true);
         });
         
         it("Should be able to get an edge out of a node", function(){
