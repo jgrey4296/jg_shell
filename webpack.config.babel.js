@@ -10,7 +10,8 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'JGShell.js',
         library: "JGShell",
-        libraryTarget: "umd"        
+        libraryTarget: "umd",
+        globalObject: 'typeof self !== \'undefined\' ? self : this',
     },
     
     externals: {
@@ -20,7 +21,7 @@ module.exports = {
             amd: "lodash",
             root: "_",
         },
-        "../libs/rete" : {
+        "rete" : {
             commonjs: "rete",
             commonjs2: "rete",
             amd: "rete",

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack --config webpack.config.babel.js",
     "flow": "flow",
-    "testfull": "mocha --check-leaks -c --prof --log-timer-events --require @babel/register",
+    "testfull": "mocha --check-leaks -c --prof --log-timer-events --require @babel/register --require ./libs/rete",
     "test": "node_modules/.bin/mocha -c --require @babel/register",
     "pending": "node_modules/.bin/mocha --require @babel/register -R mocha-pending -c",
     "clean": "rm -r dist; rm -r docs;  exit 0",
