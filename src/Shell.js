@@ -1,10 +1,10 @@
-import _ from 'lodash';
-import ReteNet from '../libs/rete';
-import GraphNode from './Node/GraphNode';
-import getCtor from './Node/Constructors';
-import util from './utils';
-import parser from './PParse';
-import * as CStructs from './Commands/CommandStructures';
+import _ from "lodash";
+import ReteNet from "../libs/rete";
+import GraphNode from "./Node/GraphNode";
+import getCtor from "./Node/Constructors";
+import util from "./utils";
+import parser from "./PParse";
+import * as CStructs from "./Commands/CommandStructures";
 
 /**
    The Main Shell Class. Provides interaction with the Graph, and the ReteNet.

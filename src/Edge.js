@@ -1,4 +1,4 @@
-import { EdgeData } from './Commands/CommandStructures';
+import { EdgeData } from "./Commands/CommandStructures";
 
 /**
    The Edge definition object

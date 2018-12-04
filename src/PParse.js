@@ -2,8 +2,8 @@
 /*
   Parsimmon based parsing
 */
-import * as P from 'parsimmon';
-import * as CStructs from './Commands/CommandStructures';
+import * as P from "parsimmon";
+import * as CStructs from "./Commands/CommandStructures";
 
 //Utility
 //Optional whitespace wrapper:

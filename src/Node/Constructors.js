@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import GraphNode from './GraphNode';
+import _ from "lodash";
+import GraphNode from "./GraphNode";
 /**
     Aggregates the constructors toget
     @module Node/Constructors

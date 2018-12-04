@@ -2,7 +2,7 @@
    Defines general utilities to use across projects
    @module utils
 */
-import _ from 'lodash';
+import _ from "lodash";
 
 /**
    @alias module:utils

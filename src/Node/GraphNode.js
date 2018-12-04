@@ -3,10 +3,10 @@
    @module Node/GraphNode
    @see GraphNode
 */
-import _ from 'lodash';
-import  util from '../utils';
-import  Edge from '../Edge';
-import { EdgeData } from '../Commands/CommandStructures';
+import _ from "lodash";
+import  util from "../utils";
+import  Edge from "../Edge";
+import { EdgeData } from "../Commands/CommandStructures";
 
 let nextId = 1;
 

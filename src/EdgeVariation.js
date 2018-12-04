@@ -3,8 +3,8 @@
    Eg: Parent/Child, calls, state/events, instance,
    condition/action/rule, 
  */
-import Edge from './Edge';
-import _ from 'lodash';
+import Edge from "./Edge";
+import _ from "lodash";
 
 //Symbols/Enum equivalents
 let symbolStrings = "Unspecified Parent Child Call State Event Instance Condition Action".split(' '),
