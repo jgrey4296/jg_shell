@@ -1,11 +1,12 @@
 //To be used with mocha --require babel-polyfill --compilers js:babel-register
-//Import * as aModule from '../src/aModule';
-import _ from 'lodash';
-import * as chai from 'chai';
-import Shell from '../src/Shell';
-import GraphNode from '../src/Node/GraphNode';
-import ReteNet from '../libs/rete';
-import { EdgeData } from '../src/Commands/CommandStructures';
+//Import * as aModule from "../src/aModule";
+import _ from "lodash";
+import * as chai from "chai";
+import ReteNet from "../libs/rete";
+import Shell from "../src/Shell";
+import GraphNode from "../src/Node/GraphNode";
+
+import { EdgeData } from "../src/Commands/CommandStructures";
 
 let should = chai.should(),
     expect = chai.expect;
